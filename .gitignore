@@ -1,32 +1,23 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
+/.vs
+/Binaries
+*.VC.db
+*.log
+*.VC.opendb
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+*.suo
+*.ilk
 *.exe
-*.out
-*.app
+*.obj
+*.tlog
+*.idb
+*.pdb
+*.iobj
+*.ipdb
+*.dll
+*.lib
+*.exp
+/Intermediate
+/Saved
