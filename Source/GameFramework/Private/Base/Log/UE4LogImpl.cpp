@@ -1,1 +1,0 @@
-﻿#include "UE4LogImpl.h"
