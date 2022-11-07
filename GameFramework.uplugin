@@ -1,0 +1,41 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0",
+  "FriendlyName": "GameFramework",
+  "Description": "Game Framework",
+  "Category": "Other",
+  "CreatedBy": "Luo",
+  "CreatedByURL": "",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "SupportURL": "",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "GameFramework",
+      "Type": "Runtime",
+      "LoadingPhase": "PreLoadingScreen",
+      "WhitelistPlatforms": [
+        "Win64",
+        "Android"
+      ]
+    },
+    {
+      "Name": "GameFrameworkEditor",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit",
+      "WhitelistPlatforms": [
+        "Win64"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "GameplayAbilities",
+      "Enabled": true
+    }
+  ]
+}
