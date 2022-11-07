@@ -1,0 +1,42 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Widgets/SWidget.h"
+#include "Modules/Money/MoneyTypeConfigTableRow.h"
+#include "Modules/Unit/UnitInfoConfigTableRow.h"
+#include "Modules/Exp/ExpTypeConfigTableRow.h"
+#include "Modules/Assets/BackpackTypeConfigTableRow.h"
+#include "Modules/Item/ItemConfigTableRow.h"
+#include "Modules/Item/ItemTypeConfigTableRow.h"
+#include "Modules/Skill/SkillConfigTableRow.h"
+#include "EditorCommon.h"
+
+/**
+ * 
+ */
+class GAMEFRAMEWORKEDITOR_API GameFrameworkEditorWidgetTool
+{
+public:
+	void ShowNotification(const FText& TextToDisplay, float TimeToDisplay);
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetUnitInfoSource();
+    TArray<TSharedPtr<FConfigTableRowWrapper>> GetUnitGroupSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetMoneyTypeSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetExpTypeSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetBackpackTypeSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetItemInfoSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetItemTypeSource();
+    TArray<TSharedPtr<FConfigTableRowWrapper>> GetSkillSource();
+
+	virtual bool IsExpTypeUse(int32 ExpType, FString& UseInfo);
+	virtual bool IsMoneyTypeUse(int32 MoneyType, FString& UseInfo);
+	virtual bool IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo);
+	virtual bool IsItemIdUse(int32 ItemId, FString& UseInfo);
+	virtual bool IsUnitIdUse(int32 UnitId, FString& UseInfo);
+    virtual bool IsSkillIdUse(int32 SkillId, FString& UseInfo);
+	virtual bool IsItemIdExist(int32 ItemId);
+	virtual bool IsUnitIdExist(int32 UnitId);
+
+	static void ExportEnumBP(FString EnumClassName, FText EnumDisplayName, TMap<int64, TPair<FString, FText>> EnumSource);
+};
