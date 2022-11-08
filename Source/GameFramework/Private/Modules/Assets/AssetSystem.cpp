@@ -596,14 +596,14 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
             if (MaxStack == 0) {
                 MaxStack = INT32_MAX;
             }
-            const auto& addItem = AddItems[AddItemIter->Value];
-            int RestCount = addItem.Count;
+            const auto& AddItem = AddItems[AddItemIter->Value];
+            int RestCount = AddItem.Count;
             TArray<TPair<int32, int32>>& TempItemInfo = ChangeItems.FindOrAdd(ItemId);
             for (int Index = 0; Index < TempItemInfo.Num(); ++Index) {
                 int NewNum = FMath::Min(MaxStack, TempItemInfo[Index].Value + RestCount);
                 int DiffNum = NewNum - TempItemInfo[Index].Value;
                 if (DiffNum > 0) {
-                    TempItemInfo[Index] = TPair<int32, int32>(ItemId, NewNum);
+                    TempItemInfo[Index] = TPair<int32, int32>(TempItemInfo[Index].Key, NewNum);
                     RestCount -= DiffNum;
                     if (RestCount == 0) {
                         break;
@@ -628,8 +628,8 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
                         MaxStack = INT32_MAX;
                     }
                     int NewNum = FMath::Min(MaxStack, RestAddItems[AddIndex].Value);
-                    TArray<TPair<int, int>>& tempItemIndexArray = ChangeItems.FindOrAdd(ItemId);
-                    tempItemIndexArray.Add(TPair<int, int>(Index, NewNum));
+                    TArray<TPair<int, int>>& TempItemIndexArray = ChangeItems.FindOrAdd(ItemId);
+                    TempItemIndexArray.Add(TPair<int, int>(Index, NewNum));
                     int RestCount = RestAddItems[AddIndex].Value - NewNum;
                     if (RestCount > 0) {
                         RestAddItems[AddIndex] = TPair<int, int>(ItemId, RestCount);
