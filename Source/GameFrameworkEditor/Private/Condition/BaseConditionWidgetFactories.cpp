@@ -73,7 +73,7 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
 			SConditionWidget::Construct(SConditionWidget::FArguments(), InWidgetCondition);
 			ParentSlot = &InParentSlot;
 
@@ -81,31 +81,58 @@ namespace ConditionUI {
 
 			ChildSlot
 			[
-				Panel
+				SNew(SExpandableArea)
+				.AreaTitle(FText::FromString(ConditionWidgetName))
+				.HeaderContent()
+				[
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					.VAlign(VAlign_Center)
+					.HAlign(HAlign_Fill)
+					[
+						SNew(STextBlock)
+						.Text(FText::FromString(ConditionWidgetName))
+					]
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					.Padding(2)
+					[
+						SNew(SButton)
+						.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+						.ForegroundColor(FSlateColor::UseForeground())
+						.HAlign(HAlign_Center)
+						.VAlign(VAlign_Center)
+						.OnClicked(this, &SConditionWidgetDefault::RemoveClick)
+						.Content()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString("-"))
+						]
+						[
+							SNew(SImage)
+							.Image(FEditorStyle::Get().GetBrush("Cross"))
+						]
+					]
+				]
+				.BodyContent()
+				[
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
+					.Padding(10.0f)
+					[
+						SNew(SSpacer)
+					]
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					.HAlign(HAlign_Fill)
+					[
+						Panel
+					]
+				]
 			];
 
 			WidgetSlot = &(Panel->AddSlot());
-
-			Panel->AddSlot()
-				.AutoWidth()
-				.Padding(2)
-				[
-					SNew(SButton)
-					.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-					.ForegroundColor(FSlateColor::UseForeground())
-					.HAlign(HAlign_Center)
-					.VAlign(VAlign_Center)
-					.OnClicked(this, &SConditionWidgetDefault::RemoveClick)
-					.Content()
-					[
-						SNew(STextBlock)
-						.Text(FText::FromString("-"))
-					]
-					[
-						SNew(SImage)
-						.Image(FEditorStyle::Get().GetBrush("Cross"))
-					]
-				];
 		}
 
 		FReply RemoveClick() {
@@ -136,8 +163,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -147,53 +174,42 @@ namespace ConditionUI {
 
 			(*WidgetSlot)
 				[
-					SNew(SVerticalBox)
-					+ SVerticalBox::Slot()
-                    .AutoHeight()
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
 					[
-						SNew(STextBlock)
-						.Text(FText::FromString(TEXT("收集物品")))
-					]
-					+ SVerticalBox::Slot()
-                    .AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
+						SNew(SVerticalBox)
+						+ SVerticalBox::Slot()
+						.AutoHeight()
 						[
-							SNew(SVerticalBox)
-							+ SVerticalBox::Slot()
-							.AutoHeight()
+							SNew(SHorizontalBox)
+							+ SHorizontalBox::Slot()
 							[
-								SNew(SHorizontalBox)
-								+ SHorizontalBox::Slot()
-								[
-									SNew(STextBlock)
-									.Text(FText::FromString(TEXT("ItemId:")))
-								]
-								+ SHorizontalBox::Slot()
-								[
-                                    ItemTableRefBox.ToSharedRef()
-								]
+								SNew(STextBlock)
+								.Text(FText::FromString(TEXT("ItemId:")))
 							]
-							+ SVerticalBox::Slot()
-							.AutoHeight()
+							+ SHorizontalBox::Slot()
 							[
-								SNew(SHorizontalBox)
-								+ SHorizontalBox::Slot()
-								[
-									SNew(STextBlock)
-									.Text(FText::FromString(TEXT("Count:")))
-								]
-								+ SHorizontalBox::Slot()
-								[
-									SNew(SNumericEntryBox<int>)
-									.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-									.Value_Lambda([this] {
-										UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)WidgetCondition;
-										return CollectItemCondition->ItemCount;
-									})
-									.OnValueCommitted(this, &CollectItemConditionWidget::OnItemCountCommitted)
-								]
+                                ItemTableRefBox.ToSharedRef()
+							]
+						]
+						+ SVerticalBox::Slot()
+						.AutoHeight()
+						[
+							SNew(SHorizontalBox)
+							+ SHorizontalBox::Slot()
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(TEXT("Count:")))
+							]
+							+ SHorizontalBox::Slot()
+							[
+								SNew(SNumericEntryBox<int>)
+								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+								.Value_Lambda([this] {
+									UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)WidgetCondition;
+									return CollectItemCondition->ItemCount;
+								})
+								.OnValueCommitted(this, &CollectItemConditionWidget::OnItemCountCommitted)
 							]
 						]
 					]
@@ -234,8 +250,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 			
             UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)WidgetCondition;
 
@@ -247,53 +263,42 @@ namespace ConditionUI {
 
 			(*WidgetSlot)
 				[
-					SNew(SVerticalBox)
-					+ SVerticalBox::Slot()
-                    .AutoHeight()
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot()
 					[
-						SNew(STextBlock)
-						.Text(FText::FromString(TEXT("收集Money")))
-					]
-					+ SVerticalBox::Slot()
-                    .AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
+						SNew(SVerticalBox)
+						+ SVerticalBox::Slot()
+						.AutoHeight()
 						[
-							SNew(SVerticalBox)
-							+ SVerticalBox::Slot()
-							.AutoHeight()
+							SNew(SHorizontalBox)
+							+ SHorizontalBox::Slot()
 							[
-								SNew(SHorizontalBox)
-								+ SHorizontalBox::Slot()
-								[
-									SNew(STextBlock)
-									.Text(FText::FromString(TEXT("MoneyType:")))
-								]
-								+ SHorizontalBox::Slot()
-								[
-                                    MoneyTypeTableRefBox.ToSharedRef()
-								]
+								SNew(STextBlock)
+								.Text(FText::FromString(TEXT("MoneyType:")))
 							]
-							+ SVerticalBox::Slot()
-							.AutoHeight()
+							+ SHorizontalBox::Slot()
 							[
-								SNew(SHorizontalBox)
-								+ SHorizontalBox::Slot()
-								[
-									SNew(STextBlock)
-									.Text(FText::FromString(TEXT("Count:")))
-								]
-								+ SHorizontalBox::Slot()
-								[
-									SNew(SNumericEntryBox<int>)
-									.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-									.Value_Lambda([this] {
-										UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)WidgetCondition;
-										return CollectMoneyCondition->MoneyCount;
-									})
-									.OnValueCommitted(this, &CollectMoneyConditionWidget::OnMoneyCountCommitted)
-								]
+                                MoneyTypeTableRefBox.ToSharedRef()
+							]
+						]
+						+ SVerticalBox::Slot()
+						.AutoHeight()
+						[
+							SNew(SHorizontalBox)
+							+ SHorizontalBox::Slot()
+							[
+								SNew(STextBlock)
+								.Text(FText::FromString(TEXT("Count:")))
+							]
+							+ SHorizontalBox::Slot()
+							[
+								SNew(SNumericEntryBox<int>)
+								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+								.Value_Lambda([this] {
+									UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)WidgetCondition;
+									return CollectMoneyCondition->MoneyCount;
+								})
+								.OnValueCommitted(this, &CollectMoneyConditionWidget::OnMoneyCountCommitted)
 							]
 						]
 					]
@@ -332,8 +337,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -342,53 +347,42 @@ namespace ConditionUI {
             ItemTableRefBox->RowSelectChanged.BindSP(this, &ConsumeItemConditionWidget::OnSelectionChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
 				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("消耗物品")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(SVerticalBox)
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("ItemId:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-                                ItemTableRefBox.ToSharedRef()
-							]
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("ItemId:")))
 						]
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Count:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SNumericEntryBox<int>)
-								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-								.Value_Lambda([this] {
-									UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)WidgetCondition;
-									return ConsumeItemCondition->ItemCount;
-								})
-								.OnValueCommitted(this, &ConsumeItemConditionWidget::OnItemCountCommitted)
-							]
+                            ItemTableRefBox.ToSharedRef()
+						]
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("Count:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SNew(SNumericEntryBox<int>)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.Value_Lambda([this] {
+								UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)WidgetCondition;
+								return ConsumeItemCondition->ItemCount;
+							})
+							.OnValueCommitted(this, &ConsumeItemConditionWidget::OnItemCountCommitted)
 						]
 					]
 				]
@@ -429,8 +423,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)WidgetCondition;
 
@@ -441,53 +435,42 @@ namespace ConditionUI {
             MoneyTypeTableRefBox->RowSelectChanged.BindSP(this, &ConsumeMoneyConditionWidget::OnSelectionChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
 				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("消耗Money")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(SVerticalBox)
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("MoneyType:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-                                MoneyTypeTableRefBox.ToSharedRef()
-							]
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("MoneyType:")))
 						]
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Count:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SNumericEntryBox<int>)
-								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-								.Value_Lambda([this] {
-								UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)WidgetCondition;
-									return ConsumeMoneyCondition->MoneyCount;
-								})
-								.OnValueCommitted(this, &ConsumeMoneyConditionWidget::OnMoneyCountCommitted)
-							]
+                            MoneyTypeTableRefBox.ToSharedRef()
+						]
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("Count:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SNew(SNumericEntryBox<int>)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.Value_Lambda([this] {
+							UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)WidgetCondition;
+								return ConsumeMoneyCondition->MoneyCount;
+							})
+							.OnValueCommitted(this, &ConsumeMoneyConditionWidget::OnMoneyCountCommitted)
 						]
 					]
 				]
@@ -526,8 +509,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)WidgetCondition;
             const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
@@ -537,53 +520,42 @@ namespace ConditionUI {
             ExpTypeTableRefBox->RowSelectChanged.BindSP(this, &PlayerReachExpLevelConditionWidget::OnSelectionChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
+				SNew( SHorizontalBox)
+				+ SHorizontalBox::Slot()
 				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("达到Exp等级")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew( SHorizontalBox)
-					+ SHorizontalBox::Slot()
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(SVerticalBox)
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("ExpType:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-                                ExpTypeTableRefBox.ToSharedRef()
-							]
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("ExpType:")))
 						]
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Level:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SNumericEntryBox<int>)
-								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-								.Value_Lambda([this] {
-									UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)WidgetCondition;
-									return ReachExpLevelCondition->ExpLevel;
-								})
-								.OnValueCommitted(this, &PlayerReachExpLevelConditionWidget::OnExpLevelCommitted)
-							]
+                            ExpTypeTableRefBox.ToSharedRef()
+						]
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("Level:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SNew(SNumericEntryBox<int>)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.Value_Lambda([this] {
+								UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)WidgetCondition;
+								return ReachExpLevelCondition->ExpLevel;
+							})
+							.OnValueCommitted(this, &PlayerReachExpLevelConditionWidget::OnExpLevelCommitted)
 						]
 					]
 				]
@@ -622,8 +594,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -633,53 +605,42 @@ namespace ConditionUI {
             UnitTableRefBox->RowSelectChanged.BindSP(this, &FarmConditionWidget::OnSelectionChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
 				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("Farm")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(SVerticalBox)
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("单位:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-                                UnitTableRefBox.ToSharedRef()
-							]
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("单位:")))
 						]
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Count:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SNumericEntryBox<int>)
-								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-								.Value_Lambda([this] {
-									UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)WidgetCondition;
-									return FarmCondition->Count;
-								})
-								.OnValueCommitted(this, &FarmConditionWidget::OnFarmCountCommitted)
-							]
+                            UnitTableRefBox.ToSharedRef()
+						]
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("Count:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SNew(SNumericEntryBox<int>)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.Value_Lambda([this] {
+								UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)WidgetCondition;
+								return FarmCondition->Count;
+							})
+							.OnValueCommitted(this, &FarmConditionWidget::OnFarmCountCommitted)
 						]
 					]
 				]
@@ -718,8 +679,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -732,73 +693,62 @@ namespace ConditionUI {
 			CompareTypeSource.Add(MakeShareable(new EIntimacyCompare(EIntimacyCompare::Below)));
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
 				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("好感度要求")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(SVerticalBox)
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("单位:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-                                UnitTableRefBox.ToSharedRef()
-							]
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("单位:")))
 						]
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Count:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SNew(SNumericEntryBox<int>)
-								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-								.Value_Lambda([this] {
-									UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
-									return IntimacyRequestCondition->IntimacyRequest;
-								})
-								.OnValueCommitted(this, &IntimacyRequestConditionWidget::OnIntimacyRequestCommitted)
-							]
+                            UnitTableRefBox.ToSharedRef()
 						]
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("Count:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SNew(SNumericEntryBox<int>)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.Value_Lambda([this] {
+								UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
+								return IntimacyRequestCondition->IntimacyRequest;
+							})
+							.OnValueCommitted(this, &IntimacyRequestConditionWidget::OnIntimacyRequestCommitted)
+						]
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("CompareType:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SAssignNew(CompareTypeComboBox, SComboBox<TSharedPtr<EIntimacyCompare>>)
+							.OptionsSource(GetCompareTypeSource())
+							.OnGenerateWidget(this, &IntimacyRequestConditionWidget::GenerateCompareTypeComboItem)
+							.OnSelectionChanged(this, &IntimacyRequestConditionWidget::CompareTypeComboBox_OnSelectionChanged)
 							[
 								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("CompareType:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-								SAssignNew(CompareTypeComboBox, SComboBox<TSharedPtr<EIntimacyCompare>>)
-								.OptionsSource(GetCompareTypeSource())
-								.OnGenerateWidget(this, &IntimacyRequestConditionWidget::GenerateCompareTypeComboItem)
-								.OnSelectionChanged(this, &IntimacyRequestConditionWidget::CompareTypeComboBox_OnSelectionChanged)
-								[
-									SNew(STextBlock)
-									.Text(this, &IntimacyRequestConditionWidget::GetCompareTypeComboText)
-								]
+								.Text(this, &IntimacyRequestConditionWidget::GetCompareTypeComboText)
 							]
 						]
 					]
@@ -877,8 +827,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -888,33 +838,22 @@ namespace ConditionUI {
             UnitTableRefBox->RowSelectChanged.BindSP(this, &TalkToConditionWidget::OnSelectionChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
 				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("NPC谈话")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
 					[
-						SNew(SVerticalBox)
-						+ SVerticalBox::Slot()
-						.AutoHeight()
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
 						[
-							SNew(SHorizontalBox)
-							+ SHorizontalBox::Slot()
-							[
-								SNew(STextBlock)
-								.Text(FText::FromString(TEXT("单位:")))
-							]
-							+ SHorizontalBox::Slot()
-							[
-                                UnitTableRefBox.ToSharedRef()
-							]
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("单位:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+                            UnitTableRefBox.ToSharedRef()
 						]
 					]
 				]
@@ -940,20 +879,15 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			(*WidgetSlot)[
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
-                .AutoHeight()
+				.AutoHeight()
 				[
 					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					[
-						SNew(STextBlock)
-						.Text(FText::FromString(TEXT("占有NPC")))
-					]
 					+ SHorizontalBox::Slot()
 					[
 						SNew(SButton)
@@ -973,7 +907,7 @@ namespace ConditionUI {
 					]
 				]
 				+ SVerticalBox::Slot()
-                .AutoHeight()
+				.AutoHeight()
 				[
 					SAssignNew(NPCsPanel, SVerticalBox)
 				]
@@ -1088,31 +1022,20 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			UPlayerDeductItemCondition* DeductItemCondition = (UPlayerDeductItemCondition*)WidgetCondition;
 
 			FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-			FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::HideNameArea, false);
+			FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::HideNameArea, false);
 			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 			DetailsView->SetObject(DeductItemCondition);
 			DetailsView->OnFinishedChangingProperties().AddSP(this, &DeductItemConditionWidget::OnPropertyChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("扣除物品")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					DetailsView.ToSharedRef()
-				]
+				DetailsView.ToSharedRef()
 			];
 		}
 
@@ -1133,31 +1056,20 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			UPlayerDeductMoneyCondition* DeductMoneyCondition = (UPlayerDeductMoneyCondition*)WidgetCondition;
 
 			FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-			FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::HideNameArea, false);
+			FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::HideNameArea, false);
 			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 			DetailsView->SetObject(DeductMoneyCondition);
 			DetailsView->OnFinishedChangingProperties().AddSP(this, &DeductMoneyConditionWidget::OnPropertyChanged);
 
 			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					SNew(STextBlock)
-					.Text(FText::FromString(TEXT("扣除货币")))
-				]
-				+ SVerticalBox::Slot()
-                .AutoHeight()
-				[
-					DetailsView.ToSharedRef()
-				]
+				DetailsView.ToSharedRef()
 			];
 		}
 
@@ -1184,7 +1096,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::CollectItemConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::CollectItemConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1198,7 +1110,7 @@ namespace BaseConditionFactory {
                     CollectItemCondition->ItemId = RowData->ItemId;
                     CollectItemCondition->ItemCount = 1;
 
-                    return SNew(ConditionUI::CollectItemConditionWidget, CollectItemCondition, ParentSlot);
+                    return SNew(ConditionUI::CollectItemConditionWidget, CollectItemCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1216,7 +1128,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::CollectMoneyConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::CollectMoneyConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1230,7 +1142,7 @@ namespace BaseConditionFactory {
                     CollectMoneyCondition->MoneyType = RowData->MoneyTypeId;
                     CollectMoneyCondition->MoneyCount = 1;
 
-                    return SNew(ConditionUI::CollectMoneyConditionWidget, CollectMoneyCondition, ParentSlot);
+                    return SNew(ConditionUI::CollectMoneyConditionWidget, CollectMoneyCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1248,7 +1160,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::ConsumeItemConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::ConsumeItemConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1262,7 +1174,7 @@ namespace BaseConditionFactory {
                     ConsumeItemCondition->ItemId = RowData->ItemId;
                     ConsumeItemCondition->ItemCount = 1;
 
-                    return SNew(ConditionUI::ConsumeItemConditionWidget, ConsumeItemCondition, ParentSlot);
+                    return SNew(ConditionUI::ConsumeItemConditionWidget, ConsumeItemCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1280,7 +1192,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::ConsumeMoneyConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::ConsumeMoneyConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1294,7 +1206,7 @@ namespace BaseConditionFactory {
                     ConsumeMoneyCondition->MoneyType = RowData->MoneyTypeId;
                     ConsumeMoneyCondition->MoneyCount = 1;
 
-                    return SNew(ConditionUI::ConsumeMoneyConditionWidget, ConsumeMoneyCondition, ParentSlot);
+                    return SNew(ConditionUI::ConsumeMoneyConditionWidget, ConsumeMoneyCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1312,7 +1224,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::FarmConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::FarmConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1326,7 +1238,7 @@ namespace BaseConditionFactory {
                     FarmCondition->UnitId = RowData->UnitId;
                     FarmCondition->Count = 1;
 
-                    return SNew(ConditionUI::FarmConditionWidget, FarmCondition, ParentSlot);
+                    return SNew(ConditionUI::FarmConditionWidget, FarmCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1374,7 +1286,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto ExpTypeSource = EditorWidgetTool->GetExpTypeSource();
@@ -1389,7 +1301,7 @@ namespace BaseConditionFactory {
                     ReachExpLevelCondition->ExpType = RowData->ExpTypeId;
                     ReachExpLevelCondition->ExpLevel = 1;
 
-                    return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, ReachExpLevelCondition, ParentSlot);
+                    return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, ReachExpLevelCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1407,7 +1319,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::IntimacyRequestConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::IntimacyRequestConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
             }
             else {
                 auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1422,7 +1334,7 @@ namespace BaseConditionFactory {
                     IntimacyRequestCondition->IntimacyRequest = 0;
                     IntimacyRequestCondition->Compare = EIntimacyCompare::Above;
 
-                    return SNew(ConditionUI::IntimacyRequestConditionWidget, IntimacyRequestCondition, ParentSlot);
+                    return SNew(ConditionUI::IntimacyRequestConditionWidget, IntimacyRequestCondition, ParentSlot, GetConditionWidgetName());
                 }
             }
         }
@@ -1440,7 +1352,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::TalkToConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::TalkToConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1453,7 +1365,7 @@ namespace BaseConditionFactory {
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
 					TalkToCondition->UnitID = RowData->UnitId;
 
-					return SNew(ConditionUI::TalkToConditionWidget, TalkToCondition, ParentSlot);
+					return SNew(ConditionUI::TalkToConditionWidget, TalkToCondition, ParentSlot, GetConditionWidgetName());
 				}
 			}
 		}
@@ -1471,7 +1383,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::AcquireNPCsConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::AcquireNPCsConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1484,7 +1396,7 @@ namespace BaseConditionFactory {
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
 					AcquireNPCsCondition->UnitIDs.Add(RowData->UnitId);
 
-					return SNew(ConditionUI::AcquireNPCsConditionWidget, AcquireNPCsCondition, ParentSlot);
+					return SNew(ConditionUI::AcquireNPCsConditionWidget, AcquireNPCsCondition, ParentSlot, GetConditionWidgetName());
 				}
 			}
 		}
@@ -1502,7 +1414,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::DeductItemConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::DeductItemConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
 			}
 			else {
 				auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1510,12 +1422,10 @@ namespace BaseConditionFactory {
 					EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的物品，请先配置物品")), 5.0f);
 					return TSharedPtr<SConditionWidget>();
 				}
-				else {
-					UPlayerDeductItemCondition* DeductItemCondition = NewObject<UPlayerDeductItemCondition>(Outer);
-					FItemConfigTableRow* RowData = (FItemConfigTableRow*)(ItemSource[0]->ConfigTableRow);
+				
+				UPlayerDeductItemCondition* DeductItemCondition = NewObject<UPlayerDeductItemCondition>(Outer);
 
-					return SNew(ConditionUI::DeductItemConditionWidget, DeductItemCondition, ParentSlot);
-				}
+				return SNew(ConditionUI::DeductItemConditionWidget, DeductItemCondition, ParentSlot, GetConditionWidgetName());
 			}
 		}
 	};
@@ -1532,7 +1442,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::DeductMoneyConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::DeductMoneyConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
 			}
 			else {
 				auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1540,12 +1450,10 @@ namespace BaseConditionFactory {
 					EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的Money类型，请先配置Money类型")), 5.0f);
 					return TSharedPtr<SConditionWidget>();
 				}
-				else {
-					UPlayerDeductMoneyCondition* DeductMoneyCondition = NewObject<UPlayerDeductMoneyCondition>(Outer);
-					FMoneyTypeConfigTableRow* RowData = (FMoneyTypeConfigTableRow*)(MoneyTypeSource[0]->ConfigTableRow);
+				
+				UPlayerDeductMoneyCondition* DeductMoneyCondition = NewObject<UPlayerDeductMoneyCondition>(Outer);
 
-					return SNew(ConditionUI::ConsumeMoneyConditionWidget, DeductMoneyCondition, ParentSlot);
-				}
+				return SNew(ConditionUI::DeductMoneyConditionWidget, DeductMoneyCondition, ParentSlot, GetConditionWidgetName());
 			}
 		}
 	};
