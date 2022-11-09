@@ -82,7 +82,10 @@ namespace ConditionUI {
 			ChildSlot
 			[
 				SNew(SExpandableArea)
-				.AreaTitle(FText::FromString(ConditionWidgetName))
+				.HeaderPadding(FMargin(2.0, 2.0))
+				.Padding(FMargin(10.0f, 2.0f))
+				.BorderBackgroundColor(FLinearColor(.6, .6, .6, 1.0f))
+				.BodyBorderBackgroundColor(FLinearColor(1.0, 0.0, 0.0))
 				.HeaderContent()
 				[
 					SNew(SHorizontalBox)
@@ -119,11 +122,6 @@ namespace ConditionUI {
 				[
 					SNew(SHorizontalBox)
 					+ SHorizontalBox::Slot()
-					.Padding(10.0f)
-					[
-						SNew(SSpacer)
-					]
-					+ SHorizontalBox::Slot()
 					.AutoWidth()
 					.HAlign(HAlign_Fill)
 					[
@@ -132,7 +130,10 @@ namespace ConditionUI {
 				]
 			];
 
-			WidgetSlot = &(Panel->AddSlot());
+			WidgetSlot = &(Panel->AddSlot()
+				.AutoWidth()
+				.HAlign(HAlign_Fill)
+				);
 		}
 
 		FReply RemoveClick() {
