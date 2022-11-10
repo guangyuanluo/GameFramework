@@ -236,7 +236,7 @@ bool UAssetSystem::DeductItems(UBackpackComponent* BackpackComponent, const TArr
             for (auto ItemIter = PackageIter->Value.CreateConstIterator(); ItemIter; ++ItemIter) {
                 auto ItemId = ItemIter->Key;
                 for (auto IndexCountIter = ItemIter->Value.CreateConstIterator(); IndexCountIter; ++IndexCountIter) {
-                    Backpack[IndexCountIter->Key]->ItemNum = IndexCountIter->Value;
+                    Backpack[IndexCountIter->Key]->ItemNum -= IndexCountIter->Value;
                     if (Backpack[IndexCountIter->Key]->ItemNum == 0) {
                         OnItemLeavePackage(BackpackComponent, Backpack[IndexCountIter->Key], BackpackType, IndexCountIter->Key);
                         Backpack[IndexCountIter->Key] = nullptr;

@@ -71,7 +71,6 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Data",
             "GameFramework/Public/Data/Area",            
             "GameFramework/Public/Data/Hero",
-            "GameFramework/Public/Data/Reward",
             "GameFramework/Public/Data/Team",
             //Editor
             "GameFramework/Public/Editor/Enum",
@@ -93,10 +92,12 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Modules/Skill",
             "GameFramework/Public/Modules/Store",
             "GameFramework/Public/Modules/Order",
+            "GameFramework/Public/Modules/Reward",
             //Global
             "GameFramework/Public/Global/Events",
             "GameFramework/Public/Global/Conditions",
             "GameFramework/Public/Global/Orders",
+            "GameFramework/Public/Global/Rewards",
             //Other
             "GameFramework/Public/UI",
             "GameFramework/Public/Utils",

@@ -1,18 +1,11 @@
 #include "GameFrameworkEditorWidgetTool.h"
 
-#include "Data/Reward/Reward/ExpReward.h"
-#include "Data/Reward/Reward/MoneyReward.h"
-#include "Data/Reward/Reward/ItemReward.h"
-#include "Data/Reward/Reward/IntimacyReward.h"
-
 #include "Global/Conditions/PlayerReachExpLevelCondition.h"
 #include "Global/Conditions/UnitReachExpLevelCondition.h"
 #include "Global/Conditions/PlayerCollectMoneyCondition.h"
 #include "Global/Conditions/PlayerConsumeMoneyCondition.h"
 #include "Global/Conditions/PlayerCollectItemCondition.h"
 #include "Global/Conditions/PlayerConsumeItemCondition.h"
-
-#include "Data/Reward/CoreReward.h"
 
 #include "Runtime/Slate/Public/Framework/Notifications/NotificationManager.h"
 #include "Runtime/Slate/Public/Widgets/Notifications/SNotificationList.h"
@@ -258,65 +251,6 @@ bool GameFrameworkEditorWidgetTool::IsExpTypeUse(int32 ExpType, FString& UseInfo
 	}
 
     bool HaveFound = false;
-	/*auto QuestMap = UQuestConfigTableHelper::GetAllQuestTemplates();
-	for (auto QuestTemplatePair : QuestMap) {
-		const auto& PreConditions = QuestTemplatePair.Value->GetPreConditions();
-		for (auto PreCondition : PreConditions) {
-            if (PreCondition->GetClass() == UPlayerReachExpLevelCondition::StaticClass()) {
-                UPlayerReachExpLevelCondition* reachExpLevelCondition = (UPlayerReachExpLevelCondition*)PreCondition;
-                if (reachExpLevelCondition->ExpType == ExpType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务前提条件中有使用该ExpType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-            else if (PreCondition->GetClass() == UUnitReachExpLevelCondition::StaticClass()) {
-                UUnitReachExpLevelCondition* reachExpLevelCondition = (UUnitReachExpLevelCondition*)PreCondition;
-                if (reachExpLevelCondition->ExpType == ExpType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务前提条件中有使用该ExpType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-
-		const auto& CompleteConditions = QuestTemplatePair.Value->GetCompleteConditions();
-		for (auto CompleteCondition : CompleteConditions) {
-            if (CompleteCondition->GetClass() == UPlayerReachExpLevelCondition::StaticClass()) {
-                UPlayerReachExpLevelCondition* reachExpLevelCondition = (UPlayerReachExpLevelCondition*)CompleteCondition;
-                if (reachExpLevelCondition->ExpType == ExpType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务完成条件中有使用该ExpType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-            else if (CompleteCondition->GetClass() == UUnitReachExpLevelCondition::StaticClass()) {
-                UUnitReachExpLevelCondition* reachExpLevelCondition = (UUnitReachExpLevelCondition*)CompleteCondition;
-                if (reachExpLevelCondition->ExpType == ExpType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务完成条件中有使用该ExpType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-		const auto& Rewards = QuestTemplatePair.Value->GetQuestRewards();
-		for (auto Reward : Rewards) {
-			switch (Reward->RewardType)
-			{
-			case RewardType::E_Exp: {
-				UExpReward* ExpReward = (UExpReward*)Reward;
-				if (ExpReward->ExpType == ExpType) {
-					UseInfo = FString::Format(TEXT("questid为{0}的任务奖励中有使用该ExpType的"), { QuestTemplatePair.Key });
-					HaveFound = true;
-				}
-			}
-			default:
-				break;
-			}
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-	}*/
 
     const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
     auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -335,194 +269,24 @@ bool GameFrameworkEditorWidgetTool::IsExpTypeUse(int32 ExpType, FString& UseInfo
 
 bool GameFrameworkEditorWidgetTool::IsMoneyTypeUse(int32 MoneyType, FString& UseInfo) {
     bool HaveFound = false;
-	/*auto QuestMap = UQuestConfigTableHelper::GetAllQuestTemplates();
-	for (auto QuestTemplatePair : QuestMap) {
-		const auto& PreConditions = QuestTemplatePair.Value->GetPreConditions();
-		for (auto PreCondition : PreConditions) {
-            if (PreCondition->GetClass() == UPlayerCollectMoneyCondition::StaticClass()) {
-                UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)PreCondition;
-                if (CollectMoneyCondition->MoneyType == MoneyType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务前提条件中有使用该MoneyType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-            else if (PreCondition->GetClass() == UPlayerConsumeMoneyCondition::StaticClass()) {
-                UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)PreCondition;
-                if (ConsumeMoneyCondition->MoneyType == MoneyType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务前提条件中有使用该MoneyType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-
-		const auto& CompleteConditions = QuestTemplatePair.Value->GetCompleteConditions();
-		for (auto CompleteCondition : CompleteConditions) {
-            if (CompleteCondition->GetClass() == UPlayerCollectMoneyCondition::StaticClass()) {
-                UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)CompleteCondition;
-                if (CollectMoneyCondition->MoneyType == MoneyType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务完成条件中有使用该MoneyType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-            else if (CompleteCondition->GetClass() == UPlayerConsumeMoneyCondition::StaticClass()) {
-                UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)CompleteCondition;
-                if (ConsumeMoneyCondition->MoneyType == MoneyType) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务完成条件中有使用该MoneyType的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-		const auto& Rewards = QuestTemplatePair.Value->GetQuestRewards();
-		for (auto Reward : Rewards) {
-			switch (Reward->RewardType)
-			{
-			case RewardType::E_Money: {
-				UMoneyReward* MoneyReward = (UMoneyReward*)Reward;
-				if (MoneyReward->MoneyType == MoneyType) {
-					UseInfo = FString::Format(TEXT("questid为{0}的任务奖励中有使用该MoneyType的"), { QuestTemplatePair.Key });
-					HaveFound = true;
-				}
-			}
-				break;
-			default:
-				break;
-			}
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-	}*/
 
 	return HaveFound;
 }
 
 bool GameFrameworkEditorWidgetTool::IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo) {
     bool HaveFound = false;
-	/*auto QuestMap = UQuestConfigTableHelper::GetAllQuestTemplates();
-	for (auto QuestTemplatePair : QuestMap) {
-		const auto& Rewards = QuestTemplatePair.Value->GetQuestRewards();
-		for (auto Reward : Rewards) {
-			switch (Reward->RewardType)
-			{
-			case RewardType::E_Item: {
-				UItemReward* ItemReward = (UItemReward*)Reward;
-				if (ItemReward->BackpackType == BackpackTypeId) {
-					UseInfo = FString::Format(TEXT("questid为{0}的任务奖励中有使用该背包类型的"), { QuestTemplatePair.Key });
-					HaveFound = true;
-				}
-			}
-				break;
-			default:
-				break;
-			}
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-	}*/
 
 	return HaveFound;
 }
 
 bool GameFrameworkEditorWidgetTool::IsItemIdUse(int32 ItemId, FString& UseInfo) {
     bool HaveFound = false;
-	/*auto QuestMap = UQuestConfigTableHelper::GetAllQuestTemplates();
-	for (auto QuestTemplatePair : QuestMap) {
-		const auto& PreConditions = QuestTemplatePair.Value->GetPreConditions();
-		for (auto PreCondition : PreConditions) {
-            if (PreCondition->GetClass() == UPlayerCollectItemCondition::StaticClass()) {
-                UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)PreCondition;
-                if (CollectItemCondition->ItemId == ItemId) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务前提条件中有使用该ItemId的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-            else if (PreCondition->GetClass() == UPlayerConsumeItemCondition::StaticClass()) {
-                UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)PreCondition;
-                if (ConsumeItemCondition->ItemId == ItemId) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务前提条件中有使用该ItemId的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-
-		const auto& CompleteConditions = QuestTemplatePair.Value->GetCompleteConditions();
-		for (auto CompleteCondition : CompleteConditions) {
-            if (CompleteCondition->GetClass() == UPlayerCollectItemCondition::StaticClass()) {
-                UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)CompleteCondition;
-                if (CollectItemCondition->ItemId == ItemId) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务完成条件中有使用该ItemId的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-            else if (CompleteCondition->GetClass() == UPlayerConsumeItemCondition::StaticClass()) {
-                UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)CompleteCondition;
-                if (ConsumeItemCondition->ItemId == ItemId) {
-                    UseInfo = FString::Format(TEXT("questid为{0}的任务完成条件中有使用该ItemId的"), { QuestTemplatePair.Key });
-                    HaveFound = true;
-                }
-            }
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-		const auto& Rewards = QuestTemplatePair.Value->GetQuestRewards();
-		for (auto Reward : Rewards) {
-			switch (Reward->RewardType)
-			{
-			case RewardType::E_Item: {
-				UItemReward* ItemReward = (UItemReward*)Reward;
-				if (ItemReward->ItemId == ItemId) {
-					UseInfo = FString::Format(TEXT("questid为{0}的任务奖励中有使用该ItemId的"), { QuestTemplatePair.Key });
-					HaveFound = true;
-				}
-			}
-			default:
-				break;
-			}
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-	}*/
-
+	
 	return HaveFound;
 }
 
 bool GameFrameworkEditorWidgetTool::IsUnitIdUse(int32 UnitId, FString& UseInfo) {
     bool HaveFound = false;
-	/*auto QuestMap = UQuestConfigTableHelper::GetAllQuestTemplates();
-	for (auto QuestTemplatePair : QuestMap) {
-		if (QuestTemplatePair.Value->GetUnitConsigner() == UnitId) {
-			UseInfo = FString::Format(TEXT("questid为{0}的任务委托的NPC中有使用该单位的"), { QuestTemplatePair.Key });
-			HaveFound = true;
-			break;
-		}
-		if (QuestTemplatePair.Value->GetUnitSubmit() == UnitId) {
-			UseInfo = FString::Format(TEXT("questid为{0}的任务提交的NPC中有使用该单位的"), { QuestTemplatePair.Key });
-			HaveFound = true;
-			break;
-		}
-		const auto& Rewards = QuestTemplatePair.Value->GetQuestRewards();
-		for (auto Reward : Rewards) {
-			switch (Reward->RewardType)
-			{
-			case RewardType::E_Intimacy: {
-				UIntimacyReward* IntimacyReward = (UIntimacyReward*)Reward;
-				if (IntimacyReward->UnitId == UnitId) {
-					UseInfo = FString::Format(TEXT("questid为{0}的任务奖励中有使用该单位的"), { QuestTemplatePair.Key });
-					HaveFound = true;
-				}
-			}
-			default:
-				break;
-			}
-			if (HaveFound) break;
-		}
-		if (HaveFound) break;
-	}*/
 	if (!HaveFound)
 	{
         const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();

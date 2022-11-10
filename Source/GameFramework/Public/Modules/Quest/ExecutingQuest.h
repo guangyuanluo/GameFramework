@@ -48,6 +48,12 @@ public:
 	const TArray<UCoreConditionProgress*>& GetQuestProgresses() const;
 
 	/**
+	* @brief 获取任务奖励
+	*/
+	UFUNCTION(BlueprintCallable, Category = "QuestSystem")
+	const TArray<UCoreReward*>& GetQuestRewards() const;
+
+	/**
 	* @brief 是否完成
 	*/
 	UFUNCTION(BlueprintCallable, Category = "QuestSystem")
@@ -106,6 +112,12 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Progress)
 	TArray<UCoreConditionProgress*> QuestProgresses;
 
+	/**
+	* 完成奖励
+	*/
+	UPROPERTY(ReplicatedUsing = OnRep_Rewards)
+	TArray<UCoreReward*> QuestRewards;
+
 	UFUNCTION()
 	void OnRep_QuestID();
 
@@ -114,6 +126,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_Progress();
+
+	UFUNCTION()
+	void OnRep_Rewards();
 
 	void NotifyPlayScenario();
 	void NotifyPlayScenarioAfterLoaded(FSoftObjectPath LoadScenarioPath);

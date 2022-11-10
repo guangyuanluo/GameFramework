@@ -22,6 +22,7 @@
 #include "QuestDetail.h"
 #include "QuestForestSubsystem.h"
 #include "Quest.h"
+#include "CoreReward.h"
 
 void UQuestSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
@@ -89,7 +90,13 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
         for (auto QuestProgress : QuestProgresses) {
             QuestProgress->HandleComplete();
         }
-        //todo，发放奖励
+        //发放奖励
+        auto& QuestRewards = FindQuest->GetQuestRewards();
+        auto Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(QuestComponent);
+        for (auto QuestReward : QuestRewards) {
+            QuestReward->HandleRewardDispatch(GameInstance, Character);
+        }
+
         //这里表示任务完成
         QuestComponent->ExecutingQuests.RemoveAt(FindIndex);
         QuestComponent->FinishQuests.Add(FindQuest->GetQuest()->ID);
@@ -105,7 +112,12 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
         for (auto QuestProgress : QuestProgresses) {
             QuestProgress->HandleComplete();
         }
-        //todo，发放奖励
+        //发放奖励
+        auto& QuestRewards = FindQuest->GetQuestRewards();
+        auto Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(QuestComponent);
+        for (auto QuestReward : QuestRewards) {
+            QuestReward->HandleRewardDispatch(GameInstance, Character);
+        }
         
         //这里就跳转下个节点
         FindQuest->StepNextNode(StepIndex);

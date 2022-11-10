@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/Reward/CoreReward.h"
+#include "Modules/Reward/CoreReward.h"
+#include "Modules/Item/ItemIDNumPair.h"
 #include "ItemReward.generated.h"
 
 /**
@@ -16,13 +17,8 @@ public:
 	GENERATED_UCLASS_BODY()
 
 	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	int32 ItemId;
+	TArray<FItemIDNumPair> Items;
 
-	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	int32 BackpackType;
-
-	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	int32 Count;
-
-	virtual void HandleRewardDispatch(class UCoreGameInstance* GameInstance, TScriptInterface<class IGameEntity> Target) override;
+	virtual FString GetNodeTitle_Implementation() override;
+	virtual void HandleRewardDispatch_Implementation(UCoreGameInstance* InGameInstance, class ACoreCharacter* Source) override;
 };

@@ -11,6 +11,7 @@
 #include "Modules/Scenario/ScenarioNode.h"
 #include "Modules/Scenario/ScenarioAction.h"
 #include "SScenarionActionListWidget.h"
+#include "SSubClassObjectListWidget.h"
 
 void FScenarioNodeCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBuilder) {
 	ActionsProperty  = LayoutBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UScenarioNode, Actions));
@@ -18,7 +19,7 @@ void FScenarioNodeCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBu
 	LayoutBuilder.HideProperty("Actions");
 	IDetailCategoryBuilder& Category = LayoutBuilder.EditCategory("Actions", FText(), ECategoryPriority::Default);
 
-	TSharedPtr<SScenarionActionListWidget> ScenarionActionListWidget = SNew(SScenarionActionListWidget, ActionsProperty);
+	TSharedPtr<SSubClassObjectListWidget<UScenarioAction>> ScenarionActionListWidget = SNew(SSubClassObjectListWidget<UScenarioAction>, ActionsProperty);
 
 	Category.AddCustomRow(FText())
 		.NameContent()

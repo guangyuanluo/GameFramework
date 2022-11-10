@@ -7,7 +7,7 @@
 #include "OrderSetting.generated.h"
 
 /*
-* @brief 订单s设置
+* @brief 订单设置
 */
 UCLASS(config = Game, defaultconfig, meta = (DisplayName = "订单设置"))
 class GAMEFRAMEWORK_API UOrderSetting : public UDeveloperSettings {
