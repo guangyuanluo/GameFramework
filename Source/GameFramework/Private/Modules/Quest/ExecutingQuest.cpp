@@ -58,6 +58,10 @@ const TArray<UCoreConditionProgress*>& UExecutingQuest::GetQuestProgresses() con
 	return QuestProgresses;
 }
 
+const TArray<UCoreReward*>& UExecutingQuest::GetQuestRewards() const {
+	return QuestRewards;
+}
+
 bool UExecutingQuest::IsComplete() const {
 	bool IsComplete = true;
 	for (int Index = 0; Index < QuestProgresses.Num(); ++Index) {
@@ -86,12 +90,6 @@ void UExecutingQuest::StepNextNode(int StepIndex) {
 	auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
 	if (!Node->NextNodes.IsValidIndex(StepIndex)) {
 		return;
-	}
-	//todo，这里发奖励
-
-	//这里处理进度
-	for (auto Progress : QuestProgresses) {
-		Progress->HandleComplete();
 	}
 	//这里取下个节点
 	SetNode(Node->NextNodes[StepIndex]);
@@ -129,6 +127,7 @@ void UExecutingQuest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, ID, Params);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, NodeID, Params);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, QuestProgresses, Params);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, QuestRewards, Params);
 }
 
 bool UExecutingQuest::IsSupportedForNetworking() const {
@@ -151,6 +150,10 @@ void UExecutingQuest::OnRep_Progress() {
 	if (IsComplete()) {
 		NotifyPlayScenario();
 	}
+}
+
+void UExecutingQuest::OnRep_Rewards() {
+	
 }
 
 void UExecutingQuest::NotifyPlayScenario() {
@@ -199,6 +202,7 @@ void UExecutingQuest::PlayScenarioCompleted(UScenario* PlayScenario, int ReturnI
 void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	NodeID = InNode->ID;
 	QuestProgresses.Empty();
+	QuestRewards.Empty();
 
 	auto Owner = Cast<ACoreCharacterStateBase>(GetOuter());
 
@@ -208,6 +212,7 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 			auto ConditionProgress = Condition->GenerateConditionProgress(Owner);
 			QuestProgresses.Add(ConditionProgress);
 		}
+		QuestRewards = NodeItem->Rewards;
 	}
 	else {
 		UE_LOG(GameCore, Error, TEXT("不支持的任务节点类型"));

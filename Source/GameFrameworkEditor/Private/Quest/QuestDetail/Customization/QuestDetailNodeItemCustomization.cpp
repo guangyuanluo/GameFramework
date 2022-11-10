@@ -10,7 +10,8 @@
 
 #include "Modules/Quest/QuestDetailNodeItem.h"
 #include "SConditionEditWidget.h"
-#include "SRewardEditWidget.h"
+#include "SSubClassObjectListWidget.h"
+#include "Modules/Reward/CoreReward.h"
 
 void FQuestDetailNodeItemCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBuilder) {
 	//条件
@@ -49,8 +50,7 @@ void FQuestDetailNodeItemCustomization::CustomizeDetails(IDetailLayoutBuilder& L
 	LayoutBuilder.HideProperty("Rewards");
 	IDetailCategoryBuilder& RewardCategory = LayoutBuilder.EditCategory("Rewards", FText(), ECategoryPriority::Default);
 
-	TSharedPtr<SRewardEditWidget> RewardEditWidget = SNew(SRewardEditWidget, OutPackages[0])
-		.OnRewardChange_Raw(this, &FQuestDetailNodeItemCustomization::OnAssetChange);
+	TSharedPtr<SSubClassObjectListWidget<UCoreReward>> RewardEditWidget = SNew(SSubClassObjectListWidget<UCoreReward>, RewardProperty);
 
 	RewardCategory.AddCustomRow(FText())
 		.NameContent()
@@ -68,7 +68,7 @@ void FQuestDetailNodeItemCustomization::CustomizeDetails(IDetailLayoutBuilder& L
 	void* RewardPropertyValuePtr;
 	RewardProperty->GetValueData(RewardPropertyValuePtr);
 	TArray<UCoreReward*>* RewardPtr = (TArray<UCoreReward*>*)RewardPropertyValuePtr;
-	RewardEditWidget->RefreshRewardPtr(RewardPtr);
+	RewardEditWidget->RefreshPropertyHandle(RewardProperty);
 }
 
 TSharedRef<IDetailCustomization> FQuestDetailNodeItemCustomization::MakeInstance() {

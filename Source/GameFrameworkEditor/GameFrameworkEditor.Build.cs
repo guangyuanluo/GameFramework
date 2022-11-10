@@ -81,8 +81,6 @@ public class GameFrameworkEditor : ModuleRules
             "GameFrameworkEditor/Public",
             "GameFrameworkEditor/Public/Condition",
             "GameFrameworkEditor/Private/Condition",
-            "GameFrameworkEditor/Public/Reward",
-            "GameFrameworkEditor/Private/Reward",
             "GameFrameworkEditor/Private",
             "GameFrameworkEditor/Private/Enum",            
             "GameFrameworkEditor/Private/Graph",

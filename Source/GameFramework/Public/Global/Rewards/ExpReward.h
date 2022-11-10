@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/Reward/CoreReward.h"
+#include "Modules/Reward/CoreReward.h"
+#include "Modules/Exp/ExpTypeNumPair.h"
 #include "ExpReward.generated.h"
 
 /**
@@ -16,10 +17,8 @@ public:
 	GENERATED_UCLASS_BODY()
 
 	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	uint8 ExpType;
+	TArray<FExpTypeNumPair> Exps;
 
-	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	int Count;
-
-	virtual void HandleRewardDispatch(class UCoreGameInstance* gameInstance, TScriptInterface<class IGameEntity> target) override;
+	virtual FString GetNodeTitle_Implementation() override;
+	virtual void HandleRewardDispatch_Implementation(UCoreGameInstance* InGameInstance, class ACoreCharacter* Source) override;
 };

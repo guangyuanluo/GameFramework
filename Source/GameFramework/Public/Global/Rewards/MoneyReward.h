@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/Reward/CoreReward.h"
+#include "Modules/Reward/CoreReward.h"
+#include "Modules/Money/MoneyTypeNumPair.h"
 #include "MoneyReward.generated.h"
 
 /**
@@ -16,10 +17,8 @@ public:
 	GENERATED_UCLASS_BODY()
 
 	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	uint8 MoneyType;
+	TArray<FMoneyTypeNumPair> Money;
 
-	UPROPERTY(Category = "Reward", EditAnywhere, BlueprintReadOnly)
-	int MoneyCount;
-
-	virtual void HandleRewardDispatch(class UCoreGameInstance* GameInstance, TScriptInterface<class IGameEntity> Target) override;
+	virtual FString GetNodeTitle_Implementation() override;
+	virtual void HandleRewardDispatch_Implementation(UCoreGameInstance* InGameInstance, class ACoreCharacter* Source) override;
 };

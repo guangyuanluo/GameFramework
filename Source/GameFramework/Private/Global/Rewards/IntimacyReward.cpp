@@ -3,9 +3,14 @@
 #include "IntimacyReward.h"
 
 UIntimacyReward::UIntimacyReward(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	RewardType = RewardType::E_Intimacy;
+
 }
 
-void UIntimacyReward::HandleRewardDispatch(UCoreGameInstance* gameInstance, TScriptInterface<class IGameEntity> target) {
+FString UIntimacyReward::GetNodeTitle_Implementation() {
+    return TEXT("好感度奖励");
+}
+
+
+void UIntimacyReward::HandleRewardDispatch_Implementation(UCoreGameInstance* InGameInstance, class ACoreCharacter* Source) {
 
 }

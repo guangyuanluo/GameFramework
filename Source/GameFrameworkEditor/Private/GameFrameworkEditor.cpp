@@ -45,7 +45,6 @@
 #include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
 #include "AssetTypeActions_QuestTree.h"
-#include "BaseRewardWidgetFactories.h"
 #include "Customization/QuestCustomization.h"
 #include "Modules/Quest/Quest.h"
 #include "Customization/QuestDetailNodeItemCustomization.h"
@@ -82,8 +81,6 @@ void FGameFrameworkEditorModule::StartupModule()
 
     //注册内置条件界面
     BaseConditionWidgetFactories::Init();
-	//注册内置奖励界面
-	BaseRewardWidgetFactories::Init();
 
     //注册放置分页
     RegistCustomPlacement(FText::FromString(TEXT("单位")), TEXT("Unit"), []() -> TSharedRef<SWidget> { return SNew(SUnitPlacementPalette); });
@@ -121,7 +118,6 @@ void FGameFrameworkEditorModule::ShutdownModule()
 	mRegistEditorWidgetFactories.Empty();
 
     BaseConditionWidgetFactories::Uninit();
-	BaseRewardWidgetFactories::Uninit();
 
 	if (GraphPanelNodeFactoryCommon.IsValid()) {
 		FEdGraphUtilities::UnregisterVisualNodeFactory(GraphPanelNodeFactoryCommon);
