@@ -10,6 +10,12 @@ struct FNPCInfo {
 	GENERATED_BODY()
 
 	/**
+	* 对象
+	*/
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	class ACoreCharacter* NPC;
+
+	/**
 	* 是否释放，空闲中
 	*/
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)

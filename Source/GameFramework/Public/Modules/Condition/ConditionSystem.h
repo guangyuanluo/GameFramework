@@ -81,6 +81,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	TScriptInterface<ICoreConditionObserver> GetObserverFromProgress(UCoreConditionProgress* InProgress);
 
+	/**
+	* 条件进度主动通知变化
+	*/
+	void NotifyConditionProgressChange(UCoreConditionProgress* InProgress);
+
 private:
 	UPROPERTY()
 	TMap<UObject*, UFollowContent*> FollowMap;

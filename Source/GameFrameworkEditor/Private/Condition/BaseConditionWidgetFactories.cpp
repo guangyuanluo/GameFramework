@@ -46,6 +46,9 @@
 //deduct money
 #include "Global/Conditions/PlayerDeductMoneyCondition.h"
 #include "Global/Conditions/PlayerDeductMoneyConditionProgress.h"
+//clost to npc
+#include "Global/Conditions/CloseToNPCCondition.h"
+#include "Global/Conditions/CloseToNPCConditionProgress.h"
 
 
 #include "GameInstance/CoreGameInstance.h"
@@ -1081,6 +1084,86 @@ namespace ConditionUI {
             NotifyConditionChange();
         }
 	};
+
+	/*靠近NPC条件*/
+	class CloseToNPCConditionWidget : public SConditionWidgetDefault {
+	public:
+		virtual ~CloseToNPCConditionWidget() {}
+
+		SLATE_BEGIN_ARGS(CloseToNPCConditionWidget) {}
+
+		SLATE_END_ARGS()
+
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+
+            const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
+            auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
+
+			UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
+            UnitTableRefBox = SNew(SRowTableRefBox, UnitDataTable, CloseToNPCCondition->UnitID);
+            UnitTableRefBox->RowSelectChanged.BindSP(this, &CloseToNPCConditionWidget::OnSelectionChanged);
+
+			(*WidgetSlot)[
+				SNew(SHorizontalBox)
+				+ SHorizontalBox::Slot()
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("单位:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+                            UnitTableRefBox.ToSharedRef()
+						]
+					]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					[
+						SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						[
+							SNew(STextBlock)
+							.Text(FText::FromString(TEXT("距离:")))
+						]
+						+ SHorizontalBox::Slot()
+						[
+							SNew(SNumericEntryBox<float>)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.Value_Lambda([this] {
+								UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
+								return CloseToNPCCondition->Radius;
+							})
+							.OnValueCommitted(this, &CloseToNPCConditionWidget::OnCountCommitted)
+						]
+					]
+				]
+			];
+		}
+
+	private:		
+        TSharedPtr<SRowTableRefBox> UnitTableRefBox;
+
+        void OnSelectionChanged(int UnitId) {
+			UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
+			CloseToNPCCondition->UnitID = UnitId;
+            NotifyConditionChange();
+        }
+
+		void OnCountCommitted(float NewValue, ETextCommit::Type InCommitType) {
+			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
+
+			UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
+			CloseToNPCCondition->Radius = NewValue;
+			NotifyConditionChange();
+		}
+	};
 }
 
 namespace BaseConditionFactory {
@@ -1458,6 +1541,37 @@ namespace BaseConditionFactory {
 			}
 		}
 	};
+
+	class ConditionWidgetFactory_CloseToNPC : public ConditionWidgetFactory {
+	public:
+		virtual FString GetConditionWidgetName() override {
+			return TEXT("靠近NPC");
+		}
+		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
+			return UCloseToNPCCondition::StaticClass();
+		}
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot& ParentSlot) override {
+			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
+			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
+			if (Condition) {
+				return SNew(ConditionUI::CloseToNPCConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+			}
+			else {
+				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
+				if (UnitInfoSource.Num() == 0) {
+					EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的单位，请先配置单位")), 5.0f);
+					return TSharedPtr<SConditionWidget>();
+				}
+				else {
+					UCloseToNPCCondition* CloseToNPCCondition = NewObject<UCloseToNPCCondition>(Outer);
+					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
+					CloseToNPCCondition->UnitID = RowData->UnitId;
+
+					return SNew(ConditionUI::CloseToNPCConditionWidget, CloseToNPCCondition, ParentSlot, GetConditionWidgetName());
+				}
+			}
+		}
+	};
 }
 
 TArray<TSharedPtr<ConditionWidgetFactory>> BaseConditionWidgetFactories::BaseFactories = {
@@ -1474,6 +1588,7 @@ TArray<TSharedPtr<ConditionWidgetFactory>> BaseConditionWidgetFactories::BaseFac
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_AcquireNPCs),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerDeductItem),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerDeductMoney),
+	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_CloseToNPC),
 };
 
 void BaseConditionWidgetFactories::Init()

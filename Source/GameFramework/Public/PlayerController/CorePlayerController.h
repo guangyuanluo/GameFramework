@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "CorePlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterTemplateUpdatedSignature, class ACorePlayerController*, PlayerController);
 /**
  * 
  */
@@ -28,6 +29,12 @@ public:
     /** GM组件 */
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CharacterController")
     class UGMComponent* GMComponent;
+
+	/**
+	* 角色模板变化通知
+	*/
+	UPROPERTY(BlueprintAssignable, Category = Character)
+	FCharacterTemplateUpdatedSignature OnCharacterTemplateUpdated;
 
 	/**
 	* 初始化role id
