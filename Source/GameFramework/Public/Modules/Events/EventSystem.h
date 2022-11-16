@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tickable.h"
 #include "Containers/Queue.h"
 #include "Base/ECS/SystemBase.h"
 #include "EventSystem.generated.h"
@@ -16,7 +15,7 @@ class IEventHandlerInterface;
  * 事件系统
  */
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UEventSystem : public USystemBase, public FTickableGameObject
+class GAMEFRAMEWORK_API UEventSystem : public USystemBase
 {
 	GENERATED_BODY()
 
@@ -43,13 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EventSystem")
 	void UnRegistEventHandler(TScriptInterface<IEventHandlerInterface> EventHandler);
 
-	// Begin FTickableGameObject implementation
-	virtual bool IsTickableWhenPaused() const override { return false; }
-	virtual bool IsTickableInEditor() const override { return false; }
-	virtual bool IsTickable() const override { return true; }
-	virtual void Tick(float DeltaTime) override;
-	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(EventSystem, STATGROUP_Tickables); }
-	// End FTickableGameObject
+	virtual void OnTick_Implementation(float DeltaTime) override;
 
     /** 给playercontroller调用来处理rpc的 **/
     void HandleSendEventToServer(class ACorePlayerController* PlayerController, const FString& EventClass, const FString& SerializeEvent);
