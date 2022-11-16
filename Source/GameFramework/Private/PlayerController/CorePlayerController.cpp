@@ -81,6 +81,8 @@ void ACorePlayerController::ChangeCharacterTemplateId(int TemplateID) {
 
 	Possess(NewCharacter);
 
+	OnCharacterTemplateUpdated.Broadcast(this);
+
     UE_LOG(GameCore, Log, TEXT("单位更换模板成功:%d"), TemplateID);
 }
 

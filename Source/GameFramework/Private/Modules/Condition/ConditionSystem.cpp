@@ -96,6 +96,89 @@ TScriptInterface<ICoreConditionObserver> UConditionSystem::GetObserverFromProgre
 	return nullptr;
 }
 
+void UConditionSystem::NotifyConditionProgressChange(UCoreConditionProgress* InProgress) {
+	if (InProgress) {
+		bool bSatisfy = false;
+		{
+			auto FindReservePtr = ProgressReserveMap.Find(InProgress);
+			if (FindReservePtr) {
+				UProgressReserveInfo* ProgressReserveInfo = *FindReservePtr;
+
+				//通知进度变化
+				auto& FollowContent = ProgressReserveInfo->ProgressFollowContent;
+				TScriptInterface<ICoreConditionObserver> Observer = FollowContent->Observer;
+				Observer->Execute_OnProgressRefresh(Observer.GetObject(), InProgress);
+
+				bool bComplete = InProgress->IsComplete();
+				if (bComplete != ProgressReserveInfo->LastComplete) {
+					ProgressReserveInfo->LastComplete = bComplete;
+
+					//满足条件，可以检查这个观察者所有的进度，看是否全部完成
+					if (bComplete) {
+						bSatisfy = true;
+
+						for (auto OtherProgress : FollowContent->Progresses) {
+							if (InProgress != OtherProgress) {
+								if (!OtherProgress->IsComplete()) {
+									bSatisfy = false;
+									break;
+								}
+							}
+						}
+
+						if (bSatisfy) {
+							//全部满足，通知
+							FollowContent->Observer->Execute_OnSatisfyConditions(Observer.GetObject(), FollowContent->Progresses);
+						}
+					}
+				}
+			}
+		}
+
+		if (bSatisfy) {
+			//这里有可能在OnSatisfyConditions被unfollow了，要加非法判断
+			UProgressReserveInfo** ProgressReserveInfo = ProgressReserveMap.Find(InProgress);
+			if (ProgressReserveInfo) {
+				//这里说明还在，EventClassType这里对比，如果不同就要重新赋值
+				const auto& OldCareEventTypes = (*ProgressReserveInfo)->CareEventTypes;
+				auto NewCareEventTypes = InProgress->GetCareEventTypes();
+				bool bCareEventTypeChange = false;
+				if (OldCareEventTypes.Num() != NewCareEventTypes.Num()) {
+					bCareEventTypeChange = true;
+				}
+				else {
+					for (int EventTypeIndex = 0; EventTypeIndex < OldCareEventTypes.Num(); ++EventTypeIndex) {
+						if (OldCareEventTypes[EventTypeIndex] != NewCareEventTypes[EventTypeIndex]) {
+							bCareEventTypeChange = true;
+							break;
+						}
+					}
+				}
+				if (bCareEventTypeChange) {
+					//移除老的
+					for (auto EventTypeIndex = 0; EventTypeIndex < OldCareEventTypes.Num(); ++EventTypeIndex) {
+						auto CareEventType = (*ProgressReserveInfo)->CareEventTypes[EventTypeIndex];
+						auto FindEventTypeInfoPtr = ProgressEventMap.Find(CareEventType);
+						if (FindEventTypeInfoPtr) {
+							FindEventTypeInfoPtr->Values.Remove(InProgress);
+							if (FindEventTypeInfoPtr->Values.Num() == 0) {
+								ProgressEventMap.Remove(CareEventType);
+							}
+						}
+					}
+					(*ProgressReserveInfo)->CareEventTypes.Empty();
+					for (auto EventTypeIndex = 0; EventTypeIndex < NewCareEventTypes.Num(); ++EventTypeIndex) {
+						auto CareEventType = NewCareEventTypes[EventTypeIndex];
+						(*ProgressReserveInfo)->CareEventTypes.Add(CareEventType);
+						auto& FindEventTypeInfo = ProgressEventMap.FindOrAdd(CareEventType);
+						FindEventTypeInfo.Values.Add(InProgress);
+					}
+				}
+			}
+		}
+	}
+}
+
 TArray<UClass*> UConditionSystem::GetHandleEventTypes_Implementation() {
 	return TArray<UClass*>({ UAllEvent::StaticClass() });
 }

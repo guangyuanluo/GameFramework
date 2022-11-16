@@ -11,11 +11,22 @@
 
 void UNPCSystem::AddNPC(ACoreCharacter* NPC) {
     check(!NPCMap.Contains(NPC->TemplateID));
-    auto& NPCInfo = NPCMap.FindOrAdd(NPC->TemplateID);    
+    auto& NPCInfo = NPCMap.FindOrAdd(NPC->TemplateID);
+    NPCInfo.NPC = NPC;
 }
 
 void UNPCSystem::RemoveNPC(ACoreCharacter* NPC) {
-    NPCMap.Remove(NPC->TemplateID);
+    auto FindNPCInfoPtr = NPCMap.Find(NPC->TemplateID);
+    if (FindNPCInfoPtr) {
+        if (FindNPCInfoPtr->IsReleased) {
+            //未被占有就移除
+            NPCMap.Remove(NPC->TemplateID);
+        }
+        else {
+            // NPC 被占有
+            FindNPCInfoPtr->NPC = nullptr;
+        }
+    }
 }
 
 bool UNPCSystem::FindNPCInfo(int32 NPCID, FNPCInfo& NPCInfo) {
@@ -65,6 +76,10 @@ void UNPCSystem::ReleaseNPCs(AActor* Owner, const TArray<int32>& NPCIDs) {
         if (FindNPCInfo) {
             FindNPCInfo->IsReleased = true;
             FindNPCInfo->CustomInfo = nullptr;
+            if (!FindNPCInfo->NPC) {
+                //NPC已经释放，这里删除map
+                NPCMap.Remove(NPCID);
+            }
         }
     }
     //释放事件
