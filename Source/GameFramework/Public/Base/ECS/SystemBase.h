@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Tickable.h"
 #include "SystemBase.generated.h"
 
 class UCoreGameInstance;
@@ -20,18 +21,21 @@ enum class ESystemType :uint8 //设置uint8类型
 * @brief 系统基类
 */
 UCLASS(BlueprintType, Blueprintable)
-class GAMEFRAMEWORK_API USystemBase : public UObject {
+class GAMEFRAMEWORK_API USystemBase : public UObject, public FTickableGameObject {
 	GENERATED_BODY()
 
 public:
 	virtual void Initialize(UCoreGameInstance* InGameInstance);
     virtual void Uninitialize();
 
-    UFUNCTION(BlueprintImplementableEvent, Category = "System")
+    UFUNCTION(BlueprintNativeEvent, Category = "System")
     void PostInitialize();
 
-    UFUNCTION(BlueprintImplementableEvent, Category = "System")
+    UFUNCTION(BlueprintNativeEvent, Category = "System")
     void PreUninitialize();
+
+    UFUNCTION(BlueprintNativeEvent, Category = "System")
+    void OnTick(float DeltaTime);
 
     UFUNCTION(BlueprintPure, Category = "System")
     ESystemType GetSystemType() const;
@@ -42,4 +46,18 @@ protected:
 
     UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true), Category = "System")
     UCoreGameInstance* GameInstance;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", DisplayName = "是否需要tick"))
+    bool CanTick = false;
+
+    // FTickableGameObject begin
+    virtual void Tick(float DeltaTime) override;
+    virtual TStatId GetStatId() const override;
+    virtual bool IsTickableWhenPaused() const override { return false; }
+    virtual bool IsTickableInEditor() const override { return false; }
+    virtual ETickableTickType GetTickableTickType() const override;
+    virtual bool IsTickable() const override;
+    // FTickableGameObject end
+
+    virtual UWorld* GetWorld() const override;
 };

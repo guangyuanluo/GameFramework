@@ -13,6 +13,8 @@
 
 void UEventSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
+
+	CanTick = true;
 }
 
 void UEventSystem::Uninitialize() {
@@ -118,7 +120,7 @@ void UEventSystem::HandleSendEventToClient(const FString& EventClass, const FStr
     }
 }
 
-void UEventSystem::Tick(float DeltaTime) {
+void UEventSystem::OnTick_Implementation(float DeltaTime) {
 	if (mEventQueue.IsEmpty()) return;
 	int HandleCount = 0;
 	while (HandleCount < TickHandleEventMax) {
