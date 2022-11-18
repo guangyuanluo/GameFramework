@@ -56,7 +56,7 @@ TArray<ACoreCharacter*> UGameFrameworkUtils::GetAllCharactersWithinRadius(ACoreC
 	if (UKismetSystemLibrary::SphereTraceMulti(Source, Source->GetActorLocation(), Source->GetActorLocation() + Source->GetActorForwardVector() * Range, Radius, TraceChannel, false, TArray<AActor*>({ Source }), EDrawDebugTrace::Type::ForDuration, OutHits, false)) {
 		for (int Index = 0; Index < OutHits.Num(); ++Index) {
 			auto& HitResult = OutHits[Index];
-			auto Agent = Cast<IGenericTeamAgentInterface>(HitResult.Actor);
+			auto Agent = Cast<IGenericTeamAgentInterface>(HitResult.GetActor());
 			if (Agent && (FGenericTeamId::GetAttitude(SourceAgent->GetGenericTeamId(), Agent->GetGenericTeamId()) == TeamAttitude)) {
 				AActor* Actor = HitResult.Actor.Get();
 				ACoreCharacter* Character = Cast<ACoreCharacter>(Actor);
@@ -91,7 +91,7 @@ TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, fl
 		for (int Index = 0; Index < OutHits.Num(); ++Index) {
 			auto& HitResult = OutHits[Index];
 			
-			AActor* Actor = HitResult.Actor.Get();
+			AActor* Actor = HitResult.GetActor();
 			Result.Add(Actor);
 		}
 	}
