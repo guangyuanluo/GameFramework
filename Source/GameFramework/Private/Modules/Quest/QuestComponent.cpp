@@ -160,11 +160,11 @@ bool UQuestComponent::ReplicateSubobjects(class UActorChannel* Channel, class FO
     bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
     for (const auto ExecutingQuest : ExecutingQuests) {
-        if (ExecutingQuest && !ExecutingQuest->IsPendingKill()) {
+        if (IsValid(ExecutingQuest)) {
             WroteSomething |= Channel->ReplicateSubobject(const_cast<UExecutingQuest*>(ExecutingQuest), *Bunch, *RepFlags);
 
             for (const auto QuestProgress : ExecutingQuest->GetQuestProgresses()) {
-                if (QuestProgress && !QuestProgress->IsPendingKill()) {
+                if (IsValid(QuestProgress)) {
                     WroteSomething |= Channel->ReplicateSubobject(const_cast<UCoreConditionProgress*>(QuestProgress), *Bunch, *RepFlags);
                 }
             }

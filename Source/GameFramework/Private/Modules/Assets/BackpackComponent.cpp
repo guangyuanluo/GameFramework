@@ -73,10 +73,10 @@ void UBackpackComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 bool UBackpackComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) {
 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-    for (const auto& backpack : Backpacks) {
-		for (const auto& item : backpack.ItemList) {
-			if (item && !item->IsPendingKill()) {
-				WroteSomething |= Channel->ReplicateSubobject(const_cast<UCoreItem*>(item), *Bunch, *RepFlags);
+    for (const auto& Backpack : Backpacks) {
+		for (const auto& Item : Backpack.ItemList) {
+			if (IsValid(Item)) {
+				WroteSomething |= Channel->ReplicateSubobject(const_cast<UCoreItem*>(Item), *Bunch, *RepFlags);
 			}
 		}
     }
