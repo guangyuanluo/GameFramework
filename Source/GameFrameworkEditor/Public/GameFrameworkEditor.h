@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include "Developer/AssetTools/Public/AssetTypeCategories.h"
-#include "Editor/UnrealEd/Public/Toolkits/IToolkit.h"
-#include "Editor/UnrealEd/Public/Toolkits/IToolkitHost.h"
+#include "Toolkits/IToolkit.h"
+#include "Toolkits/IToolkitHost.h"
 
 class SGameFrameworkMainWidget;
 class FToolBarBuilder;
