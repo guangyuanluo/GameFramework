@@ -58,7 +58,7 @@ TArray<ACoreCharacter*> UGameFrameworkUtils::GetAllCharactersWithinRadius(ACoreC
 			auto& HitResult = OutHits[Index];
 			auto Agent = Cast<IGenericTeamAgentInterface>(HitResult.GetActor());
 			if (Agent && (FGenericTeamId::GetAttitude(SourceAgent->GetGenericTeamId(), Agent->GetGenericTeamId()) == TeamAttitude)) {
-				AActor* Actor = HitResult.Actor.Get();
+				AActor* Actor = HitResult.GetActor();
 				ACoreCharacter* Character = Cast<ACoreCharacter>(Actor);
 				if (Character) {
 					Result.Add(Character);
