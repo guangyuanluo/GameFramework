@@ -65,7 +65,7 @@ const TArray<UCoreReward*>& UExecutingQuest::GetQuestRewards() const {
 bool UExecutingQuest::IsComplete() const {
 	bool IsComplete = true;
 	for (int Index = 0; Index < QuestProgresses.Num(); ++Index) {
-		if (!QuestProgresses[Index]->IsComplete()) {
+		if (!IsValid(QuestProgresses[Index]) || !QuestProgresses[Index]->IsComplete()) {
             IsComplete = false;
 			break;
 		}

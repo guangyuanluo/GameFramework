@@ -15,7 +15,7 @@ class GAMEFRAMEWORK_API UCloseToNPCConditionProgress : public UCoreConditionProg
 public:
 	GENERATED_BODY()
 
-	UPROPERTY(Transient, BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere)
 	bool HaveComplete = false;
 
 	virtual void PostProgressInitialize_Implementation() override;
