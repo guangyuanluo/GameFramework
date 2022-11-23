@@ -12,6 +12,7 @@
 #include "StoreGlobalEvents.h"
 #include "GameSystemManager.h"
 #include "EventSystem.h"
+#include "CoreCharacter.h"
 
 // Sets default values for this component's properties
 UStoreComponent::UStoreComponent()
@@ -65,9 +66,10 @@ void UStoreComponent::BuyGoods(ACoreCharacter* Character, int32 GoodsID) {
 
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
+    auto OwnerActor = Cast<IGameEntity>(GetOwner());
     auto BuyGoodsRequestEvent = NewObject<UBuyGoodsRequestEvent>();
-    BuyGoodsRequestEvent->Source = Character;
-    BuyGoodsRequestEvent->Store = GetOwner();
+    BuyGoodsRequestEvent->EntityID = Character->GetEntityID();
+    BuyGoodsRequestEvent->StoreEntityID = OwnerActor->GetEntityID();
     BuyGoodsRequestEvent->GoodsID = GoodsID;
 
     GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(BuyGoodsRequestEvent, false);
