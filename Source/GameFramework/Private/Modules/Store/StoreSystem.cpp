@@ -12,10 +12,12 @@
 #include "WalletComponent.h"
 #include "CoreGameInstance.h"
 #include "GameSystemManager.h"
+#include "GameEntityManager.h"
 #include "EventSystem.h"
 #include "AssetSystem.h"
 #include "BackpackTypeConfigTableRow.h"
 #include "StoreComponent.h"
+#include "GameFrameworkUtils.h"
 
 void UStoreSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
@@ -147,11 +149,17 @@ TArray<UClass*> UStoreSystem::GetHandleEventTypes_Implementation() {
 void UStoreSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
     if (HandleEvent->IsA(UBuyGoodsRequestEvent::StaticClass())) {
         auto Request = Cast<UBuyGoodsRequestEvent>(HandleEvent);
-        if (Request->Store) {
-            auto StoreComponent = Cast<UStoreComponent>(Request->Store->GetComponentByClass(UStoreComponent::StaticClass()));
-            if (StoreComponent) {
-                BuyGoods(Request->Source, StoreComponent, Request->GoodsID);
+        auto SourceEntity = InGameInstance->GameEntityManager->GetEntityById(Request->EntityID);
+        auto StoreEntity = InGameInstance->GameEntityManager->GetEntityById(Request->StoreEntityID);
+        if (SourceEntity && StoreEntity) {
+            auto SourceCharacter = Cast<ACoreCharacter>(SourceEntity.GetObject());
+            auto Store = Cast<AActor>(StoreEntity.GetObject());
+            if (SourceCharacter && Store) {
+                auto StoreComponent = Cast<UStoreComponent>(Store->GetComponentByClass(UStoreComponent::StaticClass()));
+                if (StoreComponent) {
+                    BuyGoods(SourceCharacter, StoreComponent, Request->GoodsID);
+                }
             }
-        }
+        }        
     }
 }

@@ -15,9 +15,9 @@ class GAMEFRAMEWORK_API UBuyGoodsRequestEvent : public UGameEventBase {
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-        class ACoreCharacter* Source;
+        FString EntityID;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-        class AActor* Store;
+        FString StoreEntityID;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
         int32 GoodsID;
 };
