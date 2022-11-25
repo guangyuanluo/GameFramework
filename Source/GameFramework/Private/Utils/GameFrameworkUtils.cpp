@@ -16,6 +16,8 @@
 #include "CoreCharacterStateBase.h"
 #include "PlayerComponent.h"
 #include "GameWorldSubsystem.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimNotifies/AnimNotifyState.h"
 
 UWaitCondition* UGameFrameworkUtils::WaitCondition(class ACorePlayerController* PlayerController, const TArray<UCoreCondition*>& Conditions) {
     auto GameInstance = PlayerController->GetWorld()->GetGameInstance<UCoreGameInstance>();
@@ -225,6 +227,46 @@ UCoreGameInstance* UGameFrameworkUtils::GetGameInstance(AActor* Actor) {
 
 bool UGameFrameworkUtils::IsTemplateObject(UObject* InObject) {
 	return InObject->IsTemplate();
+}
+
+UAnimNotifyState* UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(USkeletalMeshComponent* MeshComp, TSubclassOf<UAnimNotifyState> AnimNotifyStateClass) {
+	if (!IsValid(MeshComp)) {
+		return nullptr;
+	}
+	auto AnimInstance = MeshComp->GetAnimInstance();
+	if (!IsValid(AnimInstance)) {
+		return nullptr;
+	}
+	auto Montage = AnimInstance->GetCurrentActiveMontage();
+	if (!IsValid(Montage)) {
+		return nullptr;
+	}
+	auto ActiveMontageInstance = AnimInstance->GetActiveMontageInstance();
+	auto CurrentTrackPosition = ActiveMontageInstance->GetPosition();
+	auto FindClass = AnimNotifyStateClass.Get();
+	for (int32 Index = 0; Index < Montage->Notifies.Num(); Index++) {
+		FAnimNotifyEvent& NotifyEvent = Montage->Notifies[Index];
+
+		if (NotifyEvent.NotifyStateClass && NotifyEvent.NotifyStateClass->GetClass() == FindClass) {
+			const float NotifyStartTime = NotifyEvent.GetTriggerTime();
+			const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
+
+			bool bNotifyIsActive = (CurrentTrackPosition > NotifyStartTime) && (CurrentTrackPosition <= NotifyEndTime);
+			if (bNotifyIsActive) {
+				return NotifyEvent.NotifyStateClass;
+			}
+		}
+	}
+	return nullptr;
+}
+
+bool UGameFrameworkUtils::IsMontageValidSection(class UAnimMontage* AnimMontage, FName const& SectionName) {
+	if (!IsValid(AnimMontage)) {
+		return false;
+	}
+	const int32 SectionID = AnimMontage->GetSectionIndex(SectionName);
+
+	return AnimMontage->IsValidSectionIndex(SectionID);
 }
 
 TArray<uint8> UGameFrameworkUtils::StringToBinary(const FString& Str) {

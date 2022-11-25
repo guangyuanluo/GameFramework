@@ -137,6 +137,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static bool IsTemplateObject(UObject* InObject);
 
+	/**
+	* 通过指定class获取任意激活状态下的动画通知状态
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static UAnimNotifyState* GetAnyActiveAnimNotifyStateByClass(USkeletalMeshComponent* MeshComp, TSubclassOf<UAnimNotifyState> AnimNotifyStateClass);
+
+	/**
+	* 判断蒙太奇的section是否合法
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static bool IsMontageValidSection(class UAnimMontage* AnimMontage, FName const& SectionName);
+
     static TArray<uint8> StringToBinary(const FString& Str);
     static FString BinaryToString(const TArray<uint8>& Data);
     static FString BinaryToString(uint8* Data, int Num);

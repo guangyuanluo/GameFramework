@@ -10,6 +10,8 @@
 #include "ConfigTableCache.h"
 #include "UnitInfoConfigTableRow.h"
 #include "SkillConfigTableRow.h"
+#include "CoreAbility.h"
+#include "CoreAbilityComboExecutor.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = Cast<AActor>(GetOwner());
@@ -87,6 +89,114 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
                     }
                 }
             }
+        }
+    }
+}
+
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities) {
+    TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
+    GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
+
+    // Iterate the list of all ability specs
+    for (FGameplayAbilitySpec* Spec : AbilitiesToActivate) {
+        // Iterate all instances on this ability spec
+        TArray<UGameplayAbility*> AbilityInstances = Spec->GetAbilityInstances();
+
+        for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+            ActiveAbilities.Add(ActiveAbility);
+        }
+    }
+}
+
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities) {
+    auto FindSpec = FindAbilitySpecFromClass(AbilityClass);
+    if (FindSpec) {
+        TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
+
+        for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+            ActiveAbilities.Add(ActiveAbility);
+        }
+    }
+}
+
+void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability) {
+    auto CooldownEffect = Ability->GetCooldownGameplayEffect();
+    RemoveActiveGameplayEffectBySourceEffect(CooldownEffect->GetClass(), this);
+}
+
+void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) {
+    if (!Ability || !IsValid(Ability)) {
+        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with invalid Ability"));
+        return;
+    }
+
+    if (!Ability->IsActive()) {
+        return;
+    }
+
+    const FGameplayAbilityActorInfo* ActorInfo = AbilityActorInfo.Get();
+
+    // make sure the ActorInfo and then Actor on that FGameplayAbilityActorInfo are valid, if not bail out.
+    if (ActorInfo == nullptr || !ActorInfo->OwnerActor.IsValid() || !ActorInfo->AvatarActor.IsValid()) {
+        return;
+    }
+
+
+    const ENetRole NetMode = ActorInfo->AvatarActor->GetLocalRole();
+
+    // This should only come from button presses/local instigation (AI, etc).
+    if (NetMode == ROLE_SimulatedProxy) {
+        return;
+    }
+
+    bool bIsLocal = AbilityActorInfo->IsLocallyControlled();
+
+    UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
+    if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
+        FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
+        auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
+        if (FindExecutor && FindExecutor->Get()) {
+            auto Executor = FindExecutor->GetDefaultObject();
+            if (!Executor->CheckComboEnable(Ability)) {
+                return;
+            }
+        }
+    }
+
+    if (!bIsLocal && (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalOnly || Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalPredicted)) {
+        InternalComboAbility(Ability);
+        return;
+    }
+    if (NetMode != ROLE_Authority && (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::ServerOnly || Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::ServerInitiated)) {
+        ServerTryComboAbility(Ability);
+        return;
+    }
+    InternalComboAbility(Ability);
+}
+
+void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(UCoreAbility* Ability) {
+    InternalComboAbility(Ability);
+}
+
+bool UCoreAbilitySystemComponent::ServerTryComboAbility_Validate(UCoreAbility* Ability) {
+    return true;
+}
+
+void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
+    if (!Ability->IsActive()) {
+        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
+        return;
+    }
+    UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
+    if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
+        FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
+        auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
+        if (FindExecutor && FindExecutor->Get()) {
+            auto Executor = FindExecutor->GetDefaultObject();
+            if (!Executor->CheckComboEnable(Ability)) {
+                return;
+            }
+            Executor->ExecuteCombo(Ability);
         }
     }
 }
