@@ -8,3 +8,11 @@ UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
 	//默认为每个actor实例
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
+
+bool UCoreAbility::K2_IsActive() const {
+	return IsActive();
+}
+
+void UCoreAbility::NotifyComboAbility_Implementation(FName const ComboSection) {
+
+}
