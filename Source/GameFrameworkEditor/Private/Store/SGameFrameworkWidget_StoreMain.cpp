@@ -78,7 +78,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_StoreMain::ConstructPageButton(const FS
 			[
 				SNew(STextBlock)
 				.Font(FCoreStyle::GetDefaultFontStyle("Regular", 10))
-				.ColorAndOpacity(FLinearColor(.8f, .8f, .8f, 1))
+				.ColorAndOpacity(FLinearColor(0, 0, 0, 1))
 				.Text(FText::FromString(PageName))
 			]
 		]
