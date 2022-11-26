@@ -242,6 +242,9 @@ UAnimNotifyState* UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(USkele
 		return nullptr;
 	}
 	auto ActiveMontageInstance = AnimInstance->GetActiveMontageInstance();
+	if (!ActiveMontageInstance) {
+		return nullptr;
+	}
 	auto CurrentTrackPosition = ActiveMontageInstance->GetPosition();
 	auto FindClass = AnimNotifyStateClass.Get();
 	for (int32 Index = 0; Index < Montage->Notifies.Num(); Index++) {
@@ -267,6 +270,19 @@ bool UGameFrameworkUtils::IsMontageValidSection(class UAnimMontage* AnimMontage,
 	const int32 SectionID = AnimMontage->GetSectionIndex(SectionName);
 
 	return AnimMontage->IsValidSectionIndex(SectionID);
+}
+
+FName UGameFrameworkUtils::GetMontageNextSection(class UAnimInstance* AnimInstance) {
+	if (!IsValid(AnimInstance)) {
+		return FName();
+	}
+	auto MontageInstance = AnimInstance->GetActiveMontageInstance();
+	if (!MontageInstance) {
+		return FName();
+	}
+	auto CurrentSecionID = MontageInstance->Montage->GetSectionIndex(MontageInstance->GetCurrentSection());
+	auto NextSectionID = MontageInstance->GetNextSectionID(CurrentSecionID);
+	return MontageInstance->GetSectionNameFromID(NextSectionID);
 }
 
 TArray<uint8> UGameFrameworkUtils::StringToBinary(const FString& Str) {
