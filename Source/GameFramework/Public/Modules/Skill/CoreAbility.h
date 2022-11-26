@@ -21,4 +21,16 @@ public:
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = Tags, meta = (Categories = "AbilityTagCategory"))
 	TMap<FName, TSubclassOf<class UCoreAbilityComboExecutor>> ComboMap;
+
+	/**
+	* 是否激活
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = Ability, DisplayName = "IsActive", Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool K2_IsActive() const;
+
+	/**
+	* 触发连招
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
+	void NotifyComboAbility(FName const ComboSection);
 };

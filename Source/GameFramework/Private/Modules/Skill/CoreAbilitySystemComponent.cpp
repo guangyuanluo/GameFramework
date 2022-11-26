@@ -93,7 +93,7 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive) {
     TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
     GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
 
@@ -103,18 +103,22 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
         TArray<UGameplayAbility*> AbilityInstances = Spec->GetAbilityInstances();
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
-            ActiveAbilities.Add(ActiveAbility);
+            if (!ForceFilterActive || ActiveAbility->IsActive()) {
+                ActiveAbilities.Add(ActiveAbility);
+            }
         }
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive) {
     auto FindSpec = FindAbilitySpecFromClass(AbilityClass);
     if (FindSpec) {
         TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
-            ActiveAbilities.Add(ActiveAbility);
+            if (!ForceFilterActive || ActiveAbility->IsActive()) {
+                ActiveAbilities.Add(ActiveAbility);
+            }
         }
     }
 }
@@ -197,6 +201,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
                 return;
             }
             Executor->ExecuteCombo(Ability);
+            Ability->NotifyComboAbility(CurrentSection);
         }
     }
 }

@@ -25,11 +25,11 @@ public:
 
     /** 返回激活的拥有指定tag的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities);
+    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false);
 
     /** 返回激活的拥有指定类型的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities);
+    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false);
 
     /**
     * 重置技能冷却
