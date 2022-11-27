@@ -286,10 +286,15 @@ void UQuestComponent::RefreshNPCAcquire() {
         if (AcquireNPCQuests.Num() > 0) {
             //有满足条件的可以占有的NPC，进行优先级查询
             const UQuestSetting* QuestSetting = GetDefault<UQuestSetting>();
-            TSubclassOf<UQuestNPCAcquirePredicate> QuestNPCAcquirePredicateClass = StaticLoadClass(UQuestNPCAcquirePredicate::StaticClass(), NULL, *QuestSetting->NPCAcquirePredicateClass.ToString());
-            if (!QuestNPCAcquirePredicateClass) {
-                QuestNPCAcquirePredicateClass = UQuestNPCAcquirePredicate::StaticClass();
+            FString NPCAcquirePredicateClassPath = QuestSetting->NPCAcquirePredicateClass.ToString();
+            TSubclassOf<UQuestNPCAcquirePredicate> QuestNPCAcquirePredicateClass = UQuestNPCAcquirePredicate::StaticClass();
+            if (!NPCAcquirePredicateClassPath.IsEmpty()) {
+                TSubclassOf<UQuestNPCAcquirePredicate> LoadClass = StaticLoadClass(UQuestNPCAcquirePredicate::StaticClass(), NULL, *NPCAcquirePredicateClassPath);
+                if (LoadClass) {
+                    QuestNPCAcquirePredicateClass = LoadClass;
+                }
             }
+            
             auto QuestNPCAcquirePredicate = Cast<UQuestNPCAcquirePredicate>(QuestNPCAcquirePredicateClass->GetDefaultObject());
             TFunction<bool(UExecutingQuest*, UExecutingQuest*)> CompareFunc = [this, QuestNPCAcquirePredicate](UExecutingQuest* A, UExecutingQuest* B) {
                 return QuestNPCAcquirePredicate->Compare(this, A, B);
