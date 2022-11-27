@@ -63,6 +63,7 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Base/Log",
             "GameFramework/Public/Base/Subsystem",
             "GameFramework/Public/Base/ConfigTable",
+            "GameFramework/Public/Base/Structure",
             "GameFramework/Public/GameInstance",
             "GameFramework/Public/GameMode",
             "GameFramework/Public/PlayerController",
