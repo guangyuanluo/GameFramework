@@ -44,6 +44,11 @@ void FSkillInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> Stru
     StructBuilder.AddCustomRow(FText::FromString(TEXT("SkillInfo")))
 	[
 		SNew(SVerticalBox)
+        + SVerticalBox::Slot()
+        .AutoHeight()
+        [
+            StructPropertyHandle->CreatePropertyNameWidget()
+        ]
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
