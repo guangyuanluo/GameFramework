@@ -204,8 +204,7 @@ void ACoreCharacter::InitSkill() {
     if (UnitDataTable) {
         auto FindUnitInfo = (FUnitInfoConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(UnitDataTable, TemplateID);
         if (FindUnitInfo) {
-            if (USkillInfoUtil::IsValid(FindUnitInfo->ActivateSkill)
-                || FindUnitInfo->InitSkills.Num() > 0
+            if (FindUnitInfo->InitSkills.Num() > 0
                 || FindUnitInfo->InitPassiveEffects.Num() > 0
                 || !FindUnitInfo->AttributeTable.GetLongPackageName().IsEmpty()) {
                 auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
