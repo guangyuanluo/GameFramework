@@ -51,16 +51,6 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
             const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
             auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
             if (SkillDataTable) {
-                //添加普通攻击技能
-                auto ActivateSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, FindTemplate->ActivateSkill.SkillId);
-                if (ActivateSkill && ActivateSkill->GameplayAbilityClass) {
-                    if (Owner->GetLocalRole() == ROLE_Authority) {
-                        GiveAbility(FGameplayAbilitySpec(ActivateSkill->GameplayAbilityClass, FindTemplate->ActivateSkill.SkillLevel, INDEX_NONE, Owner));
-                    }
-                }
-                else {
-                    UE_LOG(GameCore, Warning, TEXT("使用技能系统，但是单位没设置普攻技能，模板id:%d"), TemplateId);
-                }
                 //添加主动技能
                 for (int Index = 0; Index < FindTemplate->InitSkills.Num(); ++Index) {
                     auto InitSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, FindTemplate->InitSkills[Index].SkillId);

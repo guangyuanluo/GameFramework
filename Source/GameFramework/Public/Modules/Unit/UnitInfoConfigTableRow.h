@@ -83,12 +83,6 @@ struct GAMEFRAMEWORK_API FUnitInfoConfigTableRow : public FConfigTableRowBase
 	TSoftObjectPtr<class UCurveTable> AttributeTable;
 
     /**
-    * 默认普通攻击技能
-    */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "技能", meta = (DisplayName = "默认普通攻击", DisplayPriority = "1"))
-    FSkillInfo ActivateSkill;
-
-    /**
     * 初始主动技能
     */
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "技能", meta = (DisplayName = "初始主动技能", DisplayPriority = "1"))
