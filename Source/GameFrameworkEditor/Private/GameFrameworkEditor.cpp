@@ -278,8 +278,13 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
     if (FModuleManager::Get().IsModuleLoaded("PropertyEditor")) {
         FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
         PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FMoneyTypeNumPair::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FItemIDNumPair::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FExpTypeNumPair::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UQuest::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UQuestDetailNodeItem::StaticClass()->GetFName());
+		PropertyModule.UnregisterCustomClassLayout(UCoreCondition::StaticClass()->GetFName());
+		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 
         PropertyModule.NotifyCustomizationModuleChanged();
     }
