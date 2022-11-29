@@ -286,11 +286,15 @@ void UAssetSystem::SortBackpack(UBackpackComponent* BackpackComponent, uint8 Bac
         const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
         auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
 
-        TSubclassOf<UItemSortPredicate> itemSortPredicateClass = StaticLoadClass(UItemSortPredicate::StaticClass(), NULL, *BackpackSetting->ItemSortPredicateClass.ToString());
-        if (!itemSortPredicateClass) {
-            itemSortPredicateClass = UItemSortPredicate::StaticClass();
+        TSubclassOf<UItemSortPredicate> ItemSortPredicateClass = UItemSortPredicate::StaticClass(); 
+        FString ItemSortPredicateClassPath = BackpackSetting->ItemSortPredicateClass.ToString();
+        if (!ItemSortPredicateClassPath.IsEmpty()) {
+            TSubclassOf<UItemSortPredicate> LoadClass = StaticLoadClass(UItemSortPredicate::StaticClass(), NULL, *ItemSortPredicateClassPath);
+            if (LoadClass) {
+                ItemSortPredicateClass = LoadClass;
+            }
         }
-        auto ItemSortPredicate = Cast<UItemSortPredicate>(itemSortPredicateClass->GetDefaultObject());
+        auto ItemSortPredicate = Cast<UItemSortPredicate>(ItemSortPredicateClass->GetDefaultObject());
         TArray<TLinkedList<UCoreItem*>*> AllNodes;
         TLinkedList<UCoreItem*>* Head = nullptr;
         auto& Backpack = assetBackpack.ItemList;
@@ -1125,8 +1129,8 @@ class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler() {
     const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
     FString BackpackExtendHandlerClassPath = BackpackSetting->BackpackExtendHandlerClass.ToString();
     if (!BackpackExtendHandlerClassPath.IsEmpty()) {
-        TSubclassOf<UBackpackExtendHandler> LoadClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackSetting->BackpackExtendHandlerClass.ToString());
-        if (!LoadClass) {
+        TSubclassOf<UBackpackExtendHandler> LoadClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackExtendHandlerClassPath);
+        if (LoadClass) {
             BackpackExtendHandlerClass = LoadClass;
         }
     }

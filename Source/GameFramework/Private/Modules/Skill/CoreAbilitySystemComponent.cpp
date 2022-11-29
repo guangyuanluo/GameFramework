@@ -83,7 +83,7 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
     TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
     GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
 
@@ -93,20 +93,22 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
         TArray<UGameplayAbility*> AbilityInstances = Spec->GetAbilityInstances();
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
-            if (!ForceFilterActive || ActiveAbility->IsActive()) {
+            if ((!ForceFilterActive || ActiveAbility->IsActive())
+                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
     auto FindSpec = FindAbilitySpecFromClass(AbilityClass);
     if (FindSpec) {
         TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
-            if (!ForceFilterActive || ActiveAbility->IsActive()) {
+            if ((!ForceFilterActive || ActiveAbility->IsActive())
+                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -115,7 +117,9 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
 
 void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability) {
     auto CooldownEffect = Ability->GetCooldownGameplayEffect();
-    RemoveActiveGameplayEffectBySourceEffect(CooldownEffect->GetClass(), this);
+    if (CooldownEffect) {
+        RemoveActiveGameplayEffectBySourceEffect(CooldownEffect->GetClass(), this);
+    }
 }
 
 void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) {

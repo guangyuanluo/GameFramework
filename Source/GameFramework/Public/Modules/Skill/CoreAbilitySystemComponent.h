@@ -23,13 +23,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Character")
     virtual void InitSkillFromTemplate(int TemplateId);
 
-    /** 返回激活的拥有指定tag的技能 */
+    /** 返回指定条件拥有指定tag的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false);
+    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
 
-    /** 返回激活的拥有指定类型的技能 */
+    /** 返回指定条件拥有指定类型的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false);
+    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
 
     /**
     * 重置技能冷却
