@@ -920,14 +920,14 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
             auto DiffNum = NewNum - NewSlotIndexOrigineItem->ItemNum;
             if (DiffNum == 0) {
                 OnItemLeavePackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-                OnItemLeavePackage(BackpackComponent, NewBackpack[SlotIndex], NewPackageType, NewSlotIndex);
+                OnItemLeavePackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
 
                 //没有产生堆叠，直接交换
                 Backpack[SlotIndex] = NewSlotIndexOrigineItem;
                 NewBackpack[NewSlotIndex] = BackpackItem;
 
                 OnItemEnterPackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-                OnItemEnterPackage(BackpackComponent, NewBackpack[SlotIndex], NewPackageType, NewSlotIndex);
+                OnItemEnterPackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
             }
             else {
                 BackpackItem->ItemNum -= DiffNum;
@@ -942,14 +942,14 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
 		}
         else {
             OnItemLeavePackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-            OnItemLeavePackage(BackpackComponent, NewBackpack[SlotIndex], NewPackageType, NewSlotIndex);
+            OnItemLeavePackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
 
             //id不同就交换
             Backpack[SlotIndex] = NewSlotIndexOrigineItem;
             NewBackpack[NewSlotIndex] = BackpackItem;
 
             OnItemEnterPackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-            OnItemEnterPackage(BackpackComponent, NewBackpack[SlotIndex], NewPackageType, NewSlotIndex);
+            OnItemEnterPackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
         }
 	}
 	else {
