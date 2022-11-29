@@ -464,6 +464,12 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
             }
         }
     }
+    auto BackpackExtendHandler = GetBackpackExtendHandler();
+    if (!BackpackExtendHandler->AllowItemAdd(BackpackComponent, ItemId, BackpackType)) {
+        Error = TEXT("不允许物品添加到此背包");
+        return TempChangeItems;
+    }
+
 	auto& Package = MakePackageExist(BackpackComponent, BackpackType);
     
 	auto AddItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
@@ -553,6 +559,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
+    auto BackpackExtendHandler = GetBackpackExtendHandler();
     //第一层key是packagetype，第二层key是itemid，value是AddItems的索引
     TMap<int, TMap<int, int>> TotalItems;
     for (int Index = 0; Index < AddItems.Num(); ++Index) {
@@ -567,6 +574,11 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
                 }
             }
         }
+        if (!BackpackExtendHandler->AllowItemAdd(BackpackComponent, AddItems[Index].ItemId, BackpackType)) {
+            Error = TEXT("不允许物品添加到此背包");
+            return TempChangeItems;
+        }
+
         TMap<int, int>& ItemArray = TotalItems.FindOrAdd(BackpackType);
         ItemArray.Add(AddItems[Index].ItemId, Index);
     }
@@ -879,6 +891,12 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
 
 	auto NewSlotIndexOrigineItem = NewBackpack[NewSlotIndex];
 
+    auto BackpackExtendHandler = GetBackpackExtendHandler();
+    if (!BackpackExtendHandler->CanMoveItem(BackpackComponent, BackpackType, SlotIndex, BackpackItem, NewPackageType, NewSlotIndex, NewSlotIndexOrigineItem)) {
+        Error = TEXT("不允许移动对应物品");
+        return false;
+    }
+
 	if (NewSlotIndexOrigineItem != nullptr) {
 		//这里先判断两个槽是不是同样的物品，是就合并
 		if (NewSlotIndexOrigineItem->ItemId == BackpackItem->ItemId) {
@@ -1103,10 +1121,14 @@ void UAssetSystem::SendUseMoneyEvent(UWalletComponent* WalletComponent, uint8 Mo
 }
 
 class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler() {
+    TSubclassOf<UBackpackExtendHandler> BackpackExtendHandlerClass = UBackpackExtendHandler::StaticClass();
     const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-    TSubclassOf<UBackpackExtendHandler> BackpackExtendHandlerClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackSetting->BackpackExtendHandlerClass.ToString());
-    if (!BackpackExtendHandlerClass) {
-        BackpackExtendHandlerClass = UBackpackExtendHandler::StaticClass();
+    FString BackpackExtendHandlerClassPath = BackpackSetting->BackpackExtendHandlerClass.ToString();
+    if (!BackpackExtendHandlerClassPath.IsEmpty()) {
+        TSubclassOf<UBackpackExtendHandler> LoadClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackSetting->BackpackExtendHandlerClass.ToString());
+        if (!LoadClass) {
+            BackpackExtendHandlerClass = LoadClass;
+        }
     }
     return Cast<UBackpackExtendHandler>(BackpackExtendHandlerClass->GetDefaultObject());
 }

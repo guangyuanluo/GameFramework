@@ -2,6 +2,10 @@
 
 #include "BackpackExtendHandler.h"
 
+bool UBackpackExtendHandler::AllowItemAdd_Implementation(class UBackpackComponent* BackpackComponent, int ItemID, uint8 BackpackType) {
+    return true;
+}
+
 void UBackpackExtendHandler::OnItemAdd_Implementation(class UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int PackageIndex) {
 
 }
@@ -12,4 +16,8 @@ void UBackpackExtendHandler::OnItemRemove_Implementation(class UBackpackComponen
 
 void UBackpackExtendHandler::PreItemEffectAdd_Implementation(const FGameplayEffectSpecHandle& Spec, TSubclassOf<class UGameplayEffect> EffectClass, class UBackpackComponent* BackpackComponent, class UAbilitySystemComponent* AbilitySystemComponent, class UCoreItem* Item) {
 
+}
+
+bool UBackpackExtendHandler::CanMoveItem_Implementation(class UBackpackComponent* BackpackComponent, uint8 SourceBackpackType, int SourceSlotIndex, UCoreItem* SourceItem, uint8 TargetBackpackType, int TargetSlotIndex, UCoreItem* TargetItem) {
+    return true;
 }

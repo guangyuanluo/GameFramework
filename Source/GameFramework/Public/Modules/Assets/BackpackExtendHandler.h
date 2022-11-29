@@ -14,6 +14,8 @@ class GAMEFRAMEWORK_API UBackpackExtendHandler : public UObject {
     GENERATED_BODY()
 
 public:
+    UFUNCTION(BlueprintNativeEvent)
+    bool AllowItemAdd(class UBackpackComponent* BackpackComponent, int ItemID, uint8 BackpackType);
     /**
     * 物品加入背包处理
     */
@@ -31,4 +33,10 @@ public:
     */
     UFUNCTION(BlueprintNativeEvent)
     void PreItemEffectAdd(const FGameplayEffectSpecHandle& Spec, TSubclassOf<class UGameplayEffect> EffectClass, class UBackpackComponent* BackpackComponent, class UAbilitySystemComponent* AbilitySystemComponent, class UCoreItem* Item);
+
+    /**
+    * 能否移动物品
+    */
+    UFUNCTION(BlueprintNativeEvent)
+    bool CanMoveItem(class UBackpackComponent* BackpackComponent, uint8 SourceBackpackType, int SourceSlotIndex, UCoreItem* SourceItem, uint8 TargetBackpackType, int TargetSlotIndex, UCoreItem* TargetItem);
 };
