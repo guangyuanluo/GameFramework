@@ -95,9 +95,13 @@ void UCoreItem::ActiveEffectsPrivate(class UBackpackComponent* BackpackComponent
             auto SkillComponent = CharacterState->SkillComponent;
             if (SkillComponent) {
                 const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-                TSubclassOf<UBackpackExtendHandler> BackpackExtendHandlerClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackSetting->BackpackExtendHandlerClass.ToString());
-                if (!BackpackExtendHandlerClass) {
-                    BackpackExtendHandlerClass = UBackpackExtendHandler::StaticClass();
+                TSubclassOf<UBackpackExtendHandler> BackpackExtendHandlerClass = UBackpackExtendHandler::StaticClass();
+                auto BackpackExtendHandlerClassPath = BackpackSetting->BackpackExtendHandlerClass.ToString();
+                if (!BackpackExtendHandlerClassPath.IsEmpty()) {
+                    TSubclassOf<UBackpackExtendHandler> LoadClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackSetting->BackpackExtendHandlerClass.ToString());
+                    if (LoadClass) {
+                        BackpackExtendHandlerClass = LoadClass;
+                    }
                 }
                 UBackpackExtendHandler* BackpackExtendHandler = Cast<UBackpackExtendHandler>(BackpackExtendHandlerClass->GetDefaultObject());
 

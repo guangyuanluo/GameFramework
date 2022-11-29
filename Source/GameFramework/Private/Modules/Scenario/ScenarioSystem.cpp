@@ -26,9 +26,13 @@ void UScenarioSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
     
     const UScenarioSetting* ScenarioSetting = GetDefault<UScenarioSetting>();
-    TSubclassOf<UPlayScenarioPredicate> PredicateClass = StaticLoadClass(UPlayScenarioPredicate::StaticClass(), NULL, *ScenarioSetting->PlayScenarioPredicateClass.ToString());
-    if (!PredicateClass) {
-        PredicateClass = UPlayScenarioPredicate::StaticClass();
+    TSubclassOf<UPlayScenarioPredicate> PredicateClass = UPlayScenarioPredicate::StaticClass();
+    FString PredicateClassPath = ScenarioSetting->PlayScenarioPredicateClass.ToString();
+    if (!PredicateClassPath.IsEmpty()) {
+        TSubclassOf<UPlayScenarioPredicate> LoadClass = StaticLoadClass(UPlayScenarioPredicate::StaticClass(), NULL, *PredicateClassPath);
+        if (LoadClass) {
+            PredicateClass = LoadClass;
+        }
     }
     PlayScenarioPredicate = NewObject<UPlayScenarioPredicate>(this, PredicateClass);
 }
