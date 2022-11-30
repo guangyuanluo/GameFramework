@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
 #include "EffectInfo.generated.h"
 
 USTRUCT(BlueprintType)
@@ -16,5 +15,5 @@ struct GAMEFRAMEWORK_API FEffectInfo {
 
     /** 效果类 */
 	UPROPERTY(Category = "Skill", EditAnywhere, BlueprintReadOnly)
-    TSubclassOf<class UGameplayEffect> GameplayEffectClass;
+    int EffectID = -1;
 };

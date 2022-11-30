@@ -9,12 +9,14 @@
 #include "SkillSetting.h"
 #include "ConfigTableCache.h"
 #include "UnitInfoConfigTableRow.h"
+#include "SkillGroupConfigTableRow.h"
 #include "SkillConfigTableRow.h"
+#include "EffectConfigTableRow.h"
 #include "CoreAbility.h"
 #include "CoreAbilityComboExecutor.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
-    auto Owner = Cast<AActor>(GetOwner());
+    auto Owner = GetOwner();
     if (Owner->GetLocalRole() == ROLE_Authority) {
         ClearAllAbilities();
         FGameplayEffectQuery QueryAllEffects;
@@ -48,38 +50,96 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
                     }
                 }
             }
-            const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-            auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
-            if (SkillDataTable) {
-                //添加主动技能
-                for (int Index = 0; Index < FindTemplate->InitSkills.Num(); ++Index) {
-                    auto InitSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, FindTemplate->InitSkills[Index].SkillId);
-                    if (InitSkill && InitSkill->GameplayAbilityClass) {
-                        if (Owner->GetLocalRole() == ROLE_Authority) {
-                            GiveAbility(FGameplayAbilitySpec(InitSkill->GameplayAbilityClass, FindTemplate->InitSkills[Index].SkillLevel, INDEX_NONE, Owner));
-                        }
-                    }
-                    else {
-                        UE_LOG(GameCore, Warning, TEXT("单位配置的主动技能中有空类的，请检查配置，模板id:%d"), TemplateId);
-                    }
-                }
-                //添加被动效果
-                for (int Index = 0; Index < FindTemplate->InitPassiveEffects.Num(); ++Index) {
-                    if (FindTemplate->InitPassiveEffects[Index].GameplayEffectClass) {
-                        if (Owner->GetLocalRole() == ROLE_Authority) {
-                            FGameplayEffectContextHandle EffectContext = MakeEffectContext();
-                            FGameplayEffectSpecHandle NewHandle = MakeOutgoingSpec(FindTemplate->InitPassiveEffects[Index].GameplayEffectClass, FindTemplate->InitPassiveEffects[Index].EffectLevel, EffectContext);
-                            if (NewHandle.IsValid()) {
-                                ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
-                            }
-                        }
-                    }
-                    else {
-                        UE_LOG(GameCore, Warning, TEXT("单位配置的被动效果中有空类的，请检查配置，模板id:%d"), TemplateId);
-                    }
-                }
-            }
+            AddSkillGroup(FindTemplate->SkillGroupID, FEffectPreAddDelegate());
         }
+    }
+}
+
+void UCoreAbilitySystemComponent::K2_AddSkillGroup(int SkillGroupID, const FEffectPreAddDynDelegate& InEffectPreAddCallback) {
+    AddSkillGroup(SkillGroupID,  FEffectPreAddDelegate::CreateUFunction(const_cast<UObject*>(InEffectPreAddCallback.GetUObject()), InEffectPreAddCallback.GetFunctionName()));
+}
+
+void UCoreAbilitySystemComponent::AddSkillGroup(int SkillGroupID, const FEffectPreAddDelegate& InEffectPreAddCallback) {
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto SkillGroupDataTable = SkillSetting->SkillGroupTable.LoadSynchronous();
+    auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
+    auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
+    if (SkillGroupDataTable && SkillDataTable && EffectDataTable) {
+        FSkillGroupConfigTableRow* FindSkillGroup = (FSkillGroupConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillGroupDataTable, SkillGroupID);
+        if (!FindSkillGroup) {
+            return;
+        }
+
+        auto Owner = GetOwner();
+
+        //添加技能
+        for (int Index = 0; Index < FindSkillGroup->Skills.Num(); ++Index) {
+            AddSkillPrivate(SkillDataTable, FindSkillGroup->Skills[Index]);
+        }
+        //添加效果
+        for (int Index = 0; Index < FindSkillGroup->Effects.Num(); ++Index) {
+            AddEffectPrivate(EffectDataTable, FindSkillGroup->Effects[Index], InEffectPreAddCallback);
+        }
+    }
+}
+
+void UCoreAbilitySystemComponent::RemoveSkillGroup(int SkillGroupID) {
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto SkillGroupDataTable = SkillSetting->SkillGroupTable.LoadSynchronous();
+    auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
+    auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
+    if (SkillGroupDataTable && SkillDataTable && EffectDataTable) {
+        FSkillGroupConfigTableRow* FindSkillGroup = (FSkillGroupConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillGroupDataTable, SkillGroupID);
+        if (!FindSkillGroup) {
+            return;
+        }
+
+        auto Owner = GetOwner();
+
+        //移除技能
+        for (int Index = 0; Index < FindSkillGroup->Skills.Num(); ++Index) {
+            RemoveSkillPrivate(SkillDataTable, FindSkillGroup->Skills[Index]);
+        }
+        //移除效果
+        for (int Index = 0; Index < FindSkillGroup->Effects.Num(); ++Index) {
+            RemoveEffectPrivate(EffectDataTable, FindSkillGroup->Effects[Index]);
+        }
+    }
+}
+
+void UCoreAbilitySystemComponent::AddSkill(const FSkillInfo& SkillInfo) {
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
+    if (SkillDataTable) {
+        AddSkillPrivate(SkillDataTable, SkillInfo);
+    }
+}
+
+void UCoreAbilitySystemComponent::RemoveSkill(const FSkillInfo& SkillInfo) {
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
+    if (SkillDataTable) {
+        RemoveSkillPrivate(SkillDataTable, SkillInfo);
+    }
+}
+
+void UCoreAbilitySystemComponent::K2_AddEffect(const FEffectInfo& EffectInfo, const FEffectPreAddDynDelegate& InEffectPreAddCallback) {
+    AddEffect(EffectInfo, FEffectPreAddDelegate::CreateUFunction(const_cast<UObject*>(InEffectPreAddCallback.GetUObject()), InEffectPreAddCallback.GetFunctionName()));
+}
+
+void UCoreAbilitySystemComponent::AddEffect(const FEffectInfo& EffectInfo, const FEffectPreAddDelegate& InPreAddCallback) {
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
+    if (EffectDataTable) {
+        AddEffectPrivate(EffectDataTable, EffectInfo, InPreAddCallback);
+    }
+}
+
+void UCoreAbilitySystemComponent::RemoveEffect(const FEffectInfo& EffectInfo) {
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
+    if (EffectDataTable) {
+        RemoveEffectPrivate(EffectDataTable, EffectInfo);
     }
 }
 
@@ -197,5 +257,85 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
             Executor->ExecuteCombo(Ability);
             Ability->NotifyComboAbility(CurrentSection);
         }
+    }
+}
+
+void UCoreAbilitySystemComponent::AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo) {
+    if (GetOwner()->GetLocalRole() != ROLE_Authority) {
+        return;
+    }
+    auto FindSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, SkillInfo.SkillID);
+    if (FindSkill) {
+        if (FindSkill->GameplayAbilityClass) {
+            GiveAbility(FGameplayAbilitySpec(FindSkill->GameplayAbilityClass, SkillInfo.SkillLevel, INDEX_NONE, GetOwner()));
+        }
+        else {
+            UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能有空类，请检查配置，技能id:%d"), SkillInfo.SkillID);
+        }
+    }
+    else {
+        UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能找不到:%d"), SkillInfo.SkillID);
+    }
+}
+
+void UCoreAbilitySystemComponent::RemoveSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo) {    
+    if (GetOwner()->GetLocalRole() != ROLE_Authority) {
+        return;
+    }
+    auto FindSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, SkillInfo.SkillID);
+    if (FindSkill) {
+        if (FindSkill->GameplayAbilityClass) {
+            auto FindAbilitySpec = FindAbilitySpecFromClass(FindSkill->GameplayAbilityClass);
+            if (FindAbilitySpec) {
+                ClearAbility(FindAbilitySpec->Handle);
+            }
+        }
+        else {
+            UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能有空类，请检查配置，技能id:%d"), SkillInfo.SkillID);
+        }
+    }
+    else {
+        UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能找不到:%d"), SkillInfo.SkillID);
+    }
+}
+
+void UCoreAbilitySystemComponent::AddEffectPrivate(class UDataTable* EffectDataTable, const FEffectInfo& EffectInfo, const FEffectPreAddDelegate& InPreAddCallback) {
+    if (GetOwner()->GetLocalRole() != ROLE_Authority) {
+        return;
+    }
+    auto FindEffect = (FEffectConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(EffectDataTable, EffectInfo.EffectID);
+    if (FindEffect) {
+        if (FindEffect->GameplayEffectClass) {
+            FGameplayEffectContextHandle EffectContext = MakeEffectContext();
+            FGameplayEffectSpecHandle NewHandle = MakeOutgoingSpec(FindEffect->GameplayEffectClass, EffectInfo.EffectLevel, EffectContext);
+            if (NewHandle.IsValid()) {
+                InPreAddCallback.ExecuteIfBound(this, NewHandle, FindEffect->GameplayEffectClass);
+                ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
+            }
+        }
+        else {
+            UE_LOG(GameCore, Warning, TEXT("技能模板组配置的效果有空类，请检查配置，效果id:%d"), EffectInfo.EffectID);
+        }
+    }
+    else {
+        UE_LOG(GameCore, Warning, TEXT("技能模板组配置的效果找不到:%d"), EffectInfo.EffectID);
+    }
+}
+
+void UCoreAbilitySystemComponent::RemoveEffectPrivate(class UDataTable* EffectDataTable, const FEffectInfo& EffectInfo) {
+    if (GetOwner()->GetLocalRole() != ROLE_Authority) {
+        return;
+    }
+    auto FindEffect = (FEffectConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(EffectDataTable, EffectInfo.EffectID);
+    if (FindEffect) {
+        if (FindEffect->GameplayEffectClass) {
+            RemoveActiveGameplayEffectBySourceEffect(FindEffect->GameplayEffectClass, this, -1);
+        }
+        else {
+            UE_LOG(GameCore, Warning, TEXT("技能模板组配置的效果有空类，请检查配置，效果id:%d"), EffectInfo.EffectID);
+        }
+    }
+    else {
+        UE_LOG(GameCore, Warning, TEXT("技能模板组配置的效果找不到:%d"), EffectInfo.EffectID);
     }
 }

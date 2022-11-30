@@ -3,9 +3,14 @@
 #pragma once
 
 #include "AbilitySystemComponent.h"
+#include "Modules/Skill/SkillInfo.h"
+#include "Modules/Skill/EffectInfo.h"
 #include "CoreAbilitySystemComponent.generated.h"
 
 class UCoreAbility;
+
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FEffectPreAddDynDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
+DECLARE_DELEGATE_ThreeParams(FEffectPreAddDelegate, class UCoreAbilitySystemComponent*, const FGameplayEffectSpecHandle&, TSubclassOf<class UGameplayEffect>);
 
 /**
  * Subclass of ability system component with game-specific data
@@ -22,6 +27,46 @@ public:
     */
     UFUNCTION(BlueprintCallable, Category = "Character")
     virtual void InitSkillFromTemplate(int TemplateId);
+
+    /**
+    * 增加技能模组
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character", meta = (DisplayName = "AddSkillGroup", AutoCreateRefTerm = "InEffectPreAddCallback"))
+    virtual void K2_AddSkillGroup(int SkillGroupID, const FEffectPreAddDynDelegate& InEffectPreAddCallback);
+
+    virtual void AddSkillGroup(int SkillGroupID, const FEffectPreAddDelegate& InEffectPreAddCallback);
+
+    /**
+    * 移除技能模组
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    virtual void RemoveSkillGroup(int SkillGroupID);
+
+    /**
+    * 增加技能
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    virtual void AddSkill(const FSkillInfo& SkillInfo);
+
+    /**
+    * 移除技能
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    virtual void RemoveSkill(const FSkillInfo& SkillInfo);
+
+    /**
+    * 增加效果
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character", meta = (DisplayName = "AddEffect", AutoCreateRefTerm = "InEffectPreAddCallback"))
+    virtual void K2_AddEffect(const FEffectInfo& EffectInfo, const FEffectPreAddDynDelegate& InEffectPreAddCallback);
+
+    virtual void AddEffect(const FEffectInfo& EffectInfo, const FEffectPreAddDelegate& InEffectPreAddCallback);
+
+    /**
+    * 移除效果
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    virtual void RemoveEffect(const FEffectInfo& EffectInfo);
 
     /** 返回指定条件拥有指定tag的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
@@ -51,4 +96,9 @@ public:
 
 private:
     void InternalComboAbility(UCoreAbility* Ability);
+
+    void AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
+    void RemoveSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
+    void AddEffectPrivate(class UDataTable* EffectDataTable, const FEffectInfo& EffectInfo, const FEffectPreAddDelegate& InEffectPreAddCallback);
+    void RemoveEffectPrivate(class UDataTable* EffectDataTable, const FEffectInfo& EffectInfo);
 };

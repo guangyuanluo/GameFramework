@@ -15,7 +15,17 @@ TSharedRef<IPropertyTypeCustomization> FExpTypeNumPairCustomization::MakeInstanc
 void FExpTypeNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class FDetailWidgetRow& HeaderRow,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
-    
+    HeaderRow
+	.NameContent()
+	[
+        StructPropertyHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	.VAlign(VAlign_Center)
+	.HAlign(HAlign_Left)
+	[
+        StructPropertyHandle->CreatePropertyValueWidget(/*bDisplayDefaultPropertyButtons =*/false)
+	];
 }
 
 void FExpTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,

@@ -3,66 +3,58 @@
 #include "CoreItem.h"
 #include "Net/UnrealNetwork.h"
 #include "BackpackComponent.h"
-#include "GameFrameworkUtils.h"
+#include "CoreCharacterStateBase.h"
 #include "ConfigTableCache.h"
 #include "ItemSetting.h"
 #include "ItemConfigTableRow.h"
-#include "AbilitySystemInterface.h"
-#include "BackpackSetting.h"
-#include "BackpackExtendHandler.h"
-#include "CoreCharacterStateBase.h"
 #include "CoreAbilitySystemComponent.h"
-#include "SkillSetting.h"
-#include "SkillConfigTableRow.h"
 
-void UCoreItem::CheckAndAutoActiveEffects(class UBackpackComponent* BackpackComponent) {
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
-    auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
-    if (ItemInfo && ItemInfo->AutoActiveSkillWhenInPackage) {
-        ActiveEffectsPrivate(BackpackComponent, ItemInfo);
-    }
+void UCoreItem::ActiveEffects(class UBackpackComponent* BackpackComponent, const FItemEffectPreAddDelegate& InEffectPreAddCallback) {
+    auto Callback = FEffectPreAddDelegate::CreateLambda([this, InEffectPreAddCallback](class UCoreAbilitySystemComponent* SkillComponent, const FGameplayEffectSpecHandle& Spec, TSubclassOf<class UGameplayEffect> EffectClass) {
+        InEffectPreAddCallback.ExecuteIfBound(SkillComponent, Spec, EffectClass, this);
+    });
+    ActiveActorEffectsPrivate(BackpackComponent, Callback);
+    ActiveItemTableEffectsPrivate(BackpackComponent, Callback);
 }
 
-void UCoreItem::ActiveEffects(class UBackpackComponent* BackpackComponent) {
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
-    auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
-    if (ItemInfo) {
-        ActiveEffectsPrivate(BackpackComponent, ItemInfo);
-    }
+void UCoreItem::ActiveActorEffects(class UBackpackComponent* BackpackComponent, const FItemEffectPreAddDelegate& InEffectPreAddCallback) {
+    auto Callback = FEffectPreAddDelegate::CreateLambda([this, InEffectPreAddCallback](class UCoreAbilitySystemComponent* SkillComponent, const FGameplayEffectSpecHandle& Spec, TSubclassOf<class UGameplayEffect> EffectClass) {
+        InEffectPreAddCallback.ExecuteIfBound(SkillComponent, Spec, EffectClass, this);
+    });
+    ActiveActorEffectsPrivate(BackpackComponent, Callback);
+}
+
+void UCoreItem::ActiveItemTableEffects(class UBackpackComponent* BackpackComponent, const FItemEffectPreAddDelegate& InEffectPreAddCallback) {
+    auto Callback = FEffectPreAddDelegate::CreateLambda([this, InEffectPreAddCallback](class UCoreAbilitySystemComponent* SkillComponent, const FGameplayEffectSpecHandle& Spec, TSubclassOf<class UGameplayEffect> EffectClass) {
+        InEffectPreAddCallback.ExecuteIfBound(SkillComponent, Spec, EffectClass, this);
+    });
+    ActiveItemTableEffectsPrivate(BackpackComponent, Callback);
 }
 
 void UCoreItem::DeactiveEffects(class UBackpackComponent* BackpackComponent) {
+    DeactiveActorEffects(BackpackComponent);
+    DeactiveItemTableEffects(BackpackComponent);
+}
+
+void UCoreItem::DeactiveActorEffects(class UBackpackComponent* BackpackComponent) {
+    if (Effects.Num()) {
+        auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
+        if (CharacterState && CharacterState->SkillComponent) {
+            for (auto& EffectInfo : Effects) {
+                CharacterState->SkillComponent->RemoveEffect(EffectInfo);
+            }
+        }
+    }
+}
+
+void UCoreItem::DeactiveItemTableEffects(class UBackpackComponent* BackpackComponent) {
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
-    auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
-    if (ItemInfo) {
-        if (USkillInfoUtil::IsValid(ItemInfo->ActiveSkill) || ItemInfo->PassiveEffects.Num() > 0) {
-            auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
-            if (CharacterState && CharacterState->GetLocalRole() == ROLE_Authority) {
-                auto SkillComponent = CharacterState->SkillComponent;
-                if (SkillComponent) {
-                    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-                    auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
-                    if (SkillDataTable) {
-                        auto ActiveSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, ItemInfo->ActiveSkill.SkillId);
-                        if (ActiveSkill && ActiveSkill->GameplayAbilityClass) {
-                            auto FindAbilitySpec = SkillComponent->FindAbilitySpecFromClass(ActiveSkill->GameplayAbilityClass);
-                            if (FindAbilitySpec) {
-                                SkillComponent->ClearAbility(FindAbilitySpec->Handle);
-                            }
-                        }
-                        if (ItemInfo->PassiveEffects.Num() > 0) {
-                            for (int EffectIndex = 0; EffectIndex < ItemInfo->PassiveEffects.Num(); ++EffectIndex) {
-                                if (ItemInfo->PassiveEffects[EffectIndex].GameplayEffectClass) {
-                                    SkillComponent->RemoveActiveGameplayEffectBySourceEffect(ItemInfo->PassiveEffects[EffectIndex].GameplayEffectClass, SkillComponent, -1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    auto ItemRow = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
+    if (ItemRow->SkillGroupID != -1) {
+        auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
+        if (CharacterState && CharacterState->SkillComponent) {
+            CharacterState->SkillComponent->RemoveSkillGroup(ItemRow->SkillGroupID);
         }
     }
 }
@@ -88,47 +80,25 @@ void UCoreItem::OnRep_ItemNum() {
     }
 }
 
-void UCoreItem::ActiveEffectsPrivate(class UBackpackComponent* BackpackComponent, const FItemConfigTableRow* ItemInfo) {
-    if (USkillInfoUtil::IsValid(ItemInfo->ActiveSkill) || ItemInfo->PassiveEffects.Num() > 0) {
+void UCoreItem::ActiveActorEffectsPrivate(class UBackpackComponent* BackpackComponent, const FEffectPreAddDelegate& Callback) {
+    if (Effects.Num()) {
         auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
-        if (CharacterState && CharacterState->GetLocalRole() == ROLE_Authority) {
-            auto SkillComponent = CharacterState->SkillComponent;
-            if (SkillComponent) {
-                const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-                TSubclassOf<UBackpackExtendHandler> BackpackExtendHandlerClass = UBackpackExtendHandler::StaticClass();
-                auto BackpackExtendHandlerClassPath = BackpackSetting->BackpackExtendHandlerClass.ToString();
-                if (!BackpackExtendHandlerClassPath.IsEmpty()) {
-                    TSubclassOf<UBackpackExtendHandler> LoadClass = StaticLoadClass(UBackpackExtendHandler::StaticClass(), NULL, *BackpackSetting->BackpackExtendHandlerClass.ToString());
-                    if (LoadClass) {
-                        BackpackExtendHandlerClass = LoadClass;
-                    }
-                }
-                UBackpackExtendHandler* BackpackExtendHandler = Cast<UBackpackExtendHandler>(BackpackExtendHandlerClass->GetDefaultObject());
-
-                const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-                auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
-                if (SkillDataTable) {
-                    auto ActiveSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, ItemInfo->ActiveSkill.SkillId);
-                    if (ActiveSkill && ActiveSkill->GameplayAbilityClass) {
-                        SkillComponent->GiveAbility(FGameplayAbilitySpec(ActiveSkill->GameplayAbilityClass, ItemInfo->ActiveSkill.SkillLevel));
-                    }
-                    if (ItemInfo->PassiveEffects.Num() > 0) {
-                        for (int EffectIndex = 0; EffectIndex < ItemInfo->PassiveEffects.Num(); ++EffectIndex) {
-                            auto GameplayEffect = ItemInfo->PassiveEffects[EffectIndex].GameplayEffectClass;
-                            if (GameplayEffect) {
-                                FGameplayEffectContextHandle EffectContext = SkillComponent->MakeEffectContext();
-                                FGameplayEffectSpecHandle NewHandle = SkillComponent->MakeOutgoingSpec(GameplayEffect, ItemInfo->PassiveEffects[EffectIndex].EffectLevel, EffectContext);
-
-                                BackpackExtendHandler->PreItemEffectAdd(NewHandle, GameplayEffect, BackpackComponent, SkillComponent, this);
-
-                                if (NewHandle.IsValid()) {
-                                    SkillComponent->ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
-                                }
-                            }
-                        }
-                    }
-                }
+        if (CharacterState && CharacterState->SkillComponent) {
+            for (auto& EffectInfo : Effects) {
+                CharacterState->SkillComponent->AddEffect(EffectInfo, Callback);
             }
+        }
+    }
+}
+
+void UCoreItem::ActiveItemTableEffectsPrivate(class UBackpackComponent* BackpackComponent, const FEffectPreAddDelegate& Callback) {
+    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
+    auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
+    auto ItemRow = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
+    if (ItemRow->SkillGroupID != -1) {
+        auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
+        if (CharacterState && CharacterState->SkillComponent) {
+            CharacterState->SkillComponent->AddSkillGroup(ItemRow->SkillGroupID, Callback);
         }
     }
 }

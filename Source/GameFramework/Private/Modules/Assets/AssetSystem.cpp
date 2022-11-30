@@ -696,28 +696,9 @@ bool UAssetSystem::UseItemPrivate(UBackpackComponent* BackpackComponent, uint8 B
 		return false;
 	}
 
-	FString Error;
-
-	if (BackpackItem->ActiveAbilitySpecHandle.IsValid()) {
-		ACoreCharacter* Character = Cast<ACoreCharacter>(BackpackComponent->GetOwner());
-		if (!Character) {
-			auto PlayerController = Cast<ACorePlayerController>(BackpackComponent->GetOwner());
-			if (PlayerController) {
-				Character = Cast<ACoreCharacter>(PlayerController->GetCharacter());
-			}
-		}
-		if (Character && Character->GetLocalRole() == ROLE_Authority) {
-			//if (Character->AbilitySystemComponent->TryActivateAbility(BackpackItem->ActiveAbilitySpecHandle)) {
-			//	if (ItemInfo->BeConsumed) {
-			//		ReduceItem(BackpackComponent, BackpackType, SlotIndex, Count, Reason, Error);
-			//	}
-			//}
-		}
-	}
-
 	SendUseItemEvent(BackpackComponent, ItemId, Count);
 
-	return Error.IsEmpty();
+	return true;
 }
 
 UCoreItem* UAssetSystem::AbandonItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
@@ -1141,8 +1122,6 @@ void UAssetSystem::OnItemEnterPackage(UBackpackComponent* BackpackComponent, cla
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
         GetBackpackExtendHandler()->OnItemAdd(BackpackComponent, Item, BackpackType, Index);
-
-        Item->CheckAndAutoActiveEffects(BackpackComponent);
     }
 }
 
@@ -1150,8 +1129,6 @@ void UAssetSystem::OnItemLeavePackage(UBackpackComponent* BackpackComponent, cla
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
         GetBackpackExtendHandler()->OnItemRemove(BackpackComponent, Item, BackpackType, Index);
-
-        Item->DeactiveEffects(BackpackComponent);
     }
 }
 

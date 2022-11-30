@@ -15,7 +15,17 @@ TSharedRef<IPropertyTypeCustomization> FSkillInfoCustomization::MakeInstance() {
 void FSkillInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class FDetailWidgetRow& HeaderRow,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
-    
+    HeaderRow
+	.NameContent()
+	[
+        StructPropertyHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	.VAlign(VAlign_Center)
+	.HAlign(HAlign_Left)
+	[
+        StructPropertyHandle->CreatePropertyValueWidget(/*bDisplayDefaultPropertyButtons =*/false)
+	];
 }
 
 void FSkillInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
@@ -31,7 +41,7 @@ void FSkillInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> Stru
         StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSkillInfo, SkillLevel));
 
     SkillIdPropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSkillInfo, SkillId));
+        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FSkillInfo, SkillID));
 
     check(SkillLevelPropertyHandle.IsValid() && SkillIdPropertyHandle.IsValid());
 

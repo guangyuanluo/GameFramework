@@ -82,17 +82,11 @@ struct GAMEFRAMEWORK_API FUnitInfoConfigTableRow : public FConfigTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "属性", meta = (DisplayName = "属性表", DisplayPriority = "1"))
 	TSoftObjectPtr<class UCurveTable> AttributeTable;
 
-    /**
-    * 初始主动技能
-    */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "技能", meta = (DisplayName = "初始主动技能", DisplayPriority = "1"))
-    TArray<FSkillInfo> InitSkills;
-
-    /**
-    * 初始被动效果
-    */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "技能", meta = (DisplayName = "初始被动效果", DisplayPriority = "1"))
-    TArray<FEffectInfo> InitPassiveEffects;
+	/**
+	* 初始技能模组
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "技能|Hide", meta = (DisplayName = "技能模组id", DisplayPriority = "1"))
+	int SkillGroupID = -1;
 
     virtual int GetUniqueId() override;
     virtual FString GetSimpleDescription() override;

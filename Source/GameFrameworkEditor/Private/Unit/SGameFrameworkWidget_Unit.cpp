@@ -20,6 +20,9 @@
 #include "Editor/UnrealEd/Classes/Factories/DataTableFactory.h"
 #include "Character/CoreCharacter.h"
 #include "Modules/Unit/UnitSetting.h"
+#include "SRowTableRefBox.h"
+#include "Modules/Skill/SkillSetting.h"
+#include "Modules/Skill/SkillGroupConfigTableRow.h"
 
 const FString UnitDataDirectory = TEXT("/Data/Unit/");
 
@@ -28,6 +31,7 @@ namespace UnitInfoUI
 	const FName UnitIdColumnName(TEXT("单位Id"));
 	const FName UnitNameColumnName(TEXT("单位名字"));
 	const FName UnitGrowExpTypeIdColumnName(TEXT("单位成长经验类型"));
+    const FName UnitSkillGroupIdColumnName(TEXT("技能模组"));
 };
 
 class SUnitInfoRow : public SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>
@@ -104,47 +108,37 @@ public:
 				.Text(FText::FromString(RowData->UnitName));
 		}
 		else if (ColumnName == UnitInfoUI::UnitGrowExpTypeIdColumnName) {
-			return SNew(SComboBox<TSharedPtr<FConfigTableRowWrapper>>)
-				.OptionsSource(&ExpTypeSource)
-				.OnGenerateWidget_Lambda([this](TSharedPtr<FConfigTableRowWrapper> InExp) {
-                    FExpTypeConfigTableRow* GenerateRowData = (FExpTypeConfigTableRow*)(InExp->ConfigTableRow);
-					if (GenerateRowData->ExpTypeId != -1) {
-						return SNew(STextBlock)
-							.Text(FText::FromString(FString::Format(TEXT("{0}.{1}"), { GenerateRowData->ExpTypeId, GenerateRowData->ExpTypeDescription })));
-					}
-					else {
-						return SNew(STextBlock)
-							.Text(FText::FromString(TEXT("None")));
-					}
-				})
-				.OnSelectionChanged_Lambda([this, RowData](TSharedPtr<FConfigTableRowWrapper> NewGroupingMode, ESelectInfo::Type SelectInfo) {
-					mSelectExpType = NewGroupingMode;
-					if (mSelectExpType.IsValid()) {
-						DataTableRowEditor->SelectRow(*FString::FromInt(RowData->UnitId));
-                        FExpTypeConfigTableRow* SelectExpTypeRowData = (FExpTypeConfigTableRow*)(mSelectExpType->ConfigTableRow);
-						((FUnitInfoConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->GrowExpTypeId = SelectExpTypeRowData->ExpTypeId;
+            const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
+            auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
+            if (!ExpTypeDataTable) {
+                return SNullWidget::NullWidget;
+            }
+            else {
+                TSharedPtr<SRowTableRefBox> GrowExpTypeRefBox = SNew(SRowTableRefBox, ExpTypeDataTable, RowData->GrowExpTypeId);
+                GrowExpTypeRefBox->RowSelectChanged.BindLambda([this](int ID) {
+                    ((FUnitInfoConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->GrowExpTypeId = ID;
 
-						DataTableRowEditor->MarkDatatableDirty();
-					}
-					else {
-						((FUnitInfoConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->GrowExpTypeId = -1;
-
-						DataTableRowEditor->MarkDatatableDirty();
-					}
-				})
-				[
-					SNew(STextBlock)
-					.Text_Lambda([this]() {
-                        FExpTypeConfigTableRow* SelectExpTypeRowData = (FExpTypeConfigTableRow*)(mSelectExpType->ConfigTableRow);
-						if (SelectExpTypeRowData->ExpTypeId != -1) {
-							return FText::FromString(FString::Format(TEXT("{0}.{1}"), { SelectExpTypeRowData->ExpTypeId, SelectExpTypeRowData->ExpTypeDescription }));
-						}
-						else {
-							return FText::FromString(TEXT("None"));
-						}
-					})
-				];
+                    DataTableRowEditor->MarkDatatableDirty();
+                });
+                return GrowExpTypeRefBox.ToSharedRef();
+            }
 		}
+        else if (ColumnName == UnitInfoUI::UnitSkillGroupIdColumnName) {
+            const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+            auto SkillGroupDataTable = SkillSetting->SkillGroupTable.LoadSynchronous();
+            if (!SkillGroupDataTable) {
+                return SNullWidget::NullWidget;
+            }
+            else {
+                TSharedPtr<SRowTableRefBox> SkillGroupRefBox = SNew(SRowTableRefBox, SkillGroupDataTable, RowData->SkillGroupID);
+                SkillGroupRefBox->RowSelectChanged.BindLambda([this](int ID) {
+                    ((FUnitInfoConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->SkillGroupID = ID;
+
+                    DataTableRowEditor->MarkDatatableDirty();
+                });
+                return SkillGroupRefBox.ToSharedRef();
+            }
+        }
 
 		return SNullWidget::NullWidget;
 	}
@@ -214,6 +208,9 @@ TSharedRef<class SHeaderRow> SGameFrameworkWidget_Unit::ConstructListViewHeadRow
         .FillWidth(33.0f)
         + SHeaderRow::Column(UnitInfoUI::UnitGrowExpTypeIdColumnName)
         .DefaultLabel(FText::FromName(UnitInfoUI::UnitGrowExpTypeIdColumnName))
+        .FillWidth(33.0f)
+        +SHeaderRow::Column(UnitInfoUI::UnitSkillGroupIdColumnName)
+        .DefaultLabel(FText::FromName(UnitInfoUI::UnitSkillGroupIdColumnName))
         .FillWidth(33.0f);
 }
 

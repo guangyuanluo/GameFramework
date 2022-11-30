@@ -21,6 +21,8 @@
 #include "GameFrameworkEditorWidgetTool.h"
 #include "Modules/Item/ItemType.h"
 #include "SRowTableRefBox.h"
+#include "Modules/Skill/SkillGroupConfigTableRow.h"
+#include "Modules/Skill/SkillSetting.h"
 
 namespace BackpackTypeUI
 {
@@ -158,6 +160,7 @@ namespace ItemInfoUI
 	const FName ItemNameColumnName(TEXT("物品名字"));
 	const FName ItemTypeColumnName(TEXT("物品类型"));
 	const FName ItemDescriptionColumnName(TEXT("物品描述"));
+	const FName ItemSkillGroupColumnName(TEXT("技能模组"));
 };
 
 class SItemInfoRow : public SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>
@@ -209,6 +212,22 @@ public:
 			return	SNew(SEditableText)
 				.Text(FText::FromString(RowData->ItemDescription))
 				.IsReadOnly(true);
+		}
+		else if (ColumnName == ItemInfoUI::ItemSkillGroupColumnName) {
+			const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+			auto SkillGroupDataTable = SkillSetting->SkillGroupTable.LoadSynchronous();
+			if (!SkillGroupDataTable) {
+				return SNullWidget::NullWidget;
+			}
+			else {
+				TSharedPtr<SRowTableRefBox> SkillGroupRefBox = SNew(SRowTableRefBox, SkillGroupDataTable, RowData->SkillGroupID);
+				SkillGroupRefBox->RowSelectChanged.BindLambda([this](int ID) {
+					((FItemConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->SkillGroupID = ID;
+
+					DataTableRowEditor->MarkDatatableDirty();
+				});
+				return SkillGroupRefBox.ToSharedRef();
+			}
 		}
 
 		return SNullWidget::NullWidget;
@@ -865,6 +884,9 @@ TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemInfoPage() {
 				.FillWidth(43.0f)
 				+ SHeaderRow::Column(ItemInfoUI::ItemDescriptionColumnName)
 				.DefaultLabel(FText::FromName(ItemInfoUI::ItemDescriptionColumnName))
+				.FillWidth(53.0f)
+				+ SHeaderRow::Column(ItemInfoUI::ItemSkillGroupColumnName)
+				.DefaultLabel(FText::FromName(ItemInfoUI::ItemSkillGroupColumnName))
 				.FillWidth(53.0f)
 			)
 		]

@@ -15,7 +15,17 @@ TSharedRef<IPropertyTypeCustomization> FItemIDNumPairCustomization::MakeInstance
 void FItemIDNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class FDetailWidgetRow& HeaderRow,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
-    
+    HeaderRow
+	.NameContent()
+	[
+        StructPropertyHandle->CreatePropertyNameWidget()
+	]
+	.ValueContent()
+	.VAlign(VAlign_Center)
+	.HAlign(HAlign_Left)
+	[
+        StructPropertyHandle->CreatePropertyValueWidget(/*bDisplayDefaultPropertyButtons =*/false)
+	];
 }
 
 void FItemIDNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,

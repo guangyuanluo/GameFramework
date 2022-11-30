@@ -221,12 +221,64 @@ TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetIte
 TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetSkillSource() {
     TArray<TSharedPtr<FConfigTableRowWrapper>> Result;
     const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-    auto SkilDataTable = SkillSetting->SkillTable.LoadSynchronous();
-    if (SkilDataTable != nullptr) {
-        auto TableUsingStruct = SkilDataTable->GetRowStruct();
+    auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
+    if (SkillDataTable != nullptr) {
+        auto TableUsingStruct = SkillDataTable->GetRowStruct();
         int32 StructureSize = TableUsingStruct->GetStructureSize();
         TArray<FConfigTableRowBase*> AllRowArr;
-        SkilDataTable->GetAllRows("", AllRowArr);
+        SkillDataTable->GetAllRows("", AllRowArr);
+        for (auto Index = 0; Index < AllRowArr.Num(); ++Index) {
+            FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
+            uint8* NewRawRowData = (uint8*)FMemory::Malloc(StructureSize);
+
+            TableUsingStruct->InitializeStruct(NewRawRowData);
+            TableUsingStruct->CopyScriptStruct(NewRawRowData, AllRowArr[Index]);
+
+            NewWrapper->RowStruct = TableUsingStruct;
+            NewWrapper->ConfigTableRow = NewRawRowData;
+
+            Result.Add(TSharedPtr<FConfigTableRowWrapper>(NewWrapper));
+        }
+    }
+
+    return Result;
+}
+
+TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetEffectSource() {
+    TArray<TSharedPtr<FConfigTableRowWrapper>> Result;
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
+    if (EffectDataTable != nullptr) {
+        auto TableUsingStruct = EffectDataTable->GetRowStruct();
+        int32 StructureSize = TableUsingStruct->GetStructureSize();
+        TArray<FConfigTableRowBase*> AllRowArr;
+        EffectDataTable->GetAllRows("", AllRowArr);
+        for (auto Index = 0; Index < AllRowArr.Num(); ++Index) {
+            FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
+            uint8* NewRawRowData = (uint8*)FMemory::Malloc(StructureSize);
+
+            TableUsingStruct->InitializeStruct(NewRawRowData);
+            TableUsingStruct->CopyScriptStruct(NewRawRowData, AllRowArr[Index]);
+
+            NewWrapper->RowStruct = TableUsingStruct;
+            NewWrapper->ConfigTableRow = NewRawRowData;
+
+            Result.Add(TSharedPtr<FConfigTableRowWrapper>(NewWrapper));
+        }
+    }
+
+    return Result;
+}
+
+TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetSkillGroupSource() {
+    TArray<TSharedPtr<FConfigTableRowWrapper>> Result;
+    const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+    auto SkillGroupDataTable = SkillSetting->SkillGroupTable.LoadSynchronous();
+    if (SkillGroupDataTable != nullptr) {
+        auto TableUsingStruct = SkillGroupDataTable->GetRowStruct();
+        int32 StructureSize = TableUsingStruct->GetStructureSize();
+        TArray<FConfigTableRowBase*> AllRowArr;
+        SkillGroupDataTable->GetAllRows("", AllRowArr);
         for (auto Index = 0; Index < AllRowArr.Num(); ++Index) {
             FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
             uint8* NewRawRowData = (uint8*)FMemory::Malloc(StructureSize);
@@ -309,7 +361,7 @@ bool GameFrameworkEditorWidgetTool::IsUnitIdUse(int32 UnitId, FString& UseInfo) 
 	return HaveFound;
 }
 
-bool GameFrameworkEditorWidgetTool::IsSkillIdUse(int32 SkillId, FString& UseInfo) {
+bool GameFrameworkEditorWidgetTool::IsSkillGroupIdUse(int32 SkillId, FString& UseInfo) {
     return false;
 }
 
