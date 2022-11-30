@@ -10,7 +10,7 @@
 #include "Modules/Assets/BackpackTypeConfigTableRow.h"
 #include "Modules/Item/ItemConfigTableRow.h"
 #include "Modules/Item/ItemTypeConfigTableRow.h"
-#include "Modules/Skill/SkillConfigTableRow.h"
+#include "Modules/Skill/SkillGroupConfigTableRow.h"
 #include "EditorCommon.h"
 
 /**
@@ -27,14 +27,16 @@ public:
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetBackpackTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetItemInfoSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetItemTypeSource();
-    TArray<TSharedPtr<FConfigTableRowWrapper>> GetSkillSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetSkillSource();
+	TArray<TSharedPtr<FConfigTableRowWrapper>> GetEffectSource();
+    TArray<TSharedPtr<FConfigTableRowWrapper>> GetSkillGroupSource();
 
 	virtual bool IsExpTypeUse(int32 ExpType, FString& UseInfo);
 	virtual bool IsMoneyTypeUse(int32 MoneyType, FString& UseInfo);
 	virtual bool IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo);
 	virtual bool IsItemIdUse(int32 ItemId, FString& UseInfo);
 	virtual bool IsUnitIdUse(int32 UnitId, FString& UseInfo);
-    virtual bool IsSkillIdUse(int32 SkillId, FString& UseInfo);
+    virtual bool IsSkillGroupIdUse(int32 SkillId, FString& UseInfo);
 	virtual bool IsItemIdExist(int32 ItemId);
 	virtual bool IsUnitIdExist(int32 UnitId);
 

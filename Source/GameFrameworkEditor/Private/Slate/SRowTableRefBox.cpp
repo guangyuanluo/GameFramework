@@ -10,6 +10,7 @@
 #define LOCTEXT_NAMESPACE "SRowTableRefBox"
 
 int SearchBoxId = -1000;
+int NoneId = -1;
 
 void SRowTableRefBox::Construct( const FArguments& InArgs, UDataTable* InRefDataTable, int InCurrentSelectId)
 {
@@ -46,6 +47,7 @@ void SRowTableRefBox::SetSelect(int InCurrentSelectId) {
 
     CachedRowNames.Empty();
     CachedRowNames.Add(MakeShareable(new int(SearchBoxId)));
+    CachedRowNames.Add(MakeShareable(new int(NoneId)));
 
     TSharedPtr<int> FindSelectItem;
 
@@ -91,6 +93,9 @@ TSharedRef<SWidget> SRowTableRefBox::OnGenerateWidget(TSharedPtr<int> InItem) {
 
         return SearchBox.ToSharedRef();
     }
+    else if (*InItem == NoneId) {
+        return SNew(STextBlock).Text(FText::FromString(TEXT("None")));
+    }
     else {
         return SNew(STextBlock).Text(FText::FromString(GetRowDisplayName(*InItem)));
     }
@@ -129,6 +134,9 @@ void SRowTableRefBox::OnSearchTextChanged(const FText& InFilterText) {
     
     CachedRowNames.Empty();
     CachedRowNames.Add(MakeShareable(new int(SearchBoxId)));
+    if (SearchText.IsEmpty()) {
+        CachedRowNames.Add(MakeShareable(new int(NoneId)));
+    }
 
     const TMap<FName, uint8*>& RowMap = RefDataTable->GetRowMap();
     for (auto Iter = RowMap.CreateConstIterator(); Iter; ++Iter) {

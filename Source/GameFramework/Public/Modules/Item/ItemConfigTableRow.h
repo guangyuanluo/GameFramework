@@ -88,23 +88,11 @@ struct GAMEFRAMEWORK_API FItemConfigTableRow : public FConfigTableRowBase
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "堆叠上限", DisplayPriority = "1"))
 	int MaxStack = 0;
 
-    /**
-    * 进入背包自动激活技能，默认false
-    */
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "进入背包自动激活技能和效果", DisplayPriority = "1"))
-    bool AutoActiveSkillWhenInPackage = false;
-
 	/**
-	* 主动使用技能
+	* 初始技能模组
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "物品主动技能", DisplayPriority = "1"))
-    FSkillInfo ActiveSkill;
-
-	/**
-	* 被动效果
-	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "物品被动效果", DisplayPriority = "1"))
-    TArray<FEffectInfo> PassiveEffects;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "技能|Hide", meta = (DisplayName = "技能模组id", DisplayPriority = "1"))
+	int SkillGroupID = -1;
 
     virtual int GetUniqueId() override;
     virtual FString GetSimpleDescription() override;

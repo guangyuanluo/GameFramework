@@ -21,4 +21,16 @@ public:
     */
     UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "技能表", NoResetToDefault))
     TSoftObjectPtr<class UDataTable> SkillTable;
+
+    /**
+    * 效果表
+    */
+    UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "效果表", NoResetToDefault))
+    TSoftObjectPtr<class UDataTable> EffectTable;
+
+    /**
+    * 技能模组
+    */
+    UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "技能模组表", NoResetToDefault))
+    TSoftObjectPtr<class UDataTable> SkillGroupTable;
 };
