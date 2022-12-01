@@ -13,6 +13,6 @@ bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
 }
 
-void UCoreAbility::NotifyComboAbility_Implementation(FName const ComboSection) {
+void UCoreAbility::NotifyComboAbility_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection) {
 
 }

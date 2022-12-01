@@ -31,6 +31,6 @@ public:
 	/**
 	* ´¥·¢Á¬ÕÐ
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
-	void NotifyComboAbility(FName const ComboSection);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
+	void NotifyComboAbility(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection);
 };
