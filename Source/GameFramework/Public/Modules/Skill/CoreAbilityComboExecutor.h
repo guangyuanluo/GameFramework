@@ -18,11 +18,11 @@ public:
     * 检查能否执行combo
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    bool CheckComboEnable(UCoreAbility* Ability);
+    bool CheckComboEnable(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability);
 
     /**
     * 执行combo
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    void ExecuteCombo(UCoreAbility* Ability);
+    void ExecuteCombo(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability);
 };

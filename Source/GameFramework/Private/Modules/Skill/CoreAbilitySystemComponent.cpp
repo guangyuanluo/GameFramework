@@ -180,6 +180,7 @@ void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability
     if (CooldownEffect) {
         RemoveActiveGameplayEffectBySourceEffect(CooldownEffect->GetClass(), this);
     }
+    Ability->K2_CommitAbilityCooldown();
 }
 
 void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) {
@@ -215,7 +216,7 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) 
         auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
         if (FindExecutor && FindExecutor->Get()) {
             auto Executor = FindExecutor->GetDefaultObject();
-            if (!Executor->CheckComboEnable(Ability)) {
+            if (!Executor->CheckComboEnable(this, Ability)) {
                 return;
             }
         }
@@ -251,11 +252,10 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
         auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
         if (FindExecutor && FindExecutor->Get()) {
             auto Executor = FindExecutor->GetDefaultObject();
-            if (!Executor->CheckComboEnable(Ability)) {
+            if (!Executor->CheckComboEnable(this, Ability)) {
                 return;
             }
-            Executor->ExecuteCombo(Ability);
-            Ability->NotifyComboAbility(CurrentSection);
+            Executor->ExecuteCombo(this, Ability);
         }
     }
 }
