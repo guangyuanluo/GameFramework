@@ -17,19 +17,19 @@ class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility
 
 public:
 	/**
-	* Á¬ÕĞÅäÖÃ
+	* è¿æ‹›é…ç½®
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = Tags, meta = (Categories = "AbilityTagCategory"))
 	TMap<FName, TSubclassOf<class UCoreAbilityComboExecutor>> ComboMap;
 
 	/**
-	* ÊÇ·ñ¼¤»î
+	* æ˜¯å¦æ¿€æ´»
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = Ability, DisplayName = "IsActive", Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool K2_IsActive() const;
 
 	/**
-	* ´¥·¢Á¬ÕĞ
+	* è§¦å‘è¿æ‹›
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
 	void NotifyComboAbility(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection);
