@@ -36,8 +36,8 @@ UWaitCondition* UGameFrameworkUtils::WaitCondition(class ACorePlayerController* 
 	return WaitCondition;
 }
 
-ACoreCharacter* UGameFrameworkUtils::GetClosestCharacterWithinRadius(ACoreCharacter* Source, float Range, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type teamAttitude) {
-	auto Result = GetAllCharactersWithinRadius(Source, Range, Radius, TraceChannel, teamAttitude);
+ACoreCharacter* UGameFrameworkUtils::GetClosestCharacterWithinRadius(ACoreCharacter* Source, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type teamAttitude) {
+	auto Result = GetAllCharactersWithinRadius(Source, Radius, TraceChannel, teamAttitude);
 	FVector SourceLocation = Source->GetActorLocation();
 	float MinDistance = MAX_flt;
 	ACoreCharacter* ClosestActor = nullptr;
@@ -51,11 +51,11 @@ ACoreCharacter* UGameFrameworkUtils::GetClosestCharacterWithinRadius(ACoreCharac
 	return ClosestActor;
 }
 
-TArray<ACoreCharacter*> UGameFrameworkUtils::GetAllCharactersWithinRadius(ACoreCharacter* Source, float Range, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude) {
+TArray<ACoreCharacter*> UGameFrameworkUtils::GetAllCharactersWithinRadius(ACoreCharacter* Source, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude) {
 	TArray<ACoreCharacter*> Result;
 	auto SourceAgent = Cast<IGenericTeamAgentInterface>(Source);
 	TArray<FHitResult> OutHits;
-	if (UKismetSystemLibrary::SphereTraceMulti(Source, Source->GetActorLocation(), Source->GetActorLocation() + Source->GetActorForwardVector() * Range, Radius, TraceChannel, false, TArray<AActor*>({ Source }), EDrawDebugTrace::Type::ForDuration, OutHits, false)) {
+	if (UKismetSystemLibrary::SphereTraceMulti(Source, Source->GetActorLocation(), Source->GetActorLocation() + Source->GetActorForwardVector() * Radius, Radius, TraceChannel, false, TArray<AActor*>({ Source }), EDrawDebugTrace::Type::ForDuration, OutHits, false)) {
 		for (int Index = 0; Index < OutHits.Num(); ++Index) {
 			auto& HitResult = OutHits[Index];
 			auto Agent = Cast<IGenericTeamAgentInterface>(HitResult.GetActor());
@@ -71,8 +71,8 @@ TArray<ACoreCharacter*> UGameFrameworkUtils::GetAllCharactersWithinRadius(ACoreC
 	return Result;
 }
 
-AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, float Range, float Radius, ETraceTypeQuery TraceChannel) {
-	auto Result = GetAllActorsWithinRadius(Source, Range, Radius, TraceChannel);
+AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, float Radius, ETraceTypeQuery TraceChannel) {
+	auto Result = GetAllActorsWithinRadius(Source, Radius, TraceChannel);
 	FVector SourceLocation = Source->GetActorLocation();
 	float MinDistance = MAX_flt;
 	AActor* ClosestActor = nullptr;
@@ -86,10 +86,10 @@ AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, float R
 	return ClosestActor;
 }
 
-TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, float Range, float Radius, ETraceTypeQuery TraceChannel) {
+TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, float Radius, ETraceTypeQuery TraceChannel) {
 	TArray<AActor*> Result;
 	TArray<FHitResult> OutHits;
-	if (UKismetSystemLibrary::SphereTraceMulti(Source, Source->GetActorLocation(), Source->GetActorLocation() + Source->GetActorForwardVector() * Range, Radius, TraceChannel, false, TArray<AActor*>({ Source }), EDrawDebugTrace::Type::ForDuration, OutHits, false)) {
+	if (UKismetSystemLibrary::SphereTraceMulti(Source, Source->GetActorLocation(), Source->GetActorLocation() + Source->GetActorForwardVector() * Radius, Radius, TraceChannel, false, TArray<AActor*>({ Source }), EDrawDebugTrace::Type::ForDuration, OutHits, false)) {
 		for (int Index = 0; Index < OutHits.Num(); ++Index) {
 			auto& HitResult = OutHits[Index];
 			
