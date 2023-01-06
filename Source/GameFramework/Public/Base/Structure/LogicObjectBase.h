@@ -10,4 +10,14 @@ class GAMEFRAMEWORK_API ULogicObjectBase : public UObject
 
 public:
     virtual UWorld* GetWorld() const override;
+
+    /**
+    * 装载world上下文对象
+    */
+    UFUNCTION(BlueprintCallable)
+    void LoadWorldContext(UObject* InWorldContextObject);
+
+private:
+    UPROPERTY()
+    UObject* WorldContextObject;
 };
