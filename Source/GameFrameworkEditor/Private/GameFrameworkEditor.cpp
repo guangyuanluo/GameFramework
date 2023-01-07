@@ -32,6 +32,7 @@
 
 #include "Character/CoreCharacter.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Condition/CoreConditionList.h"
 
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Money/MoneyTypeNumPair.h"
@@ -41,6 +42,7 @@
 #include "Modules/Exp/ExpTypeNumPair.h"
 #include "Customization/ExpTypeNumPairCustomization.h"
 #include "CoreConditionCustomization.h"
+#include "CoreConditionListCustomization.h"
 #include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
 #include "AssetTypeActions_QuestTree.h"
@@ -264,6 +266,10 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 	PropertyModule.RegisterCustomClassLayout(
 		UCoreCondition::StaticClass()->GetFName(),
 		FOnGetDetailCustomizationInstance::CreateStatic(&FCoreConditionCustomization::MakeInstance));
+
+	PropertyModule.RegisterCustomPropertyTypeLayout(
+		FCoreConditionList::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreConditionListCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomClassLayout(
 		UScenarioNode::StaticClass()->GetFName(),

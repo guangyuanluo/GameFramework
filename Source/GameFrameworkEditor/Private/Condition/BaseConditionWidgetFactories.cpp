@@ -49,7 +49,9 @@
 //clost to npc
 #include "Global/Conditions/CloseToNPCCondition.h"
 #include "Global/Conditions/CloseToNPCConditionProgress.h"
-
+//skill reach level
+#include "Global/Conditions/PlayerSkillReachLevelCondition.h"
+#include "Global/Conditions/PlayerSkillReachLevelConditionProgress.h"
 
 #include "GameInstance/CoreGameInstance.h"
 
@@ -57,6 +59,7 @@
 #include "Modules/Exp/ExpSetting.h"
 #include "Modules/Item/ItemSetting.h"
 #include "Modules/Unit/UnitSetting.h"
+#include "Modules/Skill/SkillConfigTableRow.h"
 
 #include "Runtime/Slate/Public/Widgets/Input/SComboBox.h"
 #include "Runtime/Slate/Public/Widgets/Input/SEditableTextBox.h"
@@ -1164,6 +1167,40 @@ namespace ConditionUI {
 			NotifyConditionChange();
 		}
 	};
+
+	/*玩家技能达到等级任务条件*/
+	class PlayerSkillReachLevelConditionWidget : public SConditionWidgetDefault {
+	public:
+		virtual ~PlayerSkillReachLevelConditionWidget() {}
+
+		SLATE_BEGIN_ARGS(PlayerSkillReachLevelConditionWidget) {}
+
+		SLATE_END_ARGS()
+
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot& InParentSlot, const FString& ConditionWidgetName) {
+			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+
+			UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)WidgetCondition;
+
+			FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+			FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::HideNameArea, false);
+			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+			DetailsView->SetObject(PlayerSkillReachLevelCondition);
+			DetailsView->OnFinishedChangingProperties().AddSP(this, &PlayerSkillReachLevelConditionWidget::OnPropertyChanged);
+
+			(*WidgetSlot)[
+				DetailsView.ToSharedRef()
+			];
+		}
+
+	private:
+        TSharedPtr<SRowTableRefBox> ItemTableRefBox;
+
+        void OnPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent) {
+            NotifyConditionChange();
+        }
+	};
 }
 
 namespace BaseConditionFactory {
@@ -1572,6 +1609,37 @@ namespace BaseConditionFactory {
 			}
 		}
 	};
+
+	class ConditionWidgetFactory_SkillReachLevel : public ConditionWidgetFactory {
+	public:
+		virtual FString GetConditionWidgetName() override {
+			return TEXT("玩家技能达到等级");
+		}
+		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
+			return UPlayerSkillReachLevelCondition::StaticClass();
+		}
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot& ParentSlot) override {
+			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
+			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
+			if (Condition) {
+				return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+			}
+			else {
+				auto SkillSource = EditorWidgetTool->GetSkillSource();
+				if (SkillSource.Num() == 0) {
+					EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的技能，请先配置技能")), 5.0f);
+					return TSharedPtr<SConditionWidget>();
+				}
+				else {
+					UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = NewObject<UPlayerSkillReachLevelCondition>(Outer);
+					FSkillConfigTableRow* RowData = (FSkillConfigTableRow*)(SkillSource[0]->ConfigTableRow);
+					PlayerSkillReachLevelCondition->Skill.SkillID = RowData->SkillId;
+
+					return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, PlayerSkillReachLevelCondition, ParentSlot, GetConditionWidgetName());
+				}
+			}
+		}
+	};
 }
 
 TArray<TSharedPtr<ConditionWidgetFactory>> BaseConditionWidgetFactories::BaseFactories = {
@@ -1589,6 +1657,7 @@ TArray<TSharedPtr<ConditionWidgetFactory>> BaseConditionWidgetFactories::BaseFac
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerDeductItem),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerDeductMoney),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_CloseToNPC),
+	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_SkillReachLevel),
 };
 
 void BaseConditionWidgetFactories::Init()

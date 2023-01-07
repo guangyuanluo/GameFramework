@@ -2,7 +2,7 @@
 
 #include "UnitReachExpLevelConditionProgress.h"
 #include "UnitReachExpLevelCondition.h"
-#include "IncreaseExpLevelEvent.h"
+#include "ExpLevelUpEvent.h"
 #include "CoreCharacter.h"
 #include "CorePlayerController.h"
 
@@ -16,19 +16,19 @@ TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::G
 	}
 	else {
 		return TArray<TSubclassOf<class UGameEventBase>>({
-			UIncreaseExpLevelEvent::StaticClass(),
+			UExpLevelUpEvent::StaticClass(),
 		});
 	}
 }
 
 bool UUnitReachExpLevelConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UIncreaseExpLevelEvent* IncreaseExpLevelEvent = (UIncreaseExpLevelEvent*)GameEvent;
-	ACoreCharacter* Unit = Cast<ACoreCharacter>(IncreaseExpLevelEvent->Source);
+	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)GameEvent;
+	ACoreCharacter* Unit = Cast<ACoreCharacter>(ExpLevelUpEvent->Source);
 	if (Unit == nullptr) {
 		return false;
 	}
 	UUnitReachExpLevelCondition* ReachExpLevelCondition = (UUnitReachExpLevelCondition*)Condition;
-	if (IncreaseExpLevelEvent->ExpTypeId == ReachExpLevelCondition->ExpType
+	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpType
 		&& Unit->TemplateID == ReachExpLevelCondition->UnitId) {
 		return true;
 	}

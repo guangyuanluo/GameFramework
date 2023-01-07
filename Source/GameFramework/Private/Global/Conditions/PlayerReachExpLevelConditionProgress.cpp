@@ -5,7 +5,7 @@
 #include "GameFrameworkUtils.h"
 #include "ExpComponent.h"
 #include "Modules/Exp/ExpInfo.h"
-#include "IncreaseExpLevelEvent.h"
+#include "ExpLevelUpEvent.h"
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
@@ -19,14 +19,14 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress:
 	}
 	else {
 		return TArray<TSubclassOf<class UGameEventBase>>({
-			UIncreaseExpLevelEvent::StaticClass(),
+			UExpLevelUpEvent::StaticClass(),
 		});
 	}
 }
 
 bool UPlayerReachExpLevelConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UIncreaseExpLevelEvent* IncreaseExpLevelEvent = (UIncreaseExpLevelEvent*)GameEvent;
-    auto EventPlayerState = UGameFrameworkUtils::GetEntityState(IncreaseExpLevelEvent->Source);
+	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)GameEvent;
+    auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ExpLevelUpEvent->Source);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
 		return false;
 	}
@@ -35,7 +35,7 @@ bool UPlayerReachExpLevelConditionProgress::ProgressGameEvent_Implementation(UGa
         return false;
     }
     UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
-    if (IncreaseExpLevelEvent->ExpTypeId == ReachExpLevelCondition->ExpType
+    if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpType
         && EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
         return true;
     }
