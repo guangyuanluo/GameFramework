@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Events/GameEventBase.h"
-#include "IncreaseExpLevelEvent.generated.h"
+#include "ExpLevelUpEvent.generated.h"
 
 /**
  * 
  */
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UIncreaseExpLevelEvent : public UGameEventBase
+class GAMEFRAMEWORK_API UExpLevelUpEvent : public UGameEventBase
 {
 	GENERATED_BODY()
 

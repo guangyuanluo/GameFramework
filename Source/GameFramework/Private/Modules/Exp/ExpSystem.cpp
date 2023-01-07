@@ -12,7 +12,7 @@
 #include "CoreCharacterStateBase.h"
 #include "EventSystem.h"
 #include "GameSystemManager.h"
-#include "IncreaseExpLevelEvent.h"
+#include "ExpLevelUpEvent.h"
 #include "CoreCharacter.h"
 #include "ExpTypeConfigTableRow.h"
 
@@ -44,12 +44,12 @@ bool UExpSystem::AddExp(UExpComponent* ExpComponent, uint8 ExpType, int32 Exp, c
             Result = AddExpPrivate(ExpTypeDataTable, ExpComponent, FindIndex, ExpType, Exp, Reason, Error);
             FExpInfo NewExp = ExpComponent->Exps[FindIndex];
             if (OldExp.Level != NewExp.Level) {
-                UIncreaseExpLevelEvent* IncreaseExpLevelEvent = NewObject<UIncreaseExpLevelEvent>();
-                IncreaseExpLevelEvent->Source = UGameFrameworkUtils::GetCharacterFromComponentOwner(ExpComponent);
-                IncreaseExpLevelEvent->ExpTypeId = ExpType;
-                IncreaseExpLevelEvent->ExpLevel = NewExp.Level;
+                UExpLevelUpEvent* ExpLevelUpEvent = NewObject<UExpLevelUpEvent>();
+                ExpLevelUpEvent->Source = UGameFrameworkUtils::GetCharacterFromComponentOwner(ExpComponent);
+                ExpLevelUpEvent->ExpTypeId = ExpType;
+                ExpLevelUpEvent->ExpLevel = NewExp.Level;
 
-                EventSystem->PushEvent(IncreaseExpLevelEvent);
+                EventSystem->PushEvent(ExpLevelUpEvent);
             }
         }
         else {
