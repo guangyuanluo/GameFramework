@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Base/Structure/LogicObjectBase.h"
 #include "CoreAbilityComboExecutor.generated.h"
 
 class UCoreAbility;
@@ -10,7 +11,7 @@ class UCoreAbility;
 * 连招数据项
 */
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class GAMEFRAMEWORK_API UCoreAbilityComboExecutor : public UObject {
+class GAMEFRAMEWORK_API UCoreAbilityComboExecutor : public ULogicObjectBase {
     GENERATED_BODY()
 
 public:

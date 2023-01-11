@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemGlobals.h"
 #include "Animation/AnimInstance.h"
+#include "GameFrameworkUtils.h"
+#include "CoreCharacter.h"
 
 UAbilityTask_PlayMontageAndWaitForEvent::UAbilityTask_PlayMontageAndWaitForEvent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -37,6 +39,8 @@ void UAbilityTask_PlayMontageAndWaitForEvent::OnMontageBlendingOut(UAnimMontage*
 		}
 	}
 
+	HandleEnd();
+
 	if (bInterrupted)
 	{
 		if (ShouldBroadcastAbilityTaskDelegates())
@@ -59,6 +63,8 @@ void UAbilityTask_PlayMontageAndWaitForEvent::OnAbilityCancelled()
 
 	if (StopPlayingMontage())
 	{
+		HandleEnd();
+
 		// Let the BP handle the interrupt as well
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
@@ -69,6 +75,8 @@ void UAbilityTask_PlayMontageAndWaitForEvent::OnAbilityCancelled()
 
 void UAbilityTask_PlayMontageAndWaitForEvent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+	HandleEnd();
+
 	if (!bInterrupted)
 	{
 		if (ShouldBroadcastAbilityTaskDelegates())
@@ -92,7 +100,7 @@ void UAbilityTask_PlayMontageAndWaitForEvent::OnGameplayEvent(FGameplayTag Event
 }
 
 UAbilityTask_PlayMontageAndWaitForEvent* UAbilityTask_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(UGameplayAbility* OwningAbility,
-	FName TaskInstanceName, UAnimMontage* MontageToPlay, FGameplayTagContainer EventTags, float Rate, FName StartSection, bool bStopWhenAbilityEnds, float AnimRootMotionTranslationScale)
+	FName TaskInstanceName, UAnimMontage* MontageToPlay, FGameplayTagContainer EventTags, float Rate, FName StartSection, bool bStopWhenAbilityEnds, bool bModifyServerAnimTickOption, float AnimRootMotionTranslationScale)
 {
 	UAbilitySystemGlobals::NonShipping_ApplyGlobalAbilityScaler_Rate(Rate);
 
@@ -103,6 +111,7 @@ UAbilityTask_PlayMontageAndWaitForEvent* UAbilityTask_PlayMontageAndWaitForEvent
 	MyObj->StartSection = StartSection;
 	MyObj->AnimRootMotionTranslationScale = AnimRootMotionTranslationScale;
 	MyObj->bStopWhenAbilityEnds = bStopWhenAbilityEnds;
+	MyObj->bModifyServerAnimTickOption = bModifyServerAnimTickOption;
 
 	return MyObj;
 }
@@ -125,6 +134,16 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 		{
 			// Bind to event callback
 			EventHandle = CoreAbilitySystemComponent->AddGameplayEventTagContainerDelegate(EventTags, FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &UAbilityTask_PlayMontageAndWaitForEvent::OnGameplayEvent));
+
+			if (bModifyServerAnimTickOption) {
+				ACoreCharacter* Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(CoreAbilitySystemComponent);
+				auto NetMode = Character->GetNetMode();
+				if (NetMode == ENetMode::NM_DedicatedServer
+					|| NetMode == ENetMode::NM_ListenServer) {
+					OriginAnimTickOption = Character->GetMesh()->VisibilityBasedAnimTickOption;
+					Character->GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+				}
+			}
 
 			if (CoreAbilitySystemComponent->PlayMontage(Ability, Ability->GetCurrentActivationInfo(), MontageToPlay, Rate, StartSection) > 0.f)
 			{
@@ -164,6 +183,8 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 
 	if (!bPlayedMontage)
 	{
+		HandleEnd();
+
 		ABILITY_LOG(Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent called in Ability %s failed to play montage %s; Task Instance Name %s."), *Ability->GetName(), *GetNameSafe(MontageToPlay),*InstanceName.ToString());
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
@@ -260,4 +281,16 @@ FString UAbilityTask_PlayMontageAndWaitForEvent::GetDebugString() const
 	}
 
 	return FString::Printf(TEXT("PlayMontageAndWaitForEvent. MontageToPlay: %s  (Currently Playing): %s"), *GetNameSafe(MontageToPlay), *GetNameSafe(PlayingMontage));
+}
+
+void UAbilityTask_PlayMontageAndWaitForEvent::HandleEnd() {
+	if (bModifyServerAnimTickOption) {
+		ACoreCharacter* Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(AbilitySystemComponent);
+
+		auto NetMode = Character->GetNetMode();
+		if (NetMode == ENetMode::NM_DedicatedServer
+			|| NetMode == ENetMode::NM_ListenServer) {
+			Character->GetMesh()->VisibilityBasedAnimTickOption = OriginAnimTickOption;
+		}		
+	}
 }

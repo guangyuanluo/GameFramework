@@ -193,6 +193,19 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) 
         return;
     }
 
+    const UGameplayAbility* const InAbilityCDO = Ability->GetClass()->GetDefaultObject<UGameplayAbility>();
+
+    FGameplayAbilitySpecHandle AbilityToCombo;
+    for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items) {
+        if (Spec.Ability == InAbilityCDO) {
+            AbilityToCombo = Spec.Handle;
+            break;
+        }
+    }
+    if (!AbilityToCombo.IsValid()) {
+        return;
+    }
+
     const FGameplayAbilityActorInfo* ActorInfo = AbilityActorInfo.Get();
 
     // make sure the ActorInfo and then Actor on that FGameplayAbilityActorInfo are valid, if not bail out.
@@ -227,22 +240,41 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) 
         return;
     }
     if (NetMode != ROLE_Authority && (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::ServerOnly || Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::ServerInitiated)) {
-        ServerTryComboAbility(Ability);
+        ServerTryComboAbility(AbilityToCombo);
         return;
     }
+    if (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalOnly || (NetMode == ROLE_Authority)) {
+        InternalComboAbility(Ability);
+    }
+    else if (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalPredicted) {
+        InternalComboAbility(Ability);
+    }
+    if (NetMode != ROLE_Authority) {
+        ServerTryComboAbility(AbilityToCombo);
+    }
+}
+
+void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(FGameplayAbilitySpecHandle AbilityToCombo) {
+    auto AbilitySpec = FindAbilitySpecFromHandle(AbilityToCombo);
+    if (!AbilitySpec) {
+        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called fail:find ability spec fail"));
+        return;
+    }
+    TArray<UGameplayAbility*> ActivateAbilities = AbilitySpec->GetAbilityInstances();
+    if (ActivateAbilities.Num() == 0) {
+        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
+        return;
+    }
+    auto Ability = Cast<UCoreAbility>(ActivateAbilities[0]);
     InternalComboAbility(Ability);
 }
 
-void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(UCoreAbility* Ability) {
-    InternalComboAbility(Ability);
-}
-
-bool UCoreAbilitySystemComponent::ServerTryComboAbility_Validate(UCoreAbility* Ability) {
+bool UCoreAbilitySystemComponent::ServerTryComboAbility_Validate(FGameplayAbilitySpecHandle AbilityToCombo) {
     return true;
 }
 
 void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
-    if (!Ability->IsActive()) {
+    if (!Ability || !Ability->IsActive()) {
         ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
         return;
     }
@@ -252,6 +284,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
         auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
         if (FindExecutor && FindExecutor->Get()) {
             auto Executor = FindExecutor->GetDefaultObject();
+            Executor->LoadWorldContext(this);
             if (!Executor->CheckComboEnable(this, Ability)) {
                 return;
             }

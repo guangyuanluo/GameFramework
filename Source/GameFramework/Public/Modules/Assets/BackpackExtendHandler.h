@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
+#include "Base/Structure/LogicObjectBase.h"
 #include "BackpackExtendHandler.generated.h"
 
 /*
 * @brief 背包扩展处理
 */
 UCLASS(BlueprintType, Blueprintable)
-class GAMEFRAMEWORK_API UBackpackExtendHandler : public UObject {
+class GAMEFRAMEWORK_API UBackpackExtendHandler : public ULogicObjectBase {
     GENERATED_BODY()
 
 public:
