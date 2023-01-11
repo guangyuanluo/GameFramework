@@ -210,6 +210,7 @@ void ACoreCharacter::InitSkill() {
                 CharacterState->SkillComponent->InitSkillFromTemplate(TemplateID);
                 ListenAttributeChange();
                 PostSkillTemplateInit();
+                CharacterState->SkillComponent->OnSkillTemplatePostInit.Broadcast(CharacterState->SkillComponent);
                 bSkillInit = true;
             }
         }
