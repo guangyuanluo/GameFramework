@@ -93,7 +93,7 @@ public:
     * 服务器端执行连招
     */
     UFUNCTION(Server, reliable, WithValidation)
-    void ServerTryComboAbility(UCoreAbility* Ability);
+    void ServerTryComboAbility(FGameplayAbilitySpecHandle AbilityToCombo);
 
     /**
     * 技能模板初始化委托

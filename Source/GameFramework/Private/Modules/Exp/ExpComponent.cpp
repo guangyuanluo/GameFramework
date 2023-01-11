@@ -47,10 +47,8 @@ int UExpComponent::GetExpLevel(uint8 ExpType) const {
 			return Exps[Index].Level;
 		}
 	}
-	UE_LOG(GameCore, Warning, TEXT("经验组件没有对应类型的经验:%d"), ExpType);
-	return 0;
+	return 1;
 }
-
 
 int UExpComponent::GetExpValue(uint8 ExpType) const {
 	for (int Index = 0; Index < Exps.Num(); ++Index) {

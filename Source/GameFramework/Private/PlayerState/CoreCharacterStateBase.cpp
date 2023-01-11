@@ -35,7 +35,5 @@ UAbilitySystemComponent* ACoreCharacterStateBase::GetAbilitySystemComponent() co
 void ACoreCharacterStateBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    if (SkillComponent) {
-        DOREPLIFETIME(ACoreCharacterStateBase, SkillComponent);
-    }
+    DOREPLIFETIME(ACoreCharacterStateBase, SkillComponent);
 }

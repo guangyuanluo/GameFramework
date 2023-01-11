@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
+#include "Components/SkinnedMeshComponent.h"
 #include "AbilityTask_PlayMontageAndWaitForEvent.generated.h"
 
 class UCoreAbilitySystemComponent;
@@ -61,6 +62,7 @@ public:
 	 * @param EventTags Any gameplay events matching this tag will activate the EventReceived callback. If empty, all events will trigger callback
 	 * @param Rate Change to play the montage faster or slower
 	 * @param bStopWhenAbilityEnds If true, this montage will be aborted if the ability ends normally. It is always stopped when the ability is explicitly cancelled
+	 * @param bModifyServerAnimTickOption If true, this montage will change VisibilityBasedAnimTickOption of Mesh to AlwaysTickPoseAndRefreshBones in server
 	 * @param AnimRootMotionTranslationScale Change to modify size of root motion or set to 0 to block it entirely
 	 */
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
@@ -72,6 +74,7 @@ public:
 		float Rate = 1.f,
 		FName StartSection = NAME_None,
 		bool bStopWhenAbilityEnds = true,
+		bool bModifyServerAnimTickOption = true,
 		float AnimRootMotionTranslationScale = 1.f);
 
 private:
@@ -99,6 +102,12 @@ private:
 	UPROPERTY()
 	bool bStopWhenAbilityEnds;
 
+	UPROPERTY()
+	bool bModifyServerAnimTickOption;
+
+	UPROPERTY()
+	EVisibilityBasedAnimTickOption OriginAnimTickOption;
+
 	/** Checks if the ability is playing a montage and stops that montage, returns true if a montage was stopped, false if not. */
 	bool StopPlayingMontage();
 
@@ -114,4 +123,6 @@ private:
 	FOnMontageEnded MontageEndedDelegate;
 	FDelegateHandle CancelledHandle;
 	FDelegateHandle EventHandle;
+
+	void HandleEnd();
 };

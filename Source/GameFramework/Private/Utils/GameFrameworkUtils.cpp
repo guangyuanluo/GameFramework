@@ -10,7 +10,7 @@
 #include "CorePlayerController.h"
 #include "CoreGameMode.h"
 #include "Engine/Engine.h"
-#include "Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "CoreConditionProgress.h"
 #include "GameSystemManager.h"
 #include "CoreCharacterStateBase.h"
