@@ -9,6 +9,7 @@
 
 class UCoreAbility;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FSkillTemplatePostInit, class UCoreAbilitySystemComponent*);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FEffectPreAddDynDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
 DECLARE_DELEGATE_ThreeParams(FEffectPreAddDelegate, class UCoreAbilitySystemComponent*, const FGameplayEffectSpecHandle&, TSubclassOf<class UGameplayEffect>);
 
@@ -93,6 +94,11 @@ public:
     */
     UFUNCTION(Server, reliable, WithValidation)
     void ServerTryComboAbility(UCoreAbility* Ability);
+
+    /**
+    * 技能模板初始化委托
+    */
+    FSkillTemplatePostInit OnSkillTemplatePostInit;
 
 private:
     void InternalComboAbility(UCoreAbility* Ability);

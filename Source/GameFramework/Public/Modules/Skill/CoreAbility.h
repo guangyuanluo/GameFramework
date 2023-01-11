@@ -3,6 +3,9 @@
 #pragma once
 
 #include "GameplayAbility.h"
+#include "CoreAbilityInterface.h"
+#include "GameplayTagContainer.h"
+#include "Modules/Skill/CoreAbilityTypes.h"
 #include "CoreAbility.generated.h"
 
 /**
@@ -11,7 +14,7 @@
  * Most games will need to implement a subclass to support their game-specific code
  */
 UCLASS()
-class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility
+class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbilityInterface
 {
 	GENERATED_UCLASS_BODY()
 
@@ -19,8 +22,28 @@ public:
 	/**
 	* 连招配置
 	*/
-	UPROPERTY(EditDefaultsOnly, Category = Tags, meta = (Categories = "AbilityTagCategory"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
 	TMap<FName, TSubclassOf<class UCoreAbilityComboExecutor>> ComboMap;
+
+	/** gameplay tags 映射触发的 gameplay effect containers */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
+	TMap<FGameplayTag, FCoreGameplayEffectContainer> EffectContainerMap;
+
+	/** Make gameplay effect container spec to be applied later, using the passed in container */
+	UFUNCTION(BlueprintCallable, Category = Ability, meta=(AutoCreateRefTerm = "EventData"))
+	virtual FCoreGameplayEffectContainerSpec MakeEffectContainerSpecFromContainer(const FCoreGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
+
+	/** Search for and make a gameplay effect container spec to be applied later, from the EffectContainerMap */
+	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
+	virtual FCoreGameplayEffectContainerSpec MakeEffectContainerSpec(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
+
+	/** Applies a gameplay effect container spec that was previously created */
+	UFUNCTION(BlueprintCallable, Category = Ability)
+	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec);
+
+	/** Applies a gameplay effect container, by creating and then applying the spec */
+	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
+	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
 
 	/**
 	* 是否激活
@@ -33,4 +56,6 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
 	void NotifyComboAbility(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection);
+
+	virtual void CallEndAbility() override;
 };
