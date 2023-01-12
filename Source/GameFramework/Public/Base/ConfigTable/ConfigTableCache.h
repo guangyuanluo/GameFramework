@@ -81,6 +81,9 @@ public:
         *(bool*)RESULT_PARAM = bSuccess;
     }
 
+    //写这个函数，要将缓存的表数据加上引用，避免gc
+    static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
+
 private:
     static TMap<int32, FConfigTableRowBase*>* FindAndInitTable(const UDataTable* Table);
 };

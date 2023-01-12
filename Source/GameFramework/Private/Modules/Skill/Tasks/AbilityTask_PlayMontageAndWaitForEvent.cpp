@@ -5,8 +5,6 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemGlobals.h"
 #include "Animation/AnimInstance.h"
-#include "GameFrameworkUtils.h"
-#include "CoreCharacter.h"
 
 UAbilityTask_PlayMontageAndWaitForEvent::UAbilityTask_PlayMontageAndWaitForEvent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -136,12 +134,14 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 			EventHandle = CoreAbilitySystemComponent->AddGameplayEventTagContainerDelegate(EventTags, FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &UAbilityTask_PlayMontageAndWaitForEvent::OnGameplayEvent));
 
 			if (bModifyServerAnimTickOption) {
-				ACoreCharacter* Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(CoreAbilitySystemComponent);
-				auto NetMode = Character->GetNetMode();
-				if (NetMode == ENetMode::NM_DedicatedServer
-					|| NetMode == ENetMode::NM_ListenServer) {
-					OriginAnimTickOption = Character->GetMesh()->VisibilityBasedAnimTickOption;
-					Character->GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+				auto Mesh = AbilitySystemComponent->AbilityActorInfo->SkeletalMeshComponent;
+				if (Mesh.IsValid()) {
+					auto NetMode = Mesh->GetNetMode();
+					if (NetMode == ENetMode::NM_DedicatedServer
+						|| NetMode == ENetMode::NM_ListenServer) {
+						OriginAnimTickOption = Mesh->VisibilityBasedAnimTickOption;
+						Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+					}
 				}
 			}
 
@@ -285,12 +285,13 @@ FString UAbilityTask_PlayMontageAndWaitForEvent::GetDebugString() const
 
 void UAbilityTask_PlayMontageAndWaitForEvent::HandleEnd() {
 	if (bModifyServerAnimTickOption) {
-		ACoreCharacter* Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(AbilitySystemComponent);
-
-		auto NetMode = Character->GetNetMode();
-		if (NetMode == ENetMode::NM_DedicatedServer
-			|| NetMode == ENetMode::NM_ListenServer) {
-			Character->GetMesh()->VisibilityBasedAnimTickOption = OriginAnimTickOption;
-		}		
+		auto Mesh = AbilitySystemComponent->AbilityActorInfo->SkeletalMeshComponent;
+		if (Mesh.IsValid()) {
+			auto NetMode = Mesh->GetNetMode();
+			if (NetMode == ENetMode::NM_DedicatedServer
+				|| NetMode == ENetMode::NM_ListenServer) {
+				Mesh->VisibilityBasedAnimTickOption = OriginAnimTickOption;
+			}
+		}
 	}
 }

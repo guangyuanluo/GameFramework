@@ -35,11 +35,6 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 			ReturnSpec.AddTargets(HitResults, TargetActors);
 		}
 
-		// If we don't have an override level, use the default on the ability itself
-		if (OverrideGameplayLevel == INDEX_NONE) {
-			OverrideGameplayLevel = OverrideGameplayLevel = this->GetAbilityLevel(); //OwningASC->GetDefaultAbilityLevel();
-		}
-
 		const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
 		auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
 
