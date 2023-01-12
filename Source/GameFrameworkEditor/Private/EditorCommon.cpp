@@ -6,5 +6,6 @@ FConfigTableRowWrapper::~FConfigTableRowWrapper() {
     if (ConfigTableRow) {
         RowStruct->DestroyStruct(ConfigTableRow);
         FMemory::Free(ConfigTableRow);
+        ConfigTableRow = nullptr;
     }
 }

@@ -160,7 +160,7 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
         return;
     }
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
-    if (!CharacterState) {
+    if (!CharacterState && PlayerStateClass) {
         if (GetNetMode() != NM_Client) {
             FActorSpawnParameters SpawnInfo;
             SpawnInfo.Owner = this;
@@ -168,12 +168,7 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
             SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
             SpawnInfo.ObjectFlags |= RF_Transient;	// We never want player states to save into a map
 
-            TSubclassOf<APlayerState> PlayerStateClassToSpawn = PlayerStateClass;
-            if (PlayerStateClassToSpawn.Get() == nullptr) {
-                PlayerStateClassToSpawn = ACoreCharacterStateBase::StaticClass();
-            }
-
-            CharacterState = Cast<ACoreCharacterStateBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, PlayerStateClassToSpawn, FTransform::Identity, ESpawnActorCollisionHandlingMethod::AlwaysSpawn, this));
+            CharacterState = Cast<ACoreCharacterStateBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, PlayerStateClass, FTransform::Identity, ESpawnActorCollisionHandlingMethod::AlwaysSpawn, this));
             SetPlayerState(CharacterState);
             UGameplayStatics::FinishSpawningActor(CharacterState, FTransform::Identity);
         }

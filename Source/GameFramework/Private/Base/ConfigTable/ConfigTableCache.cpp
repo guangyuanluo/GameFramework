@@ -117,3 +117,21 @@ TMap<int32, FConfigTableRowBase*>* UConfigTableCache::FindAndInitTable(const UDa
     }
     return nullptr;
 }
+
+//写这个函数，要将缓存的表数据算入gc
+void UConfigTableCache::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {
+    Super::AddReferencedObjects(InThis, Collector);
+
+    for (auto Iter = AllCacheRows.CreateConstIterator(); Iter; ++Iter) {
+        for (auto RowIter = Iter->Value.CreateConstIterator(); RowIter; ++RowIter) {
+            uint8* RowData = (uint8*)RowIter.Value();
+
+            if (RowData) {
+                const UScriptStruct** RowStructPtr = TableRowStruct.Find(Iter->Key);
+                FVerySlowReferenceCollectorArchiveScope CollectorScope(Collector.GetVerySlowReferenceCollectorArchive(), InThis);
+                // Serialize all of the properties to make sure they get in the collector
+                (*RowStructPtr)->SerializeBin(CollectorScope.GetArchive(), RowData);
+            }
+        }
+    }
+}
