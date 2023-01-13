@@ -77,6 +77,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Character")
     void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
 
+    /** 返回指定条件拥有指定InputID的技能 */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
+
     /**
     * 重置技能冷却
     */

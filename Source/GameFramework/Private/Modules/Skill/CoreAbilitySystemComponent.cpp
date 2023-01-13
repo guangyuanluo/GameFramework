@@ -175,6 +175,21 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
     }
 }
 
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
+    for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items) {
+        if (Spec.InputID == InputID) {
+            TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
+
+            for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+                if ((!ForceFilterActive || ActiveAbility->IsActive())
+                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
+                    ActiveAbilities.Add(ActiveAbility);
+                }
+            }
+        }
+    }
+}
+
 void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability) {
     auto CooldownEffect = Ability->GetCooldownGameplayEffect();
     if (CooldownEffect) {
@@ -323,7 +338,7 @@ void UCoreAbilitySystemComponent::AddSkillPrivate(class UDataTable* SkillDataTab
     auto FindSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, SkillInfo.SkillID);
     if (FindSkill) {
         if (FindSkill->GameplayAbilityClass) {
-            GiveAbility(FGameplayAbilitySpec(FindSkill->GameplayAbilityClass, SkillInfo.SkillLevel, INDEX_NONE, GetOwner()));
+            GiveAbility(FGameplayAbilitySpec(FindSkill->GameplayAbilityClass, SkillInfo.SkillLevel, FindSkill->InputID, GetOwner()));
         }
         else {
             UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能有空类，请检查配置，技能id:%d"), SkillInfo.SkillID);

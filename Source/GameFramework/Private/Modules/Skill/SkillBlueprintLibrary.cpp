@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillBlueprintLibrary.h"
+#include "GameplayAbility.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -25,4 +26,8 @@ TArray<FActiveGameplayEffectHandle> USkillBlueprintLibrary::ApplyExternalEffectC
 		}
 	}
 	return AllEffects;
+}
+
+bool USkillBlueprintLibrary::IsAbilityMatchingAllTags(UGameplayAbility* Ability, FGameplayTagContainer AbilityTags) {
+	return Ability->AbilityTags.HasAll(AbilityTags);
 }

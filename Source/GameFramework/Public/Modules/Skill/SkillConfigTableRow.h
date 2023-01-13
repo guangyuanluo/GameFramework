@@ -38,6 +38,12 @@ struct GAMEFRAMEWORK_API FSkillConfigTableRow : public FConfigTableRowBase
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Skill", meta = (DisplayName = "技能图标", DisplayPriority = "1"))
     FString Icon;
 
+    /**
+    * 默认输入
+    */
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Skill", meta = (DisplayName = "默认输入", DisplayPriority = "1"))
+    int32 InputID = INDEX_NONE;
+
     /** 技能类 */
     UPROPERTY(Category = "Skill", EditAnywhere, BlueprintReadOnly)
     TSubclassOf<class UGameplayAbility> GameplayAbilityClass;
