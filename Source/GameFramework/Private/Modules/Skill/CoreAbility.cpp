@@ -19,32 +19,37 @@ UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
 FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContainer(const FCoreGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel) {
 	// First figure out our actor info
 	FCoreGameplayEffectContainerSpec ReturnSpec;
-	AActor* OwningActor = GetOwningActorFromActorInfo();
-	ACoreCharacterStateBase* OwningState = Cast<ACoreCharacterStateBase>(OwningActor);
-	UCoreAbilitySystemComponent* OwningASC = Cast<UCoreAbilitySystemComponent>(OwningState->GetAbilitySystemComponent());
-	ACoreCharacter* OwningCharacter = Cast<ACoreCharacter>(OwningState->GetPawn());
 
-	if (OwningASC) {
-		// If we have a target type, run the targeting logic. This is optional, targets can be added later
-		if (Container.TargetType.Get()) {
-			TArray<FHitResult> HitResults;
-			TArray<AActor*> TargetActors;
-			const UCoreTargetType* TargetTypeCDO = Container.TargetType.GetDefaultObject();
-			AActor* AvatarActor = GetAvatarActorFromActorInfo();
-			TargetTypeCDO->GetTargets(OwningCharacter, AvatarActor, EventData, HitResults, TargetActors);
-			ReturnSpec.AddTargets(HitResults, TargetActors);
+	// If we have a target type, run the targeting logic. This is optional, targets can be added later
+	if (Container.TargetType.Get()) {
+		TArray<FHitResult> HitResults;
+		TArray<AActor*> TargetActors;
+		const UCoreTargetType* TargetTypeCDO = Container.TargetType.GetDefaultObject();
+		ACoreCharacter* TargetingCharacter = Cast<ACoreCharacter>(GetAvatarActorFromActorInfo());
+		ACoreCharacterStateBase* TargetingState = Cast<ACoreCharacterStateBase>(GetOwningActorFromActorInfo());
+		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, FilterActors, HitResults, TargetActors);
+		for (auto TargetActor : TargetActors) {
+			FilterActors.Add(TargetActor);
 		}
-
-		const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-		auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
-
-		// Build GameplayEffectSpecs for each applied effect
-		for (const FEffectInfo& EffectInfo : Container.TargetGameplayEffects) {
-			FEffectConfigTableRow* EffectRow = (FEffectConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(EffectDataTable, EffectInfo.EffectID);
-			int EffectLevel = OverrideGameplayLevel == -1 ? EffectInfo.EffectLevel : OverrideGameplayLevel;
-			ReturnSpec.TargetGameplayEffectSpecs.Add(MakeOutgoingGameplayEffectSpec(EffectRow->GameplayEffectClass, EffectLevel));
+		for (const FHitResult& HitResult : HitResults) {
+			FilterActors.Add(HitResult.GetActor());
 		}
+		for (auto TargetActor : TargetActors) {
+			FilterActors.Add(TargetActor);
+		}
+		ReturnSpec.AddTargets(HitResults, TargetActors);
 	}
+
+	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+	auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
+
+	// Build GameplayEffectSpecs for each applied effect
+	for (const FEffectInfo& EffectInfo : Container.TargetGameplayEffects) {
+		FEffectConfigTableRow* EffectRow = (FEffectConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(EffectDataTable, EffectInfo.EffectID);
+		int EffectLevel = OverrideGameplayLevel == -1 ? EffectInfo.EffectLevel : OverrideGameplayLevel;
+		ReturnSpec.TargetGameplayEffectSpecs.Add(MakeOutgoingGameplayEffectSpec(EffectRow->GameplayEffectClass, EffectLevel));
+	}
+
 	return ReturnSpec;
 }
 
@@ -70,6 +75,10 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
 TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel) {
 	FCoreGameplayEffectContainerSpec Spec = MakeEffectContainerSpec(ContainerTag, EventData, OverrideGameplayLevel);
 	return ApplyEffectContainerSpec(Spec);
+}
+
+void UCoreAbility::ClearFilterActors() {
+	FilterActors.Empty();
 }
 
 bool UCoreAbility::K2_IsActive() const {

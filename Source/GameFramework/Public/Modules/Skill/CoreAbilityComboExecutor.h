@@ -8,7 +8,7 @@
 
 class UCoreAbility;
 /**
-* Á¬ÕĞÊı¾İÏî
+* è¿æ‹›æ•°æ®é¡¹
 */
 UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UCoreAbilityComboExecutor : public ULogicObjectBase {
@@ -16,14 +16,14 @@ class GAMEFRAMEWORK_API UCoreAbilityComboExecutor : public ULogicObjectBase {
 
 public:
     /**
-    * ¼ì²éÄÜ·ñÖ´ĞĞcombo
+    * æ£€æŸ¥èƒ½å¦æ‰§è¡Œcombo
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    bool CheckComboEnable(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability);
+    bool CanComboExecute(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, FGameplayTag TriggerWayTag);
 
     /**
-    * Ö´ĞĞcombo
+    * æ‰§è¡Œcombo
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    void ExecuteCombo(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability);
+    void ExecuteCombo(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, FGameplayTag TriggerWayTag);
 };

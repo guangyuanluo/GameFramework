@@ -1,9 +1,9 @@
 #include "CoreAbilityComboExecutor.h"
 
-bool UCoreAbilityComboExecutor::CheckComboEnable_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability) {
+bool UCoreAbilityComboExecutor::CanComboExecute_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
 	return true;
 }
 
-void UCoreAbilityComboExecutor::ExecuteCombo_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability) {
+void UCoreAbilityComboExecutor::ExecuteCombo_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
 	
 }
