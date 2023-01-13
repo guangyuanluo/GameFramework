@@ -28,9 +28,6 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		ACoreCharacter* TargetingCharacter = Cast<ACoreCharacter>(GetAvatarActorFromActorInfo());
 		ACoreCharacterStateBase* TargetingState = Cast<ACoreCharacterStateBase>(GetOwningActorFromActorInfo());
 		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, FilterActors, HitResults, TargetActors);
-		for (auto TargetActor : TargetActors) {
-			FilterActors.Add(TargetActor);
-		}
 		for (const FHitResult& HitResult : HitResults) {
 			FilterActors.Add(HitResult.GetActor());
 		}

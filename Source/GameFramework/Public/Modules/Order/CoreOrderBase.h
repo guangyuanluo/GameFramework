@@ -8,7 +8,7 @@
 /**
  * 订单
  */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UCoreOrderBase : public UObject
 {
 public:

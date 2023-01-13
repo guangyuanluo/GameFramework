@@ -19,7 +19,7 @@ struct FGameplayEventData;
  * This can be used as a basis for a game-specific targeting blueprint
  * If your targeting is more complicated you may need to instance into the world once or as a pooled actor
  */
-UCLASS(Blueprintable, meta = (ShowWorldContextPin))
+UCLASS(Blueprintable, Abstract, meta = (ShowWorldContextPin))
 class GAMEFRAMEWORK_API UCoreTargetType : public UObject
 {
 	GENERATED_BODY()
