@@ -8,7 +8,7 @@
 /**
  * 事件基类
  */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UGameEventBase : public UObject
 {
 	GENERATED_BODY()

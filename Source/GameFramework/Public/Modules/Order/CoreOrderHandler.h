@@ -10,7 +10,7 @@ class UCoreGameInstance;
 /*
 * @brief 订单处理
 */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UCoreOrderHandler : public UObject {
     GENERATED_BODY()
 

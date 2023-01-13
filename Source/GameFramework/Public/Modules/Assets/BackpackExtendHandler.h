@@ -10,7 +10,7 @@
 /*
 * @brief 背包扩展处理
 */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UBackpackExtendHandler : public ULogicObjectBase {
     GENERATED_BODY()
 

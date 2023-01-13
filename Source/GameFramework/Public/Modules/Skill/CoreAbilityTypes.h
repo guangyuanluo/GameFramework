@@ -66,3 +66,17 @@ public:
 	/** Adds new targets to target data */
 	void AddTargets(const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors);
 };
+
+/**
+* ¡¨’–∆¨∂Œ≈‰÷√
+*/
+USTRUCT(BlueprintType)
+struct FComboSectionConfig {
+	GENERATED_BODY()
+
+	/**
+	* ¡¨’–÷¥––∆˜
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<class UCoreAbilityComboExecutor>> ComboExecutors;
+};

@@ -31,25 +31,25 @@ public:
 	* @brief 得到半径内最近的角色
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static ACoreCharacter* GetClosestCharacterWithinRadius(ACoreCharacter* Source, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude);
+	static ACoreCharacter* GetClosestCharacterWithinRadius(ACoreCharacter* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude);
 
 	/*
 	* @brief 得到半径内所有的角色
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static TArray<ACoreCharacter*> GetAllCharactersWithinRadius(ACoreCharacter* Source, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude);
+	static TArray<ACoreCharacter*> GetAllCharactersWithinRadius(ACoreCharacter* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude);
 
 	/*
 	* @brief 得到半径内最近的actor
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static AActor* GetClosestActorWithinRadius(AActor* Source, float Radius, ETraceTypeQuery TraceChannel);
+	static AActor* GetClosestActorWithinRadius(AActor* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel);
 
 	/*
 	* @brief 得到半径内所有的actor
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static TArray<AActor*> GetAllActorsWithinRadius(AActor* Source, float Radius, ETraceTypeQuery TraceChannel);
+	static TArray<AActor*> GetAllActorsWithinRadius(AActor* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel);
 
 	/**
 	* @brief 合并两个32位整数成64位整数

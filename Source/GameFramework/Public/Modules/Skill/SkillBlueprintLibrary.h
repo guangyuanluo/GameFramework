@@ -28,4 +28,8 @@ public:
 	/** Applies container spec that was made from an ability */
 	UFUNCTION(BlueprintCallable, Category = Ability)
 	static TArray<FActiveGameplayEffectHandle> ApplyExternalEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec);
+
+	/** check whether the ability match all tags */
+	UFUNCTION(BlueprintCallable, Category = Ability)
+	static bool IsAbilityMatchingAllTags(UGameplayAbility* Ability, FGameplayTagContainer AbilityTags);
 };

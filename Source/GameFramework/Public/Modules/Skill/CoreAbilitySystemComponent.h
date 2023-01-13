@@ -77,6 +77,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Character")
     void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
 
+    /** 返回指定条件拥有指定InputID的技能 */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
+
     /**
     * 重置技能冷却
     */
@@ -87,13 +91,13 @@ public:
     * 技能连招
     */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void TryComboAbilityByClass(UCoreAbility* Ability);
+    void TryComboAbilityByClass(UCoreAbility* Ability, FGameplayTag TriggerWayTag);
 
     /**
     * 服务器端执行连招
     */
     UFUNCTION(Server, reliable, WithValidation)
-    void ServerTryComboAbility(FGameplayAbilitySpecHandle AbilityToCombo);
+    void ServerTryComboAbility(FGameplayAbilitySpecHandle AbilityToCombo, FGameplayTag TriggerWayTag);
 
     /**
     * 技能模板初始化委托
@@ -101,7 +105,7 @@ public:
     FSkillTemplatePostInit OnSkillTemplatePostInit;
 
 private:
-    void InternalComboAbility(UCoreAbility* Ability);
+    void InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag);
 
     void AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
     void RemoveSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);

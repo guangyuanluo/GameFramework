@@ -23,11 +23,17 @@ public:
 	* 连招配置
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
-	TMap<FName, TSubclassOf<class UCoreAbilityComboExecutor>> ComboMap;
+	TMap<FName, FComboSectionConfig> ComboMap;
 
 	/** gameplay tags 映射触发的 gameplay effect containers */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
 	TMap<FGameplayTag, FCoreGameplayEffectContainer> EffectContainerMap;
+
+	/**
+	* 需要过滤处理的actor，避免多次伤害计算
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<AActor*> FilterActors;
 
 	/** Make gameplay effect container spec to be applied later, using the passed in container */
 	UFUNCTION(BlueprintCallable, Category = Ability, meta=(AutoCreateRefTerm = "EventData"))
@@ -44,6 +50,12 @@ public:
 	/** Applies a gameplay effect container, by creating and then applying the spec */
 	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
 	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
+
+	/**
+	* 清空过滤的actor
+	*/
+	UFUNCTION(BlueprintCallable, Category = Ability)
+	void ClearFilterActors();
 
 	/**
 	* 是否激活

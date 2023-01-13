@@ -175,6 +175,21 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
     }
 }
 
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
+    for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items) {
+        if (Spec.InputID == InputID) {
+            TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
+
+            for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+                if ((!ForceFilterActive || ActiveAbility->IsActive())
+                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
+                    ActiveAbilities.Add(ActiveAbility);
+                }
+            }
+        }
+    }
+}
+
 void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability) {
     auto CooldownEffect = Ability->GetCooldownGameplayEffect();
     if (CooldownEffect) {
@@ -183,7 +198,7 @@ void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability
     Ability->K2_CommitAbilityCooldown();
 }
 
-void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) {
+void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
     if (!Ability || !IsValid(Ability)) {
         ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with invalid Ability"));
         return;
@@ -226,35 +241,50 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability) 
     UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
     if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
         FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
-        auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
-        if (FindExecutor && FindExecutor->Get()) {
-            auto Executor = FindExecutor->GetDefaultObject();
-            if (!Executor->CheckComboEnable(this, Ability)) {
+        auto FindComboSectionConfigPtr = Ability->ComboMap.Find(CurrentSection);
+        if (FindComboSectionConfigPtr) {
+            if (FindComboSectionConfigPtr->ComboExecutors.Num() == 0) {
+                return;
+            }
+            bool CanComboExecute = false;
+            for (auto ComboExecutor : FindComboSectionConfigPtr->ComboExecutors) {
+                if (!ComboExecutor.Get()) {
+                    continue;
+                }
+                auto ComboExecutorCDO = ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
+                ComboExecutorCDO->LoadWorldContext(this);
+
+                if (ComboExecutorCDO->CanComboExecute(this, Ability, TriggerWayTag)) {
+                    CanComboExecute = true;
+                    break;
+                }
+            }
+            if (!CanComboExecute) {
                 return;
             }
         }
     }
 
     if (!bIsLocal && (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalOnly || Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalPredicted)) {
-        InternalComboAbility(Ability);
+        InternalComboAbility(Ability, TriggerWayTag);
         return;
     }
     if (NetMode != ROLE_Authority && (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::ServerOnly || Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::ServerInitiated)) {
-        ServerTryComboAbility(AbilityToCombo);
+        ServerTryComboAbility(AbilityToCombo, TriggerWayTag);
         return;
     }
     if (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalOnly || (NetMode == ROLE_Authority)) {
-        InternalComboAbility(Ability);
+        InternalComboAbility(Ability, TriggerWayTag);
     }
     else if (Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalPredicted) {
-        InternalComboAbility(Ability);
+        InternalComboAbility(Ability, TriggerWayTag);
     }
     if (NetMode != ROLE_Authority) {
-        ServerTryComboAbility(AbilityToCombo);
+        ServerTryComboAbility(AbilityToCombo, TriggerWayTag);
     }
 }
 
-void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(FGameplayAbilitySpecHandle AbilityToCombo) {
+void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(FGameplayAbilitySpecHandle AbilityToCombo, FGameplayTag TriggerWayTag) {
     auto AbilitySpec = FindAbilitySpecFromHandle(AbilityToCombo);
     if (!AbilitySpec) {
         ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called fail:find ability spec fail"));
@@ -266,14 +296,14 @@ void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(FGameplay
         return;
     }
     auto Ability = Cast<UCoreAbility>(ActivateAbilities[0]);
-    InternalComboAbility(Ability);
+    InternalComboAbility(Ability, TriggerWayTag);
 }
 
-bool UCoreAbilitySystemComponent::ServerTryComboAbility_Validate(FGameplayAbilitySpecHandle AbilityToCombo) {
+bool UCoreAbilitySystemComponent::ServerTryComboAbility_Validate(FGameplayAbilitySpecHandle AbilityToCombo, FGameplayTag TriggerWayTag) {
     return true;
 }
 
-void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
+void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
     if (!Ability || !Ability->IsActive()) {
         ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
         return;
@@ -281,14 +311,22 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability) {
     UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
     if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
         FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
-        auto FindExecutor = Ability->ComboMap.Find(CurrentSection);
-        if (FindExecutor && FindExecutor->Get()) {
-            auto Executor = FindExecutor->GetDefaultObject();
-            Executor->LoadWorldContext(this);
-            if (!Executor->CheckComboEnable(this, Ability)) {
+        auto FindComboSectionConfigPtr = Ability->ComboMap.Find(CurrentSection);
+        if (FindComboSectionConfigPtr) {
+            if (FindComboSectionConfigPtr->ComboExecutors.Num() == 0) {
                 return;
             }
-            Executor->ExecuteCombo(this, Ability);
+            for (auto ComboExecutor : FindComboSectionConfigPtr->ComboExecutors) {
+                if (!ComboExecutor.Get()) {
+                    continue;
+                }
+                auto ComboExecutorCDO = ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
+                ComboExecutorCDO->LoadWorldContext(this);
+                if (ComboExecutorCDO->CanComboExecute(this, Ability, TriggerWayTag)) {
+                    ComboExecutorCDO->ExecuteCombo(this, Ability, TriggerWayTag);
+                    break;
+                }
+            }
         }
     }
 }
@@ -300,7 +338,7 @@ void UCoreAbilitySystemComponent::AddSkillPrivate(class UDataTable* SkillDataTab
     auto FindSkill = (FSkillConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, SkillInfo.SkillID);
     if (FindSkill) {
         if (FindSkill->GameplayAbilityClass) {
-            GiveAbility(FGameplayAbilitySpec(FindSkill->GameplayAbilityClass, SkillInfo.SkillLevel, INDEX_NONE, GetOwner()));
+            GiveAbility(FGameplayAbilitySpec(FindSkill->GameplayAbilityClass, SkillInfo.SkillLevel, FindSkill->InputID, GetOwner()));
         }
         else {
             UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能有空类，请检查配置，技能id:%d"), SkillInfo.SkillID);
