@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Base/Structure/LogicObjectBase.h"
+#include "Modules/Skill/CoreAbilityTypes.h"
 #include "CoreAbilityComboExecutor.generated.h"
 
 class UCoreAbility;
+
 /**
-* 连招数据项
+* 连招执行器
 */
 UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UCoreAbilityComboExecutor : public ULogicObjectBase {
@@ -16,14 +18,22 @@ class GAMEFRAMEWORK_API UCoreAbilityComboExecutor : public ULogicObjectBase {
 
 public:
     /**
-    * 检查能否执行combo
-    */
-    UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    bool CanComboExecute(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, FGameplayTag TriggerWayTag);
-
-    /**
     * 执行combo
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    void ExecuteCombo(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, FGameplayTag TriggerWayTag);
+    void ExecuteCombo(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, const FComboSectionConfig& SectionConfig, FGameplayTag TriggerWayTag);
+};
+
+/**
+* 默认执行器
+*/
+UCLASS(meta = (DisplayName = "默认"))
+class GAMEFRAMEWORK_API UCoreAbilityComboExecutor_Default : public UCoreAbilityComboExecutor {
+    GENERATED_BODY()
+
+public:
+    /**
+    * 执行combo
+    */
+    virtual void ExecuteCombo_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, const FComboSectionConfig& SectionConfig, FGameplayTag TriggerWayTag) override;
 };

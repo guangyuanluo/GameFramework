@@ -14,6 +14,7 @@
 #include "EffectConfigTableRow.h"
 #include "CoreAbility.h"
 #include "CoreAbilityComboExecutor.h"
+#include "CoreAbilityComboChecker.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = GetOwner();
@@ -243,23 +244,44 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
         FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
         auto FindComboSectionConfigPtr = Ability->ComboMap.Find(CurrentSection);
         if (FindComboSectionConfigPtr) {
-            if (FindComboSectionConfigPtr->ComboExecutors.Num() == 0) {
-                return;
-            }
-            bool CanComboExecute = false;
-            for (auto ComboExecutor : FindComboSectionConfigPtr->ComboExecutors) {
-                if (!ComboExecutor.Get()) {
+            const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+            bool HaveAnyComboEnable = false;
+            for (auto SectionConfig : FindComboSectionConfigPtr->Configs) {
+                bool CheckCombo = true;
+                for (auto ComboChecker : SkillSetting->GlobalComboCheckers) {
+                    if (!ComboChecker.Get()) {
+                        continue;
+                    }
+                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
+                    ComboCheckerCDO->LoadWorldContext(this);
+
+                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                        CheckCombo = false;
+                        break;
+                    }
+                }
+                if (!CheckCombo) {
                     continue;
                 }
-                auto ComboExecutorCDO = ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
-                ComboExecutorCDO->LoadWorldContext(this);
+                for (auto ComboChecker : SectionConfig.ComboCheckers) {
+                    if (!ComboChecker.Get()) {
+                        continue;
+                    }
+                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
+                    ComboCheckerCDO->LoadWorldContext(this);
 
-                if (ComboExecutorCDO->CanComboExecute(this, Ability, TriggerWayTag)) {
-                    CanComboExecute = true;
-                    break;
+                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                        CheckCombo = false;
+                        break;
+                    }
                 }
+                if (!CheckCombo) {
+                    continue;
+                }
+                HaveAnyComboEnable = true;
+                break;
             }
-            if (!CanComboExecute) {
+            if (!HaveAnyComboEnable) {
                 return;
             }
         }
@@ -311,21 +333,47 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
     UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
     if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
         FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
-        auto FindComboSectionConfigPtr = Ability->ComboMap.Find(CurrentSection);
-        if (FindComboSectionConfigPtr) {
-            if (FindComboSectionConfigPtr->ComboExecutors.Num() == 0) {
-                return;
-            }
-            for (auto ComboExecutor : FindComboSectionConfigPtr->ComboExecutors) {
-                if (!ComboExecutor.Get()) {
+        auto FindComboSectionConfigsPtr = Ability->ComboMap.Find(CurrentSection);
+        if (FindComboSectionConfigsPtr) {
+            const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+            for (auto SectionConfig : FindComboSectionConfigsPtr->Configs) {
+                bool CheckCombo = true;
+                for (auto ComboChecker : SkillSetting->GlobalComboCheckers) {
+                    if (!ComboChecker.Get()) {
+                        continue;
+                    }
+                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
+                    ComboCheckerCDO->LoadWorldContext(this);
+
+                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                        CheckCombo = false;
+                        break;
+                    }
+                }
+                if (!CheckCombo) {
                     continue;
                 }
-                auto ComboExecutorCDO = ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
-                ComboExecutorCDO->LoadWorldContext(this);
-                if (ComboExecutorCDO->CanComboExecute(this, Ability, TriggerWayTag)) {
-                    ComboExecutorCDO->ExecuteCombo(this, Ability, TriggerWayTag);
-                    break;
+                for (auto ComboChecker : SectionConfig.ComboCheckers) {
+                    if (!ComboChecker.Get()) {
+                        continue;
+                    }
+                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
+                    ComboCheckerCDO->LoadWorldContext(this);
+
+                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                        CheckCombo = false;
+                        break;
+                    }
                 }
+                if (!CheckCombo) {
+                    continue;
+                }
+                //所有条件检查完了，执行
+                check(SectionConfig.ComboExecutor);
+                auto ComboExecutorCDO = SectionConfig.ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
+                ComboExecutorCDO->LoadWorldContext(this);
+                ComboExecutorCDO->ExecuteCombo(this, Ability, SectionConfig, TriggerWayTag);
+                return;
             }
         }
     }

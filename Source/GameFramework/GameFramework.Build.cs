@@ -88,6 +88,7 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Modules/Team",
             "GameFramework/Public/Modules/Skill",
             "GameFramework/Public/Modules/Skill/Tasks",
+            "GameFramework/Public/Modules/Skill/AnimNotifies",
             "GameFramework/Public/Modules/GM",
             "GameFramework/Public/Modules/Money",
             "GameFramework/Public/Modules/Unit",

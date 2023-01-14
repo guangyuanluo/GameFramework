@@ -17,7 +17,7 @@
 class UCoreAbilitySystemComponent;
 class UGameplayEffect;
 class UCoreTargetType;
-
+class UCoreAbility;
 
 /**
  * Struct defining a list of gameplay effects, a tag, and targeting info
@@ -68,15 +68,49 @@ public:
 };
 
 /**
-* ����Ƭ������
+* 连招片段配置
 */
 USTRUCT(BlueprintType)
 struct FComboSectionConfig {
 	GENERATED_BODY()
 
+	FComboSectionConfig();
+
 	/**
-	* ����ִ����
+	* 跳转蒙太奇片段
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<class UCoreAbilityComboExecutor>> ComboExecutors;
+	FName JumpSection;
+
+	/**
+	* 跳转技能
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UCoreAbility> JumpAbility;
+
+	/**
+	* 连招检查器
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<class UCoreAbilityComboChecker>> ComboCheckers;
+
+	/**
+	* 连招执行器
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<class UCoreAbilityComboExecutor> ComboExecutor;
+};
+
+/**
+* 连招片段配置
+*/
+USTRUCT(BlueprintType)
+struct FComboSectionConfigs {
+	GENERATED_BODY()
+
+	/**
+	* 所有配置
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FComboSectionConfig> Configs;
 };
