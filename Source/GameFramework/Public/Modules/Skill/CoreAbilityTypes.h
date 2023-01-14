@@ -70,35 +70,27 @@ public:
 /**
 * 连招片段配置
 */
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, meta = (DisplayName = "配置项"))
 struct FComboSectionConfig {
 	GENERATED_BODY()
-
-	FComboSectionConfig();
 
 	/**
 	* 跳转蒙太奇片段
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "跳转蒙太奇片段"))
 	FName JumpSection;
 
 	/**
 	* 跳转技能
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "跳转其他技能"))
 	TSubclassOf<UCoreAbility> JumpAbility;
 
 	/**
 	* 连招检查器
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招条件检查"))
 	TArray<TSubclassOf<class UCoreAbilityComboChecker>> ComboCheckers;
-
-	/**
-	* 连招执行器
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<class UCoreAbilityComboExecutor> ComboExecutor;
 };
 
 /**

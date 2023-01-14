@@ -7,6 +7,7 @@
 #include "EffectConfigTableRow.h"
 #include "SkillSetting.h"
 #include "CoreCharacterStateBase.h"
+#include "CoreAbilityComboExecutor.h"
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -14,6 +15,8 @@ UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	//默认为每个actor实例
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
+	ComboExecutor = UCoreAbilityComboExecutor_Default::StaticClass();
 }
 
 FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContainer(const FCoreGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel) {

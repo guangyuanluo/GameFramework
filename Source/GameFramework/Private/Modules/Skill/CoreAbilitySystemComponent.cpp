@@ -369,8 +369,8 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
                     continue;
                 }
                 //所有条件检查完了，执行
-                check(SectionConfig.ComboExecutor);
-                auto ComboExecutorCDO = SectionConfig.ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
+                check(Ability->ComboExecutor);
+                auto ComboExecutorCDO = Ability->ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
                 ComboExecutorCDO->LoadWorldContext(this);
                 ComboExecutorCDO->ExecuteCombo(this, Ability, SectionConfig, TriggerWayTag);
                 return;
