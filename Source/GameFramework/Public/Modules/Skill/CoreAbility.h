@@ -22,12 +22,18 @@ public:
 	/**
 	* 连招配置
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "连招配置"))
 	TMap<FName, FComboSectionConfigs> ComboMap;
 
 	/** gameplay tags 映射触发的 gameplay effect containers */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能事件配置"))
 	TMap<FGameplayTag, FCoreGameplayEffectContainer> EffectContainerMap;
+
+	/**
+	* 连招执行器
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招执行器"))
+	TSubclassOf<class UCoreAbilityComboExecutor> ComboExecutor;
 
 	/**
 	* 需要过滤处理的actor，避免多次伤害计算
