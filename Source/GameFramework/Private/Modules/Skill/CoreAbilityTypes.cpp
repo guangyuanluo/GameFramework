@@ -3,6 +3,7 @@
 #include "CoreAbilityTypes.h"
 #include "CoreAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "CoreAbilityComboExecutor.h"
 
 bool FCoreGameplayEffectContainerSpec::HasValidEffects() const
 {
@@ -28,4 +29,8 @@ void FCoreGameplayEffectContainerSpec::AddTargets(const TArray<FHitResult>& HitR
 		NewData->TargetActorArray.Append(TargetActors);
 		TargetData.Add(NewData);
 	}
+}
+
+FComboSectionConfig::FComboSectionConfig() {
+	ComboExecutor = UCoreAbilityComboExecutor_Default::StaticClass();
 }

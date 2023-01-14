@@ -23,7 +23,7 @@ public:
 	* 连招配置
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
-	TMap<FName, FComboSectionConfig> ComboMap;
+	TMap<FName, FComboSectionConfigs> ComboMap;
 
 	/** gameplay tags 映射触发的 gameplay effect containers */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)

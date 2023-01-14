@@ -33,4 +33,10 @@ public:
     */
     UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "技能模组表", NoResetToDefault))
     TSoftObjectPtr<class UDataTable> SkillGroupTable;
+
+    /**
+    * 全局配置的combo检查器
+    */
+    UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "全局连招检查器", NoResetToDefault))
+    TArray<TSubclassOf<class UCoreAbilityComboChecker>> GlobalComboCheckers;
 };
