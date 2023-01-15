@@ -7,6 +7,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "Base/ECS/GameEntity.h"
 #include "GameplayEffect.h"
+#include "Data/Team/TeamIdDefines.h"
 #include "GameFrameworkUtils.generated.h"
 
 class UCoreGameInstance;
@@ -112,6 +113,12 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static ETeamAttitude::Type GetTeamAttribute(AActor* ActorA, AActor* ActorB);
+
+	/**
+	* 获取某个角色与队伍的属性
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static ETeamAttitude::Type GetActorTeamAttributeWithTeam(AActor* ActorA, TeamIdDefines Team);
 
 	/**
 	* 获取EntityID

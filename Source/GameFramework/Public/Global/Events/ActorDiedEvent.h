@@ -20,5 +20,5 @@ public:
 	ACoreCharacter* DiedUnit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-	ACoreCharacter* KillUnit;
+	AActor* KillUnit;
 };

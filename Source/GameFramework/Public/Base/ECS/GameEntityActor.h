@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Base/ECS/GameEntity.h"
+#include "AbilitySystemInterface.h"
 #include "GameEntityActor.generated.h"
 
 /**
  * 属于实体的Actor
  */
 UCLASS()
-class GAMEFRAMEWORK_API AGameEntityActor : public AActor, public IGameEntity
+class GAMEFRAMEWORK_API AGameEntityActor : public AActor, public IGameEntity, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 public:
@@ -23,6 +24,7 @@ public:
 	virtual void OnConstruction(const FTransform& Transform) override;
     virtual const FTransform& GetTransform() const override;
     virtual void SetTransform(const FTransform& NewTransform) override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 private:
 

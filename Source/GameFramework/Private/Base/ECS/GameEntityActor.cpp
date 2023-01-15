@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "EventSystem.h"
 #include "GameEntityManager.h"
+#include "AbilitySystemComponent.h"
 
 AGameEntityActor::AGameEntityActor(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -60,4 +61,8 @@ void AGameEntityActor::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 			GameInstance->GameEntityManager->OnEntityRemove(this);
 		}
 	}
+}
+
+UAbilitySystemComponent* AGameEntityActor::GetAbilitySystemComponent() const {
+	return Cast<UAbilitySystemComponent>(GetComponentByClass(UAbilitySystemComponent::StaticClass()));
 }
