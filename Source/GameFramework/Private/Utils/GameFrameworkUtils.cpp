@@ -205,6 +205,12 @@ ETeamAttitude::Type UGameFrameworkUtils::GetTeamAttribute(AActor* ActorA, AActor
 	return FGenericTeamId::GetAttitude(ActorA, ActorB);
 }
 
+ETeamAttitude::Type UGameFrameworkUtils::GetActorTeamAttributeWithTeam(AActor* ActorA, TeamIdDefines Team) {
+	const IGenericTeamAgentInterface* TeamAgentA = Cast<const IGenericTeamAgentInterface>(ActorA);
+
+	return TeamAgentA == NULL ? ETeamAttitude::Neutral : FGenericTeamId::GetAttitude(TeamAgentA->GetGenericTeamId(), (FGenericTeamId)(uint8)Team);
+}
+
 FString UGameFrameworkUtils::GetEntityID(class AActor* Actor) {
 	auto State = Cast<ACoreCharacterStateBase>(Actor);
 	if (!State) {
