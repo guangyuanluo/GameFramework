@@ -15,6 +15,7 @@
 #include "CoreAbility.h"
 #include "CoreAbilityComboExecutor.h"
 #include "CoreAbilityComboChecker.h"
+#include "SortUtils.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = GetOwner();
@@ -144,7 +145,7 @@ void UCoreAbilitySystemComponent::RemoveEffect(const FEffectInfo& EffectInfo) {
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
     TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
     GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
 
@@ -160,9 +161,17 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
             }
         }
     }
+    if (SortByOrder && ActiveAbilities.Num() > 1) {
+        TFunction<bool(UGameplayAbility*, UGameplayAbility*)> CompareFunc = [](UGameplayAbility* A, UGameplayAbility* B) {
+            auto AbilityA = Cast<UCoreAbility>(A);
+            auto AbilityB = Cast<UCoreAbility>(B);
+            return AbilityA->SortPriority < AbilityB->SortPriority;
+        };
+        USortUtils::SortArray(ActiveAbilities, CompareFunc);
+    }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
     auto FindSpec = FindAbilitySpecFromClass(AbilityClass);
     if (FindSpec) {
         TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
@@ -173,10 +182,18 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
+        if (SortByOrder && ActiveAbilities.Num() > 1) {
+            TFunction<bool(UGameplayAbility*, UGameplayAbility*)> CompareFunc = [](UGameplayAbility* A, UGameplayAbility* B) {
+                auto AbilityA = Cast<UCoreAbility>(A);
+                auto AbilityB = Cast<UCoreAbility>(B);
+                return AbilityA->SortPriority < AbilityB->SortPriority;
+            };
+            USortUtils::SortArray(ActiveAbilities, CompareFunc);
+        }
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
     for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items) {
         if (Spec.InputID == InputID) {
             TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
@@ -188,6 +205,14 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
                 }
             }
         }
+    }
+    if (SortByOrder && ActiveAbilities.Num() > 1) {
+        TFunction<bool(UGameplayAbility*, UGameplayAbility*)> CompareFunc = [](UGameplayAbility* A, UGameplayAbility* B) {
+            auto AbilityA = Cast<UCoreAbility>(A);
+            auto AbilityB = Cast<UCoreAbility>(B);
+            return AbilityA->SortPriority < AbilityB->SortPriority;
+        };
+        USortUtils::SortArray(ActiveAbilities, CompareFunc);
     }
 }
 
