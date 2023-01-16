@@ -15,6 +15,8 @@ UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 	//默认为每个actor实例
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	//默认ds通知input
+	bReplicateInputDirectly = true;
 
 	ComboExecutor = UCoreAbilityComboExecutor_Default::StaticClass();
 }
@@ -91,4 +93,12 @@ void UCoreAbility::NotifyComboAbility_Implementation(class UCoreAbilitySystemCom
 
 void UCoreAbility::CallEndAbility() {
 	K2_EndAbility();
+}
+
+void UCoreAbility::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) {
+	K2_InputPressed();
+}
+
+void UCoreAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) {
+	K2_InputReleased();
 }

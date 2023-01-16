@@ -100,6 +100,18 @@ public:
     void ServerTryComboAbility(FGameplayAbilitySpecHandle AbilityToCombo, FGameplayTag TriggerWayTag);
 
     /**
+    * 按下对应input
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character", meta = (DisplayName = "AbilityLocalInputPressed"))
+    void K2_AbilityLocalInputPressed(int32 InputID);
+
+    /**
+    * 释放对应input
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character", meta = (DisplayName = "AbilityLocalInputReleased"))
+    void K2_AbilityLocalInputReleased(int32 InputID);
+
+    /**
     * 技能模板初始化委托
     */
     FSkillTemplatePostInit OnSkillTemplatePostInit;

@@ -350,6 +350,14 @@ bool UCoreAbilitySystemComponent::ServerTryComboAbility_Validate(FGameplayAbilit
     return true;
 }
 
+void UCoreAbilitySystemComponent::K2_AbilityLocalInputPressed(int32 InputID) {
+    AbilityLocalInputPressed(InputID);
+}
+
+void UCoreAbilitySystemComponent::K2_AbilityLocalInputReleased(int32 InputID) {
+    AbilityLocalInputReleased(InputID);
+}
+
 void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
     if (!Ability || !Ability->IsActive()) {
         ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
