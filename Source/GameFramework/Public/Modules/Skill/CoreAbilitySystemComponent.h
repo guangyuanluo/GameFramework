@@ -71,15 +71,15 @@ public:
 
     /** 返回指定条件拥有指定tag的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
+    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true, bool SortByOrder = true);
 
     /** 返回指定条件拥有指定类型的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
+    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true, bool SortByOrder = true);
 
     /** 返回指定条件拥有指定InputID的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true);
+    void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true, bool SortByOrder = true);
 
     /**
     * 重置技能冷却

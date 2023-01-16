@@ -13,7 +13,7 @@
  * This class uses GameplayEffectContainers to allow easier execution of gameplay effects based on a triggering tag
  * Most games will need to implement a subclass to support their game-specific code
  */
-UCLASS()
+UCLASS(Abstract)
 class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbilityInterface
 {
 	GENERATED_UCLASS_BODY()
@@ -34,6 +34,12 @@ public:
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招执行器"))
 	TSubclassOf<class UCoreAbilityComboExecutor> ComboExecutor;
+
+	/**
+    * 技能排序优先级
+    */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "技能排序优先级"))
+    int32 SortPriority;
 
 	/**
 	* 需要过滤处理的actor，避免多次伤害计算
