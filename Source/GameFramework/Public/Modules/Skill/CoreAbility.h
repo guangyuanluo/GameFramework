@@ -81,5 +81,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
 	void NotifyComboAbility(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputPressed", meta = (ScriptName = "InputPressed"))
+	void K2_InputPressed();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputReleased", meta = (ScriptName = "InputReleased"))
+	void K2_InputReleased();
+
 	virtual void CallEndAbility() override;
+	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 };
