@@ -8,6 +8,10 @@
 #include "Modules/Skill/CoreAbilityTypes.h"
 #include "CoreAbility.generated.h"
 
+/** delegate define */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputPressed, class UCoreAbility*, Ability, int32, InputID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputReleased, class UCoreAbility*, Ability, int32, InputID);
+
 /**
  * Subclass of ability blueprint type with game-specific data
  * This class uses GameplayEffectContainers to allow easier execution of gameplay effects based on a triggering tag
@@ -46,6 +50,18 @@ public:
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<AActor*> FilterActors;
+
+	/**
+	* 按键按下通知
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnAbilityInputPressed OnAbilityInputPressed;
+
+	/**
+	* 按键释放通知
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnAbilityInputReleased OnAbilityInputReleased;
 
 	/** Make gameplay effect container spec to be applied later, using the passed in container */
 	UFUNCTION(BlueprintCallable, Category = Ability, meta=(AutoCreateRefTerm = "EventData"))

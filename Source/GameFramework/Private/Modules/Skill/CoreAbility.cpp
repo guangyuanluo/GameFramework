@@ -97,8 +97,18 @@ void UCoreAbility::CallEndAbility() {
 
 void UCoreAbility::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) {
 	K2_InputPressed();
+
+	auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
+	auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+
+	OnAbilityInputPressed.Broadcast(this, Spec->InputID);
 }
 
 void UCoreAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) {
 	K2_InputReleased();
+
+	auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
+	auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+
+	OnAbilityInputReleased.Broadcast(this, Spec->InputID);
 }
