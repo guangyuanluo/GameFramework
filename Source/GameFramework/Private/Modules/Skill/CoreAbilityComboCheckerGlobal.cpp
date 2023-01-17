@@ -16,15 +16,25 @@ bool UCoreAbilityComboChecker_ComboEnable::CanComboExecute_Implementation(class 
 bool UCoreAbilityComboChecker_JumpAbilityValid::CanComboExecute_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, const FComboSectionConfig& SectionConfig, FGameplayTag TriggerWayTag) {
 	if (SectionConfig.JumpAbility.Get()) {
 		TArray<UGameplayAbility*> OutAbilities;
-		AbilityComponent->GetActiveAbilitiesWithClass(SectionConfig.JumpAbility->GetClass(), OutAbilities);
-		return OutAbilities.Num() > 0;
+		AbilityComponent->GetActiveAbilitiesWithClass(SectionConfig.JumpAbility, OutAbilities);
+		if (OutAbilities.Num() != 0) {
+			return true;
+		}
+		return false;
 	}
-	return true;
+	else {
+		return true;
+	}
 }
 
 bool UCoreAbilityComboChecker_JumpSectionValid::CanComboExecute_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, const FComboSectionConfig& SectionConfig, FGameplayTag TriggerWayTag) {
-	auto MeshComponent = Ability->GetOwningComponentFromActorInfo();
-	auto AnimInstance = MeshComponent->GetAnimInstance();
-	auto ActiveMontage = AnimInstance->GetCurrentActiveMontage();
-	return ActiveMontage->IsValidSectionName(SectionConfig.JumpSection);
+	if (SectionConfig.JumpSection.IsNone()) {
+		return true;
+	}
+	else {
+		auto MeshComponent = Ability->GetOwningComponentFromActorInfo();
+		auto AnimInstance = MeshComponent->GetAnimInstance();
+		auto ActiveMontage = AnimInstance->GetCurrentActiveMontage();
+		return ActiveMontage->IsValidSectionName(SectionConfig.JumpSection);
+	}
 }

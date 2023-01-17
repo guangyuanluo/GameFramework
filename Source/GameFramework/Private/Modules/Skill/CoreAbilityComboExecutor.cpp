@@ -8,7 +8,7 @@ void UCoreAbilityComboExecutor::ExecuteCombo_Implementation(class UCoreAbilitySy
 
 void UCoreAbilityComboExecutor_Default::ExecuteCombo_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, const FComboSectionConfig& SectionConfig, FGameplayTag TriggerWayTag) {
 	if (SectionConfig.JumpAbility.Get()) {
-		Ability->K2_CancelAbility();
+		Ability->CallEndAbility();
 		AbilityComponent->TryActivateAbilityByClass(SectionConfig.JumpAbility);
 		auto AbilitySpec = AbilityComponent->FindAbilitySpecFromClass(SectionConfig.JumpAbility);
 		if (AbilitySpec) {
@@ -26,7 +26,8 @@ void UCoreAbilityComboExecutor_Default::ExecuteCombo_Implementation(class UCoreA
 	else {
 		auto MeshComponent = Ability->GetOwningComponentFromActorInfo();
 		auto AnimInstance = MeshComponent->GetAnimInstance();
-		AnimInstance->Montage_JumpToSection(SectionConfig.JumpSection, AnimInstance->GetCurrentActiveMontage());
+		auto Montage = AnimInstance->GetCurrentActiveMontage();
+		AnimInstance->Montage_JumpToSection(SectionConfig.JumpSection, Montage);
 		Ability->NotifyComboAbility(AbilityComponent, SectionConfig.JumpSection);
 	}
 }
