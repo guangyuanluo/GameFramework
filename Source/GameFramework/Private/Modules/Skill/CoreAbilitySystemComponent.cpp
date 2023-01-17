@@ -210,7 +210,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
         TFunction<bool(UGameplayAbility*, UGameplayAbility*)> CompareFunc = [](UGameplayAbility* A, UGameplayAbility* B) {
             auto AbilityA = Cast<UCoreAbility>(A);
             auto AbilityB = Cast<UCoreAbility>(B);
-            return AbilityA->SortPriority < AbilityB->SortPriority;
+            return AbilityA->SortPriority > AbilityB->SortPriority;
         };
         USortUtils::SortArray(ActiveAbilities, CompareFunc);
     }
