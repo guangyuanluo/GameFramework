@@ -17,6 +17,12 @@ public:
     UFUNCTION(BlueprintCallable)
     void LoadWorldContext(UObject* InWorldContextObject);
 
+    /**
+    * 获取world上下文对象
+    */
+    UFUNCTION(BlueprintCallable)
+    UObject* GetWorldContextObject() const;
+
 private:
     UPROPERTY()
     UObject* WorldContextObject;
