@@ -172,7 +172,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
             if ((!ForceFilterActive || ActiveAbility->IsActive())
-                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, TargetEnemy ? &TargetTagContainer : nullptr))) {
+                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -209,7 +209,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
             if ((!ForceFilterActive || ActiveAbility->IsActive())
-                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, TargetEnemy ? &TargetTagContainer : nullptr))) {
+                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -246,7 +246,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
 
             for (UGameplayAbility* ActiveAbility : AbilityInstances) {
                 if ((!ForceFilterActive || ActiveAbility->IsActive())
-                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, TargetEnemy ? &TargetTagContainer : nullptr))) {
+                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))) {
                     ActiveAbilities.Add(ActiveAbility);
                 }
             }
