@@ -13,3 +13,7 @@ UWorld* ULogicObjectBase::GetWorld() const {
 void ULogicObjectBase::LoadWorldContext(UObject* InWorldContextObject) {
     WorldContextObject = InWorldContextObject;
 }
+
+UObject* ULogicObjectBase::GetWorldContextObject() const {
+    return WorldContextObject;
+}

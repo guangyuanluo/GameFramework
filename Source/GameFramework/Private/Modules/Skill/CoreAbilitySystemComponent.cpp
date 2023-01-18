@@ -16,6 +16,7 @@
 #include "CoreAbilityComboExecutor.h"
 #include "CoreAbilityComboChecker.h"
 #include "SortUtils.h"
+#include "FindEnemyComponent.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = GetOwner();
@@ -149,6 +150,21 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
     TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
     GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
 
+    ACoreCharacter* TargetEnemy = nullptr;
+    FGameplayTagContainer TargetTagContainer;
+    if (AActor* AvatarActor = GetAvatarActor()) {
+        auto FindEnemyComponent = Cast<UFindEnemyComponent>(AvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+        if (FindEnemyComponent) {
+            TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
+            if (TargetEnemy) {
+                auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
+                if (TargetAbilitySystemComponent) {
+                    TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
+                }
+            }
+        }
+    }
+
     // Iterate the list of all ability specs
     for (FGameplayAbilitySpec* Spec : AbilitiesToActivate) {
         // Iterate all instances on this ability spec
@@ -156,7 +172,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
 
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
             if ((!ForceFilterActive || ActiveAbility->IsActive())
-                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
+                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, TargetEnemy ? &TargetTagContainer : nullptr))) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -176,9 +192,24 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
     if (FindSpec) {
         TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
 
+        ACoreCharacter* TargetEnemy = nullptr;
+        FGameplayTagContainer TargetTagContainer;
+        if (AActor* AvatarActor = GetAvatarActor()) {
+            auto FindEnemyComponent = Cast<UFindEnemyComponent>(AvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+            if (FindEnemyComponent) {
+                TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
+                if (TargetEnemy) {
+                    auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
+                    if (TargetAbilitySystemComponent) {
+                        TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
+                    }
+                }
+            }
+        }
+
         for (UGameplayAbility* ActiveAbility : AbilityInstances) {
             if ((!ForceFilterActive || ActiveAbility->IsActive())
-                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
+                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, TargetEnemy ? &TargetTagContainer : nullptr))) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -194,13 +225,28 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
 }
 
 void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
+    ACoreCharacter* TargetEnemy = nullptr;
+    FGameplayTagContainer TargetTagContainer;
+    if (AActor* AvatarActor = GetAvatarActor()) {
+        auto FindEnemyComponent = Cast<UFindEnemyComponent>(AvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+        if (FindEnemyComponent) {
+            TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
+            if (TargetEnemy) {
+                auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
+                if (TargetAbilitySystemComponent) {
+                    TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
+                }
+            }
+        }
+    }
+
     for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items) {
         if (Spec.InputID == InputID) {
             TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
 
             for (UGameplayAbility* ActiveAbility : AbilityInstances) {
                 if ((!ForceFilterActive || ActiveAbility->IsActive())
-                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this))) {
+                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, TargetEnemy ? &TargetTagContainer : nullptr))) {
                     ActiveAbilities.Add(ActiveAbility);
                 }
             }
