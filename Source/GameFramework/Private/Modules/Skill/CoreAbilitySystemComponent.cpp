@@ -152,8 +152,8 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
 
     ACoreCharacter* TargetEnemy = nullptr;
     FGameplayTagContainer TargetTagContainer;
-    if (AActor* AvatarActor = GetAvatarActor()) {
-        auto FindEnemyComponent = Cast<UFindEnemyComponent>(AvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+    if (AActor* ThisAvatarActor = GetAvatarActor()) {
+        auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
         if (FindEnemyComponent) {
             TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
             if (TargetEnemy) {
@@ -194,8 +194,8 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
 
         ACoreCharacter* TargetEnemy = nullptr;
         FGameplayTagContainer TargetTagContainer;
-        if (AActor* AvatarActor = GetAvatarActor()) {
-            auto FindEnemyComponent = Cast<UFindEnemyComponent>(AvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+        if (AActor* ThisAvatarActor = GetAvatarActor()) {
+            auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
             if (FindEnemyComponent) {
                 TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
                 if (TargetEnemy) {
@@ -227,8 +227,8 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
 void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
     ACoreCharacter* TargetEnemy = nullptr;
     FGameplayTagContainer TargetTagContainer;
-    if (AActor* AvatarActor = GetAvatarActor()) {
-        auto FindEnemyComponent = Cast<UFindEnemyComponent>(AvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+    if (AActor* ThisAvatarActor = GetAvatarActor()) {
+        auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
         if (FindEnemyComponent) {
             TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
             if (TargetEnemy) {
