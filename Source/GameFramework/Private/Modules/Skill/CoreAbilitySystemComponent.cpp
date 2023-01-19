@@ -14,7 +14,7 @@
 #include "EffectConfigTableRow.h"
 #include "CoreAbility.h"
 #include "CoreAbilityComboExecutor.h"
-#include "CoreAbilityComboChecker.h"
+#include "CoreAbilityCondition.h"
 #include "SortUtils.h"
 #include "FindEnemyComponent.h"
 
@@ -321,16 +321,23 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
         if (FindComboSectionConfigPtr) {
             const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
             bool HaveAnyComboEnable = false;
+
+            //赋值上下文变量
+            CurrentComboTriggerWayTag = TriggerWayTag;
+
             for (auto SectionConfig : FindComboSectionConfigPtr->Configs) {
+                //赋值上下文变量
+                CurrentCheckComboSection = &SectionConfig;
+
                 bool CheckCombo = true;
-                for (auto ComboChecker : SkillSetting->GlobalComboCheckers) {
-                    if (!ComboChecker.Get()) {
+                for (auto ComboCondition : SkillSetting->GlobalComboConditions) {
+                    if (!ComboCondition.Get()) {
                         continue;
                     }
-                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
-                    ComboCheckerCDO->LoadWorldContext(this);
+                    auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
+                    ComboConditionCDO->LoadWorldContext(this);
 
-                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                    if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
                         break;
                     }
@@ -338,14 +345,14 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
                 if (!CheckCombo) {
                     continue;
                 }
-                for (auto ComboChecker : SectionConfig.ComboCheckers) {
-                    if (!ComboChecker.Get()) {
+                for (auto ComboCondition : SectionConfig.Conditions) {
+                    if (!ComboCondition.Get()) {
                         continue;
                     }
-                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
-                    ComboCheckerCDO->LoadWorldContext(this);
+                    auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
+                    ComboConditionCDO->LoadWorldContext(this);
 
-                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                    if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
                         break;
                     }
@@ -356,6 +363,11 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
                 HaveAnyComboEnable = true;
                 break;
             }
+
+            //清空上下文变量
+            CurrentComboTriggerWayTag = FGameplayTag::EmptyTag;
+            CurrentCheckComboSection = nullptr;
+
             if (!HaveAnyComboEnable) {
                 return;
             }
@@ -408,6 +420,14 @@ void UCoreAbilitySystemComponent::K2_AbilityLocalInputReleased(int32 InputID) {
     AbilityLocalInputReleased(InputID);
 }
 
+FGameplayTag UCoreAbilitySystemComponent::GetCurrentComboTriggerWayTag() const {
+    return CurrentComboTriggerWayTag;
+}
+
+FComboSectionConfig* UCoreAbilitySystemComponent::GetCurrentCheckComboSection() const {
+    return CurrentCheckComboSection;
+}
+
 void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
     if (!Ability || !Ability->IsActive()) {
         ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
@@ -419,20 +439,30 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
         if (!MontageInstance) {
             return;
         }
+
+        //赋值上下文变量
+        CurrentComboTriggerWayTag = TriggerWayTag;
+
         FName CurrentSection = MontageInstance->GetCurrentSection();
         auto FindComboSectionConfigsPtr = Ability->ComboMap.Find(CurrentSection);
         if (FindComboSectionConfigsPtr) {
             const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+
+            UCoreAbilityComboExecutor* FindComboExecutor = nullptr;
+
             for (auto SectionConfig : FindComboSectionConfigsPtr->Configs) {
+                //赋值上下文变量
+                CurrentCheckComboSection = &SectionConfig;
+
                 bool CheckCombo = true;
-                for (auto ComboChecker : SkillSetting->GlobalComboCheckers) {
-                    if (!ComboChecker.Get()) {
+                for (auto ComboCondition : SkillSetting->GlobalComboConditions) {
+                    if (!ComboCondition.Get()) {
                         continue;
                     }
-                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
-                    ComboCheckerCDO->LoadWorldContext(this);
+                    auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
+                    ComboConditionCDO->LoadWorldContext(this);
 
-                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                    if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
                         break;
                     }
@@ -440,14 +470,14 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
                 if (!CheckCombo) {
                     continue;
                 }
-                for (auto ComboChecker : SectionConfig.ComboCheckers) {
-                    if (!ComboChecker.Get()) {
+                for (auto ComboCondition : SectionConfig.Conditions) {
+                    if (!ComboCondition.Get()) {
                         continue;
                     }
-                    auto ComboCheckerCDO = ComboChecker->GetDefaultObject<UCoreAbilityComboChecker>();
-                    ComboCheckerCDO->LoadWorldContext(this);
+                    auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
+                    ComboConditionCDO->LoadWorldContext(this);
 
-                    if (!ComboCheckerCDO->CanComboExecute(this, Ability, SectionConfig, TriggerWayTag)) {
+                    if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
                         break;
                     }
@@ -455,13 +485,21 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
                 if (!CheckCombo) {
                     continue;
                 }
+
                 //所有条件检查完了，执行
                 check(Ability->ComboExecutor);
-                auto ComboExecutorCDO = Ability->ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
-                ComboExecutorCDO->LoadWorldContext(this);
-                ComboExecutorCDO->ExecuteCombo(this, Ability, SectionConfig, TriggerWayTag);
-                return;
+                FindComboExecutor = Ability->ComboExecutor->GetDefaultObject<UCoreAbilityComboExecutor>();
+                break;
             }
+
+            if (FindComboExecutor) {
+                FindComboExecutor->LoadWorldContext(this);
+                FindComboExecutor->ExecuteCombo(this, Ability, *CurrentCheckComboSection, TriggerWayTag);
+            }
+
+            //清空上下文变量
+            CurrentComboTriggerWayTag = FGameplayTag::EmptyTag;
+            CurrentCheckComboSection = nullptr;
         }
     }
 }

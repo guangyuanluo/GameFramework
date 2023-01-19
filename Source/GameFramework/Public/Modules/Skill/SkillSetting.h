@@ -35,8 +35,8 @@ public:
     TSoftObjectPtr<class UDataTable> SkillGroupTable;
 
     /**
-    * 全局配置的combo检查器
+    * 全局连招条件检查
     */
-    UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "全局连招检查器", NoResetToDefault))
-    TArray<TSubclassOf<class UCoreAbilityComboChecker>> GlobalComboCheckers;
+    UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "全局连招条件检查", NoResetToDefault))
+    TArray<TSubclassOf<class UCoreAbilityCondition>> GlobalComboConditions;
 };

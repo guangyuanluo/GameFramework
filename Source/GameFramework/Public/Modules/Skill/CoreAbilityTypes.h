@@ -89,8 +89,8 @@ struct FComboSectionConfig {
 	/**
 	* 连招检查器
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招条件检查"))
-	TArray<TSubclassOf<class UCoreAbilityComboChecker>> ComboCheckers;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招条件"))
+	TArray<TSubclassOf<class UCoreAbilityCondition>> Conditions;
 };
 
 /**
