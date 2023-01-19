@@ -312,7 +312,11 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
 
     UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
     if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
-        FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
+        auto MontageInstance = AnimInstance->GetActiveMontageInstance();
+        if (!MontageInstance) {
+            return;
+        }
+        FName CurrentSection = MontageInstance->GetCurrentSection();
         auto FindComboSectionConfigPtr = Ability->ComboMap.Find(CurrentSection);
         if (FindComboSectionConfigPtr) {
             const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
@@ -411,7 +415,11 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
     }
     UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
     if (LocalAnimMontageInfo.AnimMontage && AnimInstance && LocalAnimMontageInfo.AnimMontage == Ability->GetCurrentMontage()) {
-        FName CurrentSection = AnimInstance->GetActiveMontageInstance()->GetCurrentSection();
+        auto MontageInstance = AnimInstance->GetActiveMontageInstance();
+        if (!MontageInstance) {
+            return;
+        }
+        FName CurrentSection = MontageInstance->GetCurrentSection();
         auto FindComboSectionConfigsPtr = Ability->ComboMap.Find(CurrentSection);
         if (FindComboSectionConfigsPtr) {
             const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
