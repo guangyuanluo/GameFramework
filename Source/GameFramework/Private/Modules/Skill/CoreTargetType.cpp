@@ -19,16 +19,31 @@ void UCoreTargetType_UseOwner::GetTargets_Implementation(ACoreCharacter* Targeti
 
 void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
-	const FHitResult* FoundHitResult = EventData.ContextHandle.GetHitResult();
-	if (FoundHitResult)
-	{
-		if (FilterActors.Contains(FoundHitResult->GetActor())) {
-			return;
+	bool AddTarget = false;
+	if (EventData.TargetData.Num() > 0) {
+		for (auto Index = 0; Index < EventData.TargetData.Num(); ++Index) {
+			if (EventData.TargetData.IsValid(Index)) {
+				auto TargetData = EventData.TargetData.Get(Index);
+				if (const FHitResult* FoundHitResult = TargetData->GetHitResult()) {
+					if (FilterActors.Contains(FoundHitResult->GetActor())) {
+						continue;
+					}
+					AddTarget = true;
+					OutHitResults.Add(*FoundHitResult);
+				}
+				else {
+					for (auto Actor : TargetData->GetActors()) {
+						if (FilterActors.Contains(Actor.Get())) {
+							continue;
+						}
+						AddTarget = true;
+						OutActors.Add(Actor.Get());
+					}
+				}
+			}
 		}
-		OutHitResults.Add(*FoundHitResult);
 	}
-	else if (EventData.Target)
-	{
+	if (!AddTarget && EventData.Target) {
 		if (FilterActors.Contains(EventData.Target)) {
 			return;
 		}

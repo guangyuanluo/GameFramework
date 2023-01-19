@@ -33,11 +33,23 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		ACoreCharacter* TargetingCharacter = Cast<ACoreCharacter>(GetAvatarActorFromActorInfo());
 		ACoreCharacterStateBase* TargetingState = Cast<ACoreCharacterStateBase>(GetOwningActorFromActorInfo());
 		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, FilterActors, HitResults, TargetActors);
-		for (const FHitResult& HitResult : HitResults) {
-			FilterActors.Add(HitResult.GetActor());
+		for (int Index = HitResults.Num() - 1; Index >= 0; --Index) {
+			auto HitResult = HitResults[Index];
+			if (FilterActors.Contains(HitResult.GetActor())) {
+				HitResults.RemoveAt(Index);
+			}
+			else {
+				FilterActors.Add(HitResult.GetActor());
+			}
 		}
-		for (auto TargetActor : TargetActors) {
-			FilterActors.Add(TargetActor);
+		for (auto Index = TargetActors.Num() - 1; Index >= 0; --Index) {
+			auto TargetActor = TargetActors[Index];
+			if (FilterActors.Contains(TargetActor)) {
+				TargetActors.RemoveAt(Index);
+			}
+			else {
+				FilterActors.Add(TargetActor);
+			}
 		}
 		ReturnSpec.AddTargets(HitResults, TargetActors);
 	}
