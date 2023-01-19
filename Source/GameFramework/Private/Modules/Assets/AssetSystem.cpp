@@ -468,7 +468,7 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
             }
         }
     }
-    auto BackpackExtendHandler = GetBackpackExtendHandler();
+    auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
     if (!BackpackExtendHandler->AllowItemAdd(BackpackComponent, ItemId, BackpackType)) {
         Error = TEXT("不允许物品添加到此背包");
         return TempChangeItems;
@@ -563,7 +563,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-    auto BackpackExtendHandler = GetBackpackExtendHandler();
+    auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
     //第一层key是packagetype，第二层key是itemid，value是AddItems的索引
     TMap<int, TMap<int, int>> TotalItems;
     for (int Index = 0; Index < AddItems.Num(); ++Index) {
@@ -876,7 +876,7 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
 
 	auto NewSlotIndexOrigineItem = NewBackpack[NewSlotIndex];
 
-    auto BackpackExtendHandler = GetBackpackExtendHandler();
+    auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
     if (!BackpackExtendHandler->CanMoveItem(BackpackComponent, BackpackType, SlotIndex, BackpackItem, NewPackageType, NewSlotIndex, NewSlotIndexOrigineItem)) {
         Error = TEXT("不允许移动对应物品");
         return false;
@@ -1105,7 +1105,7 @@ void UAssetSystem::SendUseMoneyEvent(UWalletComponent* WalletComponent, uint8 Mo
 	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(consumeMoneyEvent);
 }
 
-class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler() {
+class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler(UBackpackComponent* BackpackComponent) {
     TSubclassOf<UBackpackExtendHandler> BackpackExtendHandlerClass = UBackpackExtendHandler::StaticClass();
     const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
     FString BackpackExtendHandlerClassPath = BackpackSetting->BackpackExtendHandlerClass.ToString();
@@ -1115,20 +1115,22 @@ class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler() {
             BackpackExtendHandlerClass = LoadClass;
         }
     }
-    return Cast<UBackpackExtendHandler>(BackpackExtendHandlerClass->GetDefaultObject());
+    auto BackpackExtendHandlerCDO = Cast<UBackpackExtendHandler>(BackpackExtendHandlerClass->GetDefaultObject());
+    BackpackExtendHandlerCDO->LoadWorldContext(BackpackComponent);
+    return BackpackExtendHandlerCDO;
 }
 
 void UAssetSystem::OnItemEnterPackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index) {
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
-        GetBackpackExtendHandler()->OnItemAdd(BackpackComponent, Item, BackpackType, Index);
+        GetBackpackExtendHandler(BackpackComponent)->OnItemAdd(BackpackComponent, Item, BackpackType, Index);
     }
 }
 
 void UAssetSystem::OnItemLeavePackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index) {
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
-        GetBackpackExtendHandler()->OnItemRemove(BackpackComponent, Item, BackpackType, Index);
+        GetBackpackExtendHandler(BackpackComponent)->OnItemRemove(BackpackComponent, Item, BackpackType, Index);
     }
 }
 

@@ -158,13 +158,6 @@ class ACoreCharacter* UGameFrameworkUtils::GetCharacterFromComponentOwner(class 
     return nullptr;
 }
 
-class AActor* UGameFrameworkUtils::SpawnActor(UObject* WorldContext, TSubclassOf<AActor> ActorClass, FVector const& Location, FRotator const& Rotation, ESpawnActorCollisionHandlingMethod SpawnCollisionHandlingOverride) {
-    auto World = WorldContext->GetWorld();
-    FActorSpawnParameters Params;
-    Params.SpawnCollisionHandlingOverride = SpawnCollisionHandlingOverride;
-    return World->SpawnActor<AActor>(ActorClass, Location, Rotation, Params);
-}
-
 class ACoreCharacterStateBase* UGameFrameworkUtils::GetEntityState(TScriptInterface<IGameEntity> Entity) {
     auto EntityObject = Entity.GetObject();
     if (EntityObject) {

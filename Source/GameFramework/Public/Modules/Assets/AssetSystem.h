@@ -122,7 +122,7 @@ private:
     /**
     * 获取背包扩展处理类
     */
-    class UBackpackExtendHandler* GetBackpackExtendHandler();
+    class UBackpackExtendHandler* GetBackpackExtendHandler(UBackpackComponent* BackpackComponent);
 
     void OnItemEnterPackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index);
     void OnItemLeavePackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index);
