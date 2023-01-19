@@ -42,7 +42,7 @@ public:
 	/**
     * 技能排序优先级
     */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "技能排序优先级"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能排序优先级"))
     int32 SortPriority;
 
 	/**
