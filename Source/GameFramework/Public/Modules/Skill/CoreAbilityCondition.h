@@ -5,21 +5,21 @@
 #include "CoreMinimal.h"
 #include "Base/Structure/LogicObjectBase.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
-#include "CoreAbilityComboChecker.generated.h"
+#include "CoreAbilityCondition.generated.h"
 
 class UCoreAbility;
 
 /**
-* 连招检查器
+* 技能条件
 */
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class GAMEFRAMEWORK_API UCoreAbilityComboChecker : public ULogicObjectBase {
+class GAMEFRAMEWORK_API UCoreAbilityCondition : public ULogicObjectBase {
     GENERATED_BODY()
 
 public:
     /**
-    * 检查能否执行combo
+    * 是否满足
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    bool CanComboExecute(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, const FComboSectionConfig& SectionConfig, FGameplayTag TriggerWayTag);
+    bool DoesSatisfy(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability);
 };

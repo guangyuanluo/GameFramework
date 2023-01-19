@@ -116,7 +116,19 @@ public:
     */
     FSkillTemplatePostInit OnSkillTemplatePostInit;
 
+    /**
+    * 当前combo的触发方式tag
+    */
+    FGameplayTag GetCurrentComboTriggerWayTag() const;
+    /**
+    * 当前正在检查combo的section
+    */
+    struct FComboSectionConfig* GetCurrentCheckComboSection() const;
+
 private:
+    FGameplayTag CurrentComboTriggerWayTag;
+    struct FComboSectionConfig* CurrentCheckComboSection;
+
     void InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag);
 
     void AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
