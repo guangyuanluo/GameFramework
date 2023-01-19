@@ -79,12 +79,6 @@ public:
     static class ACoreCharacter* GetCharacterFromComponentOwner(class UActorComponent* ActorComponent);
 
     /**
-    * 创建actor
-    */
-    UFUNCTION(BlueprintCallable, Category = "Utils", meta = (DeterminesOutputType = "ActorClass"))
-    static class AActor* SpawnActor(UObject* WorldContext, TSubclassOf<AActor> ActorClass, FVector const& Location, FRotator const& Rotation, ESpawnActorCollisionHandlingMethod SpawnCollisionHandlingOverride);
-
-    /**
     * 获取实体的状态
     */
     UFUNCTION(BlueprintPure, Category = "Utils")
