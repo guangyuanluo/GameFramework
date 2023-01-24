@@ -25,6 +25,12 @@ class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbil
 public:
     static bool GlobalIgnoreFilterActors;
 
+    /**
+    * 技能触发条件
+    */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件"))
+    TArray<TSubclassOf<class UCoreAbilityCondition>> Conditions;
+
 	/**
 	* 连招配置
 	*/
@@ -92,6 +98,12 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = Ability, DisplayName = "IsActive", Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool K2_IsActive() const;
+
+    /**
+    * 是否满足触发条件
+    */
+    UFUNCTION(BlueprintCallable, Category = Ability)
+    bool K2_IsConditionSatisfy();
 
 	/**
 	* 触发连招

@@ -79,15 +79,15 @@ public:
 
     /** 返回指定条件拥有指定tag的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true, bool SortByOrder = true);
+    void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
 
     /** 返回指定条件拥有指定类型的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true, bool SortByOrder = true);
+    void GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
 
     /** 返回指定条件拥有指定InputID的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfyTagRequirements = true, bool SortByOrder = true);
+    void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
 
     /**
     * 重置技能冷却
@@ -125,16 +125,22 @@ public:
     FSkillTemplatePostInit OnSkillTemplatePostInit;
 
     /**
-    * 当前combo的触发方式tag
+    * 得到当前触发方式tag
     */
-    FGameplayTag GetCurrentComboTriggerWayTag() const;
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    FGameplayTag GetCurrentTriggerWayTag() const;
+    /**
+    * 设置当前触发方式tag
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void SetCurrentTriggerWayTag(FGameplayTag TriggerWayTag);
     /**
     * 当前正在检查combo的section
     */
     struct FComboSectionConfig* GetCurrentCheckComboSection() const;
 
 private:
-    FGameplayTag CurrentComboTriggerWayTag;
+    FGameplayTag CurrentTriggerWayTag;
     struct FComboSectionConfig* CurrentCheckComboSection;
 
     void InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag);

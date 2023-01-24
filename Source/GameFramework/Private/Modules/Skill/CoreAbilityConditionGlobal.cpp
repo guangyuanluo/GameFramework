@@ -4,10 +4,6 @@
 #include "AnimNotifyState_ComboEnable.h"
 #include "CoreAbilitySystemComponent.h"
 
-bool UCoreAbilityCondition_ComboTriggerWayTag::DoesSatisfy_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability) {
-	return MatchTriggerTag == AbilityComponent->GetCurrentComboTriggerWayTag();
-}
-
 bool UCoreAbilityCondition_ComboEnable::DoesSatisfy_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability) {
 	auto MeshComponent = Ability->GetOwningComponentFromActorInfo();
 	return UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(MeshComponent, UAnimNotifyState_ComboEnable::StaticClass()) != nullptr;
@@ -41,4 +37,8 @@ bool UCoreAbilityCondition_ComboJumpSectionValid::DoesSatisfy_Implementation(cla
 		auto ActiveMontage = AnimInstance->GetCurrentActiveMontage();
 		return ActiveMontage->IsValidSectionName(CurrentSectoinConfig->JumpSection);
 	}
+}
+
+bool UCoreAbilityCondition_TriggerWayTag::DoesSatisfy_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability) {
+    return MatchTriggerTag == AbilityComponent->GetCurrentTriggerWayTag();
 }

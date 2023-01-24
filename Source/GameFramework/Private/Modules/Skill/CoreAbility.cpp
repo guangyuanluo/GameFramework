@@ -8,6 +8,7 @@
 #include "SkillSetting.h"
 #include "CoreCharacterStateBase.h"
 #include "CoreAbilityComboExecutor.h"
+#include "CoreAbilityCondition.h"
 
 bool UCoreAbility::GlobalIgnoreFilterActors = false;
 
@@ -105,6 +106,19 @@ void UCoreAbility::ClearFilterActors() {
 
 bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
+}
+
+bool UCoreAbility::K2_IsConditionSatisfy() {
+    auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+    bool bSatisfy = true;
+    for (auto Condition : Conditions) {
+        auto CoreAbilityConditionCDO = Condition->GetDefaultObject<UCoreAbilityCondition>();
+        if (!CoreAbilityConditionCDO->DoesSatisfy(AbilitySystemComponent, this)) {
+            bSatisfy = false;
+            break;
+        }
+    }
+    return bSatisfy;
 }
 
 void UCoreAbility::NotifyComboAbility_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection) {
