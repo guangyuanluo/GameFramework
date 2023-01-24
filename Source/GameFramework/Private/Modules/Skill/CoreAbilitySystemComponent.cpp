@@ -146,7 +146,7 @@ void UCoreAbilitySystemComponent::RemoveEffect(const FEffectInfo& EffectInfo) {
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
     TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
     GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
 
@@ -170,9 +170,11 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
         // Iterate all instances on this ability spec
         TArray<UGameplayAbility*> AbilityInstances = Spec->GetAbilityInstances();
 
-        for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+        for (UGameplayAbility* AbilityInstance : AbilityInstances) {
+            UCoreAbility* ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
             if ((!ForceFilterActive || ActiveAbility->IsActive())
-                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))) {
+                && (!bOnlyAbilitiesThatSatisfy || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))
+                && (!bOnlyAbilitiesThatSatisfy || ActiveAbility->K2_IsConditionSatisfy())) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -187,7 +189,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGameplayAbility> AbilityClass, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
     auto FindSpec = FindAbilitySpecFromClass(AbilityClass);
     if (FindSpec) {
         TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
@@ -207,9 +209,11 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
             }
         }
 
-        for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+        for (UGameplayAbility* AbilityInstance : AbilityInstances) {
+            UCoreAbility* ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
             if ((!ForceFilterActive || ActiveAbility->IsActive())
-                && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))) {
+                && (!bOnlyAbilitiesThatSatisfy || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))
+                && (!bOnlyAbilitiesThatSatisfy || ActiveAbility->K2_IsConditionSatisfy())) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -224,7 +228,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
     }
 }
 
-void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfyTagRequirements, bool SortByOrder) {
+void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
     ACoreCharacter* TargetEnemy = nullptr;
     FGameplayTagContainer TargetTagContainer;
     if (AActor* ThisAvatarActor = GetAvatarActor()) {
@@ -244,9 +248,11 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
         if (Spec.InputID == InputID) {
             TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
 
-            for (UGameplayAbility* ActiveAbility : AbilityInstances) {
+            for (UGameplayAbility* AbilityInstance : AbilityInstances) {
+                UCoreAbility* ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
                 if ((!ForceFilterActive || ActiveAbility->IsActive())
-                    && (!bOnlyAbilitiesThatSatisfyTagRequirements || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))) {
+                    && (!bOnlyAbilitiesThatSatisfy || ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer))
+                    && (!bOnlyAbilitiesThatSatisfy || ActiveAbility->K2_IsConditionSatisfy())) {
                     ActiveAbilities.Add(ActiveAbility);
                 }
             }
@@ -323,7 +329,7 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
             bool HaveAnyComboEnable = false;
 
             //赋值上下文变量
-            CurrentComboTriggerWayTag = TriggerWayTag;
+            SetCurrentTriggerWayTag(TriggerWayTag);
 
             for (auto SectionConfig : FindComboSectionConfigPtr->Configs) {
                 //赋值上下文变量
@@ -365,7 +371,7 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
             }
 
             //清空上下文变量
-            CurrentComboTriggerWayTag = FGameplayTag::EmptyTag;
+            SetCurrentTriggerWayTag(FGameplayTag::EmptyTag);
             CurrentCheckComboSection = nullptr;
 
             if (!HaveAnyComboEnable) {
@@ -420,8 +426,12 @@ void UCoreAbilitySystemComponent::K2_AbilityLocalInputReleased(int32 InputID) {
     AbilityLocalInputReleased(InputID);
 }
 
-FGameplayTag UCoreAbilitySystemComponent::GetCurrentComboTriggerWayTag() const {
-    return CurrentComboTriggerWayTag;
+FGameplayTag UCoreAbilitySystemComponent::GetCurrentTriggerWayTag() const {
+    return CurrentTriggerWayTag;
+}
+
+void UCoreAbilitySystemComponent::SetCurrentTriggerWayTag(FGameplayTag TriggerWayTag) {
+    CurrentTriggerWayTag = TriggerWayTag;
 }
 
 FComboSectionConfig* UCoreAbilitySystemComponent::GetCurrentCheckComboSection() const {
@@ -441,7 +451,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
         }
 
         //赋值上下文变量
-        CurrentComboTriggerWayTag = TriggerWayTag;
+        SetCurrentTriggerWayTag(TriggerWayTag);
 
         FName CurrentSection = MontageInstance->GetCurrentSection();
         auto FindComboSectionConfigsPtr = Ability->ComboMap.Find(CurrentSection);
@@ -498,7 +508,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
             }
 
             //清空上下文变量
-            CurrentComboTriggerWayTag = FGameplayTag::EmptyTag;
+            SetCurrentTriggerWayTag(FGameplayTag::EmptyTag);
             CurrentCheckComboSection = nullptr;
         }
     }
