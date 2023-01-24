@@ -31,3 +31,19 @@ TArray<FActiveGameplayEffectHandle> USkillBlueprintLibrary::ApplyExternalEffectC
 bool USkillBlueprintLibrary::IsAbilityMatchingAllTags(UGameplayAbility* Ability, FGameplayTagContainer AbilityTags) {
 	return Ability->AbilityTags.HasAll(AbilityTags);
 }
+
+float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpecHandle(FGameplayEffectSpecHandle SpecHandle, FGameplayTag DataTag, bool WarnIfNotFound, float DefaultIfNotFound) {
+    FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+    if (Spec) {
+        return Spec->GetSetByCallerMagnitude(DataTag, WarnIfNotFound, DefaultIfNotFound);
+    }
+    else {
+        UE_LOG(LogTemp, Warning, TEXT("SpecHandle Not Valid"));
+    }
+
+    return 0.f;
+}
+
+float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpec(FGameplayEffectSpec Spec, FGameplayTag DataTag, bool WarnIfNotFound, float DefaultIfNotFound) {
+    return Spec.GetSetByCallerMagnitude(DataTag, WarnIfNotFound, DefaultIfNotFound);
+}

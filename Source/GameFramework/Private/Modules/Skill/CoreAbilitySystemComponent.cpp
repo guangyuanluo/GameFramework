@@ -553,6 +553,7 @@ void UCoreAbilitySystemComponent::AddEffectPrivate(class UDataTable* EffectDataT
             FGameplayEffectContextHandle EffectContext = MakeEffectContext();
             FGameplayEffectSpecHandle NewHandle = MakeOutgoingSpec(FindEffect->GameplayEffectClass, EffectInfo.EffectLevel, EffectContext);
             if (NewHandle.IsValid()) {
+                EffectPreAddDynMutiDelegate.Broadcast(this, NewHandle, FindEffect->GameplayEffectClass);
                 InPreAddCallback.ExecuteIfBound(this, NewHandle, FindEffect->GameplayEffectClass);
                 ApplyGameplayEffectSpecToSelf(*NewHandle.Data.Get());
             }

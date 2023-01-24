@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Base/Structure/LogicObjectBase.h"
-#include "Modules/Skill/CoreAbilityTypes.h"
 #include "CoreAbilityCondition.generated.h"
 
 class UCoreAbility;

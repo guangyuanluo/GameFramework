@@ -10,6 +10,8 @@
 class UCoreAbility;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FSkillTemplatePostInit, class UCoreAbilitySystemComponent*);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEffectPreAddDynMutiDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FEffectPreAddDynDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
 DECLARE_DELEGATE_ThreeParams(FEffectPreAddDelegate, class UCoreAbilitySystemComponent*, const FGameplayEffectSpecHandle&, TSubclassOf<class UGameplayEffect>);
 
@@ -23,6 +25,12 @@ class GAMEFRAMEWORK_API UCoreAbilitySystemComponent : public UAbilitySystemCompo
 	GENERATED_BODY()
 
 public:
+    /**
+    * effect添加前处理
+    */
+    UPROPERTY(BlueprintAssignable)
+    FEffectPreAddDynMutiDelegate EffectPreAddDynMutiDelegate;
+
     /**
     * 从模板初始化技能
     */

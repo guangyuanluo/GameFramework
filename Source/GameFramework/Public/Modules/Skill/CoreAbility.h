@@ -23,6 +23,8 @@ class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbil
 	GENERATED_UCLASS_BODY()
 
 public:
+    static bool GlobalIgnoreFilterActors;
+
 	/**
 	* 连招配置
 	*/

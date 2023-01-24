@@ -25,7 +25,7 @@ void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* Tar
 			if (EventData.TargetData.IsValid(Index)) {
 				auto TargetData = EventData.TargetData.Get(Index);
 				if (const FHitResult* FoundHitResult = TargetData->GetHitResult()) {
-					if (FilterActors.Contains(FoundHitResult->GetActor())) {
+					if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(FoundHitResult->GetActor())) {
 						continue;
 					}
 					AddTarget = true;
@@ -33,7 +33,7 @@ void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* Tar
 				}
 				else {
 					for (auto Actor : TargetData->GetActors()) {
-						if (FilterActors.Contains(Actor.Get())) {
+						if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(Actor.Get())) {
 							continue;
 						}
 						AddTarget = true;
@@ -44,7 +44,7 @@ void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* Tar
 		}
 	}
 	if (!AddTarget && EventData.Target) {
-		if (FilterActors.Contains(EventData.Target)) {
+		if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(EventData.Target)) {
 			return;
 		}
 		OutActors.Add(const_cast<AActor*>(EventData.Target));
