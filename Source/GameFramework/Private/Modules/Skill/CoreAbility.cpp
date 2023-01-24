@@ -9,6 +9,8 @@
 #include "CoreCharacterStateBase.h"
 #include "CoreAbilityComboExecutor.h"
 
+bool UCoreAbility::GlobalIgnoreFilterActors = false;
+
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
 	//默认本地预测
@@ -35,7 +37,7 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, FilterActors, HitResults, TargetActors);
 		for (int Index = HitResults.Num() - 1; Index >= 0; --Index) {
 			auto HitResult = HitResults[Index];
-			if (FilterActors.Contains(HitResult.GetActor())) {
+			if (!GlobalIgnoreFilterActors && FilterActors.Contains(HitResult.GetActor())) {
 				HitResults.RemoveAt(Index);
 			}
 			else {
@@ -44,7 +46,7 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		}
 		for (auto Index = TargetActors.Num() - 1; Index >= 0; --Index) {
 			auto TargetActor = TargetActors[Index];
-			if (FilterActors.Contains(TargetActor)) {
+			if (!GlobalIgnoreFilterActors && FilterActors.Contains(TargetActor)) {
 				TargetActors.RemoveAt(Index);
 			}
 			else {
@@ -57,11 +59,17 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
 	auto EffectDataTable = SkillSetting->EffectTable.LoadSynchronous();
 
+    auto CoreAbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Ensured());
+
 	// Build GameplayEffectSpecs for each applied effect
 	for (const FEffectInfo& EffectInfo : Container.TargetGameplayEffects) {
 		FEffectConfigTableRow* EffectRow = (FEffectConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(EffectDataTable, EffectInfo.EffectID);
 		int EffectLevel = OverrideGameplayLevel == -1 ? EffectInfo.EffectLevel : OverrideGameplayLevel;
-		ReturnSpec.TargetGameplayEffectSpecs.Add(MakeOutgoingGameplayEffectSpec(EffectRow->GameplayEffectClass, EffectLevel));
+        auto EffectSpec = MakeOutgoingGameplayEffectSpec(EffectRow->GameplayEffectClass, EffectLevel);
+
+        CoreAbilitySystemComponent->EffectPreAddDynMutiDelegate.Broadcast(CoreAbilitySystemComponent, EffectSpec, EffectRow->GameplayEffectClass);
+
+		ReturnSpec.TargetGameplayEffectSpecs.Add(EffectSpec);
 	}
 
 	return ReturnSpec;

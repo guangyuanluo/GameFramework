@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
+#include "GameplayEffect.h"
 #include "SkillBlueprintLibrary.generated.h"
 
 
 /**
- * ¼¼ÄÜ¹«¹²º¯Êý
+ * æŠ€èƒ½å…¬å…±å‡½æ•°
  */
 UCLASS()
 class GAMEFRAMEWORK_API USkillBlueprintLibrary : public UBlueprintFunctionLibrary
@@ -32,4 +33,10 @@ public:
 	/** check whether the ability match all tags */
 	UFUNCTION(BlueprintCallable, Category = Ability)
 	static bool IsAbilityMatchingAllTags(UGameplayAbility* Ability, FGameplayTagContainer AbilityTags);
+
+    UFUNCTION(BlueprintCallable, Category = Ability)
+    static float GetSetByCallerMagnitudeWithSpecHandle(struct FGameplayEffectSpecHandle SpecHandle, FGameplayTag DataTag, bool WarnIfNotFound = true, float DefaultIfNotFound = 0.f);
+
+    UFUNCTION(BlueprintCallable, Category = Ability)
+    static float GetSetByCallerMagnitudeWithSpec(struct FGameplayEffectSpec Spec, FGameplayTag DataTag, bool WarnIfNotFound = true, float DefaultIfNotFound = 0.f);
 };
