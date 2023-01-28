@@ -52,6 +52,10 @@
 #include "Modules/Quest/QuestDetailNodeItem.h"
 #include "Customization/SkillInfoCustomization.h"
 #include "Customization/EffectInfoCustomization.h"
+#include "Customization/CoreAbilityCustomization.h"
+#include "Modules/Skill/CoreAbility.h"
+#include "Customization/CoreGameplayEffectContainerCustomization.h"
+#include "Modules/Skill/CoreAbilityTypes.h"
 
 static const FName GameFrameworkEditorTabName("GameFrameworkEditor");
 
@@ -283,6 +287,14 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 		FEffectInfo::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FEffectInfoCustomization::MakeInstance));
 
+    PropertyModule.RegisterCustomClassLayout(
+        UCoreAbility::StaticClass()->GetFName(),
+        FOnGetDetailCustomizationInstance::CreateStatic(&FCoreAbilityCustomization::MakeInstance));
+
+    PropertyModule.RegisterCustomPropertyTypeLayout(
+        FCoreGameplayEffectContainer::StaticStruct()->GetFName(),
+        FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreGameplayEffectContainerCustomization::MakeInstance));
+
     PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -299,6 +311,8 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
 		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FEffectInfo::StaticStruct()->GetFName());
+        PropertyModule.UnregisterCustomClassLayout(UCoreAbility::StaticClass()->GetFName());
+        PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreGameplayEffectContainer::StaticStruct()->GetFName());
 
         PropertyModule.NotifyCustomizationModuleChanged();
     }

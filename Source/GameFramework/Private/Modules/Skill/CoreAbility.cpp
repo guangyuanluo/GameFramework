@@ -28,6 +28,8 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 	// First figure out our actor info
 	FCoreGameplayEffectContainerSpec ReturnSpec;
 
+    ReturnSpec.ContainerPtr = const_cast<FCoreGameplayEffectContainer*>(&Container);
+
 	// If we have a target type, run the targeting logic. This is optional, targets can be added later
 	if (Container.TargetType.Get()) {
 		TArray<FHitResult> HitResults;
@@ -88,10 +90,32 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpec(FGameplay
 TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
 	TArray<FActiveGameplayEffectHandle> AllEffects;
 
+    bool NeedCheckCounter = false;
+    FCoreGameplayEffectContainer* FoundContainer = ContainerSpec.ContainerPtr;
+    switch (FoundContainer->CounterEnum) {
+    case CoreAbilityCounterEnum::E_None:
+        break;
+    case CoreAbilityCounterEnum::E_Fixed:
+        NeedCheckCounter = true;
+        RestCounter -= FoundContainer->FixedCounter;
+        break;
+    case CoreAbilityCounterEnum::E_Trigger:
+        NeedCheckCounter = true;
+        break;
+    default:
+        check(false && "not support");
+        break;
+    }
+
 	// Iterate list of effect specs and apply them to their target data
 	for (const FGameplayEffectSpecHandle& SpecHandle : ContainerSpec.TargetGameplayEffectSpecs) {
 		AllEffects.Append(K2_ApplyGameplayEffectSpecToTarget(SpecHandle, ContainerSpec.TargetData));
 	}
+
+    if (NeedCheckCounter && RestCounter <= 0) {
+        K2_EndAbility();
+    }
+
 	return AllEffects;
 }
 
@@ -121,8 +145,52 @@ bool UCoreAbility::K2_IsConditionSatisfy() {
     return bSatisfy;
 }
 
+void UCoreAbility::OnActivateNative_Implementation() {
+
+}
+
+void UCoreAbility::OnEndNative_Implementation() {
+
+}
+
 void UCoreAbility::NotifyComboAbility_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection) {
 
+}
+
+void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) {
+    if (!FMath::IsNearlyZero(LimitActiveTime)) {
+        if (LimitActiveTimeHandle.IsValid()) {
+            GetWorld()->GetTimerManager().ClearTimer(LimitActiveTimeHandle);
+            LimitActiveTimeHandle.Invalidate();
+        }
+
+        GetWorld()->GetTimerManager().SetTimer(LimitActiveTimeHandle, this, &UCoreAbility::LimitActiveTimeCallback, LimitActiveTime, false);
+    }
+
+    OnGameplayAbilityEnded.AddUObject(this, &UCoreAbility::OnAbilityEnd);
+
+    if (bHasBlueprintActivate) {
+        //子类覆写了，走子类
+        // A Blueprinted ActivateAbility function must call CommitAbility somewhere in its execution chain.
+        K2_ActivateAbility();
+    }
+    else if (bHasBlueprintActivateFromEvent) {
+        //子类覆写了，走子类
+        if (TriggerEventData) {
+            // A Blueprinted ActivateAbility function must call CommitAbility somewhere in its execution chain.
+            K2_ActivateAbilityFromEvent(*TriggerEventData);
+        }
+        else {
+            bool bReplicateEndAbility = false;
+            bool bWasCancelled = true;
+            EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+        }
+    }
+    else {
+        RestCounter = LimitActiveCounter;
+
+        OnActivateNative();
+    }
 }
 
 void UCoreAbility::CallEndAbility() {
@@ -145,4 +213,28 @@ void UCoreAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const 
 	auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
 
 	OnAbilityInputReleased.Broadcast(this, Spec->InputID);
+}
+
+void UCoreAbility::LimitActiveTimeCallback() {
+    if (IsActive()) {
+        K2_EndAbility();
+    }
+}
+
+void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
+    if (LimitActiveTimeHandle.IsValid()) {
+        GetWorld()->GetTimerManager().ClearTimer(LimitActiveTimeHandle);
+        LimitActiveTimeHandle.Invalidate();
+    }
+
+    auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+    for (auto Iter = EffectContainerMap.CreateConstIterator(); Iter; ++Iter) {
+        if (Iter->Value.FollowGAPeriod) {
+            for (auto EffectInfo : Iter->Value.TargetGameplayEffects) {
+                AbilitySystemComponent->RemoveEffect(EffectInfo);
+            }
+        }
+    }
+
+    OnEndNative();
 }

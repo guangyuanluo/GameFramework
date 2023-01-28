@@ -19,6 +19,13 @@ class UGameplayEffect;
 class UCoreTargetType;
 class UCoreAbility;
 
+UENUM(BlueprintType)
+enum class CoreAbilityCounterEnum :uint8 {
+    E_None UMETA(DisplayName = "不消耗"),
+    E_Fixed UMETA(DisplayName = "固定次数"),
+    E_Trigger UMETA(DisplayName = "触发次数"),
+};
+
 /**
  * Struct defining a list of gameplay effects, a tag, and targeting info
  * These containers are defined statically in blueprints or assets and then turn into Specs at runtime
@@ -38,6 +45,29 @@ public:
 	/** List of gameplay effects to apply to the targets */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer)
 	TArray<FEffectInfo> TargetGameplayEffects;
+
+#if WITH_EDITORONLY_DATA
+    UPROPERTY(EditAnywhere, AdvancedDisplay, Category = GameplayEffectContainer, meta = (DisplayName = "是否显示计数相关属性"))
+    bool ShowCounterEdit = false;
+#endif
+
+    /**
+    * 消耗计数器类型
+    */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "计数消耗类型"))
+    CoreAbilityCounterEnum CounterEnum = CoreAbilityCounterEnum::E_None;
+
+    /**
+    * 如果是固定消耗类型，这里填固定消耗的数量
+    */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "固定消耗次数"))
+    int FixedCounter;
+
+    /**
+    * 是否跟随技能生命周期
+    */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "是否跟随技能生命周期"))
+    bool FollowGAPeriod = false;
 };
 
 /** A "processed" version of CoreGameplayEffectContainer that can be passed around and eventually applied */
@@ -56,6 +86,8 @@ public:
 	/** List of gameplay effects to apply to the targets */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer)
 	TArray<FGameplayEffectSpecHandle> TargetGameplayEffectSpecs;
+
+    FCoreGameplayEffectContainer* ContainerPtr;
 
 	/** Returns true if this has any valid effect specs */
 	bool HasValidEffects() const;

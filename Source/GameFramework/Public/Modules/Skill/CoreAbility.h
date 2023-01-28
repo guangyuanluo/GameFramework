@@ -53,11 +53,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能排序优先级"))
     int32 SortPriority;
 
-	/**
-	* 需要过滤处理的actor，避免多次伤害计算
-	*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<AActor*> FilterActors;
+    /**
+    * 单次激活生效时长
+    */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "生效限制", meta = (DisplayName = "限制时长", Tooltip = "单次激活生效时长"))
+    float LimitActiveTime = 0.f;
+
+    /**
+    * 单次激活生效次数
+    */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "生效限制", meta = (DisplayName = "限制次数", Tooltip = "单次激活生效次数"))
+    int LimitActiveCounter = 0;
 
 	/**
 	* 按键按下通知
@@ -105,6 +111,18 @@ public:
     UFUNCTION(BlueprintCallable, Category = Ability)
     bool K2_IsConditionSatisfy();
 
+    /**
+    * 技能激活
+    */
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "OnActivateNative", meta = (ScriptName = "OnActivateNative"))
+    void OnActivateNative();
+
+    /**
+    * 技能结束
+    */
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "OnEndNative", meta = (ScriptName = "OnEndNative"))
+    void OnEndNative();
+
 	/**
 	* 触发连招
 	*/
@@ -117,7 +135,32 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputReleased", meta = (ScriptName = "InputReleased"))
 	void K2_InputReleased();
 
+    virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void CallEndAbility() override;
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+
+private:
+    FTimerHandle LimitActiveTimeHandle;
+
+    /**
+    * 需要过滤处理的actor，避免多次伤害计算
+    */
+    UPROPERTY()
+    TArray<AActor*> FilterActors;
+
+    /**
+    * 剩余计数
+    */
+    UPROPERTY()
+    int RestCounter = 0;
+
+    UFUNCTION()
+    void LimitActiveTimeCallback();
+
+    /**
+    * 技能结束处理
+    */
+    UFUNCTION()
+    void OnAbilityEnd(UGameplayAbility* Ability);
 };
