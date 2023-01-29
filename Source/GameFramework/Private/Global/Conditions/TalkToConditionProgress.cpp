@@ -8,7 +8,6 @@
 #include "TalkToNPCEvent.h"
 #include "CoreCharacterStateBase.h"
 #include "CoreGameInstance.h"
-#include "GameFrameworkUtils.h"
 #include "GameSystemManager.h"
 #include "ConditionSystem.h"
 #include "ExecutingQuest.h"
@@ -18,7 +17,7 @@ void UTalkToConditionProgress::PostProgressInitialize_Implementation() {
 }
 
 bool UTalkToConditionProgress::IsQuestOtherProgressesComplete() {
-	auto GameInstance = UGameFrameworkUtils::GetGameInstance(ProgressOwner);
+	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetGameInstance());
 	if (GameInstance) {
 		auto ConditionSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>();
 		if (ConditionSystem) {

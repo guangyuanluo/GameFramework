@@ -121,12 +121,6 @@ public:
 	static FString GetEntityID(class AActor* Actor);
 
 	/**
-	* 获取GameInstance
-	*/
-	UFUNCTION(BlueprintPure, Category = "Utils")
-	static UCoreGameInstance* GetGameInstance(AActor* Actor);
-
-	/**
 	* 获取WorldSubsystem
 	*/
 	UFUNCTION(BlueprintPure, Category = "Utils", meta = (DeterminesOutputType = "SubsystemClass"))
