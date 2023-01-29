@@ -228,14 +228,6 @@ FString UGameFrameworkUtils::GetEntityID(class AActor* Actor) {
 	return "";
 }
 
-UCoreGameInstance* UGameFrameworkUtils::GetGameInstance(AActor* Actor) {
-	auto World = Actor->GetWorld();
-	if (World) {
-		return Cast<UCoreGameInstance>(World->GetGameInstance());
-	}
-	return nullptr;
-}
-
 bool UGameFrameworkUtils::IsTemplateObject(UObject* InObject) {
 	return InObject->IsTemplate();
 }
