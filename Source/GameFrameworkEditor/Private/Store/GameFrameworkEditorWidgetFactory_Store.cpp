@@ -3,9 +3,6 @@
 #include "Modules/Store/StoreSetting.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "Editor/UnrealEd/Classes/Factories/DataTableFactory.h"
-#include "AssetRegistryModule.h"
-#include "UnrealEd/Public/ObjectTools.h"
-#include "UnrealEd/Classes/Factories/DataAssetFactory.h"
 #include "GameFrameworkEditorWidgetTool.h"
 #include "GameFrameworkEditor.h"
 

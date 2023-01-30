@@ -10,8 +10,7 @@
 #include "Editor/UnrealEd/Classes/Factories/DataTableFactory.h"
 #include "GameFrameworkEditor.h"
 #include "GameFrameworkEditorWidgetTool.h"
-#include "UnrealEd/Public/ObjectTools.h"
-#include "Runtime/AssetRegistry/Public/AssetRegistryModule.h"
+#include "ObjectTools.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
