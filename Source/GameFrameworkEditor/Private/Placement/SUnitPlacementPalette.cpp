@@ -8,6 +8,10 @@
 #include "GameFrameworkEditor.h"
 #include "GameFrameworkEditorWidgetTool.h"
 
+#if ENGINE_MAJOR_VERSION > 4
+#include "ThumbnailRendering/ThumbnailManager.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "SUnitPlacementPalette"
 
 /** The asset of the asset view */
@@ -71,8 +75,12 @@ TSharedRef<ITableRow> SUnitPlacementPalette::MakeListViewWidget(TSharedPtr<FUnit
 		.OnDragDetected(this, &SUnitPlacementPalette::OnDraggingListViewWidget);
 
 	// Get the MediaSource thumbnail or the MediaBundle is not loaded
+#if ENGINE_MAJOR_VERSION > 4
+	TSharedPtr<FAssetThumbnailPool> ThumbnailPool = UThumbnailManager::Get().GetSharedThumbnailPool();
+#else
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
 	TSharedPtr<FAssetThumbnailPool> ThumbnailPool = LevelEditorModule.GetFirstLevelEditor()->GetThumbnailPool();
+#endif
 
 	FAssetData ThumbnailAssetData = UnitPlacement->UnitBundle;
 	if (UnitPlacement->UnitBundle.IsAssetLoaded())
