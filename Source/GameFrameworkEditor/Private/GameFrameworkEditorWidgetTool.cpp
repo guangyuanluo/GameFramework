@@ -24,8 +24,12 @@
 
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "Kismet2/EnumEditorUtils.h"
+#if ENGINE_MAJOR_VERSION > 4
+#include AssetRegistry/AssetRegistryModule.h
+#else
 #include "AssetRegistryModule.h"
-#include "UnrealEd/Public/ObjectTools.h"
+#endif
+#include "ObjectTools.h"
 #include "Editor/Enum/GenerateEnum.h"
 #include "Enum/GenerateEnumFactory.h"
 
@@ -404,14 +408,18 @@ void GameFrameworkEditorWidgetTool::ExportEnumBP(FString EnumClassName, FText En
 		FPlatformFileManager::Get().GetPlatformFile().CreateDirectory(*Directory);
 	}
 
-	FString AssetPath = FString::Format(TEXT("/Game/Data/Enum/{0}.{1}"), { EnumClassName, EnumClassName });
+#if ENGINE_MAJOR_VERSION > 4
+    FSoftObjectPath AssetPath = FString::Format(TEXT("/Game/Data/Enum/{0}.{1}"), { EnumClassName, EnumClassName });
+#else
+    FName AssetPath = *FString::Format(TEXT("/Game/Data/Enum/{0}.{1}"), { EnumClassName, EnumClassName });
+#endif
 	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
-	auto FindAsset = AssetRegistryModule.Get().GetAssetByObjectPath(*AssetPath);
+	auto FindAsset = AssetRegistryModule.Get().GetAssetByObjectPath(AssetPath);
 	if (!FindAsset.IsValid()) {
 		UGenerateEnumFactory* Factory = NewObject<UGenerateEnumFactory>();
 		AssetToolsModule.Get().CreateAsset(EnumClassName, Directory, UGenerateEnum::StaticClass(), Factory);
-		FindAsset = AssetRegistryModule.Get().GetAssetByObjectPath(*AssetPath);
+		FindAsset = AssetRegistryModule.Get().GetAssetByObjectPath(AssetPath);
 	}
 	UGenerateEnum* Enum = Cast<UGenerateEnum>(FindAsset.GetAsset());
 	TMap<int64, FText> OldEnumValueMap;

@@ -14,7 +14,11 @@
 #include "Editor.h"
 #include "Logging/MessageLog.h"
 #include "ARFilter.h"
+#if ENGINE_MAJOR_VERSION > 4
+#include AssetRegistry/AssetRegistryModule.h
+#else
 #include "AssetRegistryModule.h"
+#endif
 #include "Misc/HotReloadInterface.h"
 
 #define LOCTEXT_NAMESPACE "SClassViewer"
