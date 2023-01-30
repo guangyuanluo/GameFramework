@@ -169,7 +169,11 @@ TSharedRef<class SGraphEditor> FGraphEditorBase::CreateGraphEditorWidget(UEdGrap
 	// Make title bar
 	TSharedRef<SWidget> TitleBarWidget =
 		SNew(SBorder)
+#if ENGINE_MAJOR_VERSION > 4
+		.BorderImage(FAppStyle::GetBrush(TEXT("Graph.TitleBackground")))
+#else
 		.BorderImage(FEditorStyle::GetBrush(TEXT("Graph.TitleBackground")))
+#endif
 		.HAlign(HAlign_Fill)
 		[
 			SNew(SHorizontalBox)
@@ -179,7 +183,11 @@ TSharedRef<class SGraphEditor> FGraphEditorBase::CreateGraphEditorWidget(UEdGrap
 			[
 				SNew(STextBlock)
 				.Text(FText::FromString(TEXT("图表")))
+#if ENGINE_MAJOR_VERSION > 4
+				.TextStyle(FAppStyle::Get(), TEXT("GraphBreadcrumbButtonText"))
+#else
 				.TextStyle(FEditorStyle::Get(), TEXT("GraphBreadcrumbButtonText"))
+#endif
 			]
 		];
 
@@ -403,7 +411,7 @@ bool FGraphEditorBase::CanDeleteNodes() const {
 
 void FGraphEditorBase::CreateInternalWidgets() {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::HideNameArea, false);
+	FDetailsViewArgs DetailsViewArgs;
 	DetailsViewArgs.NotifyHook = this;
 	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 	DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);

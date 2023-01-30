@@ -143,7 +143,7 @@ void SScenarionActionListWidget::RefreshActionListPanel() {
 		auto ScenarioAction = (*ActionListPtr)[Index];
 		int CurrentIndex = Index;
 		FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::HideNameArea, false);
+		FDetailsViewArgs DetailsViewArgs;
 		DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 		TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 		DetailsView->SetObject(ScenarioAction);
@@ -160,7 +160,11 @@ void SScenarionActionListWidget::RefreshActionListPanel() {
 			.Padding(2)
 			[
 				SNew(SButton)
-				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
+				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")				
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -172,7 +176,11 @@ void SScenarionActionListWidget::RefreshActionListPanel() {
 				]
 				[
 					SNew(SImage)
-					.Image(FEditorStyle::Get().GetBrush("Cross"))
+#if ENGINE_MAJOR_VERSION > 4
+					.Image(FAppStyle::Get().GetBrush("Cross"))
+#else
+					.Image(FEditorStyle::Get().GetBrush("Cross"))					
+#endif
 				]
 			]
 		];

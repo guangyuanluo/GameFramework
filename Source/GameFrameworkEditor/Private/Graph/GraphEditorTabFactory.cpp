@@ -40,7 +40,11 @@ TSharedRef<SWidget> FGraphEditorSummoner::CreateTabBodyForObject(const FWorkflow
 
 const FSlateBrush* FGraphEditorSummoner::GetTabIconForObject(const FWorkflowTabSpawnInfo& Info, UEdGraph* DocumentID) const
 {
-	return FEditorStyle::GetBrush("NoBrush");
+#if ENGINE_MAJOR_VERSION > 4
+	return FAppStyle::GetBrush("NoBrush");
+#else
+	return FEditorStyle::GetBrush("NoBrush");	
+#endif
 }
 
 void FGraphEditorSummoner::SaveState(TSharedPtr<SDockTab> Tab, TSharedPtr<FTabPayload> Payload) const
@@ -63,7 +67,11 @@ FGraphDetailsSummoner::FGraphDetailsSummoner(TSharedPtr<class FGraphEditorBase> 
 	, EditorPtr(InEditorPtr)
 {
 	TabLabel = FText::FromString(TEXT("Details"));
+#if ENGINE_MAJOR_VERSION > 4
+	TabIcon = FSlateIcon(FAppStyle::GetAppStyleSetName(), "Kismet.Tabs.Components");
+#else
 	TabIcon = FSlateIcon(FEditorStyle::GetStyleSetName(), "Kismet.Tabs.Components");
+#endif
 
 	bIsSingleton = true;
 

@@ -278,7 +278,7 @@ void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability
 
 void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
     if (!Ability || !IsValid(Ability)) {
-        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with invalid Ability"));
+        UE_LOG(GameCore, Warning, TEXT("TryComboAbilityByClass called with invalid Ability"));
         return;
     }
 
@@ -402,12 +402,12 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
 void UCoreAbilitySystemComponent::ServerTryComboAbility_Implementation(FGameplayAbilitySpecHandle AbilityToCombo, FGameplayTag TriggerWayTag) {
     auto AbilitySpec = FindAbilitySpecFromHandle(AbilityToCombo);
     if (!AbilitySpec) {
-        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called fail:find ability spec fail"));
+        UE_LOG(GameCore, Warning, TEXT("TryComboAbilityByClass called fail:find ability spec fail"));
         return;
     }
     TArray<UGameplayAbility*> ActivateAbilities = AbilitySpec->GetAbilityInstances();
     if (ActivateAbilities.Num() == 0) {
-        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
+        UE_LOG(GameCore, Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
         return;
     }
     auto Ability = Cast<UCoreAbility>(ActivateAbilities[0]);
@@ -440,7 +440,7 @@ FComboSectionConfig* UCoreAbilitySystemComponent::GetCurrentCheckComboSection() 
 
 void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag) {
     if (!Ability || !Ability->IsActive()) {
-        ABILITY_LOG(Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
+        UE_LOG(GameCore, Warning, TEXT("TryComboAbilityByClass called with not active Ability"));
         return;
     }
     UAnimInstance* AnimInstance = AbilityActorInfo.IsValid() ? AbilityActorInfo->GetAnimInstance() : nullptr;
