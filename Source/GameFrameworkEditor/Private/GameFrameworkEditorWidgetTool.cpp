@@ -25,7 +25,7 @@
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "Kismet2/EnumEditorUtils.h"
 #if ENGINE_MAJOR_VERSION > 4
-#include AssetRegistry/AssetRegistryModule.h
+#include "AssetRegistry/AssetRegistryModule.h"
 #else
 #include "AssetRegistryModule.h"
 #endif
