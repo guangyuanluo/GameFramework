@@ -86,10 +86,18 @@ void SConditionEditWidget::GenerateConditionWidget() {
 		for (int Index = ConditionPtr->Num() - 1; Index >= 0; --Index) {
 			auto Condition = (*ConditionPtr)[Index];
 			if (Condition) {
+#if ENGINE_MAJOR_VERSION > 4
+				auto ConditionSlot = ConditionPage->AddSlot();
+#else
 				auto& ConditionSlot = ConditionPage->AddSlot();
+#endif
 				auto Factory = ConditionWidgetManager::GetFactoryByWidgetName(Condition->GetClass());
 				if (Factory) {
-					auto ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot);
+#if ENGINE_MAJOR_VERSION > 4
+					auto ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot());
+#else
+					auto ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot);
+#endif
 					ConditionSlot
 						.AutoHeight()
 						[
@@ -125,12 +133,18 @@ void SConditionEditWidget::ConditionNameComboBox_OnSelectionChanged(TSharedPtr<F
 FReply SConditionEditWidget::AddConditionButtonClicked() {
 	if (SelectConditionName.IsValid()) {
 
-		auto& ConditionSlot = ConditionPage->AddSlot().VAlign(VAlign_Center);
-		TSharedPtr<SConditionWidget> ConditionWidget = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName)->CreateConditionWidget(Outer, nullptr, ConditionSlot);
+#if ENGINE_MAJOR_VERSION > 4
+		auto ConditionSlot = ConditionPage->AddSlot();
+		TSharedPtr<SConditionWidget> ConditionWidget = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName)->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot());
+#else
+		auto& ConditionSlot = ConditionPage->AddSlot();
+		TSharedPtr<SConditionWidget> ConditionWidget = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName)->CreateConditionWidget(Outer, nullptr, &ConditionSlot);
+#endif
 
 		if (ConditionWidget.IsValid()) {
 			ConditionSlot
 				.AutoHeight()
+				.VAlign(VAlign_Center)
 				[
 					ConditionWidget.ToSharedRef()
 				];

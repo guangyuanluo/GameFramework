@@ -52,7 +52,11 @@ void SGameGraphNode::UpdateGraphNode()
 		.VAlign(VAlign_Center)
 		[
 			SNew(SBorder)
-			.BorderImage( FEditorStyle::GetBrush( "Graph.StateNode.Body" ) )
+#if ENGINE_MAJOR_VERSION > 4
+			.BorderImage(FAppStyle::GetBrush("Graph.StateNode.Body"))
+#else
+			.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.Body"))
+#endif
 			.Padding(0)
 			.BorderBackgroundColor( this, &SGameGraphNode::GetBorderBackgroundColor )
 			[
@@ -75,7 +79,11 @@ void SGameGraphNode::UpdateGraphNode()
 				.Padding(10.0f)
 				[
 					SNew(SBorder)
-					.BorderImage( FEditorStyle::GetBrush("Graph.StateNode.ColorSpill") )
+#if ENGINE_MAJOR_VERSION > 4
+					.BorderImage(FAppStyle::GetBrush("Graph.StateNode.ColorSpill"))
+#else
+					.BorderImage(FEditorStyle::GetBrush("Graph.StateNode.ColorSpill"))
+#endif
 					.BorderBackgroundColor( TitleShadowColor )
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
@@ -99,7 +107,11 @@ void SGameGraphNode::UpdateGraphNode()
 							.AutoHeight()
 							[
 								SAssignNew(InlineEditableText, SInlineEditableTextBlock)
-								.Style( FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText" )
+#if ENGINE_MAJOR_VERSION > 4
+								.Style(FAppStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
+#else
+								.Style(FEditorStyle::Get(), "Graph.StateNode.NodeTitleInlineEditableText")
+#endif
 								.Text( NodeTitle.Get(), &SNodeTitle::GetHeadTitle )
 								.IsReadOnly( true )
 								.IsSelected(this, &SGameGraphNode::IsSelectedExclusively)
@@ -146,7 +158,11 @@ FText SGameGraphNode::GetPreviewCornerText() const
 
 const FSlateBrush* SGameGraphNode::GetNameIcon() const
 {
-	return FEditorStyle::GetBrush( TEXT("Graph.StateNode.Icon") );
+#if ENGINE_MAJOR_VERSION > 4
+	return FAppStyle::GetBrush(TEXT("Graph.StateNode.Icon"));
+#else
+	return FEditorStyle::GetBrush(TEXT("Graph.StateNode.Icon"));
+#endif
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -63,7 +63,11 @@ TSharedRef<ITableRow> SUnitPlacementPalette::MakeListViewWidget(TSharedPtr<FUnit
 
 	TSharedRef< STableRow<TSharedPtr<FUnitPlacementListItem>> > TableRowWidget =
 		SNew(STableRow<TSharedPtr<FUnitPlacementListItem>>, OwnerTable)
+#if ENGINE_MAJOR_VERSION > 4
+		.Style(FAppStyle::Get(), "ContentBrowser.AssetListView.TableRow")
+#else
 		.Style(FEditorStyle::Get(), "ContentBrowser.AssetListView.TableRow")
+#endif
 		.OnDragDetected(this, &SUnitPlacementPalette::OnDraggingListViewWidget);
 
 	// Get the MediaSource thumbnail or the MediaBundle is not loaded
@@ -96,14 +100,22 @@ TSharedRef<ITableRow> SUnitPlacementPalette::MakeListViewWidget(TSharedPtr<FUnit
 			[
 				SNew(SBorder)
 				.Padding(4.0f)
+#if ENGINE_MAJOR_VERSION > 4
+				.BorderImage(FAppStyle::GetBrush("ContentBrowser.ThumbnailShadow"))
+#else
 				.BorderImage(FEditorStyle::GetBrush("ContentBrowser.ThumbnailShadow"))
+#endif
 				[
 					SNew(SBox)
 					.WidthOverride(35.0f)
 					.HeightOverride(35.0f)
 					[
 						SNew(SBorder)
-						.BorderImage(FEditorStyle::GetBrush("ContentBrowser.ThumbnailShadow"))
+#if ENGINE_MAJOR_VERSION > 4
+						.BorderImage(FAppStyle::GetBrush("ContentBrowser.ThumbnailShadow"))
+#else
+						.BorderImage(FEditorStyle::GetBrush("ContentBrowser.ThumbnailShadow"))						
+#endif
 						.HAlign(HAlign_Center)
 						.VAlign(VAlign_Center)
 						[
@@ -123,7 +135,11 @@ TSharedRef<ITableRow> SUnitPlacementPalette::MakeListViewWidget(TSharedPtr<FUnit
 				.AutoHeight()
 				[
 					SNew(STextBlock)
+#if ENGINE_MAJOR_VERSION > 4
+					.TextStyle(FAppStyle::Get(), "PlacementBrowser.Asset.Name")
+#else
 					.TextStyle(FEditorStyle::Get(), "PlacementBrowser.Asset.Name")
+#endif
 					.Text(UnitPlacement->DisplayName)
 				]
 			]

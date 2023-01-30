@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemGlobals.h"
 #include "Animation/AnimInstance.h"
+#include "UE4LogImpl.h"
 
 UAbilityTask_PlayMontageAndWaitForEvent::UAbilityTask_PlayMontageAndWaitForEvent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -173,19 +174,19 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 		}
 		else
 		{
-			ABILITY_LOG(Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent call to PlayMontage failed!"));
+			UE_LOG(GameCore, Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent call to PlayMontage failed!"));
 		}
 	}
 	else
 	{
-		ABILITY_LOG(Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent called on invalid AbilitySystemComponent"));
+		UE_LOG(GameCore, Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent called on invalid AbilitySystemComponent"));
 	}
 
 	if (!bPlayedMontage)
 	{
 		HandleEnd();
 
-		ABILITY_LOG(Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent called in Ability %s failed to play montage %s; Task Instance Name %s."), *Ability->GetName(), *GetNameSafe(MontageToPlay),*InstanceName.ToString());
+		UE_LOG(GameCore, Warning, TEXT("URPGAbilityTask_PlayMontageAndWaitForEvent called in Ability %s failed to play montage %s; Task Instance Name %s."), *Ability->GetName(), *GetNameSafe(MontageToPlay),*InstanceName.ToString());
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
 			OnCancelled.Broadcast(FGameplayTag(), FGameplayEventData());
@@ -197,7 +198,11 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 
 void UAbilityTask_PlayMontageAndWaitForEvent::ExternalCancel()
 {
+#if ENGINE_MAJOR_VERSION > 4
+	check(AbilitySystemComponent.IsValid());
+#else
 	check(AbilitySystemComponent);
+#endif
 
 	OnAbilityCancelled();
 
@@ -245,7 +250,11 @@ bool UAbilityTask_PlayMontageAndWaitForEvent::StopPlayingMontage()
 
 	// Check if the montage is still playing
 	// The ability would have been interrupted, in which case we should automatically stop the montage
+#if ENGINE_MAJOR_VERSION > 4
+	if (AbilitySystemComponent.IsValid() && Ability)
+#else
 	if (AbilitySystemComponent && Ability)
+#endif
 	{
 		if (AbilitySystemComponent->GetAnimatingAbility() == Ability
 			&& AbilitySystemComponent->GetCurrentMontage() == MontageToPlay)

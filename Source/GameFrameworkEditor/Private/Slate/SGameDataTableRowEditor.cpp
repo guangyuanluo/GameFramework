@@ -434,7 +434,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 		FDetailsViewArgs ViewArgs;
 		ViewArgs.bAllowSearch = false;
 		ViewArgs.bHideSelectionTip = false;
-		ViewArgs.bShowActorLabel = false;
+#if ENGINE_MAJOR_VERSION > 4
+		ViewArgs.bShowObjectLabel = false;
+#else
+		ViewArgs.bShowActorLabel = false;		
+#endif
 		ViewArgs.NotifyHook = this;
 
 		FStructureDetailsViewArgs StructureViewArgs;
@@ -461,7 +465,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 			.Padding(2)
 			[
 				SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -474,7 +482,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				]
 				[
 					SNew(SImage)
+#if ENGINE_MAJOR_VERSION > 4
+					.Image(FAppStyle::Get().GetBrush("Plus"))
+#else
 					.Image(FEditorStyle::Get().GetBrush("Plus"))
+#endif
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -482,7 +494,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 			.Padding(2)
 			[
 				SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -495,7 +511,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				]
 				[
 					SNew(SImage)
+#if ENGINE_MAJOR_VERSION > 4
+					.Image(FAppStyle::Get().GetBrush("Cross"))
+#else
 					.Image(FEditorStyle::Get().GetBrush("Cross"))
+#endif
 				]
 			]
 			+ SHorizontalBox::Slot()
@@ -525,14 +545,22 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				.Visibility(this, &SGameDataTableRowEditor::GetResetToDefaultVisibility)
 				.ContentPadding(FMargin(5.f, 0.f))
 				.ToolTipText(LOCTEXT("ResetToDefaultToolTip", "Reset to Default"))
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "NoBorder")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "NoBorder")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
 				.Content()
 				[
 					SNew(SImage)
+#if ENGINE_MAJOR_VERSION > 4
+					.Image(FAppStyle::GetBrush("PropertyWindow.DiffersFromDefault"))
+#else
 					.Image(FEditorStyle::GetBrush("PropertyWindow.DiffersFromDefault"))
+#endif
 				]
 			]
 
@@ -568,7 +596,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 			.Padding(2)
 			[
 				SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -576,7 +608,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				.ToolTipText(LOCTEXT("MoveUpTooltip", "Move the currently selected Row up by one in the data table"))
 				[
 					SNew(STextBlock)
+#if ENGINE_MAJOR_VERSION > 4
+					.Font(FAppStyle::Get().GetFontStyle("FontAwesome.14"))
+#else
 					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.14"))
+#endif
 					.Text(FText::FromString(FString(TEXT("\xf106"))) /*fa-angle-up*/)
 				]
 			]
@@ -585,7 +621,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 			.Padding(2)
 			[
 				SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -593,7 +633,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				.ToolTipText(LOCTEXT("MoveDownTooltip", "Move the currently selected Row down by one in the data table"))
 				[
 					SNew(STextBlock)
+#if ENGINE_MAJOR_VERSION > 4
+					.Font(FAppStyle::Get().GetFontStyle("FontAwesome.14"))
+#else
 					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.14"))
+#endif
 					.Text(FText::FromString(FString(TEXT("\xf107"))) /*fa-angle-down*/)
 				]
 			]
@@ -602,7 +646,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 			.Padding(2)
 			[
 				SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -610,7 +658,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				.ToolTipText(LOCTEXT("MoveToTopTooltip", "Move the currently selected Row to the top of the data table"))
 				[
 					SNew(STextBlock)
+#if ENGINE_MAJOR_VERSION > 4
+					.Font(FAppStyle::Get().GetFontStyle("FontAwesome.14"))
+#else
 					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.14"))
+#endif
 					.Text(FText::FromString(FString(TEXT("\xf102"))) /*fa-angle-double-up*/)
 				]
 			]
@@ -619,7 +671,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 			.Padding(2)
 			[
 				SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+				.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 				.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 				.ForegroundColor(FSlateColor::UseForeground())
 				.HAlign(HAlign_Center)
 				.VAlign(VAlign_Center)
@@ -627,7 +683,11 @@ void SGameDataTableRowEditor::Construct(const FArguments& InArgs, UDataTable* Ch
 				.ToolTipText(LOCTEXT("MoveToBottomTooltip", "Move the currently selected Row to the bottom of the data table"))
 				[
 					SNew(STextBlock)
+#if ENGINE_MAJOR_VERSION > 4
+					.Font(FAppStyle::Get().GetFontStyle("FontAwesome.14"))
+#else
 					.Font(FEditorStyle::Get().GetFontStyle("FontAwesome.14"))
+#endif
 					.Text(FText::FromString(FString(TEXT("\xf103"))) /*fa-angle-double-down*/)
 				]
 			]

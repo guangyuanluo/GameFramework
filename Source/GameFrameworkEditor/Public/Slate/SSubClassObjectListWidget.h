@@ -162,7 +162,7 @@ protected:
 			auto ListItem = (*ListPtr)[Index];
 			int CurrentIndex = Index;
 			FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-			FDetailsViewArgs DetailsViewArgs(false, false, false, FDetailsViewArgs::HideNameArea, false);
+			FDetailsViewArgs DetailsViewArgs;
 			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 			DetailsView->SetObject(ListItem);
@@ -179,7 +179,11 @@ protected:
 				.Padding(2)
 				[
 					SNew(SButton)
+#if ENGINE_MAJOR_VERSION > 4
+					.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+#else
 					.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
+#endif
 					.ForegroundColor(FSlateColor::UseForeground())
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
@@ -191,7 +195,11 @@ protected:
 					]
 					[
 						SNew(SImage)
+#if ENGINE_MAJOR_VERSION > 4
+						.Image(FAppStyle::Get().GetBrush("Cross"))
+#else
 						.Image(FEditorStyle::Get().GetBrush("Cross"))
+#endif
 					]
 				]
 			];

@@ -47,6 +47,10 @@ void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* Tar
 		if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(EventData.Target)) {
 			return;
 		}
+#if ENGINE_MAJOR_VERSION > 4
+		OutActors.Add(const_cast<AActor*>(EventData.Target.Get()));
+#else
 		OutActors.Add(const_cast<AActor*>(EventData.Target));
+#endif
 	}
 }

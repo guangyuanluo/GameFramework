@@ -6,22 +6,22 @@
 #include "Widgets/SBoxPanel.h"
 
 /**
-* Ìõ¼ş¿Ø¼ş¹¤³§
+* æ¡ä»¶æ§ä»¶å·¥å‚
 */
 class GAMEFRAMEWORKEDITOR_API ConditionWidgetFactory
 {
 public:
 	/**
-    * Ìõ¼şÀàĞÍ¿Ø¼şÃû×Ö
+    * æ¡ä»¶ç±»å‹æ§ä»¶åå­—
     */
     virtual FString GetConditionWidgetName() = 0;
 
     /**
-    * µÃµ½ÒªäÖÈ¾µÄclassÀàĞÍ
+    * å¾—åˆ°è¦æ¸²æŸ“çš„classç±»å‹
     */
     virtual TSubclassOf<class UCoreCondition> GetConditionClass() = 0;
     /**
-    * ´´½¨Ò»¸ö¿Ø¼ş
+    * åˆ›å»ºä¸€ä¸ªæ§ä»¶
     */
-    virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* condition, SVerticalBox::FSlot& parentSlot) = 0;
+    virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) = 0;
 };
