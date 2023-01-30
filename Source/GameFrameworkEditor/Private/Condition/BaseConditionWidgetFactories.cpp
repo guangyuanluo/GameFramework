@@ -791,17 +791,17 @@ namespace ConditionUI {
         }
 
 		TSharedRef<SWidget> GenerateCompareTypeComboItem(TSharedPtr<EIntimacyCompare> InItem) {
-			FText display;
-			const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EIntimacyCompare"), true);
+			FText Display;
+			const UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/GameFramework.EIntimacyCompare"), true);
 			if (!EnumPtr) {
-				display = FText::FromString(FString("Invalid"));
+				Display = FText::FromString(FString("Invalid"));
 			}
 			else {
-				display = EnumPtr->GetDisplayNameTextByValue((int64)(*InItem));
+				Display = EnumPtr->GetDisplayNameTextByValue((int64)(*InItem));
 			}
 
 			return SNew(STextBlock)
-				.Text(display);
+				.Text(Display);
 		}
 
 		void CompareTypeComboBox_OnSelectionChanged(TSharedPtr<EIntimacyCompare> NewGroupingMode, ESelectInfo::Type SelectInfo) {
@@ -823,14 +823,14 @@ namespace ConditionUI {
 		}
 
 		FText GetCompareTypeComboText() const {
-			FText display = FText::FromString(FString("Invalid"));
+			FText Display = FText::FromString(FString("Invalid"));
 			if (SelectCompare.IsValid()) {
-				const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EIntimacyCompare"), true);
+				const UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/GameFramework.EIntimacyCompare"), true);
 				if (EnumPtr) {
-					display = EnumPtr->GetDisplayNameTextByValue((int64)(*SelectCompare));
+					Display = EnumPtr->GetDisplayNameTextByValue((int64)(*SelectCompare));
 				}
 			}
-			return display;
+			return Display;
 		}
 
 		TArray<TSharedPtr<EIntimacyCompare>>* GetCompareTypeSource() {
