@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/NoExportTypes.h"
 #include "AdvanceObjectPromise.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnObjectPromiseSuccess, UObject*, Result);
@@ -72,12 +73,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void BindOtherPromise(UAdvanceObjectPromise* OtherPromise);
 
+	/**
+	* 设置超时时间
+	*/
+	UFUNCTION(BlueprintCallable)
+	void SetTimeout(float Timeout);
+
 private:
 	UPROPERTY()
 	UObject* Result;
 
 	bool HaveSet = false;
 	FString FailureReason;
+	FTimerHandle TimeoutHandle;
 
 	TArray<FOnObjectPromiseSuccess> OnSuccess;
 	TArray<FOnObjectPromiseFail> OnFailure;
@@ -90,4 +98,7 @@ private:
 
 	UFUNCTION()
 	void BindOtherPromiseFailureCallback(const FString& InFailureReason);
+
+	void TimeoutCallback();
+	void ClearTimeout();
 };
