@@ -6,8 +6,11 @@
 #include "UObject/NoExportTypes.h"
 #include "AdvanceObjectPromise.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnObjectPromiseSuccess, UObject*, Result);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnObjectPromiseFail, const FString&, FailureReason);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnObjectPromiseDynSuccess, UObject*, Result);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnObjectPromiseDynFail, const FString&, FailureReason);
+
+DECLARE_DELEGATE_OneParam(FOnObjectPromiseSuccess, UObject*);
+DECLARE_DELEGATE_OneParam(FOnObjectPromiseFail, const FString&);
 
 /**
 * result是object的promise
@@ -58,14 +61,18 @@ public:
 	/**
 	* 添加成功回调
 	*/
-	UFUNCTION(BlueprintCallable)
-	void AddSuccessListener(FOnObjectPromiseSuccess SuccessCallback);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AddSuccessListener", ScriptName = "AddSuccessListener", AutoCreateRefTerm = "SuccessCallback"))
+	UAdvanceObjectPromise* K2_AddSuccessListener(const FOnObjectPromiseDynSuccess& SuccessCallback);
+
+	UAdvanceObjectPromise* AddSuccessListener(const FOnObjectPromiseSuccess& SuccessCallback);
 
 	/**
 	* 添加失败回调
 	*/
-	UFUNCTION(BlueprintCallable)
-	void AddFailureListener(FOnObjectPromiseFail FailureCallback);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "AddFailureListener", ScriptName = "AddFailureListener", AutoCreateRefTerm = "FailureCallback"))
+	UAdvanceObjectPromise* K2_AddFailureListener(const FOnObjectPromiseDynFail& FailureCallback);
+
+	UAdvanceObjectPromise* AddFailureListener(const FOnObjectPromiseFail& FailureCallback);
 
 	/**
 	 * 绑定到另外一个promise上，另一个promise成功自己就成功，另一个promise失败自己就失败

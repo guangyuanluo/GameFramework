@@ -1,10 +1,11 @@
 #include "SimpleCodePipeline.h"
 #include "AdvanceObjectPromise.h"
-#include "Async.h"
+#include "Async/Async.h"
 
-USimpleCodePipeline::FPipelineFunction::FPipelineFunction()
-: SyncFunction(), AsyncFunction() {
-	
+USimpleCodePipeline* USimpleCodePipeline::K2_PushSyncFunction(const FPipelineSyncDynFunction& SyncFunction, bool IsFraming) {
+	return PushSyncFunction(FPipelineSyncFunction::CreateLambda([SyncFunction](UObject* CallbackContext) {
+		SyncFunction.ExecuteIfBound(CallbackContext);
+	}));
 }
 
 USimpleCodePipeline* USimpleCodePipeline::PushSyncFunction(const FPipelineSyncFunction& SyncFunction, bool IsFraming) {
@@ -17,6 +18,12 @@ USimpleCodePipeline* USimpleCodePipeline::PushSyncFunction(const FPipelineSyncFu
 	Executors.Add(PipelineFunction);
 
 	return this;
+}
+
+USimpleCodePipeline* USimpleCodePipeline::K2_PushAsyncFunction(const FPipelineAsyncDynFunction& AsyncFunction, bool IsFraming) {
+	return PushAsyncFunction(FPipelineAsyncFunction::CreateLambda([AsyncFunction](UObject* CallbackContext) {
+		return AsyncFunction.Execute(CallbackContext);
+	}));
 }
 
 USimpleCodePipeline* USimpleCodePipeline::PushAsyncFunction(const FPipelineAsyncFunction& AsyncFunction, bool IsFraming) {
@@ -33,9 +40,9 @@ USimpleCodePipeline* USimpleCodePipeline::PushAsyncFunction(const FPipelineAsync
 
 class UAdvanceObjectPromise* USimpleCodePipeline::Execute() {
 	check(ExecutePromise == nullptr);
-	
+
 	ExecutePromise = NewObject<UAdvanceObjectPromise>(this);
-	
+
 	if (Executors.Num() == 0) {
 		ExecutePromise->TrySuccess(nullptr);
 	}
@@ -54,7 +61,7 @@ void USimpleCodePipeline::Cancel() {
 void USimpleCodePipeline::RunExecutor() {
 	auto Executor = Executors[CurrentExecuteIndex];
 	if (Executor.IsFraming) {
-		AsyncTask(ENamedThreads::GameThread, [this](){
+		AsyncTask(ENamedThreads::GameThread, [this]() {
 			ExecuteNext();
 		});
 	}
@@ -71,13 +78,8 @@ void USimpleCodePipeline::ExecuteNext() {
 	auto Executor = Executors[CurrentExecuteIndex];
 	if (Executor.IsAsyncFunction) {
 		UAdvanceObjectPromise* CurrentExecutePromise = Executor.AsyncFunction.Execute(Context);
-		FOnObjectPromiseSuccess SuccessCallback;
-		SuccessCallback.BindUFunction(this, TEXT("ExecutorCallbackSuccess"));
-		CurrentExecutePromise->AddSuccessListener(SuccessCallback);
-
-		FOnObjectPromiseFail FailCallback;
-		FailCallback.BindUFunction(this, TEXT("ExecutorCallbackFail"));
-		CurrentExecutePromise->AddFailureListener(FailCallback);
+		CurrentExecutePromise->AddSuccessListener(FOnObjectPromiseSuccess::CreateUObject(this, &USimpleCodePipeline::ExecutorCallbackSuccess))
+			->AddFailureListener(FOnObjectPromiseFail::CreateUObject(this, &USimpleCodePipeline::ExecutorCallbackFail));
 	}
 	else {
 		Executor.SyncFunction.Execute(Context);
