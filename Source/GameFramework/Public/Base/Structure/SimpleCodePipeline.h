@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/NoExportTypes.h"
 #include "SimpleCodePipeline.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FPipelineSyncFunction, UObject*, Context);
-DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(class UAdvanceObjectPromise*, FPipelineAsyncFunction, UObject*, Context);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FPipelineSyncDynFunction, UObject*, Context);
+DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam(class UAdvanceObjectPromise*, FPipelineAsyncDynFunction, UObject*, Context);
+
+DECLARE_DELEGATE_OneParam(FPipelineSyncFunction, UObject*);
+DECLARE_DELEGATE_RetVal_OneParam(class UAdvanceObjectPromise*, FPipelineAsyncFunction, UObject*);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCodePipelineProgressChange, class USimpleCodePipeline*, Pipeline, int, CurrentIndex, int, TotalIndex);
 
@@ -35,7 +39,9 @@ public:
 	* SyncFunction 同步函数
 	* IsFraming 是否分帧，某些函数基于性能考虑，可能需要下帧执行，减少本帧占用时间
 	*/
-	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "SyncFunction"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PushSyncFunction", ScriptName = "PushSyncFunction", AutoCreateRefTerm = "SyncFunction"))
+	USimpleCodePipeline* K2_PushSyncFunction(const FPipelineSyncDynFunction& SyncFunction, bool IsFraming = false);
+
 	USimpleCodePipeline* PushSyncFunction(const FPipelineSyncFunction& SyncFunction, bool IsFraming = false);
 
 	/**
@@ -43,7 +49,9 @@ public:
 	* AsyncFunction 异步函数，基于promise判断是否完成
 	* IsFraming 是否分帧，某些函数基于性能考虑，可能需要下帧执行，减少本帧占用时间
 	*/
-	UFUNCTION(BlueprintCallable, meta = (AutoCreateRefTerm = "AsyncFunction"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PushAsyncFunction", ScriptName = "PushAsyncFunction", AutoCreateRefTerm = "AsyncFunction"))
+	USimpleCodePipeline* K2_PushAsyncFunction(const FPipelineAsyncDynFunction& AsyncFunction, bool IsFraming = false);
+
 	USimpleCodePipeline* PushAsyncFunction(const FPipelineAsyncFunction& AsyncFunction, bool IsFraming = false);
 
 	/**
@@ -71,12 +79,9 @@ private:
 	struct FPipelineFunction {
 		bool IsAsyncFunction;
 		bool IsFraming;
-		union {
-			FPipelineSyncFunction SyncFunction;
-			FPipelineAsyncFunction AsyncFunction;
-		};
-
-		FPipelineFunction();
+		
+		FPipelineSyncFunction SyncFunction;
+		FPipelineAsyncFunction AsyncFunction;		
 	};
 
 	int CurrentExecuteIndex = 0;
