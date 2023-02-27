@@ -108,4 +108,6 @@ private:
 
 	void TimeoutCallback();
 	void ClearTimeout();
+
+	void SetReadyToDestroy();
 };
