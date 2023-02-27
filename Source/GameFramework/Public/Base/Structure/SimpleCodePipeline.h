@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCodePipelineProgressChange, cl
  */
 UCLASS(BlueprintType)
 class GAMEFRAMEWORK_API USimpleCodePipeline : public UObject {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 
 public:
 	/*
@@ -35,24 +35,32 @@ public:
 	UObject* Context;
 
 	/**
+	 * 是否显示调试信息
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	bool ShowDebugInfo = false;
+
+	/**
 	* 往管线里面加同步执行代码，先加先执行
 	* SyncFunction 同步函数
+	* Condition 类似语法糖，减少蓝图各种if连接，如果为false等于这个push不生效
 	* IsFraming 是否分帧，某些函数基于性能考虑，可能需要下帧执行，减少本帧占用时间
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PushSyncFunction", ScriptName = "PushSyncFunction", AutoCreateRefTerm = "SyncFunction"))
-	USimpleCodePipeline* K2_PushSyncFunction(const FPipelineSyncDynFunction& SyncFunction, bool IsFraming = false);
+	USimpleCodePipeline* K2_PushSyncFunction(const FPipelineSyncDynFunction& SyncFunction, bool Condition = true, bool IsFraming = false, const FString& DebugName = TEXT(""));
 
-	USimpleCodePipeline* PushSyncFunction(const FPipelineSyncFunction& SyncFunction, bool IsFraming = false);
+	USimpleCodePipeline* PushSyncFunction(const FPipelineSyncFunction& SyncFunction, bool IsFraming = false, const FString& DebugName = TEXT(""));
 
 	/**
 	* 往管线里面加异步执行代码，先加先执行
 	* AsyncFunction 异步函数，基于promise判断是否完成
+	* Condition 类似语法糖，减少蓝图各种if连接，如果为false等于这个push不生效
 	* IsFraming 是否分帧，某些函数基于性能考虑，可能需要下帧执行，减少本帧占用时间
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "PushAsyncFunction", ScriptName = "PushAsyncFunction", AutoCreateRefTerm = "AsyncFunction"))
-	USimpleCodePipeline* K2_PushAsyncFunction(const FPipelineAsyncDynFunction& AsyncFunction, bool IsFraming = false);
+	USimpleCodePipeline* K2_PushAsyncFunction(const FPipelineAsyncDynFunction& AsyncFunction, bool Condition = true, bool IsFraming = false, const FString& DebugName = TEXT(""));
 
-	USimpleCodePipeline* PushAsyncFunction(const FPipelineAsyncFunction& AsyncFunction, bool IsFraming = false);
+	USimpleCodePipeline* PushAsyncFunction(const FPipelineAsyncFunction& AsyncFunction, bool IsFraming = false, const FString& DebugName = TEXT(""));
 
 	/**
 	* 开始执行管线
@@ -81,7 +89,9 @@ private:
 		bool IsFraming;
 		
 		FPipelineSyncFunction SyncFunction;
-		FPipelineAsyncFunction AsyncFunction;		
+		FPipelineAsyncFunction AsyncFunction;
+
+		FString DebugName;
 	};
 
 	int CurrentExecuteIndex = 0;
@@ -97,4 +107,6 @@ private:
 	void ExecutorCallbackFail(const FString& FailureReason);
 
 	void ExecutorExecuteComplete();
+
+	void SetReadyToDestroy();
 };

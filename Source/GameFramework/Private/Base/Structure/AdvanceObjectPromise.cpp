@@ -19,8 +19,19 @@ UAdvanceObjectPromise::UAdvanceObjectPromise(const class FObjectInitializer& Obj
 			}
 			OnSuccess.Empty();
 			OnFailure.Empty();
+
+			if (this) {
+				SetReadyToDestroy();
+			}
 		}));
 		Future = Promise->GetFuture();
+
+		SetFlags(RF_StrongRefOnFrame);
+		auto World = GetWorld();
+		ensure(World);
+		if (World) {
+			World->GetGameInstance()->RegisterReferencedObject(this);
+		}
 	}
 }
 
@@ -167,5 +178,19 @@ void UAdvanceObjectPromise::ClearTimeout() {
 			World->GetTimerManager().ClearTimer(TimeoutHandle);
 		}
 		TimeoutHandle.Invalidate();
+	}
+}
+
+void UAdvanceObjectPromise::SetReadyToDestroy() {
+	if (HasAnyFlags(RF_StrongRefOnFrame)) {
+		ClearFlags(RF_StrongRefOnFrame);
+	}
+
+	auto World = GetWorld();
+	if (World) {
+		auto GameInstance = World->GetGameInstance();
+		if (GameInstance) {
+			GameInstance->UnregisterReferencedObject(this);
+		}
 	}
 }

@@ -2,37 +2,58 @@
 #include "AdvanceObjectPromise.h"
 #include "Async/Async.h"
 
-USimpleCodePipeline* USimpleCodePipeline::K2_PushSyncFunction(const FPipelineSyncDynFunction& SyncFunction, bool IsFraming) {
-	return PushSyncFunction(FPipelineSyncFunction::CreateLambda([SyncFunction](UObject* CallbackContext) {
-		SyncFunction.ExecuteIfBound(CallbackContext);
-	}));
+USimpleCodePipeline::USimpleCodePipeline(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer) {
+	if (!HasAnyFlags(RF_ClassDefaultObject | RF_ArchetypeObject)) {
+		SetFlags(RF_StrongRefOnFrame);
+
+		auto World = GetWorld();
+		ensure(World);
+		if (World) {
+			World->GetGameInstance()->RegisterReferencedObject(this);
+		}
+	}
 }
 
-USimpleCodePipeline* USimpleCodePipeline::PushSyncFunction(const FPipelineSyncFunction& SyncFunction, bool IsFraming) {
+USimpleCodePipeline* USimpleCodePipeline::K2_PushSyncFunction(const FPipelineSyncDynFunction& SyncFunction, bool Condition, bool IsFraming, const FString& DebugName) {
+	if (!Condition) {
+		return this;
+	}
+	return PushSyncFunction(FPipelineSyncFunction::CreateLambda([SyncFunction](UObject* CallbackContext) {
+		SyncFunction.ExecuteIfBound(CallbackContext);
+	}), IsFraming, DebugName);
+}
+
+USimpleCodePipeline* USimpleCodePipeline::PushSyncFunction(const FPipelineSyncFunction& SyncFunction, bool IsFraming, const FString& DebugName) {
 	check(ExecutePromise == nullptr);
 
 	FPipelineFunction PipelineFunction;
 	PipelineFunction.IsAsyncFunction = false;
 	PipelineFunction.IsFraming = IsFraming;
 	PipelineFunction.SyncFunction = SyncFunction;
+	PipelineFunction.DebugName = DebugName;
 	Executors.Add(PipelineFunction);
 
 	return this;
 }
 
-USimpleCodePipeline* USimpleCodePipeline::K2_PushAsyncFunction(const FPipelineAsyncDynFunction& AsyncFunction, bool IsFraming) {
+USimpleCodePipeline* USimpleCodePipeline::K2_PushAsyncFunction(const FPipelineAsyncDynFunction& AsyncFunction, bool Condition, bool IsFraming, const FString& DebugName) {
+	if (!Condition) {
+		return this;
+	}
 	return PushAsyncFunction(FPipelineAsyncFunction::CreateLambda([AsyncFunction](UObject* CallbackContext) {
 		return AsyncFunction.Execute(CallbackContext);
-	}));
+	}), IsFraming, DebugName);
 }
 
-USimpleCodePipeline* USimpleCodePipeline::PushAsyncFunction(const FPipelineAsyncFunction& AsyncFunction, bool IsFraming) {
+USimpleCodePipeline* USimpleCodePipeline::PushAsyncFunction(const FPipelineAsyncFunction& AsyncFunction, bool IsFraming, const FString& DebugName) {
 	check(ExecutePromise == nullptr);
 
 	FPipelineFunction PipelineFunction;
 	PipelineFunction.IsAsyncFunction = true;
 	PipelineFunction.IsFraming = IsFraming;
 	PipelineFunction.AsyncFunction = AsyncFunction;
+	PipelineFunction.DebugName = DebugName;
 	Executors.Add(PipelineFunction);
 
 	return this;
@@ -56,6 +77,8 @@ class UAdvanceObjectPromise* USimpleCodePipeline::Execute() {
 void USimpleCodePipeline::Cancel() {
 	check(ExecutePromise);
 	ExecutePromise->TryFailure(TEXT("UserCancel"));
+
+	SetReadyToDestroy();
 }
 
 void USimpleCodePipeline::RunExecutor() {
@@ -71,12 +94,21 @@ void USimpleCodePipeline::RunExecutor() {
 }
 
 void USimpleCodePipeline::ExecuteNext() {
+	if (ShowDebugInfo) {
+		UE_LOG(LogTemp, Log, TEXT("%s USimpleCodePipeline::ExecuteNext"), *DebugPipelineName);
+	}
 	if (ExecutePromise->IsReady()) {
 		//已经完成了，应该是被流程中断了
+		if (ShowDebugInfo) {
+			UE_LOG(LogTemp, Log, TEXT("%s USimpleCodePipeline::ExecuteNext already complete"), *DebugPipelineName);
+		}
 		return;
 	}
 	auto Executor = Executors[CurrentExecuteIndex];
 	if (Executor.IsAsyncFunction) {
+		if (ShowDebugInfo) {
+			UE_LOG(LogTemp, Log, TEXT("%s USimpleCodePipeline::Executor ExecuteNext Start%s"), *DebugPipelineName, *Executor.DebugName);
+		}
 		UAdvanceObjectPromise* CurrentExecutePromise = Executor.AsyncFunction.Execute(Context);
 		CurrentExecutePromise->AddSuccessListener(FOnObjectPromiseSuccess::CreateUObject(this, &USimpleCodePipeline::ExecutorCallbackSuccess))
 			->AddFailureListener(FOnObjectPromiseFail::CreateUObject(this, &USimpleCodePipeline::ExecutorCallbackFail));
@@ -98,14 +130,35 @@ void USimpleCodePipeline::ExecutorCallbackFail(const FString& FailureReason) {
 }
 
 void USimpleCodePipeline::ExecutorExecuteComplete() {
+	//已经完成了，应该是被流程中断了
+	if (ShowDebugInfo) {
+		UE_LOG(LogTemp, Log, TEXT("%s USimpleCodePipeline::Executor ExecuteComplete %s"), *DebugPipelineName, *Executors[CurrentExecuteIndex].DebugName);
+	}
+
 	CurrentExecuteIndex = CurrentExecuteIndex + 1;
 	//进度通知
 	OnCodePipelineProgressChange.Broadcast(this, CurrentExecuteIndex, Executors.Num());
 
 	if (CurrentExecuteIndex >= Executors.Num()) {
 		ExecutePromise->TrySuccess(nullptr);
+
+		SetReadyToDestroy();
 	}
 	else {
 		RunExecutor();
+	}
+}
+
+void USimpleCodePipeline::SetReadyToDestroy() {
+	if (HasAnyFlags(RF_StrongRefOnFrame)) {
+		ClearFlags(RF_StrongRefOnFrame);
+	}
+
+	auto World = GetWorld();
+	if (World) {
+		auto GameInstance = World->GetGameInstance();
+		if (GameInstance) {
+			GameInstance->UnregisterReferencedObject(this);
+		}
 	}
 }
