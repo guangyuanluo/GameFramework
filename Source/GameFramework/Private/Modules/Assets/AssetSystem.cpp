@@ -469,6 +469,7 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
         }
     }
     auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
+    FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
     if (!BackpackExtendHandler->AllowItemAdd(BackpackComponent, ItemId, BackpackType)) {
         Error = TEXT("不允许物品添加到此背包");
         return TempChangeItems;
@@ -564,6 +565,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
     auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
+    FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
     //第一层key是packagetype，第二层key是itemid，value是AddItems的索引
     TMap<int, TMap<int, int>> TotalItems;
     for (int Index = 0; Index < AddItems.Num(); ++Index) {
@@ -877,6 +879,7 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
 	auto NewSlotIndexOrigineItem = NewBackpack[NewSlotIndex];
 
     auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
+    FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
     if (!BackpackExtendHandler->CanMoveItem(BackpackComponent, BackpackType, SlotIndex, BackpackItem, NewPackageType, NewSlotIndex, NewSlotIndexOrigineItem)) {
         Error = TEXT("不允许移动对应物品");
         return false;
@@ -1116,21 +1119,24 @@ class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler(UBackpackCo
         }
     }
     auto BackpackExtendHandlerCDO = Cast<UBackpackExtendHandler>(BackpackExtendHandlerClass->GetDefaultObject());
-    BackpackExtendHandlerCDO->LoadWorldContext(BackpackComponent);
     return BackpackExtendHandlerCDO;
 }
 
 void UAssetSystem::OnItemEnterPackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index) {
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
-        GetBackpackExtendHandler(BackpackComponent)->OnItemAdd(BackpackComponent, Item, BackpackType, Index);
+        auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
+        FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
+        BackpackExtendHandler->OnItemAdd(BackpackComponent, Item, BackpackType, Index);
     }
 }
 
 void UAssetSystem::OnItemLeavePackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index) {
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
-        GetBackpackExtendHandler(BackpackComponent)->OnItemRemove(BackpackComponent, Item, BackpackType, Index);
+        auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
+        FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
+        BackpackExtendHandler->OnItemRemove(BackpackComponent, Item, BackpackType, Index);
     }
 }
 
