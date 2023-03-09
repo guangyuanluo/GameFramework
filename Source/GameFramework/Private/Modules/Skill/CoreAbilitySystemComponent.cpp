@@ -341,7 +341,7 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
                         continue;
                     }
                     auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
-                    ComboConditionCDO->LoadWorldContext(this);
+                    FLogicObjectLoadWorldScope LoadWorldScope(ComboConditionCDO, this);
 
                     if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
@@ -356,7 +356,7 @@ void UCoreAbilitySystemComponent::TryComboAbilityByClass(UCoreAbility* Ability, 
                         continue;
                     }
                     auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
-                    ComboConditionCDO->LoadWorldContext(this);
+                    FLogicObjectLoadWorldScope LoadWorldScope(ComboConditionCDO, this);
 
                     if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
@@ -470,7 +470,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
                         continue;
                     }
                     auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
-                    ComboConditionCDO->LoadWorldContext(this);
+                    FLogicObjectLoadWorldScope LoadWorldScope(ComboConditionCDO, this);
 
                     if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
@@ -485,7 +485,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
                         continue;
                     }
                     auto ComboConditionCDO = ComboCondition->GetDefaultObject<UCoreAbilityCondition>();
-                    ComboConditionCDO->LoadWorldContext(this);
+                    FLogicObjectLoadWorldScope LoadWorldScope(ComboConditionCDO, this);
 
                     if (!ComboConditionCDO->DoesSatisfy(this, Ability)) {
                         CheckCombo = false;
@@ -503,7 +503,7 @@ void UCoreAbilitySystemComponent::InternalComboAbility(UCoreAbility* Ability, FG
             }
 
             if (FindComboExecutor) {
-                FindComboExecutor->LoadWorldContext(this);
+                FLogicObjectLoadWorldScope LoadWorldScope(FindComboExecutor, this);
                 FindComboExecutor->ExecuteCombo(this, Ability, *CurrentCheckComboSection, TriggerWayTag);
             }
 
