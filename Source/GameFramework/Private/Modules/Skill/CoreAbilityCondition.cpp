@@ -1,5 +1,6 @@
 #include "CoreAbilityCondition.h"
 
-bool UCoreAbilityCondition::DoesSatisfy_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability) {
-	return true;
+void UCoreAbilityCondition::DoesSatisfy_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, bool& bValid, bool& bSatisfy) {
+	bValid = false;
+	bSatisfy = false;
 }

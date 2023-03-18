@@ -2,6 +2,8 @@
 
 #include "SkillBlueprintLibrary.h"
 #include "GameplayAbility.h"
+#include "CoreAbility.h"
+#include "Modules/Skill/CoreAbilityConditionGlobal.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -46,4 +48,13 @@ float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpecHandle(FGameplayEff
 
 float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpec(FGameplayEffectSpec Spec, FGameplayTag DataTag, bool WarnIfNotFound, float DefaultIfNotFound) {
     return Spec.GetSetByCallerMagnitude(DataTag, WarnIfNotFound, DefaultIfNotFound);
+}
+
+bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
+	for (const auto& ConditionConfig : Ability->ConditionConfigs) {
+		if (ConditionConfig.Condition->IsChildOf(UCoreAbilityCondition_CurrentComboSectionLimit::StaticClass())) {
+			return true;
+		}
+	}
+	return false;
 }

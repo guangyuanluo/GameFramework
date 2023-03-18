@@ -20,5 +20,5 @@ public:
     * 是否满足
     */
     UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    bool DoesSatisfy(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability);
+    void DoesSatisfy(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, bool& bValid, bool& bSatisfy);
 };

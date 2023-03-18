@@ -4,20 +4,17 @@
 #include "CoreAbility.h"
 #include "CoreCharacter.h"
 
-void UCoreTargetType::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	return;
 }
 
-void UCoreTargetType_UseOwner::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType_UseOwner::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
-	if (FilterActors.Contains(TargetingCharacter)) {
-		return;
-	}
 	OutActors.Add(TargetingCharacter);
 }
 
-void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	bool AddTarget = false;
 	if (EventData.TargetData.Num() > 0) {
@@ -25,32 +22,16 @@ void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* Tar
 			if (EventData.TargetData.IsValid(Index)) {
 				auto TargetData = EventData.TargetData.Get(Index);
 				if (const FHitResult* FoundHitResult = TargetData->GetHitResult()) {
-					if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(FoundHitResult->GetActor())) {
-						continue;
-					}
 					AddTarget = true;
 					OutHitResults.Add(*FoundHitResult);
 				}
 				else {
 					for (auto Actor : TargetData->GetActors()) {
-						if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(Actor.Get())) {
-							continue;
-						}
 						AddTarget = true;
 						OutActors.Add(Actor.Get());
 					}
 				}
 			}
 		}
-	}
-	if (!AddTarget && EventData.Target) {
-		if (!UCoreAbility::GlobalIgnoreFilterActors && FilterActors.Contains(EventData.Target)) {
-			return;
-		}
-#if ENGINE_MAJOR_VERSION > 4
-		OutActors.Add(const_cast<AActor*>(EventData.Target.Get()));
-#else
-		OutActors.Add(const_cast<AActor*>(EventData.Target));
-#endif
 	}
 }

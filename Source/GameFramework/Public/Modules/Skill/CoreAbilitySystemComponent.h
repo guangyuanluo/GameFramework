@@ -96,16 +96,10 @@ public:
     void ResetAbilityCooldown(UGameplayAbility* Ability);
 
     /**
-    * 技能连招
+    * 清空技能冷却
     */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    void TryComboAbilityByClass(UCoreAbility* Ability, FGameplayTag TriggerWayTag);
-
-    /**
-    * 服务器端执行连招
-    */
-    UFUNCTION(Server, reliable, WithValidation)
-    void ServerTryComboAbility(FGameplayAbilitySpecHandle AbilityToCombo, FGameplayTag TriggerWayTag);
+    void ClearAbilityCooldown(UGameplayAbility* Ability);
 
     /**
     * 按下对应input
@@ -120,33 +114,31 @@ public:
     void K2_AbilityLocalInputReleased(int32 InputID);
 
     /**
+     * 获取按键按下时间(秒)
+     */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    float GetInputPressTime(int32 InputID) const;
+
+    /**
     * 技能模板初始化委托
     */
     FSkillTemplatePostInit OnSkillTemplatePostInit;
 
-    /**
-    * 得到当前触发方式tag
-    */
-    UFUNCTION(BlueprintCallable, Category = "Character")
-    FGameplayTag GetCurrentTriggerWayTag() const;
-    /**
-    * 设置当前触发方式tag
-    */
-    UFUNCTION(BlueprintCallable, Category = "Character")
-    void SetCurrentTriggerWayTag(FGameplayTag TriggerWayTag);
-    /**
-    * 当前正在检查combo的section
-    */
-    struct FComboSectionConfig* GetCurrentCheckComboSection() const;
 
 private:
-    FGameplayTag CurrentTriggerWayTag;
-    struct FComboSectionConfig* CurrentCheckComboSection;
-
-    void InternalComboAbility(UCoreAbility* Ability, FGameplayTag TriggerWayTag);
+    TMap<int32, FDateTime> InputTimeMap;
 
     void AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
     void RemoveSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
     void AddEffectPrivate(class UDataTable* EffectDataTable, const FEffectInfo& EffectInfo, const FEffectPreAddDelegate& InEffectPreAddCallback);
     void RemoveEffectPrivate(class UDataTable* EffectDataTable, const FEffectInfo& EffectInfo);
+
+    UFUNCTION(Server, reliable, WithValidation)
+    void ServerInputPressed(int32 InputID);
+
+    UFUNCTION(Server, reliable, WithValidation)
+    void ServerInputReleased(int32 InputID);
+
+    void InputPressedLocal(int32 InputID);
+    void InputReleasedLocal(int32 InputID);
 };

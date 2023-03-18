@@ -30,11 +30,11 @@ public:
 
 	/** Called to determine targets to apply gameplay effects to */
 	UFUNCTION(BlueprintNativeEvent)
-	void GetTargets(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const;
+	void GetTargets(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const;
 };
 
 /** Trivial target type that uses the owner */
-UCLASS(NotBlueprintable)
+UCLASS(NotBlueprintable, meta = (DisplayName = "自身", ShowDisplayNames))
 class GAMEFRAMEWORK_API UCoreTargetType_UseOwner : public UCoreTargetType
 {
 	GENERATED_BODY()
@@ -44,11 +44,11 @@ public:
 	UCoreTargetType_UseOwner() {}
 
 	/** Uses the passed in event data */
-	virtual void GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
+	virtual void GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
 };
 
 /** Trivial target type that pulls the target out of the event data */
-UCLASS(NotBlueprintable)
+UCLASS(NotBlueprintable, meta = (DisplayName = "事件对象", ShowDisplayNames))
 class GAMEFRAMEWORK_API UCoreTargetType_UseEventData : public UCoreTargetType
 {
 	GENERATED_BODY()
@@ -58,5 +58,5 @@ public:
 	UCoreTargetType_UseEventData() {}
 
 	/** Uses the passed in event data */
-	virtual void GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, const TArray<AActor*>& FilterActors, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
+	virtual void GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
 };

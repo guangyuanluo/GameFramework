@@ -177,7 +177,6 @@ void UAdvanceObjectPromise::ClearTimeout() {
 		if (World) {
 			World->GetTimerManager().ClearTimer(TimeoutHandle);
 		}
-		TimeoutHandle.Invalidate();
 	}
 }
 
