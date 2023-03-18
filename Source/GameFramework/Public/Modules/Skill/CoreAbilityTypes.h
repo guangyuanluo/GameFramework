@@ -39,7 +39,7 @@ public:
 	FCoreGameplayEffectContainer() {}
 
 	/** Sets the way that targeting happens */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (ShowDisplayNames))
 	TSubclassOf<UCoreTargetType> TargetType;
 
 	/** List of gameplay effects to apply to the targets */
@@ -68,6 +68,17 @@ public:
     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "是否跟随技能生命周期"))
     bool FollowGAPeriod = false;
+};
+
+/**
+ * Container配置
+ */
+USTRUCT(BlueprintType)
+struct FCoreGameplayEffectContainerConfig {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (ShowDisplayNames))
+	TArray<FCoreGameplayEffectContainer> Containers;
 };
 
 /** A "processed" version of CoreGameplayEffectContainer that can be passed around and eventually applied */
@@ -100,41 +111,15 @@ public:
 };
 
 /**
-* 连招片段配置
-*/
-USTRUCT(BlueprintType, meta = (DisplayName = "配置项"))
-struct FComboSectionConfig {
-	GENERATED_BODY()
-
-	/**
-	* 跳转蒙太奇片段
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "跳转蒙太奇片段"))
-	FName JumpSection;
-
-	/**
-	* 跳转技能
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "跳转其他技能"))
-	TSubclassOf<UCoreAbility> JumpAbility;
-
-	/**
-	* 连招检查器
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招条件"))
-	TArray<TSubclassOf<class UCoreAbilityCondition>> Conditions;
-};
-
-/**
-* 连招片段配置
+* 条件配置
 */
 USTRUCT(BlueprintType)
-struct FComboSectionConfigs {
+struct FCoreConditionConfig {
 	GENERATED_BODY()
 
-	/**
-	* 所有配置
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FComboSectionConfig> Configs;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "条件类型", ShowDisplayNames))
+    TSubclassOf<class UCoreAbilityCondition> Condition;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "取反"))
+	bool bNot = false;
 };

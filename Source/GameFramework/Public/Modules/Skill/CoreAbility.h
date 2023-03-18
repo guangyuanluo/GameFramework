@@ -23,35 +23,27 @@ class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbil
 	GENERATED_UCLASS_BODY()
 
 public:
-    static bool GlobalIgnoreFilterActors;
-
     /**
     * 技能触发条件
     */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件"))
-    TArray<TSubclassOf<class UCoreAbilityCondition>> Conditions;
-
-	/**
-	* 连招配置
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "连招配置"))
-	TMap<FName, FComboSectionConfigs> ComboMap;
+    TArray<FCoreConditionConfig> ConditionConfigs;
 
 	/** gameplay tags 映射触发的 gameplay effect containers */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能事件配置"))
 	TMap<FGameplayTag, FCoreGameplayEffectContainer> EffectContainerMap;
 
 	/**
-	* 连招执行器
-	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "连招执行器"))
-	TSubclassOf<class UCoreAbilityComboExecutor> ComboExecutor;
-
-	/**
     * 技能排序优先级
     */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能排序优先级"))
     int32 SortPriority;
+
+    /**
+     * 技能结束自动清空cd
+     */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Default", meta = (DisplayName = "技能结束自动清空cd"))
+    bool bClearCooldownOnEnd = true;
 
     /**
     * 单次激活生效时长
@@ -94,12 +86,6 @@ public:
 	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
 
 	/**
-	* 清空过滤的actor
-	*/
-	UFUNCTION(BlueprintCallable, Category = Ability)
-	void ClearFilterActors();
-
-	/**
 	* 是否激活
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = Ability, DisplayName = "IsActive", Meta = (ExpandBoolAsExecs = "ReturnValue"))
@@ -123,12 +109,6 @@ public:
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "OnEndNative", meta = (ScriptName = "OnEndNative"))
     void OnEndNative();
 
-	/**
-	* 触发连招
-	*/
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "ComboAbility", meta = (ScriptName = "ComboAbility"))
-	void NotifyComboAbility(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection);
-
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputPressed", meta = (ScriptName = "InputPressed"))
 	void K2_InputPressed();
 
@@ -137,17 +117,11 @@ public:
 
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void CallEndAbility() override;
-	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
+	virtual void CallInputReleased(const FGameplayAbilitySpecHandle Handle);
 
 private:
     FTimerHandle LimitActiveTimeHandle;
-
-    /**
-    * 需要过滤处理的actor，避免多次伤害计算
-    */
-    UPROPERTY()
-    TArray<AActor*> FilterActors;
 
     /**
     * 剩余计数

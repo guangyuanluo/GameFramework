@@ -1,5 +1,4 @@
 #include "CoreAbility.h"
-#include "CoreAbilityComboExecutor.h"
 #include "CoreCharacter.h"
 #include "CoreTargetType.h"
 #include "CoreAbilitySystemComponent.h"
@@ -7,10 +6,7 @@
 #include "EffectConfigTableRow.h"
 #include "SkillSetting.h"
 #include "CoreCharacterStateBase.h"
-#include "CoreAbilityComboExecutor.h"
 #include "CoreAbilityCondition.h"
-
-bool UCoreAbility::GlobalIgnoreFilterActors = false;
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -20,8 +16,6 @@ UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	//默认ds通知input
 	bReplicateInputDirectly = true;
-
-	ComboExecutor = UCoreAbilityComboExecutor_Default::StaticClass();
 }
 
 FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContainer(const FCoreGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel) {
@@ -37,25 +31,7 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		const UCoreTargetType* TargetTypeCDO = Container.TargetType.GetDefaultObject();
 		ACoreCharacter* TargetingCharacter = Cast<ACoreCharacter>(GetAvatarActorFromActorInfo());
 		ACoreCharacterStateBase* TargetingState = Cast<ACoreCharacterStateBase>(GetOwningActorFromActorInfo());
-		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, FilterActors, HitResults, TargetActors);
-		for (int Index = HitResults.Num() - 1; Index >= 0; --Index) {
-			auto HitResult = HitResults[Index];
-			if (!GlobalIgnoreFilterActors && FilterActors.Contains(HitResult.GetActor())) {
-				HitResults.RemoveAt(Index);
-			}
-			else {
-				FilterActors.Add(HitResult.GetActor());
-			}
-		}
-		for (auto Index = TargetActors.Num() - 1; Index >= 0; --Index) {
-			auto TargetActor = TargetActors[Index];
-			if (!GlobalIgnoreFilterActors && FilterActors.Contains(TargetActor)) {
-				TargetActors.RemoveAt(Index);
-			}
-			else {
-				FilterActors.Add(TargetActor);
-			}
-		}
+		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, HitResults, TargetActors);
 		ReturnSpec.AddTargets(HitResults, TargetActors);
 	}
 
@@ -124,10 +100,6 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainer(FGameplay
 	return ApplyEffectContainerSpec(Spec);
 }
 
-void UCoreAbility::ClearFilterActors() {
-	FilterActors.Empty();
-}
-
 bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
 }
@@ -135,9 +107,12 @@ bool UCoreAbility::K2_IsActive() const {
 bool UCoreAbility::K2_IsConditionSatisfy() {
     auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
     bool bSatisfy = true;
-    for (auto Condition : Conditions) {
-        auto CoreAbilityConditionCDO = Condition->GetDefaultObject<UCoreAbilityCondition>();
-        if (!CoreAbilityConditionCDO->DoesSatisfy(AbilitySystemComponent, this)) {
+    for (const auto& ConditionConfig : ConditionConfigs) {
+        auto CoreAbilityConditionCDO = ConditionConfig.Condition->GetDefaultObject<UCoreAbilityCondition>();
+        bool bValid;
+        bool bConditionSatisfy;
+        CoreAbilityConditionCDO->DoesSatisfy(AbilitySystemComponent, this, bValid, bConditionSatisfy);
+        if (!bValid || bConditionSatisfy == ConditionConfig.bNot) {
             bSatisfy = false;
             break;
         }
@@ -153,15 +128,10 @@ void UCoreAbility::OnEndNative_Implementation() {
 
 }
 
-void UCoreAbility::NotifyComboAbility_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, FName const ComboSection) {
-
-}
-
 void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) {
     if (!FMath::IsNearlyZero(LimitActiveTime)) {
         if (LimitActiveTimeHandle.IsValid()) {
             GetWorld()->GetTimerManager().ClearTimer(LimitActiveTimeHandle);
-            LimitActiveTimeHandle.Invalidate();
         }
 
         GetWorld()->GetTimerManager().SetTimer(LimitActiveTimeHandle, this, &UCoreAbility::LimitActiveTimeCallback, LimitActiveTime, false);
@@ -197,22 +167,22 @@ void UCoreAbility::CallEndAbility() {
 	K2_EndAbility();
 }
 
-void UCoreAbility::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) {
-	K2_InputPressed();
+void UCoreAbility::CallInputPressed(const FGameplayAbilitySpecHandle Handle) {
+    K2_InputPressed();
 
-	auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
-	auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+    auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
+    auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
 
-	OnAbilityInputPressed.Broadcast(this, Spec->InputID);
+    OnAbilityInputPressed.Broadcast(this, Spec->InputID);
 }
 
-void UCoreAbility::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) {
-	K2_InputReleased();
+void UCoreAbility::CallInputReleased(const FGameplayAbilitySpecHandle Handle) {
+    K2_InputReleased();
 
-	auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
-	auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+    auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
+    auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
 
-	OnAbilityInputReleased.Broadcast(this, Spec->InputID);
+    OnAbilityInputReleased.Broadcast(this, Spec->InputID);
 }
 
 void UCoreAbility::LimitActiveTimeCallback() {
@@ -224,7 +194,6 @@ void UCoreAbility::LimitActiveTimeCallback() {
 void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
     if (LimitActiveTimeHandle.IsValid()) {
         GetWorld()->GetTimerManager().ClearTimer(LimitActiveTimeHandle);
-        LimitActiveTimeHandle.Invalidate();
     }
 
     auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
@@ -234,6 +203,10 @@ void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
                 AbilitySystemComponent->RemoveEffect(EffectInfo);
             }
         }
+    }
+
+    if (bClearCooldownOnEnd) {
+        AbilitySystemComponent->ClearAbilityCooldown(this);
     }
 
     OnEndNative();

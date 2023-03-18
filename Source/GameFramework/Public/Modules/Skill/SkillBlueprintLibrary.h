@@ -39,4 +39,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = Ability)
     static float GetSetByCallerMagnitudeWithSpec(struct FGameplayEffectSpec Spec, FGameplayTag DataTag, bool WarnIfNotFound = true, float DefaultIfNotFound = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = Ability)
+	static bool IsComboAbility(const UCoreAbility* Ability);
 };
