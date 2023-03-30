@@ -4,7 +4,7 @@
 #include "SGameGraphNode.h"
 #include "SlateCore.h"
 #include "ScenarioGraphNode.h"
-#include "Text/SInlineEditableTextBlock.h"
+#include "Widgets/Text/SInlineEditableTextBlock.h"
 
 #define LOCTEXT_NAMESPACE "GraphEditor"
 

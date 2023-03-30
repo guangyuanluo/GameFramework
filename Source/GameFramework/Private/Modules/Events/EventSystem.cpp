@@ -9,7 +9,7 @@
 #include "CoreGameInstance.h"
 #include "CorePlayerController.h"
 #include "Serialization/BufferArchive.h"
-#include "GameFrameworkUtils.h"
+#include "StringUtils.h"
 
 void UEventSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
@@ -43,7 +43,7 @@ void UEventSystem::PushEventToServer(UGameEventBase* InPushEvent, bool Reliable)
         if (PlayerController) {
             FBufferArchive ToBinary;
             InPushEvent->Serialize(ToBinary);
-            FString SerializeEvent = UGameFrameworkUtils::BinaryToString(ToBinary.GetData(), ToBinary.Num());
+            FString SerializeEvent = UStringUtils::BinaryToString(ToBinary.GetData(), ToBinary.Num());
 
 			if (Reliable) {
                 PlayerController->SendEventToServerReliable(InPushEvent->GetClass()->GetPathName(), SerializeEvent);
@@ -64,7 +64,7 @@ void UEventSystem::PushEventToClient(class ACorePlayerController* PlayerControll
     if (NetMode == ENetMode::NM_Client) {
         FBufferArchive ToBinary;
         InPushEvent->Serialize(ToBinary);
-        FString SerializeEvent = UGameFrameworkUtils::BinaryToString(ToBinary.GetData(), ToBinary.Num());
+        FString SerializeEvent = UStringUtils::BinaryToString(ToBinary.GetData(), ToBinary.Num());
         PlayerController->SendEventToClient(InPushEvent->GetClass()->GetPathName(), SerializeEvent);
     }
     else {
@@ -100,7 +100,7 @@ void UEventSystem::HandleSendEventToServer(class ACorePlayerController* PlayerCo
     UClass* FindEventClass = StaticLoadClass(UGameEventBase::StaticClass(), NULL, *EventClass);
     if (FindEventClass) {
         UGameEventBase* GameEvent = NewObject<UGameEventBase>(PlayerController, FindEventClass);
-        TArray<uint8> Data = UGameFrameworkUtils::StringToBinary(SerializeEvent);
+        TArray<uint8> Data = UStringUtils::StringToBinary(SerializeEvent);
         FMemoryReader FromBinary = FMemoryReader(Data, true);
         FromBinary.Seek(0);
         GameEvent->Serialize(FromBinary);
@@ -112,7 +112,7 @@ void UEventSystem::HandleSendEventToClient(const FString& EventClass, const FStr
     UClass* FindEventClass = StaticLoadClass(UGameEventBase::StaticClass(), NULL, *EventClass);
     if (FindEventClass) {
         UGameEventBase* GameEvent = NewObject<UGameEventBase>(this, FindEventClass);
-        TArray<uint8> Data = UGameFrameworkUtils::StringToBinary(SerializeEvent);
+        TArray<uint8> Data = UStringUtils::StringToBinary(SerializeEvent);
         FMemoryReader FromBinary = FMemoryReader(Data, true);
         FromBinary.Seek(0);
         GameEvent->Serialize(FromBinary);

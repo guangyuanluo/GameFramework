@@ -8,7 +8,7 @@
 
 
 /**
- * ×Ö·û´®¹«¹²º¯Êý
+ * å­—ç¬¦ä¸²å…¬å…±å‡½æ•°
  */
 UCLASS()
 class GAMEFRAMEWORK_API UStringUtils : public UBlueprintFunctionLibrary
@@ -17,14 +17,22 @@ public:
 	GENERATED_BODY()
 
 	/**
-	* ×Ö·û´®Æ¥Åä¿ªÊ¼
+	* å­—ç¬¦ä¸²åŒ¹é…å¼€å§‹
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static bool StartsWith(const FString& SearchStr, const FString& MatchStr, bool IgnoreCase = false);
 
 	/**
-	* ×Ö·û´®Æ¥Åä½áÊø
+	* å­—ç¬¦ä¸²åŒ¹é…ç»“æŸ
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static bool EndsWith(const FString& SearchStr, const FString& MatchStr, bool IgnoreCase = false);
+
+	/** å­—ç¬¦ä¸²è½¬int64 */
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "String To Int64", CompactNodeTitle = "->", BlueprintAutocast), Category = "Utilities|String")
+	static int64 Conv_StringToInt64(const FString& InString);
+
+    static TArray<uint8> StringToBinary(const FString& Str);
+    static FString BinaryToString(const TArray<uint8>& Data);
+    static FString BinaryToString(uint8* Data, int Num);
 };

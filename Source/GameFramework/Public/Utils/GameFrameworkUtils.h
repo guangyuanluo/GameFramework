@@ -29,28 +29,16 @@ public:
 	static UWaitCondition* WaitCondition(class ACorePlayerController* PlayerController, const TArray<UCoreCondition*>& Conditions);
 
 	/*
-	* @brief 得到半径内最近的角色
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static ACoreCharacter* GetClosestCharacterWithinRadius(ACoreCharacter* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, bool DrawDebug = true);
-
-	/*
-	* @brief 得到半径内所有的角色
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static TArray<ACoreCharacter*> GetAllCharactersWithinRadius(ACoreCharacter* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, bool DrawDebug = true);
-
-	/*
 	* @brief 得到半径内最近的actor
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static AActor* GetClosestActorWithinRadius(AActor* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, bool DrawDebug = true);
+	UFUNCTION(BlueprintCallable, Category = "Utils", meta = (DeterminesOutputType = "LimitActorClass"))
+	static AActor* GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug = true);
 
 	/*
 	* @brief 得到半径内所有的actor
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static TArray<AActor*> GetAllActorsWithinRadius(AActor* Source, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, bool DrawDebug = true);
+	UFUNCTION(BlueprintCallable, Category = "Utils", meta = (DeterminesOutputType = "LimitActorClass"))
+	static TArray<AActor*> GetAllActorsWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool SortByDistance = false, bool DrawDebug = true);
 
 	/**
 	* @brief 合并两个32位整数成64位整数
@@ -58,19 +46,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static int64 CombineNumber32(int NumberA, int NumberB);
 
-	/** 字符串转int64 */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "String To Int64", CompactNodeTitle = "->", BlueprintAutocast), Category = "Utilities|String")
-	static int64 Conv_StringToInt64(const FString& InString);
-
 	/** 是否运行在服务端 */
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static bool IsUE4RunInServer(UObject* WorldContext);
 
-    /**
-    * 从技能效果中获得单位
-    */
-    UFUNCTION(BlueprintCallable, Category = "Utils")
-    static class ACoreCharacter* GetCharacterFromGameEffectSpec(const FGameplayEffectSpec& Spec);
+	/** 是否运行在editor */
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static bool IsUE4RunInEditor();
 
     /**
     * 从组件拥有者获取Character
@@ -149,8 +131,4 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static FName GetMontageNextSection(class UAnimInstance* AnimInstance);
-
-    static TArray<uint8> StringToBinary(const FString& Str);
-    static FString BinaryToString(const TArray<uint8>& Data);
-    static FString BinaryToString(uint8* Data, int Num);
 };

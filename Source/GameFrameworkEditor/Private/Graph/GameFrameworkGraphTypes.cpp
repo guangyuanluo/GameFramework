@@ -10,10 +10,10 @@
 #include "Misc/PackageName.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Blueprint.h"
-#include "AssetData.h"
+#include "AssetRegistry/AssetData.h"
 #include "Editor.h"
 #include "Logging/MessageLog.h"
-#include "ARFilter.h"
+#include "AssetRegistry/ARFilter.h"
 #if ENGINE_MAJOR_VERSION > 4
 #include "AssetRegistry/AssetRegistryModule.h"
 #else

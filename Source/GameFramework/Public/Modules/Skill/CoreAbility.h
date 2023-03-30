@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "GameplayAbility.h"
 #include "CoreAbilityInterface.h"
+#include "Abilities/GameplayAbility.h"
 #include "GameplayTagContainer.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
 #include "CoreAbility.generated.h"

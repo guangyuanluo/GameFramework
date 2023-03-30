@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
 #include "Components/SkinnedMeshComponent.h"
+#include "Animation/AnimInstance.h"
 #include "AbilityTask_PlayMontageAndWaitForEvent.generated.h"
 
 class UCoreAbilitySystemComponent;
