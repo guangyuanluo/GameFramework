@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SkillBlueprintLibrary.h"
-#include "GameplayAbility.h"
+#include "Abilities/GameplayAbility.h"
 #include "CoreAbility.h"
 #include "Modules/Skill/CoreAbilityConditionGlobal.h"
 
@@ -57,4 +57,13 @@ bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
 		}
 	}
 	return false;
+}
+
+ACoreCharacter* USkillBlueprintLibrary::GetCharacterFromGameEffectSpec(const FGameplayEffectSpec& Spec) {
+    auto EffectCauser = Spec.GetContext().GetEffectCauser();
+    if (EffectCauser) {
+        auto CoreCharacter = Cast<ACoreCharacter>(EffectCauser);
+        return CoreCharacter;
+    }
+    return nullptr;
 }

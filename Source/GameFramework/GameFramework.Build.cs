@@ -96,6 +96,8 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Modules/Store",
             "GameFramework/Public/Modules/Order",
             "GameFramework/Public/Modules/Reward",
+            "GameFramework/Public/Modules/Scenario",
+            "GameFramework/Public/Modules/NPC",
             //Global
             "GameFramework/Public/Global/Events",
             "GameFramework/Public/Global/Conditions",
@@ -107,6 +109,7 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Utils/Async",
             "GameFramework/Public/Utils/Algorithm",
             "GameFramework/Public/Utils/Item",
+            "GameFramework/Public/Utils/String",
         });
         // To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
     }

@@ -42,4 +42,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Ability)
 	static bool IsComboAbility(const UCoreAbility* Ability);
+
+	/**
+	* 从技能效果中获得单位
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static class ACoreCharacter* GetCharacterFromGameEffectSpec(const FGameplayEffectSpec& Spec);
 };
