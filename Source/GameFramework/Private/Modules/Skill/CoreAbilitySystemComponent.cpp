@@ -145,24 +145,30 @@ void UCoreAbilitySystemComponent::RemoveEffect(const FEffectInfo& EffectInfo) {
     }
 }
 
+bool UCoreAbilitySystemComponent::DoesAbilityFilterCondition(const FGameplayTagContainer& TargetTagContainer, UCoreAbility* ActiveAbility, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy) {
+    if (ForceFilterActive) {
+        if (!ActiveAbility->IsActive()) {
+            return false;
+        }
+    }
+    else {
+        if (bOnlyAbilitiesThatSatisfy
+            && (
+                !ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer)
+                || !ActiveAbility->K2_IsConditionSatisfy()
+                )
+            ) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
     TArray<FGameplayAbilitySpec*> AbilitiesToActivate;
     GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTags, AbilitiesToActivate, false);
 
-    ACoreCharacter* TargetEnemy = nullptr;
-    FGameplayTagContainer TargetTagContainer;
-    if (AActor* ThisAvatarActor = GetAvatarActor()) {
-        auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
-        if (FindEnemyComponent) {
-            TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
-            if (TargetEnemy) {
-                auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
-                if (TargetAbilitySystemComponent) {
-                    TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
-                }
-            }
-        }
-    }
+    FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
 
     // Iterate the list of all ability specs
     for (FGameplayAbilitySpec* Spec : AbilitiesToActivate) {
@@ -171,20 +177,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithTags(FGameplayTagContain
 
         for (UGameplayAbility* AbilityInstance : AbilityInstances) {
             UCoreAbility* ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
-            if (ForceFilterActive) {
-                if (!ActiveAbility->IsActive()) {
-                    continue;
-                }
-            }
-            else {
-                if (bOnlyAbilitiesThatSatisfy 
-                && (
-                    !ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer)
-                    || !ActiveAbility->K2_IsConditionSatisfy()
-                    )
-                ) {
-                    continue;
-                }
+            if (ActiveAbility && DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, ForceFilterActive, bOnlyAbilitiesThatSatisfy)) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -204,37 +197,11 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
     if (FindSpec) {
         TArray<UGameplayAbility*> AbilityInstances = FindSpec->GetAbilityInstances();
 
-        ACoreCharacter* TargetEnemy = nullptr;
-        FGameplayTagContainer TargetTagContainer;
-        if (AActor* ThisAvatarActor = GetAvatarActor()) {
-            auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
-            if (FindEnemyComponent) {
-                TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
-                if (TargetEnemy) {
-                    auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
-                    if (TargetAbilitySystemComponent) {
-                        TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
-                    }
-                }
-            }
-        }
+        FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
 
         for (UGameplayAbility* AbilityInstance : AbilityInstances) {
             UCoreAbility* ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
-            if (ForceFilterActive) {
-                if (!ActiveAbility->IsActive()) {
-                    continue;
-                }
-            }
-            else {
-                if (bOnlyAbilitiesThatSatisfy
-                    && (
-                        !ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer)
-                        || !ActiveAbility->K2_IsConditionSatisfy()
-                        )
-                    ) {
-                    continue;
-                }
+            if (ActiveAbility && DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, ForceFilterActive, bOnlyAbilitiesThatSatisfy)) {
                 ActiveAbilities.Add(ActiveAbility);
             }
         }
@@ -250,20 +217,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithClass(TSubclassOf<UGamep
 }
 
 void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
-    ACoreCharacter* TargetEnemy = nullptr;
-    FGameplayTagContainer TargetTagContainer;
-    if (AActor* ThisAvatarActor = GetAvatarActor()) {
-        auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
-        if (FindEnemyComponent) {
-            TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
-            if (TargetEnemy) {
-                auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
-                if (TargetAbilitySystemComponent) {
-                    TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
-                }
-            }
-        }
-    }
+    FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
 
     for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items) {
         if (Spec.InputID == InputID) {
@@ -271,20 +225,7 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
 
             for (UGameplayAbility* AbilityInstance : AbilityInstances) {
                 UCoreAbility* ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
-                if (ForceFilterActive) {
-                    if (!ActiveAbility->IsActive()) {
-                        continue;
-                    }
-                }
-                else {
-                    if (bOnlyAbilitiesThatSatisfy
-                        && (
-                            !ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer)
-                            || !ActiveAbility->K2_IsConditionSatisfy()
-                            )
-                        ) {
-                        continue;
-                    }
+                if (ActiveAbility && DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, ForceFilterActive, bOnlyAbilitiesThatSatisfy)) {
                     ActiveAbilities.Add(ActiveAbility);
                 }
             }
@@ -298,6 +239,20 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
         };
         USortUtils::SortArray(ActiveAbilities, CompareFunc);
     }
+}
+
+TSubclassOf<UCoreAbility> UCoreAbilitySystemComponent::GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
+    FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
+
+    for (const auto& ActiveAbility : SortCoreAbilities) {
+        auto AbilitySpec = ActiveAbility->GetCurrentAbilitySpec();
+        if (AbilitySpec->InputID == InputID) {
+            if (DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, ForceFilterActive, bOnlyAbilitiesThatSatisfy)) {
+                return ActiveAbility->GetClass();
+            }
+        }
+    }
+    return nullptr;
 }
 
 void UCoreAbilitySystemComponent::ResetAbilityCooldown(UGameplayAbility* Ability) {
@@ -340,6 +295,48 @@ float UCoreAbilitySystemComponent::GetInputPressTime(int32 InputID) const {
         return DiffTime.GetTotalMilliseconds() * 0.001f;
     }
     return 0.f;
+}
+
+void UCoreAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) {
+    Super::OnGiveAbility(AbilitySpec);
+
+    //添加更新排序，todo，后面可以换成单个的插入排序，不用整体重新排序
+    SortCoreAbilities.Empty();
+
+    const auto& Abilities = GetActivatableAbilities();
+    for (const FGameplayAbilitySpec& Spec : Abilities) {
+        TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
+
+        for (UGameplayAbility* AbilityInstance : AbilityInstances) {
+            auto ActiveAbility = Cast<UCoreAbility>(AbilityInstance);
+            if (ActiveAbility) {
+                SortCoreAbilities.Add(ActiveAbility);
+            }
+        }
+    }
+
+    TFunction<bool(UCoreAbility*, UCoreAbility*)> CompareFunc = [](UCoreAbility* A, UCoreAbility* B) {
+        return A->SortPriority > B->SortPriority;
+    };
+    USortUtils::SortArray(SortCoreAbilities, CompareFunc);
+}
+
+void UCoreAbilitySystemComponent::OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec) {
+    Super::OnRemoveAbility(AbilitySpec);
+
+    //移除更新排序
+    TSubclassOf<UCoreAbility> AbilityClass = AbilitySpec.Ability->GetClass();
+    bool HaveFound = false;
+    for (int Index = SortCoreAbilities.Num() - 1; Index >= 0; --Index) {
+        if (SortCoreAbilities[Index]->GetClass() == AbilityClass) {
+            //同一类的ability是放在一起的，当for循环遍历完一类，后面就不用处理了
+            HaveFound = true;
+            SortCoreAbilities.RemoveAt(Index);
+        }
+        else if (HaveFound) {
+            break;
+        }
+    }
 }
 
 void UCoreAbilitySystemComponent::AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo) {
@@ -474,4 +471,21 @@ void UCoreAbilitySystemComponent::InputReleasedLocal(int32 InputID) {
             }
         }
     }
+}
+
+FGameplayTagContainer UCoreAbilitySystemComponent::GetTargetTagContainer() {
+    FGameplayTagContainer TargetTagContainer;
+    if (AActor* ThisAvatarActor = GetAvatarActor()) {
+        auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
+        if (FindEnemyComponent) {
+            auto TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
+            if (TargetEnemy) {
+                auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
+                if (TargetAbilitySystemComponent) {
+                    TargetAbilitySystemComponent->GetOwnedGameplayTags(TargetTagContainer);
+                }
+            }
+        }
+    }
+    return TargetTagContainer;
 }

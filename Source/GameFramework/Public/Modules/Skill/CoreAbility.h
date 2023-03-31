@@ -115,6 +115,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputReleased", meta = (ScriptName = "InputReleased"))
 	void K2_InputReleased();
 
+    virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const override;
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void CallEndAbility() override;
 	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
@@ -122,6 +123,7 @@ public:
 
 private:
     FTimerHandle LimitActiveTimeHandle;
+    TArray<FActiveGameplayEffectHandle> FollowGAPeriodEffectHandles;
 
     /**
     * 剩余计数

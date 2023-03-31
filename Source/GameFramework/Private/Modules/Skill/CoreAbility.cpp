@@ -7,6 +7,8 @@
 #include "SkillSetting.h"
 #include "CoreCharacterStateBase.h"
 #include "CoreAbilityCondition.h"
+#include "SkillBlueprintLibrary.h"
+#include "AbilitySystemGlobals.h"
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -85,7 +87,27 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
 
 	// Iterate list of effect specs and apply them to their target data
 	for (const FGameplayEffectSpecHandle& SpecHandle : ContainerSpec.TargetGameplayEffectSpecs) {
-		AllEffects.Append(K2_ApplyGameplayEffectSpecToTarget(SpecHandle, ContainerSpec.TargetData));
+        auto EffectSpecHandles = K2_ApplyGameplayEffectSpecToTarget(SpecHandle, ContainerSpec.TargetData);
+        AllEffects.Append(EffectSpecHandles);
+        if (FoundContainer->FollowGAPeriod) {
+            //如果跟随技能生命周期，那么要记录下
+            FollowGAPeriodEffectHandles.Append(EffectSpecHandles);
+        }
+
+        //grant ability 自动激活
+        if (FoundContainer->AutoActiveGrantedAbility && SpecHandle.Data.IsValid() && SpecHandle.Data->Def && SpecHandle.Data->Def->GrantedAbilities.Num() > 0) {
+            auto AllTargetActors = ContainerSpec.GetAllTargetActors();
+            if (AllTargetActors.Num() > 0) {
+                for (const auto& TargetActor : AllTargetActors) {
+                    auto TargetAbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
+                    if (TargetAbilitySystemComponent) {
+                        for (const auto& GrantedAbility : SpecHandle.Data->Def->GrantedAbilities) {
+                            TargetAbilitySystemComponent->TryActivateAbilityByClass(GrantedAbility.Ability);
+                        }
+                    }
+                }
+            }
+        }
 	}
 
     if (NeedCheckCounter && RestCounter <= 0) {
@@ -128,6 +150,14 @@ void UCoreAbility::OnEndNative_Implementation() {
 
 }
 
+bool UCoreAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const {
+    if (USkillBlueprintLibrary::IsComboAbility(this)) {
+        //前置combo，不在这里检查cd
+        return true;
+    }
+    return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
+}
+
 void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) {
     if (!FMath::IsNearlyZero(LimitActiveTime)) {
         if (LimitActiveTimeHandle.IsValid()) {
@@ -158,6 +188,30 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
     }
     else {
         RestCounter = LimitActiveCounter;
+
+        if (!K2_IsConditionSatisfy()) {
+            K2_EndAbility();
+            return;
+        }
+
+        if (!K2_CheckAbilityCost()) {
+            K2_EndAbility();
+            return;
+        }
+
+        const bool bComboAbility = USkillBlueprintLibrary::IsComboAbility(this);
+        if (bComboAbility) {
+            //combo要重置cd
+            auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+            AbilitySystemComponent->ClearAbilityCooldown(this);
+        }
+
+        //先检查是否满足触发条件，这里要调到父类的check
+        bool CheckCooldown = UAbilitySystemGlobals::Get().ShouldIgnoreCooldowns() || Super::CheckCooldown(CurrentSpecHandle, CurrentActorInfo);
+        if (!CheckCooldown) {
+            K2_EndAbility();
+            return;
+        }
 
         OnActivateNative();
     }
@@ -197,13 +251,17 @@ void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
     }
 
     auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-    for (auto Iter = EffectContainerMap.CreateConstIterator(); Iter; ++Iter) {
-        if (Iter->Value.FollowGAPeriod) {
-            for (auto EffectInfo : Iter->Value.TargetGameplayEffects) {
-                AbilitySystemComponent->RemoveEffect(EffectInfo);
+    //处理跟随技能生命周期的effect，要移除
+    for (auto& FollowGAPeriodEffectHandle : FollowGAPeriodEffectHandles) {
+        if (FollowGAPeriodEffectHandle.IsValid()) {
+            auto TargetAbilitySystemComponent = FollowGAPeriodEffectHandle.GetOwningAbilitySystemComponent();
+            if (IsValid(TargetAbilitySystemComponent)) {
+                TargetAbilitySystemComponent->RemoveActiveGameplayEffect(FollowGAPeriodEffectHandle);
             }
         }
     }
+    //重置变量
+    FollowGAPeriodEffectHandles.Empty();
 
     if (bClearCooldownOnEnd) {
         AbilitySystemComponent->ClearAbilityCooldown(this);

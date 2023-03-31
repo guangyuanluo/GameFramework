@@ -68,6 +68,12 @@ public:
     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "是否跟随技能生命周期"))
     bool FollowGAPeriod = false;
+
+	/**
+	 * 是否自动激活GE上的Granted GA
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "是否自动激活GE上的Granted GA"))
+	bool AutoActiveGrantedAbility = false;
 };
 
 /**
@@ -108,6 +114,12 @@ public:
 
 	/** Adds new targets to target data */
 	void AddTargets(const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors);
+
+    /** get all valid target actor */
+    TArray<AActor*> GetAllTargetActors() const;
+
+    /** clear targets */
+    void ClearTargets();
 };
 
 /**
