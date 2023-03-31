@@ -77,6 +77,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Character")
     virtual void RemoveEffect(const FEffectInfo& EffectInfo);
 
+    /** 判断一个技能是否符合条件 */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    bool DoesAbilityFilterCondition(const FGameplayTagContainer& TargetTagContainer, UCoreAbility* ActiveAbility, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy);
+
     /** 返回指定条件拥有指定tag的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
     void GetActiveAbilitiesWithTags(FGameplayTagContainer AbilityTags, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
@@ -88,6 +92,10 @@ public:
     /** 返回指定条件拥有指定InputID的技能 */
     UFUNCTION(BlueprintCallable, Category = "Character")
     void GetActiveAbilitiesWithInputID(int32 InputID, TArray<UGameplayAbility*>& ActiveAbilities, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
+
+    /** 返回指定条件拥有指定InputID的优先级最高技能class */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    TSubclassOf<UCoreAbility> GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
 
     /**
     * 重置技能冷却
@@ -124,9 +132,14 @@ public:
     */
     FSkillTemplatePostInit OnSkillTemplatePostInit;
 
+    virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
+    virtual void OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
 private:
     TMap<int32, FDateTime> InputTimeMap;
+
+    UPROPERTY()
+    TArray<UCoreAbility*> SortCoreAbilities;
 
     void AddSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
     void RemoveSkillPrivate(class UDataTable* SkillDataTable, const FSkillInfo& SkillInfo);
@@ -141,4 +154,6 @@ private:
 
     void InputPressedLocal(int32 InputID);
     void InputReleasedLocal(int32 InputID);
+
+    FGameplayTagContainer GetTargetTagContainer();
 };

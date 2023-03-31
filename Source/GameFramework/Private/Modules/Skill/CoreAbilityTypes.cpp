@@ -29,3 +29,26 @@ void FCoreGameplayEffectContainerSpec::AddTargets(const TArray<FHitResult>& HitR
 		TargetData.Add(NewData);
 	}
 }
+
+TArray<AActor*> FCoreGameplayEffectContainerSpec::GetAllTargetActors() const {
+    TSet<AActor*> ActorSet;
+    TArray<AActor*> Result;
+
+    for (const auto& Data : TargetData.Data) {
+        auto DataActors = Data->GetActors();
+        for (const auto& DataActor : DataActors) {
+            if (DataActor.IsValid()) {
+                if (!ActorSet.Contains(DataActor.Get())) {
+                    ActorSet.Add(DataActor.Get());
+                    Result.Add(DataActor.Get());
+                }
+            }
+        }
+    }
+
+    return Result;
+}
+
+void FCoreGameplayEffectContainerSpec::ClearTargets() {
+    TargetData.Clear();
+}
