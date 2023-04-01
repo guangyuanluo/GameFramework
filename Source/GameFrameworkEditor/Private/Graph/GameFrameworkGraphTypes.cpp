@@ -471,7 +471,7 @@ void FGraphNodeClassHelper::BuildClassGraph()
 	TArray<FAssetData> BlueprintList;
 
 	FARFilter Filter;
-	Filter.ClassNames.Add(UBlueprint::StaticClass()->GetFName());
+	Filter.ClassPaths.Add(UBlueprint::StaticClass()->GetClassPathName());
 	AssetRegistryModule.Get().GetAssets(Filter, BlueprintList);
 
 	for (int32 i = 0; i < BlueprintList.Num(); i++)

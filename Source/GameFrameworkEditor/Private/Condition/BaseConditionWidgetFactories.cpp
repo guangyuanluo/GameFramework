@@ -144,15 +144,10 @@ namespace ConditionUI {
 				]
 			];
 
-			auto AddWidgetSlot = &(Panel->AddSlot()
-				.AutoWidth()
-				.HAlign(HAlign_Fill)
-				);
-#if ENGINE_MAJOR_VERSION > 4
-			WidgetSlot = AddWidgetSlot->GetSlot();
-#else
-			WidgetSlot = AddWidgetSlot;
-#endif
+			SHorizontalBox::FScopedWidgetSlotArguments AddWidgetSlot = Panel->AddSlot();
+			AddWidgetSlot.AutoWidth();
+			AddWidgetSlot.HAlign(HAlign_Fill);
+			WidgetSlot = AddWidgetSlot.GetSlot();
 		}
 
 		FReply RemoveClick() {
