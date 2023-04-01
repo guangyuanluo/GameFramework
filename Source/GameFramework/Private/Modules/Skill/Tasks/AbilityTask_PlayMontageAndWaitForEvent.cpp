@@ -267,7 +267,9 @@ bool UAbilityTask_PlayMontageAndWaitForEvent::StopPlayingMontage()
 				MontageInstance->OnMontageEnded.Unbind();
 			}
 
-			AbilitySystemComponent->CurrentMontageStop();
+			if (bStopWhenAbilityEnds) {
+				AbilitySystemComponent->CurrentMontageStop();
+			}
 			return true;
 		}
 	}
