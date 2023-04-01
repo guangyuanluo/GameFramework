@@ -23,13 +23,6 @@ FGraphEditorApplicationMode::FGraphEditorApplicationMode(TSharedPtr<class FGraph
 			FTabManager::NewPrimaryArea()->SetOrientation(Orient_Vertical)
 			->Split
 			(
-				FTabManager::NewStack()
-				->SetSizeCoefficient(0.1f)
-				->AddTab(InEditor->GetToolbarTabId(), ETabState::OpenedTab)
-				->SetHideTabWell(true)
-			)
-			->Split
-			(
 				FTabManager::NewSplitter()->SetOrientation(Orient_Horizontal)
 				->Split
 				(
