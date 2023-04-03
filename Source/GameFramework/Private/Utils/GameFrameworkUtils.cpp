@@ -64,6 +64,9 @@ TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, co
 		for (int Index = 0; Index < OutHits.Num(); ++Index) {
 			auto& HitResult = OutHits[Index];
 			AActor* Actor = HitResult.GetActor();
+			if (!Actor) {
+				continue;
+			}
 			if (FilterSet.Contains(Actor)) {
 				continue;
 			}
