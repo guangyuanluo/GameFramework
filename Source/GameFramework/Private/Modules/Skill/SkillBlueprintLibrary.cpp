@@ -67,3 +67,17 @@ ACoreCharacter* USkillBlueprintLibrary::GetCharacterFromGameEffectSpec(const FGa
     }
     return nullptr;
 }
+
+UGameplayAbility* USkillBlueprintLibrary::GetActiveAbilityWithCurrentMontage(UAbilitySystemComponent* AbilitySystemComponent, UAnimMontage* Montage) {
+	const auto& ActivatableAbilities = AbilitySystemComponent->GetActivatableAbilities();
+	for (const FGameplayAbilitySpec& Spec : ActivatableAbilities) {
+		TArray<UGameplayAbility*> AbilityInstances = Spec.GetAbilityInstances();
+		for (UGameplayAbility* AbilityInstance : AbilityInstances) {
+			if (AbilityInstance->IsActive()
+				&& AbilityInstance->GetCurrentMontage() == Montage) {
+				return AbilityInstance;
+			}
+		}
+	}
+	return nullptr;
+}
