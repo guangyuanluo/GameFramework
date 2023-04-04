@@ -48,4 +48,8 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static class ACoreCharacter* GetCharacterFromGameEffectSpec(const FGameplayEffectSpec& Spec);
+
+	/** 返回已经激活的拥有指定蒙太奇的技能 */
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	static class UGameplayAbility* GetActiveAbilityWithCurrentMontage(UAbilitySystemComponent* AbilitySystemComponent, class UAnimMontage* Montage);
 };
