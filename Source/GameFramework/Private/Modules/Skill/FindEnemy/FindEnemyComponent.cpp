@@ -15,10 +15,12 @@ UFindEnemyComponent::UFindEnemyComponent()
 }
 
 ACoreCharacter* UFindEnemyComponent::FindOrGetEnemy() {
-	if (!Enemy) {
-		if (FindEnemyClass.Get()) {
-			Enemy = FindEnemyObject->FindEnemy(this);
-		}
+	if (AutoUpdate) {
+        if (!Enemy) {
+            if (FindEnemyClass.Get()) {
+                Enemy = FindEnemyObject->FindEnemy(this);
+            }
+        }
 	}
 	return Enemy;
 }
@@ -35,10 +37,24 @@ void UFindEnemyComponent::ClearEnemy() {
 	Enemy = nullptr;
 }
 
+void UFindEnemyComponent::SetLock(bool bNewLock) {
+	bLock = bNewLock;
+}
+
+bool UFindEnemyComponent::IsLock() const {
+	return bLock;
+}
+
 void UFindEnemyComponent::BeginPlay() {
 	Super::BeginPlay();
 
-	FindEnemyObject = NewObject<UFindEnemyBase>(this, FindEnemyClass);
+	if (!AutoUpdate) {
+		SetComponentTickEnabled(false);
+	}
+
+	if (FindEnemyClass) {
+		FindEnemyObject = NewObject<UFindEnemyBase>(this, FindEnemyClass);
+	}
 }
 
 void UFindEnemyComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
@@ -50,5 +66,9 @@ void UFindEnemyComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindEnemyObject->Tick(this);
+	if (AutoUpdate) {
+		if (FindEnemyObject) {
+			FindEnemyObject->Tick(this);
+		}
+	}
 }
