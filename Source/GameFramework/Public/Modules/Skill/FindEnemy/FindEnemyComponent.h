@@ -25,6 +25,12 @@ public:
 	TSubclassOf<UFindEnemyBase> FindEnemyClass;
 
 	/**
+	 * 是否自动索敌，如果是AI，关闭此选项，直接使用SetEnemy强行设置敌人
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill")
+	bool AutoUpdate = true;
+
+	/**
 	* 查找或者获取敌人
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Skill")
@@ -43,6 +49,18 @@ public:
 	void SetEnemy(ACoreCharacter* InEnemy);
 
 	/**
+	 * 锁住索敌，不会再切换
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Skill")
+	void SetLock(bool bNewLock);
+
+	/**
+	 * 是否锁住索敌
+	 */
+	UFUNCTION(BlueprintPure, Category = "Skill")
+	bool IsLock() const;
+
+	/**
 	* 清空敌人
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Skill")
@@ -53,6 +71,8 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	bool bLock = false;
+
 	UPROPERTY(Transient)
 	ACoreCharacter* Enemy;
 
