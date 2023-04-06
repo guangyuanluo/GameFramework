@@ -56,7 +56,11 @@ TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, co
 	TSet<AActor*> FilterSet;
 	TArray<FHitResult> OutHits;
 	auto SourceAgent = Cast<IGenericTeamAgentInterface>(Source);
-	FVector Center = Source->GetActorLocation() + OffsetFromActor;
+	FTransform SourceTransform = Source->GetActorTransform();
+	FTransform OffsetTransform;
+	OffsetTransform.SetLocation(OffsetFromActor);
+	FTransform FinalTransform = OffsetTransform * SourceTransform;
+	FVector Center = FinalTransform.GetLocation();
 	EDrawDebugTrace::Type DrawDebugTrace = DrawDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 	//保证end和start不一样，不然会导致impactpoint不对
 	TraceLength = FMath::IsNearlyZero(TraceLength) ? 0.001f : TraceLength;
@@ -202,29 +206,29 @@ UAnimNotifyState* UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(USkele
 	if (!IsValid(AnimInstance)) {
 		return nullptr;
 	}
-	auto Montage = AnimInstance->GetCurrentActiveMontage();
-	if (!IsValid(Montage)) {
-		return nullptr;
-	}
-	auto ActiveMontageInstance = AnimInstance->GetActiveMontageInstance();
-	if (!ActiveMontageInstance) {
-		return nullptr;
-	}
-	auto CurrentTrackPosition = ActiveMontageInstance->GetPosition();
-	auto FindClass = AnimNotifyStateClass.Get();
-	for (int32 Index = 0; Index < Montage->Notifies.Num(); Index++) {
-		FAnimNotifyEvent& NotifyEvent = Montage->Notifies[Index];
 
-		if (NotifyEvent.NotifyStateClass && NotifyEvent.NotifyStateClass->GetClass() == FindClass) {
-			const float NotifyStartTime = NotifyEvent.GetTriggerTime();
-			const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
+	for (auto MontageInstance : AnimInstance->MontageInstances) {
+		if (!MontageInstance || !MontageInstance->Montage) {
+			continue;
+		}
 
-			bool bNotifyIsActive = (CurrentTrackPosition > NotifyStartTime) && (CurrentTrackPosition <= NotifyEndTime);
-			if (bNotifyIsActive) {
-				return NotifyEvent.NotifyStateClass;
+		auto CurrentTrackPosition = MontageInstance->GetPosition();
+		auto FindClass = AnimNotifyStateClass.Get();
+		for (int32 Index = 0; Index < MontageInstance->Montage->Notifies.Num(); ++Index) {
+			FAnimNotifyEvent& NotifyEvent = MontageInstance->Montage->Notifies[Index];
+
+			if (NotifyEvent.NotifyStateClass && NotifyEvent.NotifyStateClass->GetClass() == FindClass) {
+				const float NotifyStartTime = NotifyEvent.GetTriggerTime();
+				const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
+
+				bool bNotifyIsActive = (CurrentTrackPosition > NotifyStartTime) && (CurrentTrackPosition <= NotifyEndTime);
+				if (bNotifyIsActive) {
+					return NotifyEvent.NotifyStateClass;
+				}
 			}
 		}
 	}
+	
 	return nullptr;
 }
 
