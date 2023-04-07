@@ -4,6 +4,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "CoreAbility.h"
 #include "Modules/Skill/CoreAbilityConditionGlobal.h"
+#include "AbilitySystemComponent.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -80,4 +81,12 @@ UGameplayAbility* USkillBlueprintLibrary::GetActiveAbilityWithCurrentMontage(UAb
 		}
 	}
 	return nullptr;
+}
+
+const UGameplayAbility* USkillBlueprintLibrary::EffectContextGetAbilityCDO(const FGameplayEffectContextHandle& EffectContext) {
+	return EffectContext.GetAbility();
+}
+
+const UGameplayAbility* USkillBlueprintLibrary::EffectContextGetAbilityInstance_NotReplicated(const FGameplayEffectContextHandle& EffectContext) {
+	return EffectContext.GetAbilityInstance_NotReplicated();
 }

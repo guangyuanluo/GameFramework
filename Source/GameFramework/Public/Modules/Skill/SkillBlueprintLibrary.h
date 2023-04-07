@@ -52,4 +52,12 @@ public:
 	/** 返回已经激活的拥有指定蒙太奇的技能 */
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	static class UGameplayAbility* GetActiveAbilityWithCurrentMontage(UAbilitySystemComponent* AbilitySystemComponent, class UAnimMontage* Montage);
+
+	/** 从effectcontext里面获取AbilityCDO */
+	UFUNCTION(BlueprintPure, Category = "Ability|EffectContext", Meta = (DisplayName = "GetAbilityCDO"))
+	static const UGameplayAbility* EffectContextGetAbilityCDO(const FGameplayEffectContextHandle& EffectContext);
+
+	/** 从effectcontext里面获取Ability Instance */
+	UFUNCTION(BlueprintPure, Category = "Ability|EffectContext", Meta = (DisplayName = "GetAbilityInstance_NotReplicated"))
+	static const UGameplayAbility* EffectContextGetAbilityInstance_NotReplicated(const FGameplayEffectContextHandle& EffectContext);
 };
