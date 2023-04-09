@@ -89,7 +89,7 @@ struct FCoreGameplayEffectContainerConfig {
 
 /** A "processed" version of CoreGameplayEffectContainer that can be passed around and eventually applied */
 USTRUCT(BlueprintType)
-struct FCoreGameplayEffectContainerSpec
+struct GAMEFRAMEWORK_API FCoreGameplayEffectContainerSpec
 {
 	GENERATED_BODY()
 
