@@ -27,7 +27,7 @@ void UCoreCondition::GenerateGuid() {
 }
 
 class UCoreConditionProgress* UCoreCondition::GenerateConditionProgress(AActor* ProgressOwner) {
-    auto ConditionProgress = NewObject<UCoreConditionProgress>(this, ProgressClass);
+    auto ConditionProgress = NewObject<UCoreConditionProgress>(ProgressOwner, ProgressClass);
     if (ConditionProgress) {
         ConditionProgress->Condition = this;
         ConditionProgress->ConditionID = ID;
