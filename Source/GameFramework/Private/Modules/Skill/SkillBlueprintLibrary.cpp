@@ -52,9 +52,11 @@ float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpec(FGameplayEffectSpe
 }
 
 bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
-	for (const auto& ConditionConfig : Ability->ConditionConfigs) {
-		if (ConditionConfig.Condition->IsChildOf(UCoreAbilityCondition_CurrentComboSectionLimit::StaticClass())) {
-			return true;
+	for (const auto& Group : Ability->GroupConditionConfigs) {
+		for (const auto& ConditionConfig : Group.ConditionConfigs) {
+			if (ConditionConfig.Condition->IsChildOf(UCoreAbilityCondition_CurrentComboSectionLimit::StaticClass())) {
+				return true;
+			}
 		}
 	}
 	return false;

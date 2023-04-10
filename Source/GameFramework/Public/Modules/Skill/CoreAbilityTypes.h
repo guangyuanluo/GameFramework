@@ -123,10 +123,20 @@ public:
 };
 
 /**
+ * 条件关系符
+ */
+UENUM(BlueprintType)
+enum class CoreAbilityConditionRelationEnum :uint8 {
+    E_AND UMETA(DisplayName = "与"),
+    E_OR UMETA(DisplayName = "或"),
+    E_XOR UMETA(DisplayName = "异或"),
+};
+
+/**
 * 条件配置
 */
 USTRUCT(BlueprintType)
-struct FCoreConditionConfig {
+struct FCoreAbilityConditionConfig {
 	GENERATED_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "条件类型", ShowDisplayNames))
@@ -134,4 +144,36 @@ struct FCoreConditionConfig {
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "取反"))
 	bool bNot = false;
+
+	/**
+     * 运算符
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
+    CoreAbilityConditionRelationEnum Relation = CoreAbilityConditionRelationEnum::E_AND;
+};
+
+/**
+ * 条件组信息
+ */
+USTRUCT(BlueprintType)
+struct FCoreAbilityConditionGroupInfo {
+	GENERATED_BODY()
+
+    /**
+     * 组id
+     */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int GroupId = 0;
+
+    /**
+     * 条件
+     */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件", ShowDisplayNames))
+    TArray<FCoreAbilityConditionConfig> ConditionConfigs;
+
+    /**
+     * 组关系运算符
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
+    CoreAbilityConditionRelationEnum Relation = CoreAbilityConditionRelationEnum::E_AND;
 };
