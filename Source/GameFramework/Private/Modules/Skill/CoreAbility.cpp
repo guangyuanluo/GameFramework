@@ -129,16 +129,50 @@ bool UCoreAbility::K2_IsActive() const {
 bool UCoreAbility::K2_IsConditionSatisfy() {
     auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
     bool bSatisfy = true;
-    for (const auto& ConditionConfig : ConditionConfigs) {
-        auto CoreAbilityConditionCDO = ConditionConfig.Condition->GetDefaultObject<UCoreAbilityCondition>();
-        bool bValid;
-        bool bConditionSatisfy;
-        CoreAbilityConditionCDO->DoesSatisfy(AbilitySystemComponent, this, bValid, bConditionSatisfy);
-        if (!bValid || bConditionSatisfy == ConditionConfig.bNot) {
-            bSatisfy = false;
-            break;
+
+    if (GroupConditionConfigs.Num() > 0) {
+        //对组进行逻辑运算
+        TArray<CoreAbilityConditionRelationEnum> LoopGroupRelations;
+        for (int GroupIndex = 0; GroupIndex < GroupConditionConfigs.Num(); ++GroupIndex) {
+            LoopGroupRelations.Add(GroupConditionConfigs[GroupIndex].Relation);
         }
+        FAbilityConditionNodeInfo GroupExecuteRoot = RelationsGenerate(LoopGroupRelations);
+
+        //组的检查函数里对里面的condition构建逻辑运算
+        TFunction<bool(int)> GroupConditionCheckFunction = [this, AbilitySystemComponent](int GroupIndex){
+            bool bCheckConditionResult = true;
+
+            const auto& Group = GroupConditionConfigs[GroupIndex];
+            if (Group.ConditionConfigs.Num() > 0) {
+                TArray<CoreAbilityConditionRelationEnum> LoopConditionRelations;
+                for (int ConditionIndex = 0; ConditionIndex < Group.ConditionConfigs.Num(); ++ConditionIndex) {
+                    const auto& ConditionConfig = Group.ConditionConfigs[ConditionIndex];
+                    LoopConditionRelations.Add(ConditionConfig.Relation);
+                }
+                FAbilityConditionNodeInfo ConditionExecuteRoot = RelationsGenerate(LoopConditionRelations);
+
+                //条件的检查函数里面，对condition cdo判断是否满足
+                TFunction<bool(int)> ConditionCheckFunc = [this, GroupIndex, AbilitySystemComponent](int ConditionIndex){
+                    const auto& ConditionConfig = GroupConditionConfigs[GroupIndex].ConditionConfigs[ConditionIndex];
+                    auto CoreAbilityConditionCDO = ConditionConfig.Condition->GetDefaultObject<UCoreAbilityCondition>();
+                    bool bValid;
+                    bool bConditionSatisfy;
+                    CoreAbilityConditionCDO->DoesSatisfy(AbilitySystemComponent, this, bValid, bConditionSatisfy);
+                    if (!bValid || bConditionSatisfy == ConditionConfig.bNot) {
+                        return false;
+                    }
+                    return true;
+                };
+
+                bCheckConditionResult = ExecuteConditionRelationTree(ConditionExecuteRoot, ConditionCheckFunc);
+            }
+
+            return bCheckConditionResult;
+        };
+
+        bSatisfy = ExecuteConditionRelationTree(GroupExecuteRoot, GroupConditionCheckFunction);
     }
+
     return bSatisfy;
 }
 
@@ -268,4 +302,134 @@ void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
     }
 
     OnEndNative();
+}
+
+TArray<TArray<int>> UCoreAbility::SplitRelationIndexArray(CoreAbilityConditionRelationEnum Relation, const TArray<CoreAbilityConditionRelationEnum>& LoopRelations, const TArray<int>& RelationIndexs) {
+    TArray<TArray<int>> Result;
+
+    TArray<int> SplitIndexArray;
+    for (int Index = 0; Index < RelationIndexs.Num(); ++Index) {
+        int RealIndex = RelationIndexs[Index];
+        if (SplitIndexArray.Num() == 0) {
+            SplitIndexArray.Add(RealIndex);
+        }
+        else {
+            if (LoopRelations[RealIndex] != Relation) {
+                SplitIndexArray.Add(RealIndex);
+            }
+            else {
+                Result.Add(SplitIndexArray);
+                SplitIndexArray.Empty();
+                SplitIndexArray.Add(RealIndex);
+            }
+        }
+    }
+    //最后loop完，把剩下的添加
+    if (SplitIndexArray.Num() > 0) {
+        Result.Add(SplitIndexArray);
+    }
+
+    return Result;
+}
+
+void UCoreAbility::RelationsGenerateRecursive(FAbilityConditionNodeInfo& NodeInfo, const TArray<CoreAbilityConditionRelationEnum>& RelationOrders, int NowOrderIndex, const TArray<CoreAbilityConditionRelationEnum>& LoopRelations, const TArray<int>& RelationIndexs) {
+    const auto& Relation = RelationOrders[NowOrderIndex];
+    NodeInfo.IsRelationNode = true;
+    NodeInfo.Relation = Relation;
+
+    if (NowOrderIndex == 0) {
+        //最后一层，不需要分割出更多的运算符
+        for (const auto& Index : RelationIndexs) {
+            FAbilityConditionNodeInfo& ChildRef = NodeInfo.Children.Add_GetRef(FAbilityConditionNodeInfo());
+            ChildRef.Index = Index;
+            ChildRef.IsRelationNode = false;
+        }
+    }
+    else {
+        TArray<TArray<int>> SplitArray = SplitRelationIndexArray(Relation, LoopRelations, RelationIndexs);
+
+        if (SplitArray.Num() == 1 && SplitArray[0].Num() == 1) {
+            for (const auto& Index : SplitArray[0]) {
+                FAbilityConditionNodeInfo& ChildRef = NodeInfo.Children.Add_GetRef(FAbilityConditionNodeInfo());
+                ChildRef.Index = Index;
+                ChildRef.IsRelationNode = false;
+            }
+        }
+        else {
+            for (int ArrayIndex = 0; ArrayIndex < SplitArray.Num(); ++ArrayIndex) {
+                FAbilityConditionNodeInfo& ChildRef = NodeInfo.Children.Add_GetRef(FAbilityConditionNodeInfo());
+                //继续往下一优先级递归
+                RelationsGenerateRecursive(ChildRef, RelationOrders, NowOrderIndex - 1, LoopRelations, SplitArray[ArrayIndex]);
+            }
+        }
+    }
+}
+
+UCoreAbility::FAbilityConditionNodeInfo UCoreAbility::RelationsGenerate(const TArray<CoreAbilityConditionRelationEnum>& LoopRelations) {
+    FAbilityConditionNodeInfo Root;
+    //逻辑运算优先级
+    static const TArray<CoreAbilityConditionRelationEnum>& RelationOrders = { CoreAbilityConditionRelationEnum::E_XOR, CoreAbilityConditionRelationEnum::E_AND, CoreAbilityConditionRelationEnum::E_OR };
+
+    TArray<int> IndexArray;
+    for (int Index = 0; Index < LoopRelations.Num(); ++Index) {
+        IndexArray.Add(Index);
+    }
+
+    RelationsGenerateRecursive(Root, RelationOrders, RelationOrders.Num() - 1, LoopRelations, IndexArray);
+
+    return Root;
+}
+
+bool UCoreAbility::ExecuteConditionRelationTree(const FAbilityConditionNodeInfo& Node, const TFunction<bool(int)>& ConditionCheckFunc) {
+    bool FinalResult = true;
+    for (int Index = 0; Index < Node.Children.Num(); ++Index) {
+        bool ChildResult = true;
+        const auto& Child = Node.Children[Index];
+        if (Child.IsRelationNode) {
+            ChildResult = ExecuteConditionRelationTree(Child, ConditionCheckFunc);
+        }
+        else {
+            ChildResult = ConditionCheckFunc(Child.Index);
+        }
+        bool NeedStopLoop = false;
+        if (Index == 0) {
+            FinalResult = ChildResult;
+        }
+        else {
+            switch (Node.Relation) {
+            case CoreAbilityConditionRelationEnum::E_AND:
+                FinalResult = FinalResult && ChildResult;
+                break;
+            case CoreAbilityConditionRelationEnum::E_OR:
+                FinalResult = FinalResult || ChildResult;
+                break;
+            case CoreAbilityConditionRelationEnum::E_XOR:
+                FinalResult = FinalResult ^ ChildResult;
+                break;
+            default:
+                check(false);
+                break;
+            }
+        }
+        switch (Node.Relation) {
+        case CoreAbilityConditionRelationEnum::E_AND:
+            if (!FinalResult) {
+                //and运算符，一个为false，后面都不用再运算了
+                NeedStopLoop = true;
+            }
+            break;
+        case CoreAbilityConditionRelationEnum::E_OR:
+            if (FinalResult) {
+                //or运算符，一个为true，后面都不用再运算了
+                NeedStopLoop = true;
+            }
+            break;
+        default:
+            break;
+        }
+        if (NeedStopLoop) {
+            break;
+        }
+    }
+    return FinalResult;
 }

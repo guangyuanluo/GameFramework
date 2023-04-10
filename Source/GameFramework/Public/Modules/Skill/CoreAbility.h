@@ -27,7 +27,7 @@ public:
     * 技能触发条件
     */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件"))
-    TArray<FCoreConditionConfig> ConditionConfigs;
+    TArray<FCoreAbilityConditionGroupInfo> GroupConditionConfigs;
 
 	/** gameplay tags 映射触发的 gameplay effect containers */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能事件配置"))
@@ -139,4 +139,23 @@ private:
     */
     UFUNCTION()
     void OnAbilityEnd(UGameplayAbility* Ability);
+
+    /**
+    * 技能条件节点信息
+    */
+    struct FAbilityConditionNodeInfo {
+        bool IsRelationNode = false;
+        CoreAbilityConditionRelationEnum Relation;
+        int Index;
+        TArray<FAbilityConditionNodeInfo> Children;
+    };
+
+    /** 按照运算符分割索引 */
+    TArray<TArray<int>> SplitRelationIndexArray(CoreAbilityConditionRelationEnum Relation, const TArray<CoreAbilityConditionRelationEnum>& LoopRelations, const TArray<int>& RelationIndexs);
+    /** 按运算符优先级递归构建逻辑树 */
+    void RelationsGenerateRecursive(FAbilityConditionNodeInfo& NodeInfo, const TArray<CoreAbilityConditionRelationEnum>& RelationOrders, int NowOrderIndex, const TArray<CoreAbilityConditionRelationEnum>& LoopRelations, const TArray<int>& RelationIndexs);
+    /** 构建运算符逻辑树 */
+    FAbilityConditionNodeInfo RelationsGenerate(const TArray<CoreAbilityConditionRelationEnum>& LoopRelations);
+    /** 递归一颗逻辑树的执行结果 */
+    bool ExecuteConditionRelationTree(const FAbilityConditionNodeInfo& Node, const TFunction<bool(int)>& ConditionCheckFunc);
 };
