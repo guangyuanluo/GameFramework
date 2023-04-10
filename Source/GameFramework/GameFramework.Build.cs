@@ -18,6 +18,7 @@ public class GameFramework : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "InputCore",
+                "NetCore",
                 "UMG",
                 "Json",
                 "JsonUtilities",
