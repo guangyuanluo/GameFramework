@@ -12,6 +12,7 @@
 #include "GameplayEffectTypes.h"
 #include "Abilities/GameplayAbilityTargetTypes.h"
 #include "Modules/Skill/EffectInfo.h"
+#include "Utils/Algorithm/BooleanAlgebraUtil.h"
 #include "CoreAbilityTypes.generated.h"
 
 class UCoreAbilitySystemComponent;
@@ -123,16 +124,6 @@ public:
 };
 
 /**
- * 条件关系符
- */
-UENUM(BlueprintType)
-enum class CoreAbilityConditionRelationEnum :uint8 {
-    E_AND UMETA(DisplayName = "与"),
-    E_OR UMETA(DisplayName = "或"),
-    E_XOR UMETA(DisplayName = "异或"),
-};
-
-/**
 * 条件配置
 */
 USTRUCT(BlueprintType)
@@ -149,7 +140,7 @@ struct FCoreAbilityConditionConfig {
      * 运算符
      */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
-    CoreAbilityConditionRelationEnum Relation = CoreAbilityConditionRelationEnum::E_AND;
+    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
 };
 
 /**
@@ -175,5 +166,5 @@ struct FCoreAbilityConditionGroupInfo {
      * 组关系运算符
      */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
-    CoreAbilityConditionRelationEnum Relation = CoreAbilityConditionRelationEnum::E_AND;
+    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
 };
