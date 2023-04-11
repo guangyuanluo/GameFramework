@@ -130,17 +130,17 @@ USTRUCT(BlueprintType)
 struct FCoreAbilityConditionConfig {
 	GENERATED_BODY()
 
+    /**
+     * 运算符
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
+    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "条件类型", ShowDisplayNames))
     TSubclassOf<class UCoreAbilityCondition> Condition;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "取反"))
 	bool bNot = false;
-
-	/**
-     * 运算符
-     */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
-    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
 };
 
 /**
@@ -151,20 +151,14 @@ struct FCoreAbilityConditionGroupInfo {
 	GENERATED_BODY()
 
     /**
-     * 组id
+     * 组关系运算符
      */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int GroupId = 0;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
+    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
 
     /**
      * 条件
      */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件", ShowDisplayNames))
     TArray<FCoreAbilityConditionConfig> ConditionConfigs;
-
-    /**
-     * 组关系运算符
-     */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
-    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
 };

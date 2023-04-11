@@ -35,21 +35,24 @@ void UBooleanAlgebraUtil::RelationsGenerateRecursive(FBooleanAlgebraNodeInfo& No
 
     if (NowOrderIndex == 0) {
         //最后一层，不需要分割出更多的运算符
-        for (const auto& Index : RelationIndexs) {
-            FBooleanAlgebraNodeInfo& ChildRef = NodeInfo.Children.Add_GetRef(FBooleanAlgebraNodeInfo());
-            ChildRef.Index = Index;
-            ChildRef.IsRelationNode = false;
+        if (RelationIndexs.Num() == 1) {
+            NodeInfo.IsRelationNode = false;
+            NodeInfo.Index = RelationIndexs[0];
+        }
+        else {
+            for (const auto& Index : RelationIndexs) {
+                FBooleanAlgebraNodeInfo& ChildRef = NodeInfo.Children.Add_GetRef(FBooleanAlgebraNodeInfo());
+                ChildRef.Index = Index;
+                ChildRef.IsRelationNode = false;
+            }
         }
     }
     else {
         TArray<TArray<int>> SplitArray = SplitRelationIndexArray(Relation, LoopRelations, RelationIndexs);
 
         if (SplitArray.Num() == 1 && SplitArray[0].Num() == 1) {
-            for (const auto& Index : SplitArray[0]) {
-                FBooleanAlgebraNodeInfo& ChildRef = NodeInfo.Children.Add_GetRef(FBooleanAlgebraNodeInfo());
-                ChildRef.Index = Index;
-                ChildRef.IsRelationNode = false;
-            }
+            NodeInfo.IsRelationNode = false;
+            NodeInfo.Index = SplitArray[0][0];
         }
         else {
             if (SplitArray.Num() == 1) {
@@ -82,56 +85,62 @@ FBooleanAlgebraNodeInfo UBooleanAlgebraUtil::RelationsGenerate(const TArray<Bool
     return Root;
 }
 
-bool UBooleanAlgebraUtil::ExecuteConditionRelationTree(const FBooleanAlgebraNodeInfo& Node, const TFunction<bool(int)>& ConditionCheckFunc) {
+bool UBooleanAlgebraUtil::ExecuteConditionRelationTree(const FBooleanAlgebraNodeInfo& Node, const TFunction<bool(int)>& BooleanExpressionExecFunc) {
     bool FinalResult = true;
-    for (int Index = 0; Index < Node.Children.Num(); ++Index) {
-        bool ChildResult = true;
-        const auto& Child = Node.Children[Index];
-        if (Child.IsRelationNode) {
-            ChildResult = ExecuteConditionRelationTree(Child, ConditionCheckFunc);
-        }
-        else {
-            ChildResult = ConditionCheckFunc(Child.Index);
-        }
-        bool NeedStopLoop = false;
-        if (Index == 0) {
-            FinalResult = ChildResult;
-        }
-        else {
+
+    if (Node.IsRelationNode) {
+        for (int Index = 0; Index < Node.Children.Num(); ++Index) {
+            bool ChildResult = true;
+            const auto& Child = Node.Children[Index];
+            if (Child.IsRelationNode) {
+                ChildResult = ExecuteConditionRelationTree(Child, BooleanExpressionExecFunc);
+            }
+            else {
+                ChildResult = BooleanExpressionExecFunc(Child.Index);
+            }
+            bool NeedStopLoop = false;
+            if (Index == 0) {
+                FinalResult = ChildResult;
+            }
+            else {
+                switch (Node.Relation) {
+                case BooleanAlgebraEnum::E_AND:
+                    FinalResult = FinalResult && ChildResult;
+                    break;
+                case BooleanAlgebraEnum::E_OR:
+                    FinalResult = FinalResult || ChildResult;
+                    break;
+                case BooleanAlgebraEnum::E_XOR:
+                    FinalResult = FinalResult ^ ChildResult;
+                    break;
+                default:
+                    check(false);
+                    break;
+                }
+            }
             switch (Node.Relation) {
             case BooleanAlgebraEnum::E_AND:
-                FinalResult = FinalResult && ChildResult;
+                if (!FinalResult) {
+                    //and运算符，一个为false，后面都不用再运算了
+                    NeedStopLoop = true;
+                }
                 break;
             case BooleanAlgebraEnum::E_OR:
-                FinalResult = FinalResult || ChildResult;
-                break;
-            case BooleanAlgebraEnum::E_XOR:
-                FinalResult = FinalResult ^ ChildResult;
+                if (FinalResult) {
+                    //or运算符，一个为true，后面都不用再运算了
+                    NeedStopLoop = true;
+                }
                 break;
             default:
-                check(false);
+                break;
+            }
+            if (NeedStopLoop) {
                 break;
             }
         }
-        switch (Node.Relation) {
-        case BooleanAlgebraEnum::E_AND:
-            if (!FinalResult) {
-                //and运算符，一个为false，后面都不用再运算了
-                NeedStopLoop = true;
-            }
-            break;
-        case BooleanAlgebraEnum::E_OR:
-            if (FinalResult) {
-                //or运算符，一个为true，后面都不用再运算了
-                NeedStopLoop = true;
-            }
-            break;
-        default:
-            break;
-        }
-        if (NeedStopLoop) {
-            break;
-        }
+    }
+    else {
+        FinalResult = BooleanExpressionExecFunc(Node.Index);
     }
     return FinalResult;
 }
