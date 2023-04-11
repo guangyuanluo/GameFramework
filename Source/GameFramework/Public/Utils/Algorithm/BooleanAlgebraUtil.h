@@ -39,7 +39,7 @@ public:
     /** 构建运算符逻辑树 */
     static FBooleanAlgebraNodeInfo RelationsGenerate(const TArray<BooleanAlgebraEnum>& LoopRelations);
     /** 递归一颗逻辑树的执行结果 */
-    static bool ExecuteConditionRelationTree(const FBooleanAlgebraNodeInfo& Node, const TFunction<bool(int)>& ConditionCheckFunc);
+    static bool ExecuteConditionRelationTree(const FBooleanAlgebraNodeInfo& Node, const TFunction<bool(int)>& BooleanExpressionExecFunc);
 
 private:
     /** 按照运算符分割索引 */
