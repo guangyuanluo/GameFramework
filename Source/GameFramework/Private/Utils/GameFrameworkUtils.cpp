@@ -217,7 +217,7 @@ UAnimNotifyState* UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(USkele
 		for (int32 Index = 0; Index < MontageInstance->Montage->Notifies.Num(); ++Index) {
 			FAnimNotifyEvent& NotifyEvent = MontageInstance->Montage->Notifies[Index];
 
-			if (NotifyEvent.NotifyStateClass && NotifyEvent.NotifyStateClass->GetClass() == FindClass) {
+			if (NotifyEvent.NotifyStateClass && NotifyEvent.NotifyStateClass->GetClass()->IsChildOf(FindClass)) {
 				const float NotifyStartTime = NotifyEvent.GetTriggerTime();
 				const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
 

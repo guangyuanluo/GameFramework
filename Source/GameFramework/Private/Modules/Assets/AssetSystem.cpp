@@ -72,7 +72,7 @@ int32 UAssetSystem::AddItem(UBackpackComponent* BackpackComponent, uint8 Backpac
                         auto AddItem = GenerateNewItem(BackpackComponent, ItemId, ItemClass);
                         Backpack[Iter->Key] = AddItem;
 
-                        OnItemEnterPackage(BackpackComponent, AddItem, BackpackType, Iter->Key);
+                        OnPackageItemChange(BackpackComponent, AddItem, nullptr, BackpackType, Iter->Key);
 
                         AddCount += Iter->Value;
                     }
@@ -136,7 +136,7 @@ bool UAssetSystem::AddItems(UBackpackComponent* BackpackComponent, const TArray<
                             auto AddItem = GenerateNewItem(BackpackComponent, ItemId, ItemClass);
                             Backpack[IndexCountIter->Key] = AddItem;
 
-                            OnItemEnterPackage(BackpackComponent, AddItem, BackpackType, IndexCountIter->Key);
+                            OnPackageItemChange(BackpackComponent, AddItem, nullptr, BackpackType, IndexCountIter->Key);
 
                             AddCount += IndexCountIter->Value;
                         }
@@ -200,7 +200,7 @@ bool UAssetSystem::DeductItem(UBackpackComponent* BackpackComponent, uint8 Backp
                 if (Backpack[ItemIter->Key]) {
                     Backpack[ItemIter->Key]->ItemNum -= ItemIter->Value;
                     if (Backpack[ItemIter->Key]->ItemNum <= 0) {
-                        OnItemLeavePackage(BackpackComponent, Backpack[ItemIter->Key], PackageIter->Key, ItemIter->Key);
+                        OnPackageItemChange(BackpackComponent, nullptr, Backpack[ItemIter->Key], PackageIter->Key, ItemIter->Key);
                         Backpack[ItemIter->Key] = nullptr;
                     }
                     SendChangeItemEvent(BackpackComponent, ItemId, -Count, Reason);
@@ -238,7 +238,7 @@ bool UAssetSystem::DeductItems(UBackpackComponent* BackpackComponent, const TArr
                 for (auto IndexCountIter = ItemIter->Value.CreateConstIterator(); IndexCountIter; ++IndexCountIter) {
                     Backpack[IndexCountIter->Key]->ItemNum -= IndexCountIter->Value;
                     if (Backpack[IndexCountIter->Key]->ItemNum == 0) {
-                        OnItemLeavePackage(BackpackComponent, Backpack[IndexCountIter->Key], BackpackType, IndexCountIter->Key);
+                        OnPackageItemChange(BackpackComponent, nullptr, Backpack[IndexCountIter->Key], BackpackType, IndexCountIter->Key);
                         Backpack[IndexCountIter->Key] = nullptr;
                     }
                     SendChangeItemEvent(BackpackComponent, ItemId, -IndexCountIter->Value, Reason);
@@ -438,15 +438,15 @@ void UAssetSystem::ChangeMoney(UWalletComponent* WalletComponent, const TArray<F
     }
 }
 
-FAssetBackpack& UAssetSystem::MakePackageExist(UBackpackComponent* BackpackComponent, uint8 BackpackType) {
-    return BackpackComponent->FindOrAddPackage(BackpackType);
-}
-
 UCoreItem* UAssetSystem::GenerateNewItem(UBackpackComponent* BackpackComponent, int ItemId, UClass* ItemClass) {
     auto AddItem = NewObject<UCoreItem>(BackpackComponent, ItemClass);
     AddItem->ItemId = ItemId;
 
     return AddItem;
+}
+
+FAssetBackpack& UAssetSystem::MakePackageExist(UBackpackComponent* BackpackComponent, uint8 BackpackType) {
+    return BackpackComponent->FindOrAddPackage(BackpackType);
 }
 
 TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error) {
@@ -903,15 +903,12 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
             auto NewNum = FMath::Min(MaxStack, NewSlotIndexOrigineItem->ItemNum + BackpackItem->ItemNum);
             auto DiffNum = NewNum - NewSlotIndexOrigineItem->ItemNum;
             if (DiffNum == 0) {
-                OnItemLeavePackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-                OnItemLeavePackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
-
                 //没有产生堆叠，直接交换
                 Backpack[SlotIndex] = NewSlotIndexOrigineItem;
                 NewBackpack[NewSlotIndex] = BackpackItem;
 
-                OnItemEnterPackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-                OnItemEnterPackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
+                OnPackageItemChange(BackpackComponent, NewSlotIndexOrigineItem, BackpackItem, BackpackType, SlotIndex);
+                OnPackageItemChange(BackpackComponent, BackpackItem, NewSlotIndexOrigineItem, NewPackageType, NewSlotIndex);
             }
             else {
                 BackpackItem->ItemNum -= DiffNum;
@@ -919,30 +916,26 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
 
                 if (BackpackItem->ItemNum == 0) {
                     //原有物品就没必要存在了
-                    OnItemLeavePackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
+                    OnPackageItemChange(BackpackComponent, nullptr, Backpack[SlotIndex], BackpackType, SlotIndex);
                     Backpack[SlotIndex] = nullptr;
                 }
             }
 		}
         else {
-            OnItemLeavePackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-            OnItemLeavePackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
-
             //id不同就交换
             Backpack[SlotIndex] = NewSlotIndexOrigineItem;
             NewBackpack[NewSlotIndex] = BackpackItem;
 
-            OnItemEnterPackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-            OnItemEnterPackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
+            OnPackageItemChange(BackpackComponent, NewSlotIndexOrigineItem, BackpackItem, BackpackType, SlotIndex);
+            OnPackageItemChange(BackpackComponent, BackpackItem, NewSlotIndexOrigineItem, NewPackageType, NewSlotIndex);
         }
 	}
 	else {
-        OnItemLeavePackage(BackpackComponent, Backpack[SlotIndex], BackpackType, SlotIndex);
-
 		Backpack[SlotIndex] = nullptr;
 		NewBackpack[NewSlotIndex] = BackpackItem;
 
-        OnItemEnterPackage(BackpackComponent, NewBackpack[NewSlotIndex], NewPackageType, NewSlotIndex);
+        OnPackageItemChange(BackpackComponent, nullptr, BackpackItem, BackpackType, SlotIndex);
+        OnPackageItemChange(BackpackComponent, BackpackItem, nullptr, NewPackageType, NewSlotIndex);
 	}
 
 	return true;
@@ -994,7 +987,7 @@ int32 UAssetSystem::SplitItemPrivate(UBackpackComponent* BackpackComponent, uint
 
             Backpack[Index] = NewItem;
 
-            OnItemEnterPackage(BackpackComponent, NewItem, BackpackType, Index);
+            OnPackageItemChange(BackpackComponent, NewItem, nullptr, BackpackType, Index);
 
 			BackpackItem->ItemNum -= Count;
 
@@ -1065,7 +1058,7 @@ UCoreItem* UAssetSystem::ReduceItem(UBackpackComponent* BackpackComponent, uint8
 
 	BackpackItem->ItemNum -= Count;
 	if (BackpackItem->ItemNum == 0) {
-        OnItemLeavePackage(BackpackComponent, BackpackItem, BackpackType, SlotIndex);
+        OnPackageItemChange(BackpackComponent, nullptr, BackpackItem, BackpackType, SlotIndex);
 		Backpack[SlotIndex] = nullptr;
 	}
 	UE_LOG(GameCore, Display, TEXT("减少背包类型[%d]中itemid为[%d]，数量[%d]，剩余数量[%d] Reason:[%s]"), BackpackType, BackpackItem->ItemId, Count, BackpackItem->ItemNum, *Reason);
@@ -1122,21 +1115,12 @@ class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler(UBackpackCo
     return BackpackExtendHandlerCDO;
 }
 
-void UAssetSystem::OnItemEnterPackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index) {
+void UAssetSystem::OnPackageItemChange(UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, uint8 BackpackType, int Index) {
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
         auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
         FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
-        BackpackExtendHandler->OnItemAdd(BackpackComponent, Item, BackpackType, Index);
-    }
-}
-
-void UAssetSystem::OnItemLeavePackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index) {
-    if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
-        //这里移除物品扩展处理
-        auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
-        FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
-        BackpackExtendHandler->OnItemRemove(BackpackComponent, Item, BackpackType, Index);
+        BackpackExtendHandler->OnItemChange(BackpackComponent,NewItem, OldItem, BackpackType, Index);
     }
 }
 

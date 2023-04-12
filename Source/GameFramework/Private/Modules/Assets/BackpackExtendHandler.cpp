@@ -6,11 +6,7 @@ bool UBackpackExtendHandler::AllowItemAdd_Implementation(class UBackpackComponen
     return true;
 }
 
-void UBackpackExtendHandler::OnItemAdd_Implementation(class UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int PackageIndex) {
-
-}
-
-void UBackpackExtendHandler::OnItemRemove_Implementation(class UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int PackageIndex) {
+void UBackpackExtendHandler::OnItemChange_Implementation(class UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, uint8 BackpackType, int PackageIndex) {
 
 }
 

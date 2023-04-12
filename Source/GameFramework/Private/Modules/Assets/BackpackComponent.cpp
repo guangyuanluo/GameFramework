@@ -67,7 +67,10 @@ void UBackpackComponent::BeginPlay()
 void UBackpackComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UBackpackComponent, Backpacks);
+    FDoRepLifetimeParams Params;
+
+    Params.Condition = COND_OwnerOnly;
+    DOREPLIFETIME_WITH_PARAMS_FAST(UBackpackComponent, Backpacks, Params);
 }
 
 bool UBackpackComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) {
