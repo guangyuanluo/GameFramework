@@ -34,11 +34,11 @@ public:
     TSubclassOf<APlayerState> PlayerStateClass;
 
     /** 技能模板初始化回调 */
-    UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+    UFUNCTION(BlueprintNativeEvent, Category = "Character")
     void PostSkillTemplateInit();
 
     /** 属性变化回调 */
-    UFUNCTION(BlueprintImplementableEvent, Category = "Character")
+    UFUNCTION(BlueprintNativeEvent, Category = "Character")
     void ReceiveAttributeChanged(FGameplayAttribute Attribute, float OldValue, float NewValue);
 
 	virtual void BeginPlay() override;

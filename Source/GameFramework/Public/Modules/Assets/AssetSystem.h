@@ -98,9 +98,13 @@ public:
 	*/
 	void ChangeMoney(UWalletComponent* WalletComponent, const TArray<FMoneyTypeNumPair>& ChangeMoneys, bool bConsume, const FString& Reason, FString& Error);
 
+	/**
+	 * 生成一个物品
+	 */
+	UCoreItem* GenerateNewItem(UBackpackComponent* BackpackComponent, int ItemId, UClass* ItemClass);
+
 private:
 	FAssetBackpack& MakePackageExist(UBackpackComponent* BackpackComponent, uint8 BackpackType);
-    UCoreItem* GenerateNewItem(UBackpackComponent* BackpackComponent, int ItemId, UClass* ItemClass);    
 	TMap<int32, int32> SimulateAddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error);
     TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> SimulateAddItems(UBackpackComponent* BackpackComponent, const TArray<FAddItemInfo>& AddItems, bool Force, const FString& Reason, FString& Error);
 	bool UseItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason);
@@ -124,8 +128,7 @@ private:
     */
     class UBackpackExtendHandler* GetBackpackExtendHandler(UBackpackComponent* BackpackComponent);
 
-    void OnItemEnterPackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index);
-    void OnItemLeavePackage(UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int Index);
+    void OnPackageItemChange(UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, uint8 BackpackType, int Index);
 
 	/** 覆写事件监听 */
 	virtual TArray<UClass*> GetHandleEventTypes_Implementation() override;

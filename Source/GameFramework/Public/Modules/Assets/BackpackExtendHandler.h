@@ -15,19 +15,16 @@ class GAMEFRAMEWORK_API UBackpackExtendHandler : public ULogicObjectBase {
     GENERATED_BODY()
 
 public:
+    /**
+     * 是否允许添加物品
+     */
     UFUNCTION(BlueprintNativeEvent)
     bool AllowItemAdd(class UBackpackComponent* BackpackComponent, int ItemID, uint8 BackpackType);
     /**
-    * 物品加入背包处理
+    * 背包物品变动处理
     */
     UFUNCTION(BlueprintNativeEvent)
-    void OnItemAdd(class UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int PackageIndex);
-
-    /**
-    * 物品移出背包处理
-    */
-    UFUNCTION(BlueprintNativeEvent)
-    void OnItemRemove(class UBackpackComponent* BackpackComponent, class UCoreItem* Item, uint8 BackpackType, int PackageIndex);
+    void OnItemChange(class UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, UCoreItem* OldItem, uint8 BackpackType, int PackageIndex);
 
     /**
     * 物品效果增加前处理

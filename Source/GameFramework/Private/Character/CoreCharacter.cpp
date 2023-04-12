@@ -23,9 +23,18 @@
 #include "UnitSetting.h"
 #include "UnitInfoConfigTableRow.h"
 #include "Kismet/GameplayStatics.h"
+#include "SkillPostInitComponentListener.h"
 
 ACoreCharacter::ACoreCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     
+}
+
+void ACoreCharacter::PostSkillTemplateInit_Implementation() {
+
+}
+
+void ACoreCharacter::ReceiveAttributeChanged_Implementation(FGameplayAttribute Attribute, float OldValue, float NewValue) {
+
 }
 
 void ACoreCharacter::BeginPlay() {
@@ -209,6 +218,15 @@ void ACoreCharacter::InitSkill() {
                 CharacterState->SkillComponent->InitSkillFromTemplate(TemplateID);
                 ListenAttributeChange();
                 PostSkillTemplateInit();
+
+                //触发监听的组件回调
+                const auto& AllOwnerComponents = GetComponents();
+                for (const auto& OwnerComponent : AllOwnerComponents) {
+                    if (OwnerComponent->Implements<USkillPostInitComponentListener>()) {
+                        ISkillPostInitComponentListener::Execute_PostSkillTemplateInit(OwnerComponent);
+                    }
+                }
+
                 CharacterState->SkillComponent->OnSkillTemplatePostInit.Broadcast(CharacterState->SkillComponent);
                 bSkillInit = true;
             }
