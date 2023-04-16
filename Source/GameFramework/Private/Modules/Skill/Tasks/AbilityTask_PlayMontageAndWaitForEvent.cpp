@@ -6,6 +6,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Animation/AnimInstance.h"
 #include "UE4LogImpl.h"
+#include "Character/CoreCharacter.h"
 
 UAbilityTask_PlayMontageAndWaitForEvent::UAbilityTask_PlayMontageAndWaitForEvent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -148,6 +149,12 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 
 			if (CoreAbilitySystemComponent->PlayMontage(Ability, Ability->GetCurrentActivationInfo(), MontageToPlay, Rate, StartSection) > 0.f)
 			{
+				ACoreCharacter* Character = Cast<ACoreCharacter>(GetAvatarActor());
+
+				if (Character) {
+					Character->RPC_ReplicatePlayMontageToActorOwingClient(MontageToPlay, Rate, StartSection);
+				}
+
 				// Playing a montage could potentially fire off a callback into game code which could kill this ability! Early out if we are  pending kill.
 				if (ShouldBroadcastAbilityTaskDelegates() == false)
 				{
@@ -162,7 +169,6 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 				MontageEndedDelegate.BindUObject(this, &UAbilityTask_PlayMontageAndWaitForEvent::OnMontageEnded);
 				AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, MontageToPlay);
 
-				ACharacter* Character = Cast<ACharacter>(GetAvatarActor());
 				if (Character && (Character->GetLocalRole() == ROLE_Authority ||
 								  (Character->GetLocalRole() == ROLE_AutonomousProxy && Ability->GetNetExecutionPolicy() == EGameplayAbilityNetExecutionPolicy::LocalPredicted)))
 				{

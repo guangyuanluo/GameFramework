@@ -37,6 +37,12 @@ void ACoreCharacter::ReceiveAttributeChanged_Implementation(FGameplayAttribute A
 
 }
 
+void ACoreCharacter::RPC_ReplicatePlayMontageToActorOwingClient_Implementation(class UAnimMontage* AnimMontage, float InPlayRate, FName StartSectionName) {
+    if (GetLocalRole() == ENetRole::ROLE_SimulatedProxy) {
+        PlayAnimMontage(AnimMontage, InPlayRate, StartSectionName);
+    }
+}
+
 void ACoreCharacter::BeginPlay() {
     Super::BeginPlay();
 

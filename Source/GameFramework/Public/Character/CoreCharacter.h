@@ -41,6 +41,10 @@ public:
     UFUNCTION(BlueprintNativeEvent, Category = "Character")
     void ReceiveAttributeChanged(FGameplayAttribute Attribute, float OldValue, float NewValue);
 
+    /** 联网同步播放蒙太奇 */
+    UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+    void RPC_ReplicatePlayMontageToActorOwingClient(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
