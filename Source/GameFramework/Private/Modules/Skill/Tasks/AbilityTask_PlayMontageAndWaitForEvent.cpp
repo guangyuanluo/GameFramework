@@ -151,7 +151,7 @@ void UAbilityTask_PlayMontageAndWaitForEvent::Activate()
 			{
 				ACoreCharacter* Character = Cast<ACoreCharacter>(GetAvatarActor());
 
-				if (Character) {
+				if (Character && Character->GetRemoteRole() == ENetRole::ROLE_SimulatedProxy) {
 					Character->RPC_ReplicatePlayMontageToActorOwingClient(MontageToPlay, Rate, StartSection);
 				}
 
