@@ -19,12 +19,28 @@ FCoreGameplayEffectContainerSpec USkillBlueprintLibrary::AddTargetsToEffectConta
 TArray<FActiveGameplayEffectHandle> USkillBlueprintLibrary::ApplyExternalEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
 	TArray<FActiveGameplayEffectHandle> AllEffects;
 
-	// Iterate list of gameplay effects
+	UCoreAbility* TriggerAbility = nullptr;
 	for (const FGameplayEffectSpecHandle& SpecHandle : ContainerSpec.TargetGameplayEffectSpecs) {
 		if (SpecHandle.IsValid()) {
-			// If effect is valid, iterate list of targets and apply to all
-			for (TSharedPtr<FGameplayAbilityTargetData> Data : ContainerSpec.TargetData.Data) {
-				AllEffects.Append(Data->ApplyGameplayEffectSpec(*SpecHandle.Data.Get()));
+			auto Ability = SpecHandle.Data->GetEffectContext().GetAbilityInstance_NotReplicated();
+			if (Ability->IsA(UCoreAbility::StaticClass())) {
+				TriggerAbility = const_cast<UCoreAbility*>(Cast<UCoreAbility>(Ability));
+			}
+			break;
+		}
+	}
+
+	// Iterate list of gameplay effects
+	if (TriggerAbility) {
+		AllEffects = TriggerAbility->ApplyEffectContainerSpec(ContainerSpec);
+	}
+	else {
+		for (const FGameplayEffectSpecHandle& SpecHandle : ContainerSpec.TargetGameplayEffectSpecs) {
+			if (SpecHandle.IsValid()) {
+				// If effect is valid, iterate list of targets and apply to all
+				for (TSharedPtr<FGameplayAbilityTargetData> Data : ContainerSpec.TargetData.Data) {
+					AllEffects.Append(Data->ApplyGameplayEffectSpec(*SpecHandle.Data.Get()));
+				}
 			}
 		}
 	}
