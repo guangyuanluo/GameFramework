@@ -99,6 +99,8 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Modules/Reward",
             "GameFramework/Public/Modules/Scenario",
             "GameFramework/Public/Modules/NPC",
+            "GameFramework/Public/Modules/CustomizableSearchTree",
+            "GameFramework/Public/Modules/AnimSearchTree",
             //Global
             "GameFramework/Public/Global/Events",
             "GameFramework/Public/Global/Conditions",
