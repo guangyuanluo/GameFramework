@@ -56,6 +56,7 @@
 #include "Modules/Skill/CoreAbility.h"
 #include "Customization/CoreGameplayEffectContainerCustomization.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
+#include "AnimSearchTree/AssetTypeActions_AnimSearchTree.h"
 
 static const FName GameFrameworkEditorTabName("GameFrameworkEditor");
 
@@ -229,6 +230,10 @@ void FGameFrameworkEditorModule::RegistAssetType() {
 	TSharedPtr<FAssetTypeActions_QuestTree> AssetTypeActions_QuestTree = MakeShareable(new FAssetTypeActions_QuestTree);
 	ItemDataAssetTypeActions.Add(AssetTypeActions_QuestTree);
 	AssetToolsModule.RegisterAssetTypeActions(AssetTypeActions_QuestTree.ToSharedRef());
+
+	TSharedPtr<FAssetTypeActions_AnimSearchTree> AnimSearchTreeAssetTypeAction = MakeShareable(new FAssetTypeActions_AnimSearchTree);
+	ItemDataAssetTypeActions.Add(AnimSearchTreeAssetTypeAction);
+	AssetToolsModule.RegisterAssetTypeActions(AnimSearchTreeAssetTypeAction.ToSharedRef());
 
     GraphPanelNodeFactoryCommon = MakeShareable(new FGraphPanelNodeFactoryCommon());
     FEdGraphUtilities::RegisterVisualNodeFactory(GraphPanelNodeFactoryCommon);
