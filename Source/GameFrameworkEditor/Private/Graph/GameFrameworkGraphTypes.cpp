@@ -19,7 +19,6 @@
 #else
 #include "AssetRegistryModule.h"
 #endif
-#include "Misc/HotReloadInterface.h"
 
 #define LOCTEXT_NAMESPACE "SClassViewer"
 
@@ -154,8 +153,7 @@ FGraphNodeClassHelper::FGraphNodeClassHelper(UClass* InRootClass)
 	AssetRegistryModule.Get().OnAssetRemoved().AddRaw(this, &FGraphNodeClassHelper::OnAssetRemoved);
 
 	// Register to have Populate called when doing a Hot Reload.
-	IHotReloadInterface& HotReloadSupport = FModuleManager::LoadModuleChecked<IHotReloadInterface>("HotReload");
-	HotReloadSupport.OnHotReload().AddRaw(this, &FGraphNodeClassHelper::OnHotReload);
+	FCoreUObjectDelegates::ReloadCompleteDelegate.AddRaw(this, &FGraphNodeClassHelper::OnHotReload);
 
 	// Register to have Populate called when a Blueprint is compiled.
 	GEditor->OnBlueprintCompiled().AddRaw(this, &FGraphNodeClassHelper::InvalidateCache);
@@ -175,11 +173,7 @@ FGraphNodeClassHelper::~FGraphNodeClassHelper()
 		AssetRegistryModule.Get().OnAssetRemoved().RemoveAll(this);
 
 		// Unregister to have Populate called when doing a Hot Reload.
-		if (FModuleManager::Get().IsModuleLoaded(TEXT("HotReload")))
-		{
-			IHotReloadInterface& HotReloadSupport = FModuleManager::GetModuleChecked<IHotReloadInterface>("HotReload");
-			HotReloadSupport.OnHotReload().RemoveAll(this);
-		}
+		FCoreUObjectDelegates::ReloadCompleteDelegate.RemoveAll(this);
 
 		// Unregister to have Populate called when a Blueprint is compiled.
 		if (UObjectInitialized())
@@ -331,7 +325,7 @@ void FGraphNodeClassHelper::InvalidateCache()
 	UpdateAvailableBlueprintClasses();
 }
 
-void FGraphNodeClassHelper::OnHotReload(bool bWasTriggeredAutomatically)
+void FGraphNodeClassHelper::OnHotReload(EReloadCompleteReason Reason)
 {
 	InvalidateCache();
 }
