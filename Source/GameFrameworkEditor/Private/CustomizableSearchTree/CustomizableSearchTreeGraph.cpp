@@ -58,6 +58,7 @@ void UCustomizableSearchTreeGraph::NotifyGraphPinConnectionChanged()
 			UGameFrameworkGraphNode* ChildNode = Cast<UGameFrameworkGraphNode>(LinkedTo->GetOwningNode());
 			UCustomizableSearchTreeNodeBase* CustomizableSearchTreeNode = Cast<UCustomizableSearchTreeNodeBase>(ChildNode->NodeInstance);
 			CustomizableSearchTree->Root->FollowNodes.Add(CustomizableSearchTreeNode);
+			CustomizableSearchTreeNode->PreNode = CustomizableSearchTree->Root;
             UpdateTreeNodeRecusive(ChildNode);
 		}
 	}
