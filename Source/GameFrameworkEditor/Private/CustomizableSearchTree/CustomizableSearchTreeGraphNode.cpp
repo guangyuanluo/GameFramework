@@ -10,7 +10,22 @@ UCustomizableSearchTreeGraphNode::UCustomizableSearchTreeGraphNode(const FObject
 
 FText UCustomizableSearchTreeGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const {
     UCustomizableSearchTreeNodeBase* CustomizableSearchTreeNode = Cast<UCustomizableSearchTreeNodeBase>(NodeInstance);
-    return FText::FromString(CustomizableSearchTreeNode->GetNodeTitle());
+
+    FString ReturnNodeTitle;
+
+    if (CustomizableSearchTreeNode->PreNode) {
+        for (int Index = 0; Index < CustomizableSearchTreeNode->PreNode->FollowNodes.Num(); ++Index) {
+            if (CustomizableSearchTreeNode->PreNode->FollowNodes[Index] == CustomizableSearchTreeNode) {
+                ReturnNodeTitle.AppendInt(Index);
+                ReturnNodeTitle.Append(TEXT("."));
+                break;
+            }
+        }
+    }
+
+    ReturnNodeTitle.Append(CustomizableSearchTreeNode->GetNodeTitle());
+
+    return FText::FromString(ReturnNodeTitle);
 }
 
 void UCustomizableSearchTreeGraphNode::AllocateDefaultPins() {
