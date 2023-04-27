@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/EdGraph/EdGraphPin.h"
 #include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeBase.h"
 #include "Modules/CustomizableSearchTree/CustomizableSearchTree.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeRoot.h"
 #include "CustomizableSearchTreeGraphNode_Root.h"
 #include "CustomizableSearchTreeGraphNode.h"
 
@@ -43,16 +44,22 @@ void UCustomizableSearchTreeGraph::NotifyGraphPinConnectionChanged()
 		}
 	}
 
+	auto CustomizableSearchTree = Cast<UCustomizableSearchTree>(Editor->GetObjectToEdit());
+	if (CustomizableSearchTree->Root == nullptr) {
+		CustomizableSearchTree->Root = NewObject<UCustomizableSearchTreeNodeRoot>(CustomizableSearchTree);
+		CustomizableSearchTree->Root->Asset = CustomizableSearchTree;
+	}
+	CustomizableSearchTree->Root->FollowNodes.Empty();
 
 	if (RootNode->Pins[0]->LinkedTo.Num() > 0)
 	{
-		UGameFrameworkGraphNode* ChildNode = Cast<UGameFrameworkGraphNode>(RootNode->Pins[0]->LinkedTo[0]->GetOwningNode());
-		UCustomizableSearchTreeNodeBase* CustomizableSearchTreeNode = Cast<UCustomizableSearchTreeNodeBase>(ChildNode->NodeInstance);
-
-		auto CustomizableSearchTree = Cast<UCustomizableSearchTree>(Editor->GetObjectToEdit());
-		CustomizableSearchTree->RootScenario = CustomizableSearchTreeNode;
-
-		UpdateTreeNodeRecusive(ChildNode);
+		for (const auto& LinkedTo : RootNode->Pins[0]->LinkedTo)
+		{
+			UGameFrameworkGraphNode* ChildNode = Cast<UGameFrameworkGraphNode>(LinkedTo->GetOwningNode());
+			UCustomizableSearchTreeNodeBase* CustomizableSearchTreeNode = Cast<UCustomizableSearchTreeNodeBase>(ChildNode->NodeInstance);
+			CustomizableSearchTree->Root->FollowNodes.Add(CustomizableSearchTreeNode);
+            UpdateTreeNodeRecusive(ChildNode);
+		}
 	}
 }
 

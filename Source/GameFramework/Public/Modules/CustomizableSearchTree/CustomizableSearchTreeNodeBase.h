@@ -45,4 +45,7 @@ public:
 
     UFUNCTION(BlueprintNativeEvent)
     TArray<FCustomizableSearchTreeNodeOutputPinInfo> GetOutputPinInfo();
+
+    UFUNCTION(BlueprintNativeEvent)
+    TSubclassOf<class UCustomizableSearchTreeNodeChecker> GetCheckerClass();
 };
