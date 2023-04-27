@@ -18,7 +18,7 @@ public:
 	* 树根节点
 	*/
 	UPROPERTY(BlueprintReadOnly, Category = "Anim")
-	class UCustomizableSearchTreeNodeBase* RootScenario;
+	class UCustomizableSearchTreeNodeBase* Root;
 
 	/**
 	* 限制树节点子类的类型

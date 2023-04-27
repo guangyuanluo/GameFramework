@@ -15,7 +15,7 @@ bool UCustomizableSearchTreeGraphNode_Root::CanUserDeleteNode() const {
 
 void UCustomizableSearchTreeGraphNode_Root::AllocateDefaultPins()
 {
-	CreatePin(EGPD_Output, PinCategory_SingleNode, TEXT("Next"));
+	CreatePin(EGPD_Output, PinCategory_MultipleNodes, TEXT("Next"));
 }
 
 FText UCustomizableSearchTreeGraphNode_Root::GetNodeTitle(ENodeTitleType::Type TitleType) const

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeBase.h"
-#include "AnimSearchTreeNodeBase.generated.h"
+#include "CustomizableSearchTreeNodeRoot.generated.h"
 
 /**
- * 动画搜索树节点基类
+ * 定制化搜索树根节点
  */
-UCLASS(Abstract)
-class GAMEFRAMEWORK_API UAnimSearchTreeNodeBase : public UCustomizableSearchTreeNodeBase
+UCLASS()
+class GAMEFRAMEWORK_API UCustomizableSearchTreeNodeRoot : public UCustomizableSearchTreeNodeBase
 {
 	GENERATED_BODY()
 
