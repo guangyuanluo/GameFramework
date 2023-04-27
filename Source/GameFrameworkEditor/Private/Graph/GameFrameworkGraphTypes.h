@@ -82,7 +82,7 @@ struct FGraphNodeClassHelper
 	void OnAssetAdded(const struct FAssetData& AssetData);
 	void OnAssetRemoved(const struct FAssetData& AssetData);
 	void InvalidateCache();
-	void OnHotReload(bool bWasTriggeredAutomatically);
+	void OnHotReload(EReloadCompleteReason Reason);
 
 	static void AddUnknownClass(const FGameFrameworkGraphNodeClassData& ClassData);
 	static bool IsClassKnown(const FGameFrameworkGraphNodeClassData& ClassData);
