@@ -3,60 +3,89 @@
 #include "CustomizableSearchTreeBlueprintLibrary.h"
 #include "CustomizableSearchTree.h"
 #include "CustomizableSearchTreeNodeBase.h"
-#include "CustomizableSearchTreeNodeChecker.h"
+#include "CustomizableSearchTreeNodeVisit.h"
 
 UCustomizableSearchTreeNodeBase* UCustomizableSearchTreeBlueprintLibrary::FindNodeFromAnimSearchTree(UCustomizableSearchTree* CustomizableSearchTree, TSubclassOf<UCustomizableSearchTreeNodeBase> NodeClass, UObject* FindContext) {
-    if (!IsValid(CustomizableSearchTree)) {
-        return nullptr;
-    }
-    if (!IsValid(CustomizableSearchTree->Root)) {
-        return nullptr;
-    }
-    if (CustomizableSearchTree->Root->FollowNodes.Num() == 0) {
-        return nullptr;
-    }
-    if (!NodeClass) {
-        return nullptr;
-    }
-    TArray<UCustomizableSearchTreeNodeBase*> VisitStack;
-    for (int Index = CustomizableSearchTree->Root->FollowNodes.Num() - 1; Index >= 0; --Index) {
-        VisitStack.Add(CustomizableSearchTree->Root->FollowNodes[Index]);
-    }
-    //遍历
-    UCustomizableSearchTreeNodeBase* FindResult = nullptr;
-    while (VisitStack.Num() > 0) {
-        auto NowNode = VisitStack[VisitStack.Num() - 1];
-        //出栈
-        VisitStack.RemoveAt(VisitStack.Num() - 1);
-        if (NowNode->GetClass() == NodeClass) {
-            //找到，终止循环
-            FindResult = NowNode;
-            break;
-        }
-        else {
-            auto CheckerClass = NowNode->GetCheckerClass();
-            ensure(CheckerClass);
-            if (!CheckerClass) {
-                continue;
-            }
-            auto CheckerNodeCDO = CheckerClass->GetDefaultObject<UCustomizableSearchTreeNodeChecker>();
-            auto FindNode = CheckerNodeCDO->FindNode(NowNode, NodeClass, FindContext);
-            if (FindNode) {
-                FindResult = FindNode;
-                break;
-            }
-            //没找到就继续查找树
-            if (NowNode->FollowNodes.Num() > 0) {
-                //不是这个类型，要判断是否符合条件
-                if (CheckerNodeCDO->NeedSearchChildren(NowNode, FindContext)) {
-                    //这里说明节点满足条件，可以访问子节点
-                    for (int ChildIndex = NowNode->FollowNodes.Num() - 1; ChildIndex >= 0; --ChildIndex) {
-                        //入栈
-                        VisitStack.Add(NowNode->FollowNodes[ChildIndex]);
-                    }
-                }
-            }
-        }
-    }
-    return FindResult;
+	if (!NodeClass) {
+		return nullptr;
+	}
+	//遍历
+	UCustomizableSearchTreeNodeBase* FindResult = nullptr;
+
+	FCustomizableSearchTreeNodeVisitFunc VisitFunc;
+	VisitFunc.BindLambda([FindContext, &FindResult, NodeClass](class UCustomizableSearchTreeNodeBase* Node, bool& NeedSearchChildren, bool& NeedBreakLoop) {
+		if (Node->GetClass() == NodeClass) {
+			FindResult = Node;
+			NeedBreakLoop = true;
+		}
+		else {
+			NeedBreakLoop = false;
+			NeedSearchChildren = Node->NeedSearchChildren(FindContext);
+		}
+	});
+
+	bool NeedBreakLoop;
+	UCustomizableSearchTreeBlueprintLibrary::VisitAnimSearchTree(CustomizableSearchTree, VisitFunc, NeedBreakLoop);
+
+	return FindResult;
+}
+
+void UCustomizableSearchTreeBlueprintLibrary::FindAllNodesByClassFromAnimSearchTree(class UCustomizableSearchTree* CustomizableSearchTree, TSubclassOf<class UCustomizableSearchTreeNodeBase> NodeClass, TArray<UCustomizableSearchTreeNodeBase*>& OutNodes) {
+	if (!NodeClass) {
+		return;
+	}
+	TArray<UCustomizableSearchTreeNodeBase*> VisitStack;
+	for (int Index = CustomizableSearchTree->Root->FollowNodes.Num() - 1; Index >= 0; --Index) {
+		VisitStack.Add(CustomizableSearchTree->Root->FollowNodes[Index]);
+	}
+
+	//遍历	
+	FCustomizableSearchTreeNodeVisitFunc VisitFunc;
+	VisitFunc.BindLambda([&VisitStack, &OutNodes, NodeClass](class UCustomizableSearchTreeNodeBase* Node, bool& NeedSearchChildren, bool& NeedBreakLoop) {
+		if (Node->GetClass() == NodeClass) {
+			OutNodes.Add(Node);
+		}
+		NeedSearchChildren = true;
+		NeedBreakLoop = false;
+	});
+
+	bool NeedBreakLoop;
+	UCustomizableSearchTreeBlueprintLibrary::VisitAnimSearchTree(CustomizableSearchTree, VisitFunc, NeedBreakLoop);
+}
+
+void UCustomizableSearchTreeBlueprintLibrary::VisitAnimSearchTree(class UCustomizableSearchTree* CustomizableSearchTree, FCustomizableSearchTreeNodeVisitFunc VisitFunc, bool& NeedBreakLoop) {
+	if (!IsValid(CustomizableSearchTree)) {
+		return;
+	}
+	if (!IsValid(CustomizableSearchTree->Root)) {
+		return;
+	}
+	if (CustomizableSearchTree->Root->FollowNodes.Num() == 0) {
+		return;
+	}
+	TArray<UCustomizableSearchTreeNodeBase*> VisitStack;
+	for (int Index = CustomizableSearchTree->Root->FollowNodes.Num() - 1; Index >= 0; --Index) {
+		VisitStack.Add(CustomizableSearchTree->Root->FollowNodes[Index]);
+	}
+	while (VisitStack.Num() > 0) {
+		auto NowNode = VisitStack[VisitStack.Num() - 1];
+		//出栈
+		VisitStack.RemoveAt(VisitStack.Num() - 1);
+		auto VisitClass = NowNode->GetVisitClass();
+		ensure(VisitClass);
+		if (!VisitClass) {
+			continue;
+		}
+		auto VisitNodeCDO = VisitClass->GetDefaultObject<UCustomizableSearchTreeNodeVisit>();
+		bool NeedSearchChildren;
+		VisitNodeCDO->VisitNode(NowNode, VisitFunc, NeedSearchChildren, NeedBreakLoop);
+		if (NeedBreakLoop) {
+			break;
+		}
+		if (NeedSearchChildren && NowNode->FollowNodes.Num() > 0) {
+			for (int ChildIndex = NowNode->FollowNodes.Num() - 1; ChildIndex >= 0; --ChildIndex) {
+				VisitStack.Add(NowNode->FollowNodes[ChildIndex]);
+			}
+		}
+	}
 }

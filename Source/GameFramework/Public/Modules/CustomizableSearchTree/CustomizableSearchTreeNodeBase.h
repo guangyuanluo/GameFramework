@@ -47,5 +47,8 @@ public:
     TArray<FCustomizableSearchTreeNodeOutputPinInfo> GetOutputPinInfo();
 
     UFUNCTION(BlueprintNativeEvent)
-    TSubclassOf<class UCustomizableSearchTreeNodeChecker> GetCheckerClass();
+    TSubclassOf<class UCustomizableSearchTreeNodeVisit> GetVisitClass();
+
+	UFUNCTION(BlueprintNativeEvent)
+	bool NeedSearchChildren(UObject* FindContext);
 };
