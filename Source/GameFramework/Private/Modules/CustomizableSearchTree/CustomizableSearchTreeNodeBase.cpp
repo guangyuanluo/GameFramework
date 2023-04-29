@@ -4,13 +4,17 @@
 #include "CustomizableSearchTreeNodeVisit.h"
 
 FString UCustomizableSearchTreeNodeBase::GetNodeTitle_Implementation() {
+#if WITH_EDITORONLY_DATA
     return GetClass()->GetDisplayNameText().ToString();
+#else
+    return GetClass()->GetName();
+#endif
 }
 
 TArray<FCustomizableSearchTreeNodeOutputPinInfo> UCustomizableSearchTreeNodeBase::GetOutputPinInfo_Implementation() {
     FCustomizableSearchTreeNodeOutputPinInfo PinInfo;
     PinInfo.AllowMulti = true;
-    PinInfo.Name = "Next";
+    PinInfo.Name = TEXT("Next");
     return TArray<FCustomizableSearchTreeNodeOutputPinInfo>({ PinInfo });
 }
 
