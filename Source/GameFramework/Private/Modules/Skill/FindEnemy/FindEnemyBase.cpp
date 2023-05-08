@@ -6,7 +6,3 @@
 class ACoreCharacter* UFindEnemyBase::FindEnemy_Implementation(class UFindEnemyComponent* Component) {
     return nullptr;
 }
-
-void UFindEnemyBase::Tick_Implementation(UFindEnemyComponent* OwnerComponent) {
-
-}

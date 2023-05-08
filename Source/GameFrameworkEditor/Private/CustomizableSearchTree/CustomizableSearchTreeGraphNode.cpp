@@ -14,11 +14,13 @@ FText UCustomizableSearchTreeGraphNode::GetNodeTitle(ENodeTitleType::Type TitleT
     FString ReturnNodeTitle;
 
     if (CustomizableSearchTreeNode->PreNode) {
-        for (int Index = 0; Index < CustomizableSearchTreeNode->PreNode->FollowNodes.Num(); ++Index) {
-            if (CustomizableSearchTreeNode->PreNode->FollowNodes[Index] == CustomizableSearchTreeNode) {
-                ReturnNodeTitle.AppendInt(Index);
-                ReturnNodeTitle.Append(TEXT("."));
-                break;
+        if (CustomizableSearchTreeNode->PreNode->FollowNodes.Num() > 1) {
+            for (int Index = 0; Index < CustomizableSearchTreeNode->PreNode->FollowNodes.Num(); ++Index) {
+                if (CustomizableSearchTreeNode->PreNode->FollowNodes[Index] == CustomizableSearchTreeNode) {
+                    ReturnNodeTitle.AppendInt(Index);
+                    ReturnNodeTitle.Append(TEXT("."));
+                    break;
+                }
             }
         }
     }
