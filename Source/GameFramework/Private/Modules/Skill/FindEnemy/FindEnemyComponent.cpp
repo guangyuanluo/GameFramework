@@ -37,6 +37,10 @@ void UFindEnemyComponent::ClearEnemy() {
 	Enemy = nullptr;
 }
 
+void UFindEnemyComponent::SetAutoUpdateInterval(float NewInterval) {
+	AutoUpdateInterval = NewInterval;
+}
+
 void UFindEnemyComponent::SetLock(bool bNewLock) {
 	bLock = bNewLock;
 }
@@ -67,8 +71,14 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (AutoUpdate) {
-		if (FindEnemyObject) {
-			FindEnemyObject->Tick(this);
+		FDateTime Now = FDateTime::Now();
+		FTimespan TimeSinceLastUpdate = Now - LastAutoUpdateTime;
+		if (TimeSinceLastUpdate.GetTotalMilliseconds() > AutoUpdateInterval) {
+			LastAutoUpdateTime = Now;
+			//更新索敌
+			if (FindEnemyClass.Get()) {
+				Enemy = FindEnemyObject->FindEnemy(this);
+			}
 		}
 	}
 }

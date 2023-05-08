@@ -66,12 +66,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void ClearEnemy();
 
+	/**
+	* 更新自动索敌间隔
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Skill")
+	void SetAutoUpdateInterval(float NewInterval);
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
 	bool bLock = false;
+	FDateTime LastAutoUpdateTime;
+	float AutoUpdateInterval = 500.f;
 
 	UPROPERTY(Transient)
 	ACoreCharacter* Enemy;

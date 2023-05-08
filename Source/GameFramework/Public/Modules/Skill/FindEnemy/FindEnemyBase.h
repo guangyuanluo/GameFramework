@@ -17,10 +17,4 @@ public:
 	*/
 	UFUNCTION(BlueprintNativeEvent)
 	class ACoreCharacter* FindEnemy(class UFindEnemyComponent* OwnerComponent);
-
-	/**
-	* tick处理
-	*/
-	UFUNCTION(BlueprintNativeEvent)
-	void Tick(UFindEnemyComponent* OwnerComponent);
 };
