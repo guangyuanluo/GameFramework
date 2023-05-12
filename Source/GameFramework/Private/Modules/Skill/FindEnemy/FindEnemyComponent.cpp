@@ -75,6 +75,11 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 		FTimespan TimeSinceLastUpdate = Now - LastAutoUpdateTime;
 		if (TimeSinceLastUpdate.GetTotalMilliseconds() > AutoUpdateInterval) {
 			LastAutoUpdateTime = Now;
+
+			if (bLock) {
+				return;
+			}
+
 			//更新索敌
 			if (FindEnemyClass.Get()) {
 				Enemy = FindEnemyObject->FindEnemy(this);

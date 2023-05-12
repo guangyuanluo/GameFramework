@@ -478,7 +478,7 @@ FGameplayTagContainer UCoreAbilitySystemComponent::GetTargetTagContainer() {
     if (AActor* ThisAvatarActor = GetAvatarActor()) {
         auto FindEnemyComponent = Cast<UFindEnemyComponent>(ThisAvatarActor->GetComponentByClass(UFindEnemyComponent::StaticClass()));
         if (FindEnemyComponent) {
-            auto TargetEnemy = FindEnemyComponent->FindOrGetEnemy();
+            auto TargetEnemy = FindEnemyComponent->JustGetEnemy();
             if (TargetEnemy) {
                 auto TargetAbilitySystemComponent = TargetEnemy->GetAbilitySystemComponent();
                 if (TargetAbilitySystemComponent) {
