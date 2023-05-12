@@ -3,6 +3,8 @@
 
 #include "FindEnemyComponent.h"
 #include "FindEnemyBase.h"
+#include "AbilitySystemGlobals.h"
+#include "AbilitySystemComponent.h"
 
 // Sets default values for this component's properties
 UFindEnemyComponent::UFindEnemyComponent()
@@ -17,9 +19,19 @@ UFindEnemyComponent::UFindEnemyComponent()
 ACoreCharacter* UFindEnemyComponent::FindOrGetEnemy() {
 	if (AutoUpdate) {
         if (!Enemy) {
-            if (FindEnemyClass.Get()) {
-                Enemy = FindEnemyObject->FindEnemy(this);
-            }
+			auto NetMode = GetWorld()->GetNetMode();
+			if (NetMode != ENetMode::NM_Client && NetMode != ENetMode::NM_Standalone) {
+				//索敌逻辑完全听客户端的
+			}
+			else {
+				if (FindEnemyClass.Get()) {
+					auto NewEnemy = FindEnemyObject->FindEnemy(this);
+					if (NewEnemy != Enemy) {
+						ServerSyncEnemy(NewEnemy);
+					}
+					Enemy = NewEnemy;
+				}
+			}
         }
 	}
 	return Enemy;
@@ -70,6 +82,12 @@ void UFindEnemyComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	auto NetMode = GetWorld()->GetNetMode();
+	if (NetMode != ENetMode::NM_Client && NetMode != ENetMode::NM_Standalone) {
+		//索敌逻辑完全听客户端的
+		return;
+	}
+
 	if (AutoUpdate) {
 		FDateTime Now = FDateTime::Now();
 		FTimespan TimeSinceLastUpdate = Now - LastAutoUpdateTime;
@@ -80,10 +98,27 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 				return;
 			}
 
+			if (!IgnoreAutoUpdateTagContainer.IsEmpty()) {
+				//有某些特定tag的时候，跳过自动更新
+				if (auto ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner())) {
+					if (ASC->HasAnyMatchingGameplayTags(IgnoreAutoUpdateTagContainer)) {
+						return;
+					}
+				}
+			}
+
 			//更新索敌
 			if (FindEnemyClass.Get()) {
-				Enemy = FindEnemyObject->FindEnemy(this);
+				auto NewEnemy = FindEnemyObject->FindEnemy(this);
+				if (NewEnemy != Enemy) {
+					ServerSyncEnemy(NewEnemy);
+				}
+				Enemy = NewEnemy;
 			}
 		}
 	}
+}
+
+void UFindEnemyComponent::ServerSyncEnemy_Implementation(ACoreCharacter* InEnemy) {
+	SetEnemy(InEnemy);
 }
