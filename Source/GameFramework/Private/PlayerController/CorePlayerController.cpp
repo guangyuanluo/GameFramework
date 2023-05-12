@@ -18,6 +18,7 @@
 #include "UnitSetting.h"
 #include "ConfigTableCache.h"
 #include "UnitInfoConfigTableRow.h"
+#include "Components/InputComponent.h"
 
 ACorePlayerController::ACorePlayerController(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     GMComponent = CreateDefaultSubobject<UGMComponent>(TEXT("GMComponent"));
