@@ -4,7 +4,7 @@
 #include "CoreAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemGlobals.h"
-#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "UE4LogImpl.h"
 #include "Character/CoreCharacter.h"
 
