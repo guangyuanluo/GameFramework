@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/ECS/GameEntityComponent.h"
+#include "GameplayTagContainer.h"
 #include "FindEnemyComponent.generated.h"
 
 class UFindEnemyBase;
@@ -29,6 +30,12 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill")
 	bool AutoUpdate = true;
+
+	/**
+	* 拥有以下Tag时跳过触发自动更新
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill", meta = (DisplayName = "拥有以下Tag时跳过触发自动更新"))
+	FGameplayTagContainer IgnoreAutoUpdateTagContainer;
 
 	/**
 	* 查找或者获取敌人
@@ -86,4 +93,10 @@ private:
 
 	UPROPERTY(Transient)
 	UFindEnemyBase* FindEnemyObject;
+
+	/**
+	* 向服务器同步索敌
+	*/
+	UFUNCTION(Server, reliable)
+	void ServerSyncEnemy(ACoreCharacter* InEnemy);
 };
