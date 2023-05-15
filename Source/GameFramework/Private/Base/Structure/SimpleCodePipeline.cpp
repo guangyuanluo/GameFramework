@@ -70,6 +70,8 @@ class UAdvanceObjectPromise* USimpleCodePipeline::Execute() {
 	else {
 		RunExecutor();
 	}
+	ExecutePromise->AddSuccessListener(FOnObjectPromiseSuccess::CreateUObject(this, &USimpleCodePipeline::ExecutePromiseCallbackSuccess))
+		->AddFailureListener(FOnObjectPromiseFail::CreateUObject(this, &USimpleCodePipeline::ExecutePromiseCallbackFail));
 
 	return ExecutePromise;
 }
@@ -161,4 +163,12 @@ void USimpleCodePipeline::SetReadyToDestroy() {
 			GameInstance->UnregisterReferencedObject(this);
 		}
 	}
+}
+
+void USimpleCodePipeline::ExecutePromiseCallbackSuccess(UObject* Result) {
+	OnCodePipelineFinish.Broadcast(this, CurrentExecuteIndex, ExecutePromise);
+}
+
+void USimpleCodePipeline::ExecutePromiseCallbackFail(const FString& FailureReason) {
+	OnCodePipelineFinish.Broadcast(this, CurrentExecuteIndex, ExecutePromise);
 }

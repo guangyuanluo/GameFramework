@@ -14,6 +14,8 @@ DECLARE_DELEGATE_RetVal_OneParam(class UAdvanceObjectPromise*, FPipelineAsyncFun
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCodePipelineProgressChange, class USimpleCodePipeline*, Pipeline, int, CurrentIndex, int, TotalIndex);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCodePipelineFinish, class USimpleCodePipeline*, Pipeline, int, FinishIndex, class UAdvanceObjectPromise*, ExecutePromise);
+
 /**
 * 简单代码执行管线
  */
@@ -80,6 +82,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnCodePipelineProgressChange OnCodePipelineProgressChange;
 
+	/**
+	* 管线终止回调
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnCodePipelineFinish OnCodePipelineFinish;
+
 private:
 	UPROPERTY()
 	class UAdvanceObjectPromise* ExecutePromise;
@@ -107,6 +115,12 @@ private:
 	void ExecutorCallbackFail(const FString& FailureReason);
 
 	void ExecutorExecuteComplete();
+
+	UFUNCTION()
+	void ExecutePromiseCallbackSuccess(UObject* Result);
+
+	UFUNCTION()
+	void ExecutePromiseCallbackFail(const FString& FailureReason);
 
 	void SetReadyToDestroy();
 };
