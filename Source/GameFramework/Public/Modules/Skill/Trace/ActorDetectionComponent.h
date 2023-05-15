@@ -18,7 +18,7 @@ enum class ActorDetectionWayEnum :uint8 {
 };
 
 UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
-class GAMEFRAMEWORK_API UActorDetectionComponent : public USceneComponent {
+class GAMEFRAMEWORK_API UActorDetectionComponent : public UPrimitiveComponent {
     GENERATED_BODY()
 
 public:
@@ -82,9 +82,21 @@ public:
     UPROPERTY(EditAnywhere)
     TArray<TObjectPtr<AActor>> ExtraActorsToIgnore;
 
+    /** Color used to draw the shape. */
+    UPROPERTY(EditAnywhere, AdvancedDisplay, BlueprintReadOnly, Category = Shape)
+    FColor ShapeColor;
+
+    /** Only show this component if the actor is selected */
+    UPROPERTY()
+    uint8 bDrawOnlyIfSelected : 1;
+
     bool IsValidHitClass(UClass* HitClass);
 
     virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+    //~ Begin UPrimitiveComponent Interface.
+    virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
+    //~ End UPrimitiveComponent Interface.
+private:
     void HandleHitResult(const FHitResult& HitResult, TSet<AActor*>& DetectedActorsCopy);
 };
