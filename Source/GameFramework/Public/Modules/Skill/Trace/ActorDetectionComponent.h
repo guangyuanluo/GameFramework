@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Base/ECS/GameEntityComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "WorldCollision.h"
 
 #include "ActorDetectionComponent.generated.h"

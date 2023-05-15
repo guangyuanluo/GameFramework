@@ -6,7 +6,7 @@
 #include "PhysicsEngine/PhysicsSettings.h"
 
 //这里搞了一大段代码是因为引擎自带的胶囊体检测不带旋转的drawdebug，所以要把旋转透传进去应用到drawdebug
-namespace ActtorDetection {
+namespace ActorDetection {
     const float KISMET_TRACE_DEBUG_IMPACTPOINT_SIZE = 16.f;
 
 
@@ -103,7 +103,7 @@ namespace ActtorDetection {
         bool const bHit = World ? World->SweepMultiByChannel(OutHits, Start, End, FQuat::Identity, CollisionChannel, FCollisionShape::MakeCapsule(Radius, HalfHeight), Params) : false;
 
 #if ENABLE_DRAW_DEBUG
-        DrawDebugCapsuleTraceMulti(World, Start, End, Quat, Radius, HalfHeight, DrawDebugType, bHit, OutHits, TraceColor, TraceHitColor, DrawTime);
+        ActorDetection::DrawDebugCapsuleTraceMulti(World, Start, End, Quat, Radius, HalfHeight, DrawDebugType, bHit, OutHits, TraceColor, TraceHitColor, DrawTime);
 #endif
 
         return bHit;
@@ -120,7 +120,7 @@ namespace ActtorDetection {
         bool const bHit = World ? World->SweepSingleByChannel(OutHit, Start, End, FQuat::Identity, CollisionChannel, FCollisionShape::MakeCapsule(Radius, HalfHeight), Params) : false;
 
 #if ENABLE_DRAW_DEBUG
-        ActtorDetection::DrawDebugCapsuleTraceSingle(World, Start, End, Quat, Radius, HalfHeight, DrawDebugType, bHit, OutHit, TraceColor, TraceHitColor, DrawTime);
+        ActorDetection::DrawDebugCapsuleTraceSingle(World, Start, End, Quat, Radius, HalfHeight, DrawDebugType, bHit, OutHit, TraceColor, TraceHitColor, DrawTime);
 #endif
 
         return bHit;
@@ -230,7 +230,7 @@ void UActorDetectionComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
         //胶囊体检测
         if (bTraceMulti) {
             TArray<FHitResult> HitResults;
-            if (ActtorDetection::CapsuleTraceMulti(this, Start, End, ComponentWorldTransform.GetRotation(), CapsuleRadius, CapsuleHalfHeight, UEngineTypes::ConvertToTraceType(CollisionChannel), false, IgnoreActors, DrawDebugTrace, HitResults, true, FLinearColor::Green, FLinearColor::Red, -1.f)) {
+            if (ActorDetection::CapsuleTraceMulti(this, Start, End, ComponentWorldTransform.GetRotation(), CapsuleRadius, CapsuleHalfHeight, UEngineTypes::ConvertToTraceType(CollisionChannel), false, IgnoreActors, DrawDebugTrace, HitResults, true, FLinearColor::Green, FLinearColor::Red, -1.f)) {
                 for (auto& HitResult : HitResults) {
                     HandleHitResult(HitResult, DetectedActorsCopy);
                 }
@@ -238,7 +238,7 @@ void UActorDetectionComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
         }
         else {
             FHitResult HitResult;
-            if (ActtorDetection::CapsuleTraceSingle(this, Start, End, ComponentWorldTransform.GetRotation(), CapsuleRadius, CapsuleHalfHeight, UEngineTypes::ConvertToTraceType(CollisionChannel), false, IgnoreActors, DrawDebugTrace, HitResult, true, FLinearColor::Green, FLinearColor::Red, -1.f)) {
+            if (ActorDetection::CapsuleTraceSingle(this, Start, End, ComponentWorldTransform.GetRotation(), CapsuleRadius, CapsuleHalfHeight, UEngineTypes::ConvertToTraceType(CollisionChannel), false, IgnoreActors, DrawDebugTrace, HitResult, true, FLinearColor::Green, FLinearColor::Red, -1.f)) {
                 HandleHitResult(HitResult, DetectedActorsCopy);
             }
         }
