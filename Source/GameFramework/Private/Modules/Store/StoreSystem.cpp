@@ -140,10 +140,10 @@ bool UStoreSystem::BuyGoods(ACoreCharacter* Character, UStoreComponent* StoreCom
     return false;
 }
 
-TArray<UClass*> UStoreSystem::GetHandleEventTypes_Implementation() {
-    return TArray<UClass*>({
+TArray<TSubclassOf<class UGameEventBase>> UStoreSystem::GetHandleEventTypes_Implementation() {
+    return {
         UBuyGoodsRequestEvent::StaticClass()
-    }) ;
+    };
 }
 
 void UStoreSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {

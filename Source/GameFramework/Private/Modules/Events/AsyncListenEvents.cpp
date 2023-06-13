@@ -15,32 +15,32 @@ UAsyncListenEvents::UAsyncListenEvents(const FObjectInitializer& ObjectInitializ
 
 }
 
-UAsyncListenEvents* UAsyncListenEvents::StartListen(UObject* WorldContextObject, const TArray<UClass*>& InListenEvents) {
+UAsyncListenEvents* UAsyncListenEvents::StartListen(UObject* WorldContextObject, const TArray<TSubclassOf<class UGameEventBase>>& InListenEvents) {
     auto gameInstance = WorldContextObject->GetWorld()->GetGameInstance<UCoreGameInstance>();
     auto eventSystem = gameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
-    UAsyncListenEvents* asyncListenEvents = NewObject<UAsyncListenEvents>(WorldContextObject);
-    asyncListenEvents->ListenEvents = InListenEvents;
-    eventSystem->RegistEventHandler(asyncListenEvents);
-    asyncListenEvents->AddToRoot();
+    UAsyncListenEvents* AsyncListenEvents = NewObject<UAsyncListenEvents>(WorldContextObject);
+    AsyncListenEvents->ListenEvents = InListenEvents;
+    eventSystem->RegistEventHandler(AsyncListenEvents);
+    AsyncListenEvents->AddToRoot();
 
 #if WITH_EDITORONLY_DATA
-    asyncListenEvents->EndPlayDelegateHandle = FGameDelegates::Get().GetEndPlayMapDelegate().AddUObject(asyncListenEvents, &UAsyncListenEvents::OnMapChange, (uint32)0);
+    AsyncListenEvents->EndPlayDelegateHandle = FGameDelegates::Get().GetEndPlayMapDelegate().AddUObject(AsyncListenEvents, &UAsyncListenEvents::OnMapChange, (uint32)0);
 #endif
 
-    return asyncListenEvents;
+    return AsyncListenEvents;
 }
 
 void UAsyncListenEvents::Abort() {
 #if WITH_EDITORONLY_DATA
     FGameDelegates::Get().GetEndPlayMapDelegate().Remove(EndPlayDelegateHandle);
 #endif
-    auto gameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-    auto eventSystem = gameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
-    eventSystem->UnRegistEventHandler(this);
+    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+    auto EventSystem = GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
+    EventSystem->UnRegistEventHandler(this);
     RemoveFromRoot();
 }
 
-TArray<UClass*> UAsyncListenEvents::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UAsyncListenEvents::GetHandleEventTypes_Implementation() {
     return ListenEvents;
 }
 

@@ -11,31 +11,31 @@ void UPlayerIntimacyRequestConditionProgress::PostProgressInitialize_Implementat
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerIntimacyRequestConditionProgress::GetCareEventTypes_Implementation() {
-	return { UIntimacyChangeEvent::StaticClass() };
-}
-
-bool UPlayerIntimacyRequestConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UIntimacyChangeEvent* IntimacyChangeEvent = (UIntimacyChangeEvent*)GameEvent;
-    auto EventPlayerState = UGameFrameworkUtils::GetEntityState(IntimacyChangeEvent->Source);
-	if (EventPlayerState == nullptr && EventPlayerState->PlayerComponent == nullptr) {
-		return false;
-	}
-    auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-	if (ConditionPlayerState&& ConditionPlayerState->PlayerComponent) {
-		UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)Condition;
-		if (IntimacyChangeEvent->NPCId == IntimacyRequestCondition->NPCId
-			&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
-			return IsComplete();
-		}
-	}
-	return false;
-}
-
 bool UPlayerIntimacyRequestConditionProgress::IsComplete_Implementation() {
 	return false;
 }
 
 void UPlayerIntimacyRequestConditionProgress::HandleComplete_Implementation() {
 
+}
+
+TArray<TSubclassOf<class UGameEventBase>> UPlayerIntimacyRequestConditionProgress::GetHandleEventTypes_Implementation() {
+	return { UIntimacyChangeEvent::StaticClass() };
+}
+
+void UPlayerIntimacyRequestConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UIntimacyChangeEvent* IntimacyChangeEvent = (UIntimacyChangeEvent*)HandleEvent;
+	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(IntimacyChangeEvent->Source);
+	if (EventPlayerState == nullptr && EventPlayerState->PlayerComponent == nullptr) {
+		return;
+	}
+	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+	if (ConditionPlayerState && ConditionPlayerState->PlayerComponent) {
+		UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)Condition;
+		if (IntimacyChangeEvent->NPCId == IntimacyRequestCondition->NPCId
+			&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
+
+			RefreshSatisfy();
+		}
+	}
 }

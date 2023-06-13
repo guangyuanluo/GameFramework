@@ -10,29 +10,28 @@ void UUnitReachExpLevelConditionProgress::PostProgressInitialize_Implementation(
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetCareEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
+		return {};
 	}
 	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
+		return {
 			UExpLevelUpEvent::StaticClass(),
-		});
+		};
 	}
 }
 
-bool UUnitReachExpLevelConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)GameEvent;
+void UUnitReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)HandleEvent;
 	ACoreCharacter* Unit = Cast<ACoreCharacter>(ExpLevelUpEvent->Source);
 	if (Unit == nullptr) {
-		return false;
+		return;
 	}
 	UUnitReachExpLevelCondition* ReachExpLevelCondition = (UUnitReachExpLevelCondition*)Condition;
 	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpType
 		&& Unit->TemplateID == ReachExpLevelCondition->UnitId) {
-		return true;
+		RefreshSatisfy();
 	}
-	return false;
 }
 
 bool UUnitReachExpLevelConditionProgress::IsComplete_Implementation() {

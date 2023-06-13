@@ -1124,8 +1124,8 @@ void UAssetSystem::OnPackageItemChange(UBackpackComponent* BackpackComponent, cl
     }
 }
 
-TArray<UClass*> UAssetSystem::GetHandleEventTypes_Implementation() {
-	return TArray<UClass*>({
+TArray<TSubclassOf<class UGameEventBase>> UAssetSystem::GetHandleEventTypes_Implementation() {
+	return {
 		UAddItemRequesEvent::StaticClass(),
         UAddItemsRequesEvent::StaticClass(),
 		UUseItemRequesEvent::StaticClass(),
@@ -1137,7 +1137,7 @@ TArray<UClass*> UAssetSystem::GetHandleEventTypes_Implementation() {
 		UPickupItemRequesEvent::StaticClass(),
         USortBackpackRequestEvent::StaticClass(),
         UChangeMoneyRequestEvent::StaticClass(),
-	});
+	};
 }
 
 void UAssetSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {

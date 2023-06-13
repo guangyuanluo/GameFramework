@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Modules/Condition/CoreConditionObserver.h"
-#include "Modules/Events/EventHandlerInterface.h"
 #include "Base/ECS/SystemBase.h"
 #include "ConditionSystem.generated.h"
 
@@ -18,42 +17,30 @@ class UFollowContent : public UObject {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ConditionSystem")
+	UPROPERTY()
 	TArray<UCoreConditionProgress*> Progresses;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ConditionSystem")
+	UPROPERTY()
 	TScriptInterface<ICoreConditionObserver> Observer;
 };
 
-UCLASS()
-class UProgressReserveInfo : public UObject {
+USTRUCT()
+struct FProgressReserveInfo {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ConditionSystem")
+	UPROPERTY()
 	UFollowContent* ProgressFollowContent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ConditionSystem")
-	TArray<UClass*> CareEventTypes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ConditionSystem")
+	UPROPERTY()
 	bool LastComplete;
 };
-
-USTRUCT(BlueprintType)
-struct FProgressEventMapValue {
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ConditionSystem")
-	TArray<UCoreConditionProgress*> Values;
-};
-
 
 /*
 * @brief 条件系统
 */
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UConditionSystem : public USystemBase, public IEventHandlerInterface {
+class GAMEFRAMEWORK_API UConditionSystem : public USystemBase {
 public:
 	GENERATED_BODY()
 
@@ -81,23 +68,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	TScriptInterface<ICoreConditionObserver> GetObserverFromProgress(UCoreConditionProgress* InProgress);
 
-	/**
-	* 条件进度主动通知变化
-	*/
-	void NotifyConditionProgressChange(UCoreConditionProgress* InProgress);
-
 private:
 	UPROPERTY()
 	TMap<UObject*, UFollowContent*> FollowMap;
 	UPROPERTY()
-	TMap<UCoreConditionProgress*, UProgressReserveInfo*> ProgressReserveMap;
-	UPROPERTY()
-	TMap<UClass*, FProgressEventMapValue> ProgressEventMap;
+	TMap<UCoreConditionProgress*, FProgressReserveInfo> ProgressReserveMap;
 
-	/**************EventHandler interface define begin*************/
-	virtual TArray<UClass*> GetHandleEventTypes_Implementation() override;
-	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* handleEvent) override;
-	/**************EventHandler interface define end*************/
+	/**
+	* 条件进度满足性变化回调
+	*/
+	UFUNCTION()
+	void OnConditionSatisfyChange(UCoreConditionProgress* Progress, bool NewSatisfy);
+
+	/**
+	* 进度是否满足
+	*/
+	bool IsFollowContentSatisfy(UFollowContent* FollowContentObj);
 };
 
 /****************Wait Condition begin******************/

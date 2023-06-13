@@ -36,37 +36,6 @@ bool UTalkToConditionProgress::IsQuestOtherProgressesComplete() {
 	return false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
-			UTalkToNPCEvent::StaticClass(),
-		});
-	}
-}
-
-bool UTalkToConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	if (HaveTalk) {
-		return false;
-	}
-	if (UTalkToNPCEvent* TalkToEvent = Cast<UTalkToNPCEvent>(GameEvent)) {
-		auto TalkToCondition = Cast<UTalkToCondition>(Condition);
-		if (TalkToCondition->UnitID == TalkToEvent->NPCID) {
-			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-			auto ConditionCharacter = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
-			if (ConditionCharacter->GetEntityID() == TalkToEvent->EntityId) {
-				if (IsQuestOtherProgressesComplete()) {
-					HaveTalk = true;
-					return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
 bool UTalkToConditionProgress::IsComplete_Implementation() {
 	return HaveTalk;
 }
@@ -75,8 +44,42 @@ void UTalkToConditionProgress::HandleComplete_Implementation() {
 
 }
 
+TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {
+			UTalkToNPCEvent::StaticClass(),
+		};
+	}
+}
+
+void UTalkToConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	if (HaveTalk) {
+		return;
+	}
+	if (UTalkToNPCEvent* TalkToEvent = Cast<UTalkToNPCEvent>(HandleEvent)) {
+		auto TalkToCondition = Cast<UTalkToCondition>(Condition);
+		if (TalkToCondition->UnitID == TalkToEvent->NPCID) {
+			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+			auto ConditionCharacter = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
+			if (ConditionCharacter->GetEntityID() == TalkToEvent->EntityId) {
+				if (IsQuestOtherProgressesComplete()) {
+					HaveTalk = true;
+
+					RefreshSatisfy();
+				}
+			}
+		}
+	}
+}
+
 void UTalkToConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UTalkToConditionProgress, HaveTalk);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UTalkToConditionProgress, HaveTalk, Params);
 }

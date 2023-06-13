@@ -24,6 +24,7 @@
 #include "UnitInfoConfigTableRow.h"
 #include "Kismet/GameplayStatics.h"
 #include "SkillPostInitComponentListener.h"
+#include "NPCComponent.h"
 
 ACoreCharacter::ACoreCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     
@@ -124,14 +125,19 @@ void ACoreCharacter::OnRep_PlayerState() {
 
     // Our controller changed, must update ActorInfo on AbilitySystemComponent
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
-    if (CharacterState && CharacterState->SkillComponent) {
+    if (CharacterState) {
+        if (auto NPCComponent = Cast<UNPCComponent>(CharacterState->GetComponentByClass(UNPCComponent::StaticClass()))) {
+            NPCComponent->RefreshNPCInfo();
+        }
         if (GetLocalRole() != ENetRole::ROLE_Authority) {
-            if (!CharacterState->SkillComponent->AbilityActorInfo.IsValid()) {
-                CharacterState->SkillComponent->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(UAbilitySystemGlobals::Get().AllocAbilityActorInfo());
-            }
-            CharacterState->SkillComponent->InitAbilityActorInfo(CharacterState, this);
+            if (CharacterState->SkillComponent) {
+                if (!CharacterState->SkillComponent->AbilityActorInfo.IsValid()) {
+                    CharacterState->SkillComponent->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(UAbilitySystemGlobals::Get().AllocAbilityActorInfo());
+                }
+                CharacterState->SkillComponent->InitAbilityActorInfo(CharacterState, this);
 
-            InitSkill();
+                InitSkill();
+            }
         }
     }
 }
@@ -179,14 +185,9 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
         if (GetNetMode() != NM_Client) {
             auto CharController = GetController();
 
-            FActorSpawnParameters SpawnInfo;
-            SpawnInfo.Owner = this;
-            SpawnInfo.Instigator = GetInstigator();
-            SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-            SpawnInfo.ObjectFlags |= RF_Transient;	// We never want player states to save into a map
-
-            CharacterState = GetWorld()->SpawnActor<ACoreCharacterStateBase>(PlayerStateClass, SpawnInfo);
+            CharacterState = Cast<ACoreCharacterStateBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, PlayerStateClass, FTransform::Identity, ESpawnActorCollisionHandlingMethod::AlwaysSpawn, this));
             SetPlayerState(CharacterState);
+            UGameplayStatics::FinishSpawningActor(CharacterState, FTransform::Identity);
             if (CharController) {
                 CharController->PlayerState = CharacterState;
             }

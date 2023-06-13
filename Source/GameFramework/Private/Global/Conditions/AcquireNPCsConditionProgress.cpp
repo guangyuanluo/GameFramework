@@ -31,46 +31,6 @@ void UAcquireNPCsConditionProgress::PostProgressInitialize_Implementation() {
 	}
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
-			UNPCAcquireEvent::StaticClass(),
-			UNPCReleaseEvent::StaticClass(),
-		});
-	}
-}
-
-bool UAcquireNPCsConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	if (HaveAcquire) {
-		return false;
-	}
-	if (UNPCReleaseEvent* NPCReleaseEvent = Cast<UNPCReleaseEvent>(GameEvent)) {
-		//通知任务组件可以进行NPC占有逻辑
-		auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-		auto EventPlayerState = UGameFrameworkUtils::GetEntityState(NPCReleaseEvent->Source);
-		if (ConditionPlayerState == EventPlayerState) {
-			if (ConditionPlayerState->QuestComponent) {
-				ConditionPlayerState->QuestComponent->NotifyAcquireNPCs();
-			}
-			return true;
-		}
-	}
-	else if (UNPCAcquireEvent* NPCAcquireEvent = Cast<UNPCAcquireEvent>(GameEvent)) {
-		auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-		auto EventPlayerState = UGameFrameworkUtils::GetEntityState(NPCAcquireEvent->Source);
-		if (ConditionPlayerState == EventPlayerState) {
-			if (NPCAcquireEvent->CustomInfo == this) {
-				HaveAcquire = true;
-			}
-			return true;
-		}
-	}
-	return false;
-}
-
 bool UAcquireNPCsConditionProgress::IsComplete_Implementation() {
 	return HaveAcquire;
 }
@@ -88,8 +48,51 @@ void UAcquireNPCsConditionProgress::HandleComplete_Implementation() {
 	}
 }
 
+TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {
+			UNPCAcquireEvent::StaticClass(),
+			UNPCReleaseEvent::StaticClass(),
+		};
+	}
+}
+
+void UAcquireNPCsConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	if (HaveAcquire) {
+		return;
+	}
+	if (UNPCReleaseEvent* NPCReleaseEvent = Cast<UNPCReleaseEvent>(HandleEvent)) {
+		//閫氱煡浠诲姟缁勪欢鍙互杩涜NPC鍗犳湁閫昏緫
+		auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+		auto EventPlayerState = UGameFrameworkUtils::GetEntityState(NPCReleaseEvent->Source);
+		if (ConditionPlayerState == EventPlayerState) {
+			if (ConditionPlayerState->QuestComponent) {
+				ConditionPlayerState->QuestComponent->NotifyAcquireNPCs();
+			}
+			return;
+		}
+	}
+	else if (UNPCAcquireEvent* NPCAcquireEvent = Cast<UNPCAcquireEvent>(HandleEvent)) {
+		auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+		auto EventPlayerState = UGameFrameworkUtils::GetEntityState(NPCAcquireEvent->Source);
+		if (ConditionPlayerState == EventPlayerState) {
+			if (NPCAcquireEvent->CustomInfo == this) {
+				HaveAcquire = true;
+
+				RefreshSatisfy();
+			}
+		}
+	}
+}
+
 void UAcquireNPCsConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UAcquireNPCsConditionProgress, HaveAcquire);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UAcquireNPCsConditionProgress, HaveAcquire, Params);
 }

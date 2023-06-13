@@ -22,7 +22,7 @@ class GAMEFRAMEWORK_API UAsyncListenEvents : public UBlueprintAsyncActionBase, p
 
 public:
 	UFUNCTION(BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "WorldContextObject"))
-	static UAsyncListenEvents* StartListen(UObject* WorldContextObject, const TArray<UClass*>& InListenEvents);
+	static UAsyncListenEvents* StartListen(UObject* WorldContextObject, const TArray<TSubclassOf<class UGameEventBase>>& InListenEvents);
 
 public:
 	/**
@@ -35,7 +35,7 @@ public:
 	* 监听的事件
 	*/
 	UPROPERTY(BlueprintReadOnly)
-	TArray<UClass*> ListenEvents;
+	TArray<TSubclassOf<class UGameEventBase>> ListenEvents;
 
 	/**
 	* 终止监听
@@ -44,7 +44,7 @@ public:
 	void Abort();
 
 	/**************EventHandler interface define begin*************/
-	virtual TArray<UClass*> GetHandleEventTypes_Implementation() override;
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
 	virtual void OnEvent_Implementation(UCoreGameInstance* gameInstance, UGameEventBase* handleEvent) override;
 	/**************EventHandler interface define end*************/
 

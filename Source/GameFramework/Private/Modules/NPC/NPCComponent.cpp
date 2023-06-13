@@ -17,12 +17,7 @@ UNPCComponent::UNPCComponent(const FObjectInitializer& ObjectInitializer)
 	// ...
 }
 
-
-// Called when the game starts
-void UNPCComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
+void UNPCComponent::RefreshNPCInfo() {
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 	if (GameInstance) {
 		auto NPCSystem = GameInstance->GameSystemManager->GetSystemByClass<UNPCSystem>();
@@ -33,6 +28,14 @@ void UNPCComponent::BeginPlay()
 			}
 		}
 	}
+}
+
+// Called when the game starts
+void UNPCComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RefreshNPCInfo();
 }
 
 void UNPCComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {

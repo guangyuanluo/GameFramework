@@ -10,12 +10,12 @@ void UCoreConditionProgress::PostProgressInitialize_Implementation() {
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UCoreConditionProgress::GetCareEventTypes_Implementation() {
-    return {};
+void UCoreConditionProgress::StartFollow_Implementation() {
+
 }
 
-bool UCoreConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-    return false;
+void UCoreConditionProgress::StopFollow_Implementation() {
+
 }
 
 bool UCoreConditionProgress::IsComplete_Implementation() {
@@ -26,11 +26,27 @@ void UCoreConditionProgress::HandleComplete_Implementation() {
 
 }
 
+void UCoreConditionProgress::RefreshSatisfy() {
+    bool NewSatisfy = IsComplete();
+    if (LastSatisfy != NewSatisfy) {
+        LastSatisfy = NewSatisfy;
+        OnSatisfyChange();
+        OnConditionProgressSatisfyUpdate.Broadcast(this, LastSatisfy);
+    }
+}
+
+void UCoreConditionProgress::OnSatisfyChange_Implementation() {
+
+}
+
 void UCoreConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UCoreConditionProgress, ConditionID);
-    DOREPLIFETIME(UCoreConditionProgress, ProgressOwner);
+    FDoRepLifetimeParams Params;
+    Params.Condition = COND_OwnerOnly;
+
+    DOREPLIFETIME_WITH_PARAMS_FAST(UCoreConditionProgress, ConditionID, Params);
+    DOREPLIFETIME_WITH_PARAMS_FAST(UCoreConditionProgress, ProgressOwner, Params);
 }
 
 bool UCoreConditionProgress::IsSupportedForNetworking() const {
@@ -40,4 +56,8 @@ bool UCoreConditionProgress::IsSupportedForNetworking() const {
 void UCoreConditionProgress::OnRep_ConditionID() {
     UConditionStoreSubsystem* ConditionStoreSubsystem = Cast<UConditionStoreSubsystem>(USubsystemBlueprintLibrary::GetGameInstanceSubsystem(this, UConditionStoreSubsystem::StaticClass()));
     Condition = ConditionStoreSubsystem->GetCondition(ConditionID);
+}
+
+void UCoreConditionProgress::PostNetReceive() {
+    OnConditionProgressPostNetReceive.Broadcast(this);
 }

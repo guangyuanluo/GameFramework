@@ -15,35 +15,6 @@ void UPlayerSkillReachLevelConditionProgress::PostProgressInitialize_Implementat
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
-			USkillLevelUpEvent::StaticClass()
-		});
-	}
-}
-
-bool UPlayerSkillReachLevelConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	USkillLevelUpEvent* SkillLevelUpEvent = (USkillLevelUpEvent*)GameEvent;
-	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(SkillLevelUpEvent->Unit);
-	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
-		return false;
-	}
-	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-	if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
-		return false;
-	}
-	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
-	if (SkillLevelUpEvent->Skill == PlayerSkillReachLevelCondition->Skill.SkillID
-		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
-		return true;
-	}
-	return false;
-}
-
 bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation() {
 	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
 
@@ -66,4 +37,33 @@ bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation() {
 
 void UPlayerSkillReachLevelConditionProgress::HandleComplete_Implementation() {
 
+}
+
+TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {
+			USkillLevelUpEvent::StaticClass()
+		};
+	}
+}
+
+void UPlayerSkillReachLevelConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	USkillLevelUpEvent* SkillLevelUpEvent = (USkillLevelUpEvent*)HandleEvent;
+	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(SkillLevelUpEvent->Unit);
+	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
+		return;
+	}
+	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+	if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
+		return;
+	}
+	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
+	if (SkillLevelUpEvent->Skill == PlayerSkillReachLevelCondition->Skill.SkillID
+		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
+
+		RefreshSatisfy();
+	}
 }

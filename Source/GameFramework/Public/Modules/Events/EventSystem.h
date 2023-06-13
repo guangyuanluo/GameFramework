@@ -42,6 +42,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EventSystem")
 	void UnRegistEventHandler(TScriptInterface<IEventHandlerInterface> EventHandler);
 
+	/**
+	* 刷新eventhandler注册
+	*/
+	UFUNCTION(BlueprintCallable, Category = "EventSystem")
+	void RefreshEventHandler(TScriptInterface<IEventHandlerInterface> EventHandler);
+
 	virtual void OnTick_Implementation(float DeltaTime) override;
 
     /** 给playercontroller调用来处理rpc的 **/
@@ -49,7 +55,8 @@ public:
     void HandleSendEventToClient(const FString& EventClass, const FString& SerializeEvent);
 
 private:
-	TQueue<UGameEventBase*> mEventQueue;
-	TMap<UClass*, TArray<TScriptInterface<IEventHandlerInterface>>> mEventHandlerMap;
+	TQueue<UGameEventBase*> EventQueue;
+	TMap<TSubclassOf<class UGameEventBase>, TArray<UObject*>> EventHandlerMap;
+	TMap<UObject*, TArray<TSubclassOf<class UGameEventBase>>> HandlerEventTypeMap;
 	const int TickHandleEventMax = 10;
 };

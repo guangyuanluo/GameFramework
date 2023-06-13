@@ -13,35 +13,6 @@ void UPlayerReachExpLevelConditionProgress::PostProgressInitialize_Implementatio
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
-			UExpLevelUpEvent::StaticClass(),
-		});
-	}
-}
-
-bool UPlayerReachExpLevelConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)GameEvent;
-    auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ExpLevelUpEvent->Source);
-	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
-		return false;
-	}
-    auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-    if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
-        return false;
-    }
-    UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
-    if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpType
-        && EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
-        return true;
-    }
-	return false;
-}
-
 bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation() {
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
 
@@ -52,4 +23,32 @@ bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation() {
 
 void UPlayerReachExpLevelConditionProgress::HandleComplete_Implementation() {
 
+}
+
+TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {
+			UExpLevelUpEvent::StaticClass(),
+		};
+	}
+}
+
+void UPlayerReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)HandleEvent;
+	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ExpLevelUpEvent->Source);
+	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
+		return;
+	}
+	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+	if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
+		return;
+	}
+	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
+	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpType
+		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
+		RefreshSatisfy();
+	}
 }

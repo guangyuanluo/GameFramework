@@ -160,11 +160,11 @@ void UQuestSystem::AddExecutinQuestAfterLoaded(UQuestComponent* QuestComponent, 
     UE_LOG(GameCore, Display, TEXT("接受任务成功, EID:%s, Uin:%s QuestID:%s"), *UGameFrameworkUtils::GetEntityID(QuestComponent->GetOwner()), *UGameFrameworkUtils::GetRoleID(QuestComponent->GetOwner()), *ID.ToString());
 }
 
-TArray<UClass*> UQuestSystem::GetHandleEventTypes_Implementation() {
-    return TArray<UClass*>({
+TArray<TSubclassOf<class UGameEventBase>> UQuestSystem::GetHandleEventTypes_Implementation() {
+    return {
         UAcceptQuestRequesEvent::StaticClass(),
         UPushQuestRequesEvent::StaticClass(),
-    });
+    };
 }
 
 void UQuestSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {

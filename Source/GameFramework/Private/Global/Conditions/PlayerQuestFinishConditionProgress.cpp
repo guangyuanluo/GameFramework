@@ -14,22 +14,22 @@ void UPlayerQuestFinishConditionProgress::PostProgressInitialize_Implementation(
 	HaveComplete = false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::GetCareEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
+		return {};
 	}
 	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
+		return {
 			UCompleteQuestEvent::StaticClass(),
-		});
+		};
 	}
 }
 
-bool UPlayerQuestFinishConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UCompleteQuestEvent* CompleteQuestEvent = (UCompleteQuestEvent*)GameEvent;
+void UPlayerQuestFinishConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UCompleteQuestEvent* CompleteQuestEvent = (UCompleteQuestEvent*)HandleEvent;
     auto EventPlayerState = UGameFrameworkUtils::GetEntityState(CompleteQuestEvent->Source);
 	if (EventPlayerState == nullptr && EventPlayerState->PlayerComponent) {
-		return false;
+		return;
 	}
 	UPlayerQuestFinishCondition* QuestFinishCondition = (UPlayerQuestFinishCondition*)Condition;
     auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -37,10 +37,10 @@ bool UPlayerQuestFinishConditionProgress::ProgressGameEvent_Implementation(UGame
 		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
 		if (CompleteQuestEvent->CompleteQuestId == QuestFinishCondition->FinishQuestId) {
 			HaveComplete = true;
-			return true;
+
+			RefreshSatisfy();
 		}
 	}
-	return false;
 }
 
 bool UPlayerQuestFinishConditionProgress::IsComplete_Implementation() {
@@ -54,5 +54,8 @@ void UPlayerQuestFinishConditionProgress::HandleComplete_Implementation() {
 void UPlayerQuestFinishConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UPlayerQuestFinishConditionProgress, HaveComplete);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UPlayerQuestFinishConditionProgress, HaveComplete, Params);
 }

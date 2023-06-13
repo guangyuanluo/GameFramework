@@ -125,7 +125,7 @@ private:
 	void OnRep_NodeID();
 
 	UFUNCTION()
-	void OnRep_Progress();
+	void OnRep_Progress(const TArray<UCoreConditionProgress*>& OldProgresses);
 
 	UFUNCTION()
 	void OnRep_Rewards();
@@ -136,4 +136,7 @@ private:
 	void PlayScenarioCompleted(UScenario* PlayScenario, int ReturnIndex);
 
 	void SetNode(UQuestDetailNode* InNode);
+
+	UFUNCTION()
+	void OnProgressPostNetReceive(UCoreConditionProgress* Progress);
 };

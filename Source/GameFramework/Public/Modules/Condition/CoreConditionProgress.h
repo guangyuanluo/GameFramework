@@ -8,6 +8,9 @@
 
 class ACharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnConditionProgressSatisfyUpdate, UCoreConditionProgress*, Progress, bool, NewSatisfy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConditionProgressPostNetReceive, UCoreConditionProgress*, Progress);
+
 /**
  * 
  */
@@ -35,22 +38,34 @@ public:
 	AActor* ProgressOwner;
 
 	/**
+	* 进度满足性更新回调，从满足变成不满足，从不满足变成满足时触发
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnConditionProgressSatisfyUpdate OnConditionProgressSatisfyUpdate;
+
+	/**
+	* 进度被网络同步的时候的回调
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnConditionProgressPostNetReceive OnConditionProgressPostNetReceive;
+
+	/**
 	* 初始化完成
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
 	void PostProgressInitialize();
 
 	/**
-	* 得到关心的事件类型
+	* 开始监听条件
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	TArray<TSubclassOf<class UGameEventBase>> GetCareEventTypes();
+	void StartFollow();
 
 	/**
-	* 处理事件，返回值是是否处理了事件
+	* 停止监听条件
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	bool ProgressGameEvent(UGameEventBase* GameEvent);
+	void StopFollow();
 
 	/*
 	* @brief 是否完成
@@ -64,10 +79,26 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
 	void HandleComplete();
 
+	/**
+	* 刷新满足性
+	*/
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
+	void RefreshSatisfy();
+
+	/**
+	* 满足性变更
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
+	void OnSatisfyChange();
+
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
+	virtual void PostNetReceive() override;
 
 private:
+	UPROPERTY(Transient)
+	bool LastSatisfy = false;
+
     UFUNCTION()
     void OnRep_ConditionID();
 };

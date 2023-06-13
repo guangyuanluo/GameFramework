@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/Condition/CoreConditionProgress.h"
+#include "Modules/Condition/CoreConditionProgress_Event.h"
 #include "CloseToNPCConditionProgress.generated.h"
 
 /**
  * 靠近NPC条件进度
  */
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UCloseToNPCConditionProgress : public UCoreConditionProgress
+class GAMEFRAMEWORK_API UCloseToNPCConditionProgress : public UCoreConditionProgress_Event
 {
 public:
 	GENERATED_BODY()
@@ -19,10 +19,12 @@ public:
 	bool HaveComplete = false;
 
 	virtual void PostProgressInitialize_Implementation() override;
-	virtual TArray<TSubclassOf<class UGameEventBase>> GetCareEventTypes_Implementation() override;
-	virtual bool ProgressGameEvent_Implementation(UGameEventBase* GameEvent) override;
 	virtual bool IsComplete_Implementation() override;
 	virtual void HandleComplete_Implementation() override;
+	/**************EventHandler interface define begin*************/
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
+	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
+	/**************EventHandler interface define end*************/
 
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
