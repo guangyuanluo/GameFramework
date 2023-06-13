@@ -18,29 +18,6 @@ void UPlayerCollectItemConditionProgress::PostProgressInitialize_Implementation(
 	
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetCareEventTypes_Implementation() {
-	return { UChangeItemEvent::StaticClass() };
-}
-
-bool UPlayerCollectItemConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UChangeItemEvent* ChangeItemEvent = (UChangeItemEvent*)GameEvent;
-
-    auto SourcePlayerState = UGameFrameworkUtils::GetEntityState(ChangeItemEvent->Source);
-	if (!SourcePlayerState || !SourcePlayerState->PlayerComponent) {
-		return false;
-	}
-    auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-    if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
-        return false;
-    }
-    UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
-    if (ChangeItemEvent->ItemId == CollectItemCondition->ItemId
-        && SourcePlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
-        return true;
-    }
-	return false;
-}
-
 bool UPlayerCollectItemConditionProgress::IsComplete_Implementation() {
 	UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
     
@@ -66,4 +43,27 @@ void UPlayerCollectItemConditionProgress::HandleComplete_Implementation() {
 	FString Error;
     auto GameInstance = ProgressOwner->GetWorld()->GetGameInstance<UCoreGameInstance>();
     GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemId, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
+}
+
+TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetHandleEventTypes_Implementation() {
+    return { UChangeItemEvent::StaticClass() };
+}
+
+void UPlayerCollectItemConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+    UChangeItemEvent* ChangeItemEvent = (UChangeItemEvent*)HandleEvent;
+
+    auto SourcePlayerState = UGameFrameworkUtils::GetEntityState(ChangeItemEvent->Source);
+    if (!SourcePlayerState || !SourcePlayerState->PlayerComponent) {
+        return;
+    }
+    auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+    if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
+        return;
+    }
+    UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
+    if (ChangeItemEvent->ItemId == CollectItemCondition->ItemId
+        && SourcePlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
+
+        RefreshSatisfy();
+    }
 }

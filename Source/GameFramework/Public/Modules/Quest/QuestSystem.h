@@ -37,6 +37,6 @@ private:
 	void AddExecutinQuestAfterLoaded(UQuestComponent* QuestComponent, const FGuid ID);
 
     /** 覆写事件监听 */
-    virtual TArray<UClass*> GetHandleEventTypes_Implementation() override;
+    virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
     virtual void OnEvent_Implementation(UCoreGameInstance* IngGameInstance, UGameEventBase* HandleEvent) override;
 };

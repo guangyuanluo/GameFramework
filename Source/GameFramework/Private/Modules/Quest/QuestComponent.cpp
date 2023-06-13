@@ -125,6 +125,8 @@ void UQuestComponent::NotifyQuestChangedAfterLoaded() {
     auto OnQuestRefreshEvent = NewObject<UOnQuestRefreshEvent>();
     OnQuestRefreshEvent->QuestComponent = this;
     GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnQuestRefreshEvent);
+
+    RefreshAcceptableQuests();
 }
 
 void UQuestComponent::OnFinishQuestChanged() {

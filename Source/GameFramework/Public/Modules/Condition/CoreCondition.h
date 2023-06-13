@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/Algorithm/BooleanAlgebraTypes.h"
 #include "CoreCondition.generated.h"
 
 /**
@@ -19,6 +20,18 @@ public:
 	*/
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FGuid ID;
+
+	/**
+	* 布尔运算关系符
+	*/
+	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
+	BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
+
+	/**
+	* 是否取反
+	*/
+	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
+	bool bNot = false;
 
 	/**
 	* 条件进度类型

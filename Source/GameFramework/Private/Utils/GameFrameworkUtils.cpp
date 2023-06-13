@@ -107,7 +107,10 @@ class ACoreCharacter* UGameFrameworkUtils::GetCharacterFromComponentOwner(class 
     auto Owner = ActorComponent->GetOwner();
     auto PlayerState = Cast<ACoreCharacterStateBase>(Owner);
     if (PlayerState) {
-        return Cast<ACoreCharacter>(PlayerState->GetPawn());
+        auto Pawn = Cast<ACoreCharacter>(PlayerState->GetPawn());
+		if (Pawn) {
+			return Pawn;
+		}
     }
 
     ACoreCharacter* Character = Cast<ACoreCharacter>(Owner);

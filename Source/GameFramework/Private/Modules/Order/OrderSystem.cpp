@@ -75,10 +75,10 @@ void UOrderSystem::CancelOrder(const FGuid& OrderID) {
     }
 }
 
-TArray<UClass*> UOrderSystem::GetHandleEventTypes_Implementation() {
-    return TArray<UClass*>({
+TArray<TSubclassOf<class UGameEventBase>> UOrderSystem::GetHandleEventTypes_Implementation() {
+    return {
         UPayOrderRequestEvent::StaticClass(),
-    }) ;
+    };
 }
 
 void UOrderSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {

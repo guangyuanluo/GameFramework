@@ -158,10 +158,10 @@ bool UExpSystem::AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent
     return false;
 }
 
-TArray<UClass*> UExpSystem::GetHandleEventTypes_Implementation() {
-    return TArray<UClass*>({
+TArray<TSubclassOf<class UGameEventBase>> UExpSystem::GetHandleEventTypes_Implementation() {
+    return {
 		UAddExpRequesEvent::StaticClass(),
-	});
+	};
 }
 
 void UExpSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {

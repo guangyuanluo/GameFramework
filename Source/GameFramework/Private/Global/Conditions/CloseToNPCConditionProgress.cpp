@@ -22,14 +22,6 @@ void UCloseToNPCConditionProgress::PostProgressInitialize_Implementation() {
 	Character->OnCharacterMovementUpdated.AddDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UCloseToNPCConditionProgress::GetCareEventTypes_Implementation() {
-	return TArray<TSubclassOf<class UGameEventBase>>({});
-}
-
-bool UCloseToNPCConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	return false;
-}
-
 bool UCloseToNPCConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
 }
@@ -41,10 +33,21 @@ void UCloseToNPCConditionProgress::HandleComplete_Implementation() {
 	Character->OnCharacterMovementUpdated.RemoveDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
 }
 
+TArray<TSubclassOf<class UGameEventBase>> UCloseToNPCConditionProgress::GetHandleEventTypes_Implementation() {
+	return {};
+}
+
+void UCloseToNPCConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+
+}
+
 void UCloseToNPCConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UCloseToNPCConditionProgress, HaveComplete);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UCloseToNPCConditionProgress, HaveComplete, Params);
 }
 
 void UCloseToNPCConditionProgress::OnCharacterTemplateUpdate(class ACorePlayerController* PlayerController) {
@@ -70,14 +73,13 @@ void UCloseToNPCConditionProgress::OnCharacterMovementUpdate(float DeltaSeconds,
 				auto Distance = NPCInfo.NPC->GetCapsuleComponent()->GetScaledCapsuleRadius() + Character->GetCapsuleComponent()->GetScaledCapsuleRadius() + CloseToNPCCondition->Radius;
 
 				if (Distance * Distance >= SizeSquared) {
-					//Âú×ãÌõ¼þ
+					//æ»¡è¶³æ¡ä»¶
 					HaveComplete = true;
 				}
 				else {
 					HaveComplete = false;
 				}
-				auto ConditionSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>();
-				ConditionSystem->NotifyConditionProgressChange(this);
+				RefreshSatisfy();
 			}
 		}
 	}

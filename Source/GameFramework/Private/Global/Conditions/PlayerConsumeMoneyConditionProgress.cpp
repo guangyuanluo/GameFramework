@@ -13,34 +13,34 @@ void UPlayerConsumeMoneyConditionProgress::PostProgressInitialize_Implementation
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetCareEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
+		return {};
 	}
 	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
+		return {
 			UConsumeMoneyEvent::StaticClass(),
-		});
+		};
 	}
 }
 
-bool UPlayerConsumeMoneyConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UConsumeMoneyEvent* ConsumeMoneyEvent = (UConsumeMoneyEvent*)GameEvent;
+void UPlayerConsumeMoneyConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UConsumeMoneyEvent* ConsumeMoneyEvent = (UConsumeMoneyEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ConsumeMoneyEvent->Source);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
-		return false;
+		return;
 	}
     auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
     if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
-        return false;
+        return;
     }
     UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
     if (ConsumeMoneyEvent->MoneyType == ConsumeMoneyCondition->MoneyType
         && EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
         CurrentCount += ConsumeMoneyEvent->MoneyCount;
-        return true;
+        
+		RefreshSatisfy();
     }
-	return false;
 }
 
 bool UPlayerConsumeMoneyConditionProgress::IsComplete_Implementation() {
@@ -55,5 +55,8 @@ void UPlayerConsumeMoneyConditionProgress::HandleComplete_Implementation() {
 void UPlayerConsumeMoneyConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UPlayerConsumeMoneyConditionProgress, CurrentCount);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UPlayerConsumeMoneyConditionProgress, CurrentCount, Params);
 }

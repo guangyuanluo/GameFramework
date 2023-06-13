@@ -146,7 +146,18 @@ void UExecutingQuest::OnRep_NodeID() {
 	UE_LOG(GameCore, Log, TEXT("收到任务节点推进通知，QID:%s NodeID:%s"), *ID.ToString(), *NodeID.ToString());
 }
 
-void UExecutingQuest::OnRep_Progress() {
+void UExecutingQuest::OnRep_Progress(const TArray<UCoreConditionProgress*>& OldProgresses) {
+	for (const auto& OldProgress : OldProgresses) {
+		if (OldProgress) {
+			OldProgress->OnConditionProgressPostNetReceive.RemoveDynamic(this, &UExecutingQuest::OnProgressPostNetReceive);
+		}
+	}
+	for (auto Progress : QuestProgresses) {
+		if (Progress) {
+			Progress->OnConditionProgressPostNetReceive.AddDynamic(this, &UExecutingQuest::OnProgressPostNetReceive);
+		}
+	}
+
 	if (IsComplete()) {
 		NotifyPlayScenario();
 	}
@@ -222,4 +233,10 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	auto ConditionSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>();
 	ConditionSystem->UnfollowConditions(this);
 	ConditionSystem->FollowConditions(QuestProgresses, this);
+}
+
+void UExecutingQuest::OnProgressPostNetReceive(UCoreConditionProgress* Progress) {
+	if (IsComplete()) {
+		NotifyPlayScenario();
+	}
 }

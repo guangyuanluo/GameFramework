@@ -29,28 +29,6 @@ void UPlayerDeductMoneyConditionProgress::PostProgressInitialize_Implementation(
 	OrderID = MoneyOrder->ID;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
-			UOrderCompleteEvent::StaticClass(),
-		});
-	}
-}
-
-bool UPlayerDeductMoneyConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UOrderCompleteEvent* OrderCompleteEvent = Cast<UOrderCompleteEvent>(GameEvent);
-	if (OrderCompleteEvent) {
-		if (OrderCompleteEvent->OrderID == OrderID) {
-			HaveComplete = true;
-			return true;
-		}
-	}
-	return false;
-}
-
 bool UPlayerDeductMoneyConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
 }
@@ -59,9 +37,34 @@ void UPlayerDeductMoneyConditionProgress::HandleComplete_Implementation() {
 
 }
 
+TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {
+			UOrderCompleteEvent::StaticClass(),
+		};
+	}
+}
+
+void UPlayerDeductMoneyConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UOrderCompleteEvent* OrderCompleteEvent = Cast<UOrderCompleteEvent>(HandleEvent);
+	if (OrderCompleteEvent) {
+		if (OrderCompleteEvent->OrderID == OrderID) {
+			HaveComplete = true;
+
+			RefreshSatisfy();
+		}
+	}
+}
+
 void UPlayerDeductMoneyConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UPlayerDeductMoneyConditionProgress, HaveComplete);
-	DOREPLIFETIME(UPlayerDeductMoneyConditionProgress, OrderID);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UPlayerDeductMoneyConditionProgress, HaveComplete, Params);
+	DOREPLIFETIME_WITH_PARAMS_FAST(UPlayerDeductMoneyConditionProgress, OrderID, Params);
 }

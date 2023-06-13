@@ -11,28 +11,6 @@ void UArrivingAtConditionProgress::PostProgressInitialize_Implementation() {
 	HaveComplete = false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
-			UEnterAreaEvent::StaticClass(),
-		});
-	}
-}
-
-bool UArrivingAtConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UEnterAreaEvent* EnterAreaEvent = (UEnterAreaEvent*)GameEvent;
-	UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
-	if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitId
-		&& EnterAreaEvent->AreaName == ArrivingAtCondition->LocationName) {
-		HaveComplete = true;
-		return true;
-	}
-	return false;
-}
-
 bool UArrivingAtConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
 }
@@ -41,8 +19,33 @@ void UArrivingAtConditionProgress::HandleComplete_Implementation() {
 
 }
 
+TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {
+			UEnterAreaEvent::StaticClass(),
+		};
+	}
+}
+
+void UArrivingAtConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UEnterAreaEvent* EnterAreaEvent = (UEnterAreaEvent*)HandleEvent;
+	UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
+	if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitId
+		&& EnterAreaEvent->AreaName == ArrivingAtCondition->LocationName) {
+		HaveComplete = true;
+
+		RefreshSatisfy();
+	}
+}
+
 void UArrivingAtConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UArrivingAtConditionProgress, HaveComplete);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UArrivingAtConditionProgress, HaveComplete, Params);
 }

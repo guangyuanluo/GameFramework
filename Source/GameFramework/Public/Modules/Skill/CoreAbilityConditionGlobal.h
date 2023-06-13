@@ -7,7 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "CoreAbilityConditionGlobal.generated.h"
 
-UCLASS(meta = (DisplayName = "前置连招检查", ToolTip = "前置连招检查", ShowDisplayNames), Abstract)
+UCLASS(Category = "Ability", meta = (DisplayName = "前置连招检查", ToolTip = "前置连招检查", ShowDisplayNames), Abstract)
 class GAMEFRAMEWORK_API UCoreAbilityCondition_CurrentComboSectionLimit : public UCoreAbilityCondition {
     GENERATED_BODY()
 
@@ -18,7 +18,7 @@ public:
     virtual void DoesSatisfy_Implementation(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, bool& bValid, bool& bSatisfy) override;
 };
 
-UCLASS(meta = (DisplayName = "按下时间", ToolTip = "按下时间", ShowDisplayNames), Abstract)
+UCLASS(Category = "Ability", meta = (DisplayName = "按下时间", ToolTip = "按下时间", ShowDisplayNames), Abstract)
 class GAMEFRAMEWORK_API UCoreAbilityCondition_InputTime : public UCoreAbilityCondition {
     GENERATED_BODY()
 

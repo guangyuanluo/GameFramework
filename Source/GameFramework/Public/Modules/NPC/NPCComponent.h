@@ -13,6 +13,8 @@ class GAMEFRAMEWORK_API UNPCComponent : public UGameEntityComponent
 	GENERATED_UCLASS_BODY()
 
 public:	
+	void RefreshNPCInfo();
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 		

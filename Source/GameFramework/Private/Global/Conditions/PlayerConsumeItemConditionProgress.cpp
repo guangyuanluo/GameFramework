@@ -13,35 +13,35 @@ void UPlayerConsumeItemConditionProgress::PostProgressInitialize_Implementation(
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::GetCareEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
+		return {};
 	}
 	else {
-		return TArray<TSubclassOf<class UGameEventBase>>({
+		return {
 			UChangeItemEvent::StaticClass(),
-		});
+		};
 	}
 }
 
-bool UPlayerConsumeItemConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	UChangeItemEvent* ChangeItemEvent = (UChangeItemEvent*)GameEvent;
+void UPlayerConsumeItemConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+	UChangeItemEvent* ChangeItemEvent = (UChangeItemEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ChangeItemEvent->Source);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
-		return false;
+		return;
 	}
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	if (!ConditionPlayerState || !ConditionPlayerState->PlayerComponent) {
-		return false;
+		return;
 	}
 	UPlayerConsumeItemCondition* PlayerConsumeItemCondition = (UPlayerConsumeItemCondition*)Condition;
 	if (ChangeItemEvent->ItemId == PlayerConsumeItemCondition->ItemId
 		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID
 		&& ChangeItemEvent->Count < 0) {
 		CurrentCount += -ChangeItemEvent->Count;
-		return true;
+		
+		RefreshSatisfy();
 	}
-	return false;
 }
 
 bool UPlayerConsumeItemConditionProgress::IsComplete_Implementation() {
@@ -56,5 +56,8 @@ void UPlayerConsumeItemConditionProgress::HandleComplete_Implementation() {
 void UPlayerConsumeItemConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UPlayerConsumeItemConditionProgress, CurrentCount);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UPlayerConsumeItemConditionProgress, CurrentCount, Params);
 }

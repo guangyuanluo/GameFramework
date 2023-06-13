@@ -9,19 +9,6 @@ void UPlayerHuntConditionProgress::PostProgressInitialize_Implementation() {
 
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetCareEventTypes_Implementation() {
-	if (IsComplete()) {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-	else {
-		return TArray<TSubclassOf<class UGameEventBase>>();
-	}
-}
-
-bool UPlayerHuntConditionProgress::ProgressGameEvent_Implementation(UGameEventBase* GameEvent) {
-	return false;
-}
-
 bool UPlayerHuntConditionProgress::IsComplete_Implementation() {
 	UPlayerHuntCondition* huntCondition = (UPlayerHuntCondition*)Condition;
 	return ContributionDegree >= huntCondition->ContributionDegree;
@@ -31,8 +18,24 @@ void UPlayerHuntConditionProgress::HandleComplete_Implementation() {
 
 }
 
+TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandleEventTypes_Implementation() {
+	if (IsComplete()) {
+		return {};
+	}
+	else {
+		return {};
+	}
+}
+
+void UPlayerHuntConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+
+}
+
 void UPlayerHuntConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UPlayerHuntConditionProgress, ContributionDegree);
+	FDoRepLifetimeParams Params;
+	Params.Condition = COND_OwnerOnly;
+
+	DOREPLIFETIME_WITH_PARAMS_FAST(UPlayerHuntConditionProgress, ContributionDegree, Params);
 }
