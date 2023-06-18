@@ -8,9 +8,9 @@
 #include "PlayerDeductMoneyCondition.generated.h"
 
 /**
- * 玩家扣除金币
+ * 玩家扣除货币
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "玩家扣除货币"))
 class GAMEFRAMEWORK_API UPlayerDeductMoneyCondition : public UCoreCondition
 {
 public:

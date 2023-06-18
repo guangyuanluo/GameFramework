@@ -9,7 +9,7 @@
 /**
  * 玩家任务完成条件
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "任务完成"))
 class GAMEFRAMEWORK_API UPlayerQuestFinishCondition : public UCoreCondition
 {
 public:

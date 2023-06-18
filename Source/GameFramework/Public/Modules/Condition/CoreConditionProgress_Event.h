@@ -10,7 +10,7 @@
 /**
  * 基于事件系统的条件进度
  */
-UCLASS()
+UCLASS(Abstract)
 class GAMEFRAMEWORK_API UCoreConditionProgress_Event : public UCoreConditionProgress, public IEventHandlerInterface
 {
 public:

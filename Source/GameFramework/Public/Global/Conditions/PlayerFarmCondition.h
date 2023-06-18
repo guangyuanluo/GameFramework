@@ -9,7 +9,7 @@
 /**
  * 砍怪
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "砍怪"))
 class GAMEFRAMEWORK_API UPlayerFarmCondition : public UCoreCondition
 {
 public:

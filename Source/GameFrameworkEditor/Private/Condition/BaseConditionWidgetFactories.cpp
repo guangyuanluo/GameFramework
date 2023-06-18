@@ -73,7 +73,7 @@
 #include "SRowTableRefBox.h"
 
 namespace ConditionUI {
-	class SConditionWidgetDefault : public SConditionWidget {
+	class SConditionWidgetBase : public SConditionWidget {
 	public:
 		SLATE_BEGIN_ARGS(SConditionWidget) {}
 
@@ -116,7 +116,7 @@ namespace ConditionUI {
 						.ForegroundColor(FSlateColor::UseForeground())
 						.HAlign(HAlign_Center)
 						.VAlign(VAlign_Center)
-						.OnClicked(this, &SConditionWidgetDefault::RemoveClick)
+						.OnClicked(this, &SConditionWidgetBase::RemoveClick)
 						.Content()
 						[
 							SNew(STextBlock)
@@ -170,7 +170,7 @@ namespace ConditionUI {
 	};
 
 	/*收集物品任务条件*/
-	class CollectItemConditionWidget : public SConditionWidgetDefault {
+	class CollectItemConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~CollectItemConditionWidget() {}
 
@@ -179,7 +179,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -257,7 +257,7 @@ namespace ConditionUI {
 	};
 
 	/*收集money任务条件*/
-	class CollectMoneyConditionWidget : public SConditionWidgetDefault {
+	class CollectMoneyConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~CollectMoneyConditionWidget() {}
 
@@ -266,7 +266,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 			
             UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)WidgetCondition;
 
@@ -344,7 +344,7 @@ namespace ConditionUI {
 	};
 
 	/*消耗物品任务条件*/
-	class ConsumeItemConditionWidget : public SConditionWidgetDefault {
+	class ConsumeItemConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~ConsumeItemConditionWidget() {}
 
@@ -353,7 +353,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -430,7 +430,7 @@ namespace ConditionUI {
 	};
 
 	/*消耗money任务条件*/
-	class ConsumeMoneyConditionWidget : public SConditionWidgetDefault {
+	class ConsumeMoneyConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~ConsumeMoneyConditionWidget() {}
 
@@ -439,7 +439,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)WidgetCondition;
 
@@ -516,7 +516,7 @@ namespace ConditionUI {
 	};
 
 	/*到达exp等级任务条件*/
-	class PlayerReachExpLevelConditionWidget : public SConditionWidgetDefault {
+	class PlayerReachExpLevelConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~PlayerReachExpLevelConditionWidget() {}
 
@@ -525,7 +525,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)WidgetCondition;
             const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
@@ -601,7 +601,7 @@ namespace ConditionUI {
 	};
 
 	/*farm任务条件*/
-	class FarmConditionWidget : public SConditionWidgetDefault {
+	class FarmConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~FarmConditionWidget() {}
 
@@ -610,7 +610,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -686,7 +686,7 @@ namespace ConditionUI {
 	};
 
 	/*好感度要求任务条件*/
-	class IntimacyRequestConditionWidget : public SConditionWidgetDefault {
+	class IntimacyRequestConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~IntimacyRequestConditionWidget() {}
 
@@ -695,7 +695,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -834,7 +834,7 @@ namespace ConditionUI {
 	};
 
 	/*NPC谈话条件*/
-	class TalkToConditionWidget : public SConditionWidgetDefault {
+	class TalkToConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~TalkToConditionWidget() {}
 
@@ -843,7 +843,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -886,7 +886,7 @@ namespace ConditionUI {
 	};
 
 	/*占住NPC条件*/
-	class AcquireNPCsConditionWidget : public SConditionWidgetDefault {
+	class AcquireNPCsConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~AcquireNPCsConditionWidget() {}
 
@@ -895,7 +895,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			(*WidgetSlot)[
 				SNew(SVerticalBox)
@@ -1037,7 +1037,7 @@ namespace ConditionUI {
 	};
 
 	/*扣除物品任务条件*/
-	class DeductItemConditionWidget : public SConditionWidgetDefault {
+	class DeductItemConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~DeductItemConditionWidget() {}
 
@@ -1046,7 +1046,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			UPlayerDeductItemCondition* DeductItemCondition = (UPlayerDeductItemCondition*)WidgetCondition;
 
@@ -1072,7 +1072,7 @@ namespace ConditionUI {
 	};
 
 	/*扣除money任务条件*/
-	class DeductMoneyConditionWidget : public SConditionWidgetDefault {
+	class DeductMoneyConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~DeductMoneyConditionWidget() {}
 
@@ -1081,7 +1081,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			UPlayerDeductMoneyCondition* DeductMoneyCondition = (UPlayerDeductMoneyCondition*)WidgetCondition;
 
@@ -1107,7 +1107,7 @@ namespace ConditionUI {
 	};
 
 	/*靠近NPC条件*/
-	class CloseToNPCConditionWidget : public SConditionWidgetDefault {
+	class CloseToNPCConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~CloseToNPCConditionWidget() {}
 
@@ -1116,7 +1116,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
             const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
             auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -1187,7 +1187,7 @@ namespace ConditionUI {
 	};
 
 	/*玩家技能达到等级任务条件*/
-	class PlayerSkillReachLevelConditionWidget : public SConditionWidgetDefault {
+	class PlayerSkillReachLevelConditionWidget : public SConditionWidgetBase {
 	public:
 		virtual ~PlayerSkillReachLevelConditionWidget() {}
 
@@ -1196,7 +1196,7 @@ namespace ConditionUI {
 		SLATE_END_ARGS()
 
 		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetDefault::Construct(SConditionWidgetDefault::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
 
 			UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)WidgetCondition;
 

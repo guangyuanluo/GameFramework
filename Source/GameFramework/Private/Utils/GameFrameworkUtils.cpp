@@ -25,9 +25,7 @@ UWaitCondition* UGameFrameworkUtils::WaitCondition(class ACorePlayerController* 
 	UWaitCondition* WaitCondition = NewObject<UWaitCondition>();	
 	for (int Index = 0; Index < Conditions.Num(); ++Index) {
 		auto Condition = Conditions[Index];
-		auto ConditionProgress = NewObject<UCoreConditionProgress>(nullptr, Condition->ProgressClass);
-		ConditionProgress->Condition = Condition;
-		ConditionProgress->ProgressOwner = PlayerController;
+		auto ConditionProgress = Condition->GenerateConditionProgress(PlayerController);
 		WaitCondition->ConditionProgress.Add(ConditionProgress);
 	}
 

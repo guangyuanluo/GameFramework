@@ -9,6 +9,8 @@
 #include "GameFrameworkEditorWidgetTool.h"
 #include "SConditionWidget.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "SConditionWidgetDefault.h"
+#include "Graph/GameFrameworkGraphTypes.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -16,9 +18,20 @@ void SConditionEditWidget::Construct(const FArguments& InArgs, UObject* InOuter)
 	Outer = InOuter;
 	OnConditionChange = InArgs._OnConditionChange;
 
-	auto ConditionWidgetFactories = ConditionWidgetManager::GetAllFactories();
-	for (int Index = 0; Index < ConditionWidgetFactories.Num(); ++Index) {
-		ConditionNameSource.Add(MakeShareable(new FString(ConditionWidgetFactories[Index]->GetConditionWidgetName())));
+	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(UCoreCondition::StaticClass()));
+	ClassCache->UpdateAvailableBlueprintClasses();
+
+	FCategorizedGraphActionListBuilder ConditionBuilder(TEXT("Condition"));
+
+	TArray<FGameFrameworkGraphNodeClassData> ConditionClassDatas;
+	ClassCache->GatherClasses(UCoreCondition::StaticClass(), ConditionClassDatas);
+
+	for (auto& ConditionClassData : ConditionClassDatas) {
+		auto ConditionClass = ConditionClassData.GetClass();
+		if (ConditionClass->HasAnyClassFlags(CLASS_Abstract)) continue;
+		auto ConditionClassName = ConditionClass->GetDisplayNameText().ToString();
+		ConditionNameSource.Add(MakeShareable(new FString(ConditionClassName)));
+		ConditionNameMap.Add(ConditionClassName, ConditionClass);
 	}
 
 	ChildSlot
@@ -91,21 +104,26 @@ void SConditionEditWidget::GenerateConditionWidget() {
 #else
 				auto& ConditionSlot = ConditionPage->AddSlot();
 #endif
+
+				TSharedPtr<class SConditionWidget> ConditionWidget;
 				auto Factory = ConditionWidgetManager::GetFactoryByWidgetName(Condition->GetClass());
 				if (Factory) {
 #if ENGINE_MAJOR_VERSION > 4
-					auto ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot());
+					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot());
 #else
-					auto ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot);
+					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot);
 #endif
-					ConditionSlot
-						.AutoHeight()
-						[
-							ConditionWidget.ToSharedRef()
-						];
-					ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
-					ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
 				}
+				else {
+					ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
+				}
+				ConditionSlot
+					.AutoHeight()
+					[
+						ConditionWidget.ToSharedRef()
+					];
+				ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
+				ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
 			}
 			else {
 				ConditionPtr->RemoveAt(Index);
@@ -133,13 +151,27 @@ void SConditionEditWidget::ConditionNameComboBox_OnSelectionChanged(TSharedPtr<F
 FReply SConditionEditWidget::AddConditionButtonClicked() {
 	if (SelectConditionName.IsValid()) {
 
+		TSharedPtr<class SConditionWidget> ConditionWidget;
 #if ENGINE_MAJOR_VERSION > 4
 		auto ConditionSlot = ConditionPage->AddSlot();
-		TSharedPtr<SConditionWidget> ConditionWidget = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName)->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot());
+		auto ConditionFactory = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName);
+		if (ConditionFactory) {
+			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot());
+		}
 #else
 		auto& ConditionSlot = ConditionPage->AddSlot();
-		TSharedPtr<SConditionWidget> ConditionWidget = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName)->CreateConditionWidget(Outer, nullptr, &ConditionSlot);
+		auto ConditionFactory = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName);
+		if (ConditionFactory) {
+			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, &ConditionSlot);
+		}
 #endif
+		if (!ConditionWidget.IsValid()) {
+			auto FindConditionClassPtr = ConditionNameMap.Find(*SelectConditionName);
+			if (FindConditionClassPtr) {
+				auto Condition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
+				ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
+			}
+		}
 
 		if (ConditionWidget.IsValid()) {
 			ConditionSlot

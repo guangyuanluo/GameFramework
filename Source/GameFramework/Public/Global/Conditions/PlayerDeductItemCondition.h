@@ -10,7 +10,7 @@
 /**
  * 玩家扣除物品
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "玩家扣除物品"))
 class GAMEFRAMEWORK_API UPlayerDeductItemCondition : public UCoreCondition
 {
 public:

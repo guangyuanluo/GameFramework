@@ -7,9 +7,9 @@
 #include "TalkToCondition.generated.h"
 
 /**
- * 
+ * NPC谈话
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "NPC谈话"))
 class GAMEFRAMEWORK_API UTalkToCondition : public UCoreCondition
 {
 public:

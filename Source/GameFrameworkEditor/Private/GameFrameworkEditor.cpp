@@ -41,12 +41,10 @@
 #include "Customization/ItemIDNumPairCustomization.h"
 #include "Modules/Exp/ExpTypeNumPair.h"
 #include "Customization/ExpTypeNumPairCustomization.h"
-#include "CoreConditionCustomization.h"
 #include "CoreConditionListCustomization.h"
 #include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
 #include "AssetTypeActions_QuestTree.h"
-#include "Customization/QuestCustomization.h"
 #include "Modules/Quest/Quest.h"
 #include "Customization/QuestDetailNodeItemCustomization.h"
 #include "Modules/Quest/QuestDetailNodeItem.h"
@@ -265,16 +263,8 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FExpTypeNumPairCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomClassLayout(
-		UQuest::StaticClass()->GetFName(),
-		FOnGetDetailCustomizationInstance::CreateStatic(&FQuestCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomClassLayout(
 		UQuestDetailNodeItem::StaticClass()->GetFName(),
 		FOnGetDetailCustomizationInstance::CreateStatic(&FQuestDetailNodeItemCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomClassLayout(
-		UCoreCondition::StaticClass()->GetFName(),
-		FOnGetDetailCustomizationInstance::CreateStatic(&FCoreConditionCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomPropertyTypeLayout(
 		FCoreConditionList::StaticStruct()->GetFName(),
@@ -309,10 +299,7 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FMoneyTypeNumPair::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FItemIDNumPair::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FExpTypeNumPair::StaticStruct()->GetFName());
-		PropertyModule.UnregisterCustomClassLayout(UQuest::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UQuestDetailNodeItem::StaticClass()->GetFName());
-		PropertyModule.UnregisterCustomClassLayout(UCoreCondition::StaticClass()->GetFName());
-		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FEffectInfo::StaticStruct()->GetFName());

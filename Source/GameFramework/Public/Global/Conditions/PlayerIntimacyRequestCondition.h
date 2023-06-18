@@ -15,7 +15,7 @@ enum class EIntimacyCompare : uint8
 /**
  * 玩家好感度需求条件
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "玩家好感度需求"))
 class GAMEFRAMEWORK_API UPlayerIntimacyRequestCondition : public UCoreCondition
 {
 public:

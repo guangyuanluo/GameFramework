@@ -9,7 +9,7 @@
 /**
  * 玩家达到经验等级条件
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "玩家达到经验等级"))
 class GAMEFRAMEWORK_API UPlayerReachExpLevelCondition : public UCoreCondition
 {
 public:

@@ -9,7 +9,7 @@
 /**
  * 玩家boss输出
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "玩家boss输出"))
 class GAMEFRAMEWORK_API UPlayerHuntCondition : public UCoreCondition
 {
 public:

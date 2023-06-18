@@ -7,9 +7,9 @@
 #include "PlayerCollectMoneyCondition.generated.h"
 
 /**
- * 玩家收集金币
+ * 玩家收集货币
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "收集货币"))
 class GAMEFRAMEWORK_API UPlayerCollectMoneyCondition : public UCoreCondition
 {
 public:
