@@ -23,14 +23,9 @@ public:
 	/**
 	* 条件
 	*/
-	UPROPERTY(Transient, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
+	UPROPERTY(ReplicatedUsing = OnRep_Condition, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
 	UCoreCondition* Condition;
 
-    /**
-    * 条件id
-    */
-    UPROPERTY(ReplicatedUsing = OnRep_ConditionID, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
-    FGuid ConditionID;
 	/**
 	* 拥有者
 	*/
@@ -99,6 +94,6 @@ private:
 	UPROPERTY(Transient)
 	bool LastSatisfy = false;
 
-    UFUNCTION()
-    void OnRep_ConditionID();
+	UFUNCTION()
+	void OnRep_Condition();
 };

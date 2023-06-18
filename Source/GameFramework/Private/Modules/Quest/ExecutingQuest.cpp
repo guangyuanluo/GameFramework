@@ -35,13 +35,6 @@ void UExecutingQuest::Initialize(UQuest* InQuest) {
 	}
 }
 
-//void UExecutingQuest::Initialize(FQuestConfigTableRow* InRow, int InStepIndex, const TArray<UCoreConditionProgress*>& InQuestProgresses) {
-//	Row = InRow;
-//	QuestTemplateId = Row->Base.QuestTemplateId;
-//	StepIndex = InStepIndex;
-//	QuestProgresses = InQuestProgresses;
-//}
-
 const FGuid& UExecutingQuest::GetID() const {
 	return ID;
 }
@@ -139,6 +132,10 @@ void UExecutingQuest::OnRep_QuestID() {
 	Quest = QuestForestSubsystem->GetQuestByID(ID);
 	if (!Quest.IsValid()) {
 		UE_LOG(GameCore, Error, TEXT("客户端任务表读表错误%s"), *ID.ToString());
+	}
+	else {
+		//同步过来，要通知
+		GetQuestComponent()->OnQuestChanged();
 	}
 }
 

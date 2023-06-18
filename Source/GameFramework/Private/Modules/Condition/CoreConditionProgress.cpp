@@ -3,8 +3,6 @@
 #include "CoreConditionProgress.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "ConditionStoreSubsystem.h"
-#include "Subsystems/SubsystemBlueprintLibrary.h"
 
 void UCoreConditionProgress::PostProgressInitialize_Implementation() {
 
@@ -45,7 +43,7 @@ void UCoreConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
     FDoRepLifetimeParams Params;
     Params.Condition = COND_OwnerOnly;
 
-    DOREPLIFETIME_WITH_PARAMS_FAST(UCoreConditionProgress, ConditionID, Params);
+    DOREPLIFETIME_WITH_PARAMS_FAST(UCoreConditionProgress, Condition, Params);
     DOREPLIFETIME_WITH_PARAMS_FAST(UCoreConditionProgress, ProgressOwner, Params);
 }
 
@@ -53,9 +51,8 @@ bool UCoreConditionProgress::IsSupportedForNetworking() const {
     return true;
 }
 
-void UCoreConditionProgress::OnRep_ConditionID() {
-    UConditionStoreSubsystem* ConditionStoreSubsystem = Cast<UConditionStoreSubsystem>(USubsystemBlueprintLibrary::GetGameInstanceSubsystem(this, UConditionStoreSubsystem::StaticClass()));
-    Condition = ConditionStoreSubsystem->GetCondition(ConditionID);
+void UCoreConditionProgress::OnRep_Condition() {
+    
 }
 
 void UCoreConditionProgress::PostNetReceive() {

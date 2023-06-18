@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Quest.h"
 #include "CoreCondition.h"
@@ -15,7 +15,6 @@ void UQuest::PostEditImport() {
         TArray<UCoreCondition*> NewConditions;
         for (auto Condition : PreConditions) {
             auto NewCondition = DuplicateObject(Condition, Outer);
-            NewCondition->ID = FGuid::NewGuid();
             NewConditions.Add(NewCondition);
         }
         PreConditions = NewConditions;

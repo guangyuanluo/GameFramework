@@ -16,12 +16,6 @@ public:
 	GENERATED_UCLASS_BODY()
 
 	/**
-	* 全局唯一id
-	*/
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FGuid ID;
-
-	/**
 	* 布尔运算关系符
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
@@ -38,12 +32,6 @@ public:
 	*/
 	UPROPERTY(transient, BlueprintReadWrite, VisibleAnywhere, Category = "ConditionSystem")
 	TSubclassOf<class UCoreConditionProgress> ProgressClass;
-
-	/**
-	* 生成guid，如果已经有了，不会再生成
-	*/
-	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-	void GenerateGuid();
 
 	/**
 	* 生成基于该条件的条件进度

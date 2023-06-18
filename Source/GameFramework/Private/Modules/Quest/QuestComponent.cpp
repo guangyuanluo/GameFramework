@@ -100,6 +100,10 @@ void UQuestComponent::PushQuest(const FGuid& ID, int StepIndex) {
 void UQuestComponent::OnQuestChanged() {
     TArray<FSoftObjectPath> TargetsToStream;
     for (int Index = 0; Index < ExecutingQuests.Num(); ++Index) {
+        if (ExecutingQuests[Index]->GetQuest() == nullptr) {
+            //quest还没同步过来，等待同步
+            return;
+        }
         TargetsToStream.Add(ExecutingQuests[Index]->GetQuest()->QuestDetail.ToSoftObjectPath());
     }
 

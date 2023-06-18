@@ -23,8 +23,6 @@ public:
 	GENERATED_BODY()
 
 	void Initialize(UQuest* InQuest);
-	/*void Initialize(FQuestConfigTableRow* InRow);
-	void Initialize(FQuestConfigTableRow* InRow, int InStepIndex, const TArray<UCoreConditionProgress*>& InQuestProgresses);*/
 
 	/**
 	* @brief 获得任务id

@@ -5,8 +5,5 @@
 SConditionWidget::~SConditionWidget() {}
 
 void SConditionWidget::Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition) {
-    if (InWidgetCondition) {
-        InWidgetCondition->GenerateGuid();
-    }
     WidgetCondition = InWidgetCondition;
 }
