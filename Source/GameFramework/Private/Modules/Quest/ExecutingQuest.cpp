@@ -216,7 +216,7 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 
 	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(InNode);
 	if (NodeItem) {
-		for (auto Condition : NodeItem->Conditions) {
+		for (auto Condition : NodeItem->ConditionList.Conditions) {
 			auto ConditionProgress = Condition->GenerateConditionProgress(Owner);
 			QuestProgresses.Add(ConditionProgress);
 		}

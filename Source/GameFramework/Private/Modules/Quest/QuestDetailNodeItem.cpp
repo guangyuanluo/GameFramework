@@ -20,13 +20,13 @@ FString UQuestDetailNodeItem::GetNodeTypeName_Implementation() {
 
 void UQuestDetailNodeItem::PostEditImport() {
     auto Outer = GetOuter();
-    if (Conditions.Num() > 0) {
+    if (ConditionList.Conditions.Num() > 0) {
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : Conditions) {
+        for (auto Condition : ConditionList.Conditions) {
             auto NewCondition = DuplicateObject(Condition, Outer);
             NewConditions.Add(NewCondition);
         }
-        Conditions = NewConditions;
+        ConditionList.Conditions = NewConditions;
     }
 
     if (Rewards.Num() > 0) {

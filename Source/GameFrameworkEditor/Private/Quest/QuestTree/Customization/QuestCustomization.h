@@ -17,7 +17,4 @@ public:
 	static TSharedRef<IDetailCustomization> MakeInstance();
 
 private:
-	TSharedPtr<IPropertyHandle> PreConditionProperty;
-
-	void OnConditionChange();
 };

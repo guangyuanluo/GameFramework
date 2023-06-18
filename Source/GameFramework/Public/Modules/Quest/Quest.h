@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/Condition/CoreConditionList.h"
 #include "Quest.generated.h"
 
 /**
@@ -29,7 +30,7 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	* 前置条件
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "前置条件"))
-	TArray<class UCoreCondition*> PreConditions;
+	FCoreConditionList PreConditionList;
 
 	/**
 	* 任务详情

@@ -17,7 +17,6 @@ public:
 	static TSharedRef<IDetailCustomization> MakeInstance();
 
 private:
-	TSharedPtr<IPropertyHandle> ConditionProperty;
 	TSharedPtr<IPropertyHandle> RewardProperty;
 
 	void OnAssetChange();

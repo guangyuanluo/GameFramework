@@ -10,14 +10,14 @@ UQuest::UQuest(const class FObjectInitializer& ObjectInitializer) : Super(Object
 #if WITH_EDITOR
 
 void UQuest::PostEditImport() {
-    if (PreConditions.Num() > 0) {
+    if (PreConditionList.Conditions.Num() > 0) {
         auto Outer = GetOuter();
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : PreConditions) {
+        for (auto Condition : PreConditionList.Conditions) {
             auto NewCondition = DuplicateObject(Condition, Outer);
             NewConditions.Add(NewCondition);
         }
-        PreConditions = NewConditions;
+        PreConditionList.Conditions = NewConditions;
     }
 }
 

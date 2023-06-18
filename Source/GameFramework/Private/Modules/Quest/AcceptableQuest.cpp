@@ -16,7 +16,7 @@ void UAcceptableQuest::Initialize(UQuest* InQuestPtr, UQuestComponent* InQuestCo
 	QuestComponent = InQuestComponent;
 
 	//未接受的任务
-	for (auto PreCondition : QuestPtr->PreConditions) {
+	for (auto PreCondition : QuestPtr->PreConditionList.Conditions) {
 		auto ConditionProgress = PreCondition->GenerateConditionProgress(QuestComponent->GetOwner());
 		QuestProgresses.Add(ConditionProgress);
 	}
