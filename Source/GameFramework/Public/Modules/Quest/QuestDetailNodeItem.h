@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Quest/QuestDetailNode.h"
+#include "Modules/Condition/CoreConditionList.h"
 #include "QuestDetailNodeItem.generated.h"
 
 /**
@@ -31,7 +32,7 @@ public:
 	* 条件
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "条件"))
-	TArray<class UCoreCondition*> Conditions;
+	FCoreConditionList ConditionList;
 
 	/**
 	* 任务进行中，占有NPC交谈剧情
