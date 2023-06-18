@@ -7,9 +7,9 @@
 #include "PlayerConsumeMoneyCondition.generated.h"
 
 /**
- * 玩家消耗金币
+ * 玩家消耗货币
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "玩家消耗货币"))
 class GAMEFRAMEWORK_API UPlayerConsumeMoneyCondition : public UCoreCondition
 {
 public:

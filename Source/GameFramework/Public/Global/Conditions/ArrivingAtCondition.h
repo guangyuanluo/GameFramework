@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta = (DisplayName = "到达地点"))
 class GAMEFRAMEWORK_API UArrivingAtCondition : public UCoreCondition
 {
 public:

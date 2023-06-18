@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConditionProgressPostNetReceive, 
 /**
  * 
  */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UCoreConditionProgress : public UObject
 {
 public:

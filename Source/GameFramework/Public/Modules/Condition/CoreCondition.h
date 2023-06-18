@@ -9,7 +9,7 @@
 /**
  * 条件
  */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS(BlueprintType, Blueprintable, Abstract)
 class GAMEFRAMEWORK_API UCoreCondition : public UObject
 {
 public:
@@ -18,19 +18,19 @@ public:
 	/**
 	* 布尔运算关系符
 	*/
-	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "关系", EditAnywhere, BlueprintReadWrite)
 	BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
 
 	/**
 	* 是否取反
 	*/
-	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "关系", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "取反"))
 	bool bNot = false;
 
 	/**
 	* 条件进度类型
 	*/
-	UPROPERTY(transient, BlueprintReadWrite, VisibleAnywhere, Category = "ConditionSystem")
+	UPROPERTY(Transient, BlueprintReadWrite, EditDefaultsOnly, Category = "ConditionSystem")
 	TSubclassOf<class UCoreConditionProgress> ProgressClass;
 
 	/**

@@ -28,6 +28,7 @@ public:
 
 private:
 	TArray<TSharedPtr<FString>> ConditionNameSource;
+	TMap<FString, TSubclassOf<class UCoreCondition>> ConditionNameMap;
 	TSharedPtr<FString> SelectConditionName;
 	TSharedPtr<SVerticalBox> ConditionPage;
 	TArray<class UCoreCondition*>* ConditionPtr;
