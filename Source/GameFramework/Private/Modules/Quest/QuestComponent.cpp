@@ -282,7 +282,7 @@ void UQuestComponent::RefreshNPCAcquire() {
                 auto QuestProgress = Cast<UAcquireNPCsConditionProgress>(Progress);
                 if (QuestProgress && !QuestProgress->IsComplete()) {
                     auto AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(QuestProgress->Condition);
-                    if (AcquireNPCsCondition && NPCSystem->IsNPCRelease(AcquireNPCsCondition->UnitIDs)) {
+                    if (AcquireNPCsCondition && NPCSystem->IsNPCReleaseByContainer(AcquireNPCsCondition->UnitIDContainers)) {
                         AcquireNPCQuests.Add(ExecutingQuest);
                         break;
                     }
@@ -315,7 +315,7 @@ void UQuestComponent::RefreshNPCAcquire() {
                     auto AcquireNPCsConditionProgress = Cast<UAcquireNPCsConditionProgress>(Progress);
                     if (AcquireNPCsConditionProgress && !AcquireNPCsConditionProgress->IsComplete()) {
                         auto AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(AcquireNPCsConditionProgress->Condition);
-                        NPCSystem->TryAcquireNPCs(GetOwner(), AcquireNPCsCondition->UnitIDs, AcquireNPCsConditionProgress);
+                        NPCSystem->TryAcquireNPCByContainer(GetOwner(), AcquireNPCsCondition->UnitIDContainers, AcquireNPCsConditionProgress);
                     }
                 }
             }

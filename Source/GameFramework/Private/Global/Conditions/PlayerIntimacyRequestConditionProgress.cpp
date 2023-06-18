@@ -32,7 +32,7 @@ void UPlayerIntimacyRequestConditionProgress::OnEvent_Implementation(UCoreGameIn
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	if (ConditionPlayerState && ConditionPlayerState->PlayerComponent) {
 		UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)Condition;
-		if (IntimacyChangeEvent->NPCId == IntimacyRequestCondition->NPCId
+		if (IntimacyChangeEvent->NPCId == IntimacyRequestCondition->NPCIDContainer.UnitID
 			&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
 
 			RefreshSatisfy();

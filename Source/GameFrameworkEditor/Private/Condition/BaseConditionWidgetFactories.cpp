@@ -71,6 +71,7 @@
 #include "GameFrameworkEditor.h"
 #include "GameFrameworkEditorWidgetTool.h"
 #include "SRowTableRefBox.h"
+#include "SConditionWidgetDefault.h"
 
 namespace ConditionUI {
 	class SConditionWidgetBase : public SConditionWidget {
@@ -79,7 +80,7 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
 			SConditionWidget::Construct(SConditionWidget::FArguments(), InWidgetCondition);
 			ParentSlot = InParentSlot;
 
@@ -101,7 +102,7 @@ namespace ConditionUI {
 					.HAlign(HAlign_Fill)
 					[
 						SNew(STextBlock)
-						.Text(FText::FromString(ConditionWidgetName))
+						.Text(WidgetCondition->GetClass()->GetDisplayNameText())
 					]
 					+ SHorizontalBox::Slot()
 					.AutoWidth()
@@ -178,8 +179,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
             UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -265,8 +266,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 			
             UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)WidgetCondition;
 
@@ -352,8 +353,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
             UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -438,8 +439,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
             UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)WidgetCondition;
 
@@ -524,8 +525,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
             UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)WidgetCondition;
             const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
@@ -600,442 +601,6 @@ namespace ConditionUI {
 		}
 	};
 
-	/*farm任务条件*/
-	class FarmConditionWidget : public SConditionWidgetBase {
-	public:
-		virtual ~FarmConditionWidget() {}
-
-		SLATE_BEGIN_ARGS(FarmConditionWidget) {}
-
-		SLATE_END_ARGS()
-
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
-
-            const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
-            auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
-
-            UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)WidgetCondition;
-            UnitTableRefBox = SNew(SRowTableRefBox, UnitDataTable, FarmCondition->UnitId);
-            UnitTableRefBox->RowSelectChanged.BindSP(this, &FarmConditionWidget::OnSelectionChanged);
-
-			(*WidgetSlot)[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				[
-					SNew(SVerticalBox)
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("单位:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-                            UnitTableRefBox.ToSharedRef()
-						]
-					]
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("Count:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-							SNew(SNumericEntryBox<int>)
-							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-							.Value_Lambda([this] {
-								UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)WidgetCondition;
-								return FarmCondition->Count;
-							})
-							.OnValueCommitted(this, &FarmConditionWidget::OnFarmCountCommitted)
-						]
-					]
-				]
-			];
-		}
-
-	private:
-        TSharedPtr<SRowTableRefBox> UnitTableRefBox;
-
-		void OnSelectionChanged(int UnitId) {
-			UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)WidgetCondition;
-            FarmCondition->UnitId = UnitId;
-			NotifyConditionChange();
-		}
-
-		void OnFarmCountCommitted(int NewValue, ETextCommit::Type InCommitType) {
-			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-
-			if (NewValue > 0) {
-				UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)WidgetCondition;
-                FarmCondition->Count = NewValue;
-				NotifyConditionChange();
-			}
-			else {
-				GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("Count必须大于0，回退操作")), 5.0);
-			}
-		}
-	};
-
-	/*好感度要求任务条件*/
-	class IntimacyRequestConditionWidget : public SConditionWidgetBase {
-	public:
-		virtual ~IntimacyRequestConditionWidget() {}
-
-		SLATE_BEGIN_ARGS(IntimacyRequestConditionWidget) {}
-
-		SLATE_END_ARGS()
-
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
-
-            const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
-            auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
-
-            UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
-            UnitTableRefBox = SNew(SRowTableRefBox, UnitDataTable, IntimacyRequestCondition->NPCId);
-            UnitTableRefBox->RowSelectChanged.BindSP(this, &IntimacyRequestConditionWidget::OnSelectionChanged);
-
-			CompareTypeSource.Add(MakeShareable(new EIntimacyCompare(EIntimacyCompare::Above)));
-			CompareTypeSource.Add(MakeShareable(new EIntimacyCompare(EIntimacyCompare::Below)));
-
-			(*WidgetSlot)[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				[
-					SNew(SVerticalBox)
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("单位:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-                            UnitTableRefBox.ToSharedRef()
-						]
-					]
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("Count:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-							SNew(SNumericEntryBox<int>)
-							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-							.Value_Lambda([this] {
-								UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
-								return IntimacyRequestCondition->IntimacyRequest;
-							})
-							.OnValueCommitted(this, &IntimacyRequestConditionWidget::OnIntimacyRequestCommitted)
-						]
-					]
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("CompareType:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-							SAssignNew(CompareTypeComboBox, SComboBox<TSharedPtr<EIntimacyCompare>>)
-							.OptionsSource(GetCompareTypeSource())
-							.OnGenerateWidget(this, &IntimacyRequestConditionWidget::GenerateCompareTypeComboItem)
-							.OnSelectionChanged(this, &IntimacyRequestConditionWidget::CompareTypeComboBox_OnSelectionChanged)
-							[
-								SNew(STextBlock)
-								.Text(this, &IntimacyRequestConditionWidget::GetCompareTypeComboText)
-							]
-						]
-					]
-				]
-			];
-			CompareTypeComboBox->SetSelectedItem(MakeShareable(new EIntimacyCompare(IntimacyRequestCondition->Compare)));
-		}
-
-	private:		
-		TSharedPtr<SComboBox<TSharedPtr<EIntimacyCompare>>> CompareTypeComboBox;
-		TSharedPtr<EIntimacyCompare> SelectCompare;
-		TArray<TSharedPtr<EIntimacyCompare>> CompareTypeSource;
-		
-        TSharedPtr<SRowTableRefBox> UnitTableRefBox;
-
-        void OnSelectionChanged(int UnitId) {
-            UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
-            IntimacyRequestCondition->NPCId = UnitId;
-            NotifyConditionChange();
-        }
-
-		TSharedRef<SWidget> GenerateCompareTypeComboItem(TSharedPtr<EIntimacyCompare> InItem) {
-			FText Display;
-			const UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/GameFramework.EIntimacyCompare"), true);
-			if (!EnumPtr) {
-				Display = FText::FromString(FString("Invalid"));
-			}
-			else {
-				Display = EnumPtr->GetDisplayNameTextByValue((int64)(*InItem));
-			}
-
-			return SNew(STextBlock)
-				.Text(Display);
-		}
-
-		void CompareTypeComboBox_OnSelectionChanged(TSharedPtr<EIntimacyCompare> NewGroupingMode, ESelectInfo::Type SelectInfo) {
-			if (!NewGroupingMode.IsValid()) {
-				return;
-			}
-			SelectCompare = NewGroupingMode;
-			UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
-            IntimacyRequestCondition->Compare = *SelectCompare;
-			NotifyConditionChange();
-		}
-
-		void OnIntimacyRequestCommitted(int NewValue, ETextCommit::Type InCommitType) {
-			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-
-			UPlayerIntimacyRequestCondition* IntimacyRequestCondition = (UPlayerIntimacyRequestCondition*)WidgetCondition;
-            IntimacyRequestCondition->IntimacyRequest = NewValue;
-			NotifyConditionChange();
-		}
-
-		FText GetCompareTypeComboText() const {
-			FText Display = FText::FromString(FString("Invalid"));
-			if (SelectCompare.IsValid()) {
-				const UEnum* EnumPtr = FindObject<UEnum>(nullptr, TEXT("/Script/GameFramework.EIntimacyCompare"), true);
-				if (EnumPtr) {
-					Display = EnumPtr->GetDisplayNameTextByValue((int64)(*SelectCompare));
-				}
-			}
-			return Display;
-		}
-
-		TArray<TSharedPtr<EIntimacyCompare>>* GetCompareTypeSource() {
-			return &CompareTypeSource;
-		}
-	};
-
-	/*NPC谈话条件*/
-	class TalkToConditionWidget : public SConditionWidgetBase {
-	public:
-		virtual ~TalkToConditionWidget() {}
-
-		SLATE_BEGIN_ARGS(TalkToConditionWidget) {}
-
-		SLATE_END_ARGS()
-
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
-
-            const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
-            auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
-
-			UTalkToCondition* TalkToCondition = (UTalkToCondition*)WidgetCondition;
-            UnitTableRefBox = SNew(SRowTableRefBox, UnitDataTable, TalkToCondition->UnitID);
-            UnitTableRefBox->RowSelectChanged.BindSP(this, &TalkToConditionWidget::OnSelectionChanged);
-
-			(*WidgetSlot)[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				[
-					SNew(SVerticalBox)
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("单位:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-                            UnitTableRefBox.ToSharedRef()
-						]
-					]
-				]
-			];
-		}
-
-	private:		
-        TSharedPtr<SRowTableRefBox> UnitTableRefBox;
-
-        void OnSelectionChanged(int UnitId) {
-			UTalkToCondition* TalkToCondition = (UTalkToCondition*)WidgetCondition;
-			TalkToCondition->UnitID = UnitId;
-            NotifyConditionChange();
-        }
-	};
-
-	/*占住NPC条件*/
-	class AcquireNPCsConditionWidget : public SConditionWidgetBase {
-	public:
-		virtual ~AcquireNPCsConditionWidget() {}
-
-		SLATE_BEGIN_ARGS(AcquireNPCsConditionWidget) {}
-
-		SLATE_END_ARGS()
-
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
-
-			(*WidgetSlot)[
-				SNew(SVerticalBox)
-				+ SVerticalBox::Slot()
-				.AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					[
-						SNew(SButton)
-						.ForegroundColor(FSlateColor::UseForeground())
-						.OnClicked(this, &AcquireNPCsConditionWidget::AddNPC)
-						[
-							SNew(SBorder)
-							.HAlign(HAlign_Center)
-							.VAlign(VAlign_Center)
-							[
-								SNew(STextBlock)
-								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-								.ColorAndOpacity(FLinearColor(0, 0, 0, 1.0f))
-								.Text(FText::FromString(TEXT("添加")))
-							]
-						]
-					]
-				]
-				+ SVerticalBox::Slot()
-				.AutoHeight()
-				[
-					SAssignNew(NPCsPanel, SVerticalBox)
-				]
-			];
-
-			Refresh();
-		}
-
-	private:
-		TSharedPtr<SVerticalBox> NPCsPanel;
-
-		FReply AddNPC() {
-			UAcquireNPCsCondition* AcquireNPCsCondition = (UAcquireNPCsCondition*)WidgetCondition;
-			AcquireNPCsCondition->UnitIDs.Add(-1);
-
-			Refresh();
-
-			return FReply::Handled();
-		}
-
-        void OnUnitIDSelectionChanged(int UnitId, int CurrentIndex) {
-			UAcquireNPCsCondition* AcquireNPCsCondition = (UAcquireNPCsCondition*)WidgetCondition;
-			if (UnitId != -1) {
-				TSet<int32> IDSet;
-				for (int Index = 0; Index < AcquireNPCsCondition->UnitIDs.Num(); ++Index) {
-					if (Index != CurrentIndex) {
-						int UnitID = AcquireNPCsCondition->UnitIDs[Index];
-						if (UnitID != -1) {
-							IDSet.Add(UnitID);
-						}
-					}
-				}
-				if (IDSet.Contains(UnitId)) {
-					AcquireNPCsCondition->UnitIDs[CurrentIndex] = -1;
-					Refresh();
-
-					FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-					GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("占据npcid不能重复")), 5.0);
-					return;
-				}
-			}
-			AcquireNPCsCondition->UnitIDs[CurrentIndex] = UnitId;
-
-            NotifyConditionChange();
-        }
-
-		FReply RemoveItem(int CurrentIndex) {
-			UAcquireNPCsCondition* AcquireNPCsCondition = (UAcquireNPCsCondition*)WidgetCondition;
-			if (CurrentIndex < AcquireNPCsCondition->UnitIDs.Num()) {
-				AcquireNPCsCondition->UnitIDs.RemoveAt(CurrentIndex);
-			}
-
-			Refresh();
-
-			NotifyConditionChange();
-
-			return FReply::Handled();
-		}
-
-		void Refresh() {
-			const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
-			auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
-
-			NPCsPanel->ClearChildren();
-
-			UAcquireNPCsCondition* AcquireNPCsCondition = (UAcquireNPCsCondition*)WidgetCondition;
-			for (int Index = 0; Index < AcquireNPCsCondition->UnitIDs.Num(); ++Index) {
-				auto CurrentIndex = Index;
-				auto UnitTableRefBox = SNew(SRowTableRefBox, UnitDataTable, AcquireNPCsCondition->UnitIDs[Index]);
-				UnitTableRefBox->RowSelectChanged.BindSP(this, &AcquireNPCsConditionWidget::OnUnitIDSelectionChanged, CurrentIndex);
-
-				NPCsPanel->AddSlot()
-				.AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					[
-						UnitTableRefBox
-					]
-					+ SHorizontalBox::Slot()
-					.AutoWidth()
-					.Padding(2)
-					[
-						SNew(SButton)
-#if ENGINE_MAJOR_VERSION > 4
-						.ButtonStyle(FAppStyle::Get(), "HoverHintOnly")
-#else
-						.ButtonStyle(FEditorStyle::Get(), "HoverHintOnly")
-#endif
-						.ForegroundColor(FSlateColor::UseForeground())
-						.HAlign(HAlign_Center)
-						.VAlign(VAlign_Center)
-						.OnClicked(this, &AcquireNPCsConditionWidget::RemoveItem, CurrentIndex)
-						.Content()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString("-"))
-						]
-						[
-							SNew(SImage)
-#if ENGINE_MAJOR_VERSION > 4
-							.Image(FAppStyle::Get().GetBrush("Cross"))
-#else
-							.Image(FEditorStyle::Get().GetBrush("Cross"))
-#endif
-						]
-					]
-				];
-			}
-		}
-	};
-
 	/*扣除物品任务条件*/
 	class DeductItemConditionWidget : public SConditionWidgetBase {
 	public:
@@ -1045,8 +610,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
 			UPlayerDeductItemCondition* DeductItemCondition = (UPlayerDeductItemCondition*)WidgetCondition;
 
@@ -1080,8 +645,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
 			UPlayerDeductMoneyCondition* DeductMoneyCondition = (UPlayerDeductMoneyCondition*)WidgetCondition;
 
@@ -1106,86 +671,6 @@ namespace ConditionUI {
         }
 	};
 
-	/*靠近NPC条件*/
-	class CloseToNPCConditionWidget : public SConditionWidgetBase {
-	public:
-		virtual ~CloseToNPCConditionWidget() {}
-
-		SLATE_BEGIN_ARGS(CloseToNPCConditionWidget) {}
-
-		SLATE_END_ARGS()
-
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
-
-            const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
-            auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
-
-			UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
-            UnitTableRefBox = SNew(SRowTableRefBox, UnitDataTable, CloseToNPCCondition->UnitID);
-            UnitTableRefBox->RowSelectChanged.BindSP(this, &CloseToNPCConditionWidget::OnSelectionChanged);
-
-			(*WidgetSlot)[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				[
-					SNew(SVerticalBox)
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("单位:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-                            UnitTableRefBox.ToSharedRef()
-						]
-					]
-					+ SVerticalBox::Slot()
-					.AutoHeight()
-					[
-						SNew(SHorizontalBox)
-						+ SHorizontalBox::Slot()
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString(TEXT("距离:")))
-						]
-						+ SHorizontalBox::Slot()
-						[
-							SNew(SNumericEntryBox<float>)
-							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-							.Value_Lambda([this] {
-								UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
-								return CloseToNPCCondition->Radius;
-							})
-							.OnValueCommitted(this, &CloseToNPCConditionWidget::OnCountCommitted)
-						]
-					]
-				]
-			];
-		}
-
-	private:		
-        TSharedPtr<SRowTableRefBox> UnitTableRefBox;
-
-        void OnSelectionChanged(int UnitId) {
-			UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
-			CloseToNPCCondition->UnitID = UnitId;
-            NotifyConditionChange();
-        }
-
-		void OnCountCommitted(float NewValue, ETextCommit::Type InCommitType) {
-			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-
-			UCloseToNPCCondition* CloseToNPCCondition = (UCloseToNPCCondition*)WidgetCondition;
-			CloseToNPCCondition->Radius = NewValue;
-			NotifyConditionChange();
-		}
-	};
-
 	/*玩家技能达到等级任务条件*/
 	class PlayerSkillReachLevelConditionWidget : public SConditionWidgetBase {
 	public:
@@ -1195,8 +680,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, const FString& ConditionWidgetName) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ConditionWidgetName);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
 
 			UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)WidgetCondition;
 
@@ -1225,9 +710,6 @@ namespace ConditionUI {
 namespace BaseConditionFactory {
     class ConditionWidgetFactory_CollectItem : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("收集物品");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override
         {
             return UPlayerCollectItemCondition::StaticClass();
@@ -1236,7 +718,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::CollectItemConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(ConditionUI::CollectItemConditionWidget, Condition, ParentSlot);
             }
             else {
                 auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1250,7 +732,7 @@ namespace BaseConditionFactory {
                     CollectItemCondition->ItemId = RowData->ItemId;
                     CollectItemCondition->ItemCount = 1;
 
-                    return SNew(ConditionUI::CollectItemConditionWidget, CollectItemCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(ConditionUI::CollectItemConditionWidget, CollectItemCondition, ParentSlot);
                 }
             }
         }
@@ -1258,9 +740,6 @@ namespace BaseConditionFactory {
 
     class ConditionWidgetFactory_CollectMoney : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("收集金币");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerCollectMoneyCondition::StaticClass();
         }
@@ -1268,7 +747,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::CollectMoneyConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(ConditionUI::CollectMoneyConditionWidget, Condition, ParentSlot);
             }
             else {
                 auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1282,7 +761,7 @@ namespace BaseConditionFactory {
                     CollectMoneyCondition->MoneyType = RowData->MoneyTypeId;
                     CollectMoneyCondition->MoneyCount = 1;
 
-                    return SNew(ConditionUI::CollectMoneyConditionWidget, CollectMoneyCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(ConditionUI::CollectMoneyConditionWidget, CollectMoneyCondition, ParentSlot);
                 }
             }
         }
@@ -1290,9 +769,6 @@ namespace BaseConditionFactory {
 
     class ConditionWidgetFactory_PlayerConsumeItem : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("玩家消耗物品");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerConsumeItemCondition::StaticClass();
         }
@@ -1300,7 +776,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::ConsumeItemConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(ConditionUI::ConsumeItemConditionWidget, Condition, ParentSlot);
             }
             else {
                 auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1314,7 +790,7 @@ namespace BaseConditionFactory {
                     ConsumeItemCondition->ItemId = RowData->ItemId;
                     ConsumeItemCondition->ItemCount = 1;
 
-                    return SNew(ConditionUI::ConsumeItemConditionWidget, ConsumeItemCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(ConditionUI::ConsumeItemConditionWidget, ConsumeItemCondition, ParentSlot);
                 }
             }
         }
@@ -1322,9 +798,6 @@ namespace BaseConditionFactory {
 
     class ConditionWidgetFactory_PlayerConsumeMoney : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("玩家消耗货币");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerConsumeMoneyCondition::StaticClass();
         }
@@ -1332,7 +805,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::ConsumeMoneyConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(ConditionUI::ConsumeMoneyConditionWidget, Condition, ParentSlot);
             }
             else {
                 auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1346,7 +819,7 @@ namespace BaseConditionFactory {
                     ConsumeMoneyCondition->MoneyType = RowData->MoneyTypeId;
                     ConsumeMoneyCondition->MoneyCount = 1;
 
-                    return SNew(ConditionUI::ConsumeMoneyConditionWidget, ConsumeMoneyCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(ConditionUI::ConsumeMoneyConditionWidget, ConsumeMoneyCondition, ParentSlot);
                 }
             }
         }
@@ -1354,9 +827,6 @@ namespace BaseConditionFactory {
 
     class ConditionWidgetFactory_PlayerFarm : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("杀怪");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerFarmCondition::StaticClass();
         }
@@ -1364,7 +834,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::FarmConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(SConditionWidgetDefault, Condition, ParentSlot);
             }
             else {
                 auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1375,10 +845,10 @@ namespace BaseConditionFactory {
                 else {
                     UPlayerFarmCondition* FarmCondition = NewObject<UPlayerFarmCondition>(Outer);
                     FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
-                    FarmCondition->UnitId = RowData->UnitId;
+                    FarmCondition->UnitIDContainer.UnitID = RowData->UnitId;
                     FarmCondition->Count = 1;
 
-                    return SNew(ConditionUI::FarmConditionWidget, FarmCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(SConditionWidgetDefault, FarmCondition, ParentSlot);
                 }
             }
         }
@@ -1386,39 +856,40 @@ namespace BaseConditionFactory {
 
     class ConditionWidgetFactory_PlayerHunt : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("Boss贡献");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerHuntCondition::StaticClass();
         }
         virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            return TSharedPtr<SConditionWidget>();
+            
+			if (!Condition) {
+				Condition = NewObject<UPlayerHuntCondition>(Outer);
+			}
+
+			return SNew(SConditionWidgetDefault, Condition, ParentSlot);
         }
     };
 
     class ConditionWidgetFactory_ArrivingAt : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("到达地点");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UArrivingAtCondition::StaticClass();
         }
         virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            return TSharedPtr<SConditionWidget>();
+
+			if (!Condition) {
+				Condition = NewObject<UArrivingAtCondition>(Outer);
+			}
+
+            return SNew(SConditionWidgetDefault, Condition, ParentSlot);
         }
     };
 
     class ConditionWidgetFactory_PlayerReachExpLevel : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("玩家达到等级");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerReachExpLevelCondition::StaticClass();
         }
@@ -1426,7 +897,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, Condition, ParentSlot);
             }
             else {
                 auto ExpTypeSource = EditorWidgetTool->GetExpTypeSource();
@@ -1441,7 +912,7 @@ namespace BaseConditionFactory {
                     ReachExpLevelCondition->ExpType = RowData->ExpTypeId;
                     ReachExpLevelCondition->ExpLevel = 1;
 
-                    return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, ReachExpLevelCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, ReachExpLevelCondition, ParentSlot);
                 }
             }
         }
@@ -1449,9 +920,6 @@ namespace BaseConditionFactory {
 
     class ConditionWidgetFactory_PlayerIntimacyRequest : public ConditionWidgetFactory {
     public:
-        virtual FString GetConditionWidgetName() override {
-            return TEXT("玩家好感度需求");
-        }
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerIntimacyRequestCondition::StaticClass();
         }
@@ -1459,7 +927,7 @@ namespace BaseConditionFactory {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::IntimacyRequestConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+                return SNew(SConditionWidgetDefault, Condition, ParentSlot);
             }
             else {
                 auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1470,11 +938,11 @@ namespace BaseConditionFactory {
                 else {
                     UPlayerIntimacyRequestCondition* IntimacyRequestCondition = NewObject<UPlayerIntimacyRequestCondition>(Outer);
                     FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
-                    IntimacyRequestCondition->NPCId = RowData->UnitId;
+                    IntimacyRequestCondition->NPCIDContainer.UnitID = RowData->UnitId;
                     IntimacyRequestCondition->IntimacyRequest = 0;
                     IntimacyRequestCondition->Compare = EIntimacyCompare::Above;
 
-                    return SNew(ConditionUI::IntimacyRequestConditionWidget, IntimacyRequestCondition, ParentSlot, GetConditionWidgetName());
+                    return SNew(SConditionWidgetDefault, IntimacyRequestCondition, ParentSlot);
                 }
             }
         }
@@ -1482,9 +950,6 @@ namespace BaseConditionFactory {
 
 	class ConditionWidgetFactory_TalkTo : public ConditionWidgetFactory {
 	public:
-		virtual FString GetConditionWidgetName() override {
-			return TEXT("NPC交谈");
-		}
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UTalkToCondition::StaticClass();
 		}
@@ -1492,7 +957,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::TalkToConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot);
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1503,9 +968,9 @@ namespace BaseConditionFactory {
 				else {
 					UTalkToCondition* TalkToCondition = NewObject<UTalkToCondition>(Outer);
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
-					TalkToCondition->UnitID = RowData->UnitId;
+					TalkToCondition->UnitIDContainer.UnitID = RowData->UnitId;
 
-					return SNew(ConditionUI::TalkToConditionWidget, TalkToCondition, ParentSlot, GetConditionWidgetName());
+					return SNew(SConditionWidgetDefault, TalkToCondition, ParentSlot);
 				}
 			}
 		}
@@ -1513,9 +978,6 @@ namespace BaseConditionFactory {
 
 	class ConditionWidgetFactory_AcquireNPCs : public ConditionWidgetFactory {
 	public:
-		virtual FString GetConditionWidgetName() override {
-			return TEXT("占有NPC");
-		}
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UAcquireNPCsCondition::StaticClass();
 		}
@@ -1523,7 +985,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::AcquireNPCsConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot);
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1534,9 +996,11 @@ namespace BaseConditionFactory {
 				else {
 					UAcquireNPCsCondition* AcquireNPCsCondition = NewObject<UAcquireNPCsCondition>(Outer);
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
-					AcquireNPCsCondition->UnitIDs.Add(RowData->UnitId);
+					FUnitIDContainer IDContainer;
+					IDContainer.UnitID = RowData->UnitId;
+					AcquireNPCsCondition->UnitIDContainers.Add(IDContainer);
 
-					return SNew(ConditionUI::AcquireNPCsConditionWidget, AcquireNPCsCondition, ParentSlot, GetConditionWidgetName());
+					return SNew(SConditionWidgetDefault, AcquireNPCsCondition, ParentSlot);
 				}
 			}
 		}
@@ -1544,9 +1008,6 @@ namespace BaseConditionFactory {
 
 	class ConditionWidgetFactory_PlayerDeductItem : public ConditionWidgetFactory {
 	public:
-		virtual FString GetConditionWidgetName() override {
-			return TEXT("玩家扣除物品");
-		}
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UPlayerDeductItemCondition::StaticClass();
 		}
@@ -1554,7 +1015,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::DeductItemConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+				return SNew(ConditionUI::DeductItemConditionWidget, Condition, ParentSlot);
 			}
 			else {
 				auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1565,16 +1026,13 @@ namespace BaseConditionFactory {
 				
 				UPlayerDeductItemCondition* DeductItemCondition = NewObject<UPlayerDeductItemCondition>(Outer);
 
-				return SNew(ConditionUI::DeductItemConditionWidget, DeductItemCondition, ParentSlot, GetConditionWidgetName());
+				return SNew(ConditionUI::DeductItemConditionWidget, DeductItemCondition, ParentSlot);
 			}
 		}
 	};
 
 	class ConditionWidgetFactory_PlayerDeductMoney : public ConditionWidgetFactory {
 	public:
-		virtual FString GetConditionWidgetName() override {
-			return TEXT("玩家扣除货币");
-		}
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UPlayerDeductMoneyCondition::StaticClass();
 		}
@@ -1582,7 +1040,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::DeductMoneyConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+				return SNew(ConditionUI::DeductMoneyConditionWidget, Condition, ParentSlot);
 			}
 			else {
 				auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1593,16 +1051,13 @@ namespace BaseConditionFactory {
 				
 				UPlayerDeductMoneyCondition* DeductMoneyCondition = NewObject<UPlayerDeductMoneyCondition>(Outer);
 
-				return SNew(ConditionUI::DeductMoneyConditionWidget, DeductMoneyCondition, ParentSlot, GetConditionWidgetName());
+				return SNew(ConditionUI::DeductMoneyConditionWidget, DeductMoneyCondition, ParentSlot);
 			}
 		}
 	};
 
 	class ConditionWidgetFactory_CloseToNPC : public ConditionWidgetFactory {
 	public:
-		virtual FString GetConditionWidgetName() override {
-			return TEXT("靠近NPC");
-		}
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UCloseToNPCCondition::StaticClass();
 		}
@@ -1610,7 +1065,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::CloseToNPCConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot);
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1621,9 +1076,9 @@ namespace BaseConditionFactory {
 				else {
 					UCloseToNPCCondition* CloseToNPCCondition = NewObject<UCloseToNPCCondition>(Outer);
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
-					CloseToNPCCondition->UnitID = RowData->UnitId;
+					CloseToNPCCondition->UnitIDContainer.UnitID = RowData->UnitId;
 
-					return SNew(ConditionUI::CloseToNPCConditionWidget, CloseToNPCCondition, ParentSlot, GetConditionWidgetName());
+					return SNew(SConditionWidgetDefault, CloseToNPCCondition, ParentSlot);
 				}
 			}
 		}
@@ -1631,9 +1086,6 @@ namespace BaseConditionFactory {
 
 	class ConditionWidgetFactory_SkillReachLevel : public ConditionWidgetFactory {
 	public:
-		virtual FString GetConditionWidgetName() override {
-			return TEXT("玩家技能达到等级");
-		}
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UPlayerSkillReachLevelCondition::StaticClass();
 		}
@@ -1641,7 +1093,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, Condition, ParentSlot, GetConditionWidgetName());
+				return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, Condition, ParentSlot);
 			}
 			else {
 				auto SkillSource = EditorWidgetTool->GetSkillSource();
@@ -1654,7 +1106,7 @@ namespace BaseConditionFactory {
 					FSkillConfigTableRow* RowData = (FSkillConfigTableRow*)(SkillSource[0]->ConfigTableRow);
 					PlayerSkillReachLevelCondition->Skill.SkillID = RowData->SkillId;
 
-					return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, PlayerSkillReachLevelCondition, ParentSlot, GetConditionWidgetName());
+					return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, PlayerSkillReachLevelCondition, ParentSlot);
 				}
 			}
 		}

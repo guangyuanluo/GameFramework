@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "CloseToNPCCondition.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	* @brief 靠近哪个npc
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int UnitID;
+	FUnitIDContainer UnitIDContainer;
 
 	/**
 	* @brief 半径

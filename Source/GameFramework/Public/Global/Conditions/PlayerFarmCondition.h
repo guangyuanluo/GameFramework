@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "PlayerFarmCondition.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	* 单位id
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int32 UnitId;
+	FUnitIDContainer UnitIDContainer;
 
 	/**
 	* 单位数量

@@ -21,7 +21,7 @@ void UAcquireNPCsConditionProgress::PostProgressInitialize_Implementation() {
 	if (GameInstance) {
 		UNPCSystem* NPCSystem = GameInstance->GameSystemManager->GetSystemByClass<UNPCSystem>();
 		if (NPCSystem) {
-			if (NPCSystem->IsNPCRelease(AcquireNPCsCondition->UnitIDs)) {
+			if (NPCSystem->IsNPCReleaseByContainer(AcquireNPCsCondition->UnitIDContainers)) {
 				auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 				if (ConditionPlayerState->QuestComponent) {
 					ConditionPlayerState->QuestComponent->NotifyAcquireNPCs();
@@ -43,7 +43,7 @@ void UAcquireNPCsConditionProgress::HandleComplete_Implementation() {
 		if (NPCSystem) {
 			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 
-			NPCSystem->ReleaseNPCs(ConditionPlayerState, AcquireNPCsCondition->UnitIDs);
+			NPCSystem->ReleaseNPCByContainer(ConditionPlayerState, AcquireNPCsCondition->UnitIDContainers);
 		}
 	}
 }

@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 class ConditionWidgetFactory;
+class UCoreCondition;
 
 class GAMEFRAMEWORKEDITOR_API ConditionWidgetManager {
 public:
 	static void RegistConditionWidgetFactory(TSharedPtr<ConditionWidgetFactory> Factory);
 	static void UnregistConditionWidgetFactory(TSharedPtr<ConditionWidgetFactory> Factory);
 	static TArray<TSharedPtr<ConditionWidgetFactory>> GetAllFactories();
-	static TSharedPtr<ConditionWidgetFactory> GetFactoryByWidgetName(const FString& name);
-    static TSharedPtr<ConditionWidgetFactory> GetFactoryByWidgetName(TSubclassOf<class UCoreCondition> conditionClass);
+    static TSharedPtr<ConditionWidgetFactory> GetFactoryByConditionClass(TSubclassOf<class UCoreCondition> ConditionClass);
 
 private:
-	static TMap<FString, TSharedPtr<ConditionWidgetFactory>> mFactoryMap;
+	static TMap<TSubclassOf<UCoreCondition>, TSharedPtr<ConditionWidgetFactory>> FactoryMap;
 };

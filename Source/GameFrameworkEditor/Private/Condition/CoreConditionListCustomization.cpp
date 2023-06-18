@@ -31,7 +31,7 @@ void FCoreConditionListCustomization::CustomizeHeader(TSharedRef<IPropertyHandle
 void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class IDetailChildrenBuilder& StructBuilder,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
-    //Ìõ¼þ
+    //æ¡ä»¶
 	ConditionProperty =
 		StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FCoreConditionList, Conditions));
 

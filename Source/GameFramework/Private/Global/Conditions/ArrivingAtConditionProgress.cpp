@@ -33,7 +33,7 @@ TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandl
 void UArrivingAtConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UEnterAreaEvent* EnterAreaEvent = (UEnterAreaEvent*)HandleEvent;
 	UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
-	if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitId
+	if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitIDContainer.UnitID
 		&& EnterAreaEvent->AreaName == ArrivingAtCondition->LocationName) {
 		HaveComplete = true;
 

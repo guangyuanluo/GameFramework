@@ -106,7 +106,7 @@ void SConditionEditWidget::GenerateConditionWidget() {
 #endif
 
 				TSharedPtr<class SConditionWidget> ConditionWidget;
-				auto Factory = ConditionWidgetManager::GetFactoryByWidgetName(Condition->GetClass());
+				auto Factory = ConditionWidgetManager::GetFactoryByConditionClass(Condition->GetClass());
 				if (Factory) {
 #if ENGINE_MAJOR_VERSION > 4
 					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot());
@@ -150,27 +150,27 @@ void SConditionEditWidget::ConditionNameComboBox_OnSelectionChanged(TSharedPtr<F
 
 FReply SConditionEditWidget::AddConditionButtonClicked() {
 	if (SelectConditionName.IsValid()) {
-
+		auto FindConditionClassPtr = ConditionNameMap.Find(*SelectConditionName);
+		if (!FindConditionClassPtr) {
+			return FReply::Unhandled();
+		}
 		TSharedPtr<class SConditionWidget> ConditionWidget;
 #if ENGINE_MAJOR_VERSION > 4
 		auto ConditionSlot = ConditionPage->AddSlot();
-		auto ConditionFactory = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName);
+		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
 		if (ConditionFactory) {
 			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot());
 		}
 #else
 		auto& ConditionSlot = ConditionPage->AddSlot();
-		auto ConditionFactory = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName);
+		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
 		if (ConditionFactory) {
 			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, &ConditionSlot);
 		}
 #endif
 		if (!ConditionWidget.IsValid()) {
-			auto FindConditionClassPtr = ConditionNameMap.Find(*SelectConditionName);
-			if (FindConditionClassPtr) {
-				auto Condition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
-				ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
-			}
+			auto Condition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
+			ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
 		}
 
 		if (ConditionWidget.IsValid()) {

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Base/ECS/SystemBase.h"
 #include "Modules/NPC/NPCInfo.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "NPCSystem.generated.h"
 
 class ACoreCharacter;
@@ -38,19 +39,37 @@ public:
 	* 尝试占有NPC ID
 	*/
 	UFUNCTION(BlueprintCallable)
-	bool TryAcquireNPCs(AActor* Owner, const TArray<int32>& NPCIDs, UObject* CustomInfo);
+	bool TryAcquireNPCByID(AActor* Owner, const TArray<int32>& NPCIDs, UObject* CustomInfo);
+
+	/**
+	* 尝试占有NPC ID
+	*/
+	UFUNCTION(BlueprintCallable)
+	bool TryAcquireNPCByContainer(AActor* Owner, const TArray<FUnitIDContainer>& NPCIDContainers, UObject* CustomInfo);
 
 	/**
 	* 是否NPC空闲
 	*/
 	UFUNCTION(BlueprintCallable)
-	bool IsNPCRelease(const TArray<int32>& NPCIDs);
+	bool IsNPCReleaseByID(const TArray<int32>& NPCIDs);
 
 	/**
-	* 是否NPC ID
+	* 是否NPC空闲
 	*/
 	UFUNCTION(BlueprintCallable)
-	void ReleaseNPCs(AActor* Owner, const TArray<int32>& NPCIDs);
+	bool IsNPCReleaseByContainer(const TArray<FUnitIDContainer>& NPCIDs);
+
+	/**
+	* 通过NPC ID释放占有的npc
+	*/
+	UFUNCTION(BlueprintCallable)
+	void ReleaseNPCByID(AActor* Owner, const TArray<int32>& NPCIDs);
+
+	/**
+	* 通过NPC ID释放占有的npc
+	*/
+	UFUNCTION(BlueprintCallable)
+	void ReleaseNPCByContainer(AActor* Owner, const TArray<FUnitIDContainer>& NPCIDContainers);
 
 private:
 	UPROPERTY()

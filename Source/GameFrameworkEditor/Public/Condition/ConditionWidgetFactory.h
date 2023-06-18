@@ -11,10 +11,6 @@
 class GAMEFRAMEWORKEDITOR_API ConditionWidgetFactory
 {
 public:
-	/**
-    * 条件类型控件名字
-    */
-    virtual FString GetConditionWidgetName() = 0;
 
     /**
     * 得到要渲染的class类型

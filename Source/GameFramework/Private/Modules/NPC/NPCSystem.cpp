@@ -19,11 +19,11 @@ void UNPCSystem::RemoveNPC(ACoreCharacter* NPC) {
     auto FindNPCInfoPtr = NPCMap.Find(NPC->TemplateID);
     if (FindNPCInfoPtr) {
         if (FindNPCInfoPtr->IsReleased) {
-            //Œ¥±ª’º”–æÕ“∆≥˝
+            //Êú™Ë¢´Âç†ÊúâÂ∞±ÁßªÈô§
             NPCMap.Remove(NPC->TemplateID);
         }
         else {
-            // NPC ±ª’º”–
+            // NPC Ë¢´Âç†Êúâ
             FindNPCInfoPtr->NPC = nullptr;
         }
     }
@@ -38,8 +38,8 @@ bool UNPCSystem::FindNPCInfo(int32 NPCID, FNPCInfo& NPCInfo) {
     return false;
 }
 
-bool UNPCSystem::TryAcquireNPCs(AActor* Owner, const TArray<int32>& NPCIDs, UObject* CustomInfo) {
-    if (!IsNPCRelease(NPCIDs)) {
+bool UNPCSystem::TryAcquireNPCByID(AActor* Owner, const TArray<int32>& NPCIDs, UObject* CustomInfo) {
+    if (!IsNPCReleaseByID(NPCIDs)) {
         return false;
     }
     for (int Index = 0; Index < NPCIDs.Num(); ++Index) {
@@ -48,7 +48,7 @@ bool UNPCSystem::TryAcquireNPCs(AActor* Owner, const TArray<int32>& NPCIDs, UObj
         FindNPCInfo.IsReleased = false;
         FindNPCInfo.CustomInfo = CustomInfo;
     }
-    //’º”– ¬º˛
+    //Âç†Êúâ‰∫ã‰ª∂
     UNPCAcquireEvent* NPCAcquireEvent = NewObject<UNPCAcquireEvent>();
     NPCAcquireEvent->Source = Owner;
     NPCAcquireEvent->NPCIDs = NPCIDs;
@@ -57,7 +57,16 @@ bool UNPCSystem::TryAcquireNPCs(AActor* Owner, const TArray<int32>& NPCIDs, UObj
     return true;
 }
 
-bool UNPCSystem::IsNPCRelease(const TArray<int32>& NPCIDs) {
+bool UNPCSystem::TryAcquireNPCByContainer(AActor* Owner, const TArray<FUnitIDContainer>& NPCIDContainers, UObject* CustomInfo) {
+    TArray<int32> UnitIDs;
+    for (int Index = 0; Index < NPCIDContainers.Num(); ++Index) {
+        auto NPCID = NPCIDContainers[Index].UnitID;
+        UnitIDs.Add(NPCID);
+    }
+    return TryAcquireNPCByID(Owner, UnitIDs, CustomInfo);
+}
+
+bool UNPCSystem::IsNPCReleaseByID(const TArray<int32>& NPCIDs) {
     for (int Index = 0; Index < NPCIDs.Num(); ++Index) {
         auto NPCID = NPCIDs[Index];
         auto FindNPCInfo = NPCMap.Find(NPCID);
@@ -69,7 +78,19 @@ bool UNPCSystem::IsNPCRelease(const TArray<int32>& NPCIDs) {
     return true;
 }
 
-void UNPCSystem::ReleaseNPCs(AActor* Owner, const TArray<int32>& NPCIDs) {
+bool UNPCSystem::IsNPCReleaseByContainer(const TArray<FUnitIDContainer>& NPCIDs) {
+    for (int Index = 0; Index < NPCIDs.Num(); ++Index) {
+        auto NPCID = NPCIDs[Index].UnitID;
+        auto FindNPCInfo = NPCMap.Find(NPCID);
+        if (FindNPCInfo != nullptr
+            && !FindNPCInfo->IsReleased) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void UNPCSystem::ReleaseNPCByID(AActor* Owner, const TArray<int32>& NPCIDs) {
     for (int Index = 0; Index < NPCIDs.Num(); ++Index) {
         auto NPCID = NPCIDs[Index];
         auto FindNPCInfo = NPCMap.Find(NPCID);
@@ -77,14 +98,23 @@ void UNPCSystem::ReleaseNPCs(AActor* Owner, const TArray<int32>& NPCIDs) {
             FindNPCInfo->IsReleased = true;
             FindNPCInfo->CustomInfo = nullptr;
             if (!FindNPCInfo->NPC) {
-                //NPC“—æ≠ Õ∑≈£¨’‚¿Ô…æ≥˝map
+                //NPCÂ∑≤ÁªèÈáäÊîæÔºåËøôÈáåÂà†Èô§map
                 NPCMap.Remove(NPCID);
             }
         }
     }
-    // Õ∑≈ ¬º˛
+    //ÈáäÊîæ‰∫ã‰ª∂
     UNPCReleaseEvent* NPCReleaseEvent = NewObject<UNPCReleaseEvent>();
     NPCReleaseEvent->Source = Owner;
     NPCReleaseEvent->NPCIDs = NPCIDs;
     GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(NPCReleaseEvent);
+}
+
+void UNPCSystem::ReleaseNPCByContainer(AActor* Owner, const TArray<FUnitIDContainer>& NPCIDContainers) {
+    TArray<int32> UnitIDs;
+    for (int Index = 0; Index < NPCIDContainers.Num(); ++Index) {
+        auto NPCID = NPCIDContainers[Index].UnitID;
+        UnitIDs.Add(NPCID);
+    }
+    ReleaseNPCByID(Owner, UnitIDs);
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "UnitReachExpLevelCondition.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	* 单位id
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int UnitId;
+	FUnitIDContainer UnitIDContainer;
 
 	/**
 	* 经验类型
