@@ -4,7 +4,7 @@
 
 #include "SConditionWidget.h"
 
-class SConditionWidgetDefault : public SConditionWidget {
+class GAMEFRAMEWORKEDITOR_API SConditionWidgetDefault : public SConditionWidget {
 public:
 	SLATE_BEGIN_ARGS(SConditionWidgetDefault) {}
 

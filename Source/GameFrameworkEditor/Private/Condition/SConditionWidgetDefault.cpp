@@ -77,6 +77,9 @@ void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition
 	FDetailsViewArgs DetailsViewArgs;
 	DetailsViewArgs.bAllowSearch = false;
 	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+	DetailsViewArgs.bHideSelectionTip = true;
+	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
 	TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject(WidgetCondition);
 	DetailsView->OnFinishedChangingProperties().AddSP(this, &SConditionWidgetDefault::OnPropertyChanged);

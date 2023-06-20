@@ -619,6 +619,9 @@ namespace ConditionUI {
 			FDetailsViewArgs DetailsViewArgs;
 			DetailsViewArgs.bAllowSearch = false;
 			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+			DetailsViewArgs.bHideSelectionTip = true;
+			DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
 			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 			DetailsView->SetObject(DeductItemCondition);
 			DetailsView->OnFinishedChangingProperties().AddSP(this, &DeductItemConditionWidget::OnPropertyChanged);
@@ -654,6 +657,9 @@ namespace ConditionUI {
 			FDetailsViewArgs DetailsViewArgs;
 			DetailsViewArgs.bAllowSearch = false;
 			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+			DetailsViewArgs.bHideSelectionTip = true;
+			DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
 			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 			DetailsView->SetObject(DeductMoneyCondition);
 			DetailsView->OnFinishedChangingProperties().AddSP(this, &DeductMoneyConditionWidget::OnPropertyChanged);
@@ -689,6 +695,9 @@ namespace ConditionUI {
 			FDetailsViewArgs DetailsViewArgs;
 			DetailsViewArgs.bAllowSearch = false;
 			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+			DetailsViewArgs.bHideSelectionTip = true;
+			DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
 			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 			DetailsView->SetObject(PlayerSkillReachLevelCondition);
 			DetailsView->OnFinishedChangingProperties().AddSP(this, &PlayerSkillReachLevelConditionWidget::OnPropertyChanged);

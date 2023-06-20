@@ -24,7 +24,7 @@ public:
     // END IPropertyTypeCustomization interface
 
 private:
-    TSharedPtr<IPropertyHandle> ConditionProperty;
+    TSharedPtr<IPropertyHandle> ConditionsProperty;
 
     void OnAssetChange();
 };
