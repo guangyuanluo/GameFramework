@@ -12,6 +12,7 @@
 #include "GraphEditorTabFactory.h"
 #include "EdGraphUtilities.h"
 #include "HAL/PlatformApplicationMisc.h"
+#include "Widgets/Layout/SScrollBox.h"
 
 FGraphEditorBase::FGraphEditorBase() {
 
@@ -136,13 +137,21 @@ void FGraphEditorBase::NotifyPostChange(const FPropertyChangedEvent& PropertyCha
 }
 
 TSharedRef<SWidget> FGraphEditorBase::SpawnProperties() {
+	TSharedPtr<SScrollBar> VerticalScrollBar = SNew(SScrollBar)
+		.AlwaysShowScrollbar(true);
 	return
 		SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
 		[
-			DetailsView.ToSharedRef()
+			SNew(SScrollBox)
+			.Orientation(Orient_Vertical)
+			.ExternalScrollbar(VerticalScrollBar)
+			+ SScrollBox::Slot()
+			[
+				DetailsView.ToSharedRef()
+			]
 		];
 }
 
@@ -416,7 +425,7 @@ void FGraphEditorBase::CreateInternalWidgets() {
 	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
 	DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject(ObjectToEdit);
-	DetailsView->SetIsPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled::CreateSP(this, &FGraphEditorBase::IsPropertyEditable));
+	DetailsView->SetIsPropertyEditingEnabledDelegate(FIsPropertyEditingEnabled::CreateSP(this, &FGraphEditorBase::IsPropertyEditable));	
 	DetailsView->OnFinishedChangingProperties().AddSP(this, &FGraphEditorBase::OnFinishedChangingProperties);
 }
 
