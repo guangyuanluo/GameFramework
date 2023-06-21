@@ -80,8 +80,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidget::Construct(SConditionWidget::FArguments(), InWidgetCondition);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidget::Construct(SConditionWidget::FArguments(), InWidgetCondition, ChildIndex);
 			ParentSlot = InParentSlot;
 
 			TSharedRef<SHorizontalBox> Panel = SNew(SHorizontalBox);
@@ -179,8 +179,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
             UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -266,8 +266,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 			
             UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)WidgetCondition;
 
@@ -353,8 +353,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
             UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)WidgetCondition;
             const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -439,8 +439,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
             UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)WidgetCondition;
 
@@ -525,8 +525,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
             UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)WidgetCondition;
             const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
@@ -610,8 +610,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
 			UPlayerDeductItemCondition* DeductItemCondition = (UPlayerDeductItemCondition*)WidgetCondition;
 
@@ -648,8 +648,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
 			UPlayerDeductMoneyCondition* DeductMoneyCondition = (UPlayerDeductMoneyCondition*)WidgetCondition;
 
@@ -686,8 +686,8 @@ namespace ConditionUI {
 
 		SLATE_END_ARGS()
 
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot);
+		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
+			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
 
 			UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)WidgetCondition;
 
@@ -723,11 +723,11 @@ namespace BaseConditionFactory {
         {
             return UPlayerCollectItemCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::CollectItemConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::CollectItemConditionWidget, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -741,7 +741,7 @@ namespace BaseConditionFactory {
                     CollectItemCondition->ItemId = RowData->ItemId;
                     CollectItemCondition->ItemCount = 1;
 
-                    return SNew(ConditionUI::CollectItemConditionWidget, CollectItemCondition, ParentSlot);
+                    return SNew(ConditionUI::CollectItemConditionWidget, CollectItemCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -752,11 +752,11 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerCollectMoneyCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::CollectMoneyConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::CollectMoneyConditionWidget, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -770,7 +770,7 @@ namespace BaseConditionFactory {
                     CollectMoneyCondition->MoneyType = RowData->MoneyTypeId;
                     CollectMoneyCondition->MoneyCount = 1;
 
-                    return SNew(ConditionUI::CollectMoneyConditionWidget, CollectMoneyCondition, ParentSlot);
+                    return SNew(ConditionUI::CollectMoneyConditionWidget, CollectMoneyCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -781,11 +781,11 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerConsumeItemCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::ConsumeItemConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::ConsumeItemConditionWidget, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -799,7 +799,7 @@ namespace BaseConditionFactory {
                     ConsumeItemCondition->ItemId = RowData->ItemId;
                     ConsumeItemCondition->ItemCount = 1;
 
-                    return SNew(ConditionUI::ConsumeItemConditionWidget, ConsumeItemCondition, ParentSlot);
+                    return SNew(ConditionUI::ConsumeItemConditionWidget, ConsumeItemCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -810,11 +810,11 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerConsumeMoneyCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::ConsumeMoneyConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::ConsumeMoneyConditionWidget, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -828,7 +828,7 @@ namespace BaseConditionFactory {
                     ConsumeMoneyCondition->MoneyType = RowData->MoneyTypeId;
                     ConsumeMoneyCondition->MoneyCount = 1;
 
-                    return SNew(ConditionUI::ConsumeMoneyConditionWidget, ConsumeMoneyCondition, ParentSlot);
+                    return SNew(ConditionUI::ConsumeMoneyConditionWidget, ConsumeMoneyCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -839,11 +839,11 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerFarmCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+                return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -857,7 +857,7 @@ namespace BaseConditionFactory {
                     FarmCondition->UnitIDContainer.UnitID = RowData->UnitId;
                     FarmCondition->Count = 1;
 
-                    return SNew(SConditionWidgetDefault, FarmCondition, ParentSlot);
+                    return SNew(SConditionWidgetDefault, FarmCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -868,7 +868,7 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerHuntCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             
@@ -876,7 +876,7 @@ namespace BaseConditionFactory {
 				Condition = NewObject<UPlayerHuntCondition>(Outer);
 			}
 
-			return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+			return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
         }
     };
 
@@ -885,7 +885,7 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UArrivingAtCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 
@@ -893,7 +893,7 @@ namespace BaseConditionFactory {
 				Condition = NewObject<UArrivingAtCondition>(Outer);
 			}
 
-            return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+            return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
         }
     };
 
@@ -902,11 +902,11 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerReachExpLevelCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, Condition, ParentSlot);
+                return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto ExpTypeSource = EditorWidgetTool->GetExpTypeSource();
@@ -921,7 +921,7 @@ namespace BaseConditionFactory {
                     ReachExpLevelCondition->ExpType = RowData->ExpTypeId;
                     ReachExpLevelCondition->ExpLevel = 1;
 
-                    return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, ReachExpLevelCondition, ParentSlot);
+                    return SNew(ConditionUI::PlayerReachExpLevelConditionWidget, ReachExpLevelCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -932,11 +932,11 @@ namespace BaseConditionFactory {
         virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
             return UPlayerIntimacyRequestCondition::StaticClass();
         }
-        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+        virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
             if (Condition) {
-                return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+                return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
             }
             else {
                 auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -951,7 +951,7 @@ namespace BaseConditionFactory {
                     IntimacyRequestCondition->IntimacyRequest = 0;
                     IntimacyRequestCondition->Compare = EIntimacyCompare::Above;
 
-                    return SNew(SConditionWidgetDefault, IntimacyRequestCondition, ParentSlot);
+                    return SNew(SConditionWidgetDefault, IntimacyRequestCondition, ParentSlot, ChildIndex);
                 }
             }
         }
@@ -962,11 +962,11 @@ namespace BaseConditionFactory {
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UTalkToCondition::StaticClass();
 		}
-		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -979,7 +979,7 @@ namespace BaseConditionFactory {
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
 					TalkToCondition->UnitIDContainer.UnitID = RowData->UnitId;
 
-					return SNew(SConditionWidgetDefault, TalkToCondition, ParentSlot);
+					return SNew(SConditionWidgetDefault, TalkToCondition, ParentSlot, ChildIndex);
 				}
 			}
 		}
@@ -990,11 +990,11 @@ namespace BaseConditionFactory {
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UAcquireNPCsCondition::StaticClass();
 		}
-		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1009,7 +1009,7 @@ namespace BaseConditionFactory {
 					IDContainer.UnitID = RowData->UnitId;
 					AcquireNPCsCondition->UnitIDContainers.Add(IDContainer);
 
-					return SNew(SConditionWidgetDefault, AcquireNPCsCondition, ParentSlot);
+					return SNew(SConditionWidgetDefault, AcquireNPCsCondition, ParentSlot, ChildIndex);
 				}
 			}
 		}
@@ -1020,11 +1020,11 @@ namespace BaseConditionFactory {
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UPlayerDeductItemCondition::StaticClass();
 		}
-		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::DeductItemConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::DeductItemConditionWidget, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto ItemSource = EditorWidgetTool->GetItemInfoSource();
@@ -1035,7 +1035,7 @@ namespace BaseConditionFactory {
 				
 				UPlayerDeductItemCondition* DeductItemCondition = NewObject<UPlayerDeductItemCondition>(Outer);
 
-				return SNew(ConditionUI::DeductItemConditionWidget, DeductItemCondition, ParentSlot);
+				return SNew(ConditionUI::DeductItemConditionWidget, DeductItemCondition, ParentSlot, ChildIndex);
 			}
 		}
 	};
@@ -1045,11 +1045,11 @@ namespace BaseConditionFactory {
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UPlayerDeductMoneyCondition::StaticClass();
 		}
-		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::DeductMoneyConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::DeductMoneyConditionWidget, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
@@ -1060,7 +1060,7 @@ namespace BaseConditionFactory {
 				
 				UPlayerDeductMoneyCondition* DeductMoneyCondition = NewObject<UPlayerDeductMoneyCondition>(Outer);
 
-				return SNew(ConditionUI::DeductMoneyConditionWidget, DeductMoneyCondition, ParentSlot);
+				return SNew(ConditionUI::DeductMoneyConditionWidget, DeductMoneyCondition, ParentSlot, ChildIndex);
 			}
 		}
 	};
@@ -1070,11 +1070,11 @@ namespace BaseConditionFactory {
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UCloseToNPCCondition::StaticClass();
 		}
-		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(SConditionWidgetDefault, Condition, ParentSlot);
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
@@ -1087,7 +1087,7 @@ namespace BaseConditionFactory {
 					FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
 					CloseToNPCCondition->UnitIDContainer.UnitID = RowData->UnitId;
 
-					return SNew(SConditionWidgetDefault, CloseToNPCCondition, ParentSlot);
+					return SNew(SConditionWidgetDefault, CloseToNPCCondition, ParentSlot, ChildIndex);
 				}
 			}
 		}
@@ -1098,11 +1098,11 @@ namespace BaseConditionFactory {
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
 			return UPlayerSkillReachLevelCondition::StaticClass();
 		}
-		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) override {
+		virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) override {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, Condition, ParentSlot);
+				return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto SkillSource = EditorWidgetTool->GetSkillSource();
@@ -1115,7 +1115,7 @@ namespace BaseConditionFactory {
 					FSkillConfigTableRow* RowData = (FSkillConfigTableRow*)(SkillSource[0]->ConfigTableRow);
 					PlayerSkillReachLevelCondition->Skill.SkillID = RowData->SkillId;
 
-					return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, PlayerSkillReachLevelCondition, ParentSlot);
+					return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, PlayerSkillReachLevelCondition, ParentSlot, ChildIndex);
 				}
 			}
 		}

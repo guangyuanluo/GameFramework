@@ -96,39 +96,42 @@ void SConditionEditWidget::RefreshConditionPtr(TArray<class UCoreCondition*>* In
 void SConditionEditWidget::GenerateConditionWidget() {
 	if (ConditionPtr) {
 		bool HaveInvalidData = false;
+
 		for (int Index = ConditionPtr->Num() - 1; Index >= 0; --Index) {
 			auto Condition = (*ConditionPtr)[Index];
-			if (Condition) {
-#if ENGINE_MAJOR_VERSION > 4
-				auto ConditionSlot = ConditionPage->AddSlot();
-#else
-				auto& ConditionSlot = ConditionPage->AddSlot();
-#endif
-
-				TSharedPtr<class SConditionWidget> ConditionWidget;
-				auto Factory = ConditionWidgetManager::GetFactoryByConditionClass(Condition->GetClass());
-				if (Factory) {
-#if ENGINE_MAJOR_VERSION > 4
-					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot());
-#else
-					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot);
-#endif
-				}
-				else {
-					ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
-				}
-				ConditionSlot
-					.AutoHeight()
-					[
-						ConditionWidget.ToSharedRef()
-					];
-				ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
-				ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
-			}
-			else {
+			if (!Condition) {
 				ConditionPtr->RemoveAt(Index);
 				HaveInvalidData = true;
 			}
+		}
+
+		for (int Index = 0; Index < ConditionPtr->Num(); ++Index) {
+			auto Condition = (*ConditionPtr)[Index];
+#if ENGINE_MAJOR_VERSION > 4
+			auto ConditionSlot = ConditionPage->AddSlot();
+#else
+			auto& ConditionSlot = ConditionPage->AddSlot();
+#endif
+
+			TSharedPtr<class SConditionWidget> ConditionWidget;
+			auto Factory = ConditionWidgetManager::GetFactoryByConditionClass(Condition->GetClass());
+			if (Factory) {
+#if ENGINE_MAJOR_VERSION > 4
+				ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot(), Index);
+#else
+				ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot, Index);
+#endif
+			}
+			else {
+				ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot(), Index);
+			}
+			ConditionSlot
+				.AutoHeight()
+				[
+					ConditionWidget.ToSharedRef()
+				];
+			ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
+			ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
 		}
 		if (HaveInvalidData) {
 			OnConditionChange.ExecuteIfBound();
@@ -159,18 +162,18 @@ FReply SConditionEditWidget::AddConditionButtonClicked() {
 		auto ConditionSlot = ConditionPage->AddSlot();
 		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
 		if (ConditionFactory) {
-			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot());
+			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot(), ConditionPtr->Num());
 		}
 #else
 		auto& ConditionSlot = ConditionPage->AddSlot();
 		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
 		if (ConditionFactory) {
-			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, &ConditionSlot);
+			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, &ConditionSlot, ConditionPtr->Num());
 		}
 #endif
 		if (!ConditionWidget.IsValid()) {
 			auto Condition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
-			ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
+			ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot(), ConditionPtr->Num());
 		}
 
 		if (ConditionWidget.IsValid()) {
@@ -216,6 +219,9 @@ void SConditionEditWidget::OnConditionWidgetChange(class UCoreCondition* CoreCon
 
 void SConditionEditWidget::OnConditionWidgetRemove(class UCoreCondition* CoreCondition) {
 	ConditionPtr->Remove(CoreCondition);
+
+	ConditionPage->ClearChildren();
+	GenerateConditionWidget();
 
 	OnConditionChange.ExecuteIfBound();
 }

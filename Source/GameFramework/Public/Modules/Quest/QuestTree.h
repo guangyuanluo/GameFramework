@@ -17,7 +17,7 @@ public:
 	/**
 	* id
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务树Id"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Quest", meta = (DisplayName = "任务树Id"))
 	FGuid ID;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Quest")

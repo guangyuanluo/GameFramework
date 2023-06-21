@@ -19,5 +19,5 @@ public:
     /**
     * 创建一个控件
     */
-    virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot) = 0;
+    virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) = 0;
 };
