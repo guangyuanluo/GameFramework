@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Item/ItemIDContainer.h"
 #include "PlayerCollectItemCondition.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	* 物品id
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int32 ItemId;
+	FItemIDContainer ItemIDContainer;
 
 	/**
 	* 物品数量

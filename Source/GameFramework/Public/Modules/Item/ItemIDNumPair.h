@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/Item/ItemIDContainer.h"
 #include "ItemIDNumPair.generated.h"
 
 /**
@@ -16,8 +17,8 @@ struct GAMEFRAMEWORK_API FItemIDNumPair
 	/**
 	* 物品id
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item", meta = (DisplayName = "物品ID"))
-	int32 ItemID;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Item")
+	FItemIDContainer ItemIDContainer;
 
 	/**
 	* 物品数量

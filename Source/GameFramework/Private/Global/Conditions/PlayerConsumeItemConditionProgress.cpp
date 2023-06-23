@@ -35,7 +35,7 @@ void UPlayerConsumeItemConditionProgress::OnEvent_Implementation(UCoreGameInstan
 		return;
 	}
 	UPlayerConsumeItemCondition* PlayerConsumeItemCondition = (UPlayerConsumeItemCondition*)Condition;
-	if (ChangeItemEvent->ItemId == PlayerConsumeItemCondition->ItemId
+	if (ChangeItemEvent->ItemId == PlayerConsumeItemCondition->ItemIDContainer.ItemID
 		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID
 		&& ChangeItemEvent->Count < 0) {
 		CurrentCount += -ChangeItemEvent->Count;

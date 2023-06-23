@@ -17,7 +17,12 @@ public:
     */
     virtual TSubclassOf<class UCoreCondition> GetConditionClass() = 0;
     /**
-    * 创建一个控件
+    * 是否允许创建该条件
     */
-    virtual TSharedPtr<class SConditionWidget> CreateConditionWidget(UObject* Outer, class UCoreCondition* Condition, SVerticalBox::FSlot* ParentSlot, int ChildIndex) = 0;
+    virtual bool CanCreateCondition() = 0;
+
+    /**
+    * 对创建出来的条件进行一些初始化处理
+    */
+    virtual void PostInitConditionCreated(class UCoreCondition* Condition) = 0;
 };

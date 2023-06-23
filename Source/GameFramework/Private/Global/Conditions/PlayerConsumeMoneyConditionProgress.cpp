@@ -35,7 +35,7 @@ void UPlayerConsumeMoneyConditionProgress::OnEvent_Implementation(UCoreGameInsta
         return;
     }
     UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
-    if (ConsumeMoneyEvent->MoneyType == ConsumeMoneyCondition->MoneyType
+    if (ConsumeMoneyEvent->MoneyType == ConsumeMoneyCondition->MoneyTypeContainer.MoneyType
         && EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
         CurrentCount += ConsumeMoneyEvent->MoneyCount;
         

@@ -28,7 +28,7 @@ void UUnitReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstan
 		return;
 	}
 	UUnitReachExpLevelCondition* ReachExpLevelCondition = (UUnitReachExpLevelCondition*)Condition;
-	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpType
+	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpTypeContainer.ExpType
 		&& Unit->TemplateID == ReachExpLevelCondition->UnitIDContainer.UnitID) {
 		RefreshSatisfy();
 	}

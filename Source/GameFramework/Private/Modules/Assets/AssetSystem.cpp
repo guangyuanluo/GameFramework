@@ -421,11 +421,11 @@ bool UAssetSystem::CanDeductMoney(UWalletComponent* WalletComponent, const TArra
         MoneyTotal.Add(MoneyInfo.MoneyType, MoneyInfo.Count);
     }
     for (auto MoneyTypeNumPair : DeductMoneys) {
-        if (!MoneyTotal.Contains(MoneyTypeNumPair.MoneyType)) {
+        if (!MoneyTotal.Contains(MoneyTypeNumPair.MoneyTypeContainer.MoneyType)) {
             return false;
         }
-        MoneyTotal[MoneyTypeNumPair.MoneyType] -= MoneyTypeNumPair.Num;
-        if (MoneyTotal[MoneyTypeNumPair.MoneyType] < 0) {
+        MoneyTotal[MoneyTypeNumPair.MoneyTypeContainer.MoneyType] -= MoneyTypeNumPair.Num;
+        if (MoneyTotal[MoneyTypeNumPair.MoneyTypeContainer.MoneyType] < 0) {
             return false;
         }
     }
@@ -434,7 +434,7 @@ bool UAssetSystem::CanDeductMoney(UWalletComponent* WalletComponent, const TArra
 
 void UAssetSystem::ChangeMoney(UWalletComponent* WalletComponent, const TArray<FMoneyTypeNumPair>& ChangeMoneys, bool bConsume, const FString& Reason, FString& Error) {
     for (auto MoneyTypeNumPair : ChangeMoneys) {
-        ChangeMoney(WalletComponent, MoneyTypeNumPair.MoneyType, MoneyTypeNumPair.Num, bConsume, Reason, Error);
+        ChangeMoney(WalletComponent, MoneyTypeNumPair.MoneyTypeContainer.MoneyType, MoneyTypeNumPair.Num, bConsume, Reason, Error);
     }
 }
 
@@ -801,11 +801,11 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateDedu
     
     TMap<int, int> TotalRemoves;
     for (int Index = 0; Index < DeductItems.Num(); ++Index) {
-        if (TotalRemoves.Contains(DeductItems[Index].ItemID)) {
-            TotalRemoves[DeductItems[Index].ItemID] += DeductItems[Index].ItemNum;
+        if (TotalRemoves.Contains(DeductItems[Index].ItemIDContainer.ItemID)) {
+            TotalRemoves[DeductItems[Index].ItemIDContainer.ItemID] += DeductItems[Index].ItemNum;
         }
         else {
-            TotalRemoves.Add(DeductItems[Index].ItemID, DeductItems[Index].ItemNum);
+            TotalRemoves.Add(DeductItems[Index].ItemIDContainer.ItemID, DeductItems[Index].ItemNum);
         }
     }
 

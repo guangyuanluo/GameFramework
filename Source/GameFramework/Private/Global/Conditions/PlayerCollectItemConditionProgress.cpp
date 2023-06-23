@@ -42,7 +42,7 @@ void UPlayerCollectItemConditionProgress::HandleComplete_Implementation() {
     UBackpackComponent* BackpackComponent = CharacterState->BackpackComponent;
 	FString Error;
     auto GameInstance = ProgressOwner->GetWorld()->GetGameInstance<UCoreGameInstance>();
-    GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemId, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
+    GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetHandleEventTypes_Implementation() {
@@ -61,7 +61,7 @@ void UPlayerCollectItemConditionProgress::OnEvent_Implementation(UCoreGameInstan
         return;
     }
     UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
-    if (ChangeItemEvent->ItemId == CollectItemCondition->ItemId
+    if (ChangeItemEvent->ItemId == CollectItemCondition->ItemIDContainer.ItemID
         && SourcePlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
 
         RefreshSatisfy();

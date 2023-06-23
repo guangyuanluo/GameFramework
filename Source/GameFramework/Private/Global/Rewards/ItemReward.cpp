@@ -37,7 +37,7 @@ void UItemReward::HandleRewardDispatch_Implementation(UCoreGameInstance* InGameI
     for (int Index = 0; Index < Items.Num(); ++Index) {
         auto Item = Items[Index];
         FAddItemInfo AddItemInfo;
-        AddItemInfo.ItemId = Item.ItemID;
+        AddItemInfo.ItemId = Item.ItemIDContainer.ItemID;
         AddItemInfo.Count = Item.ItemNum;
         AddItems.Add(MoveTemp(AddItemInfo));
     }

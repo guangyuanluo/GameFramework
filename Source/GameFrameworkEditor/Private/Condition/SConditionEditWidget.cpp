@@ -112,19 +112,8 @@ void SConditionEditWidget::GenerateConditionWidget() {
 #else
 			auto& ConditionSlot = ConditionPage->AddSlot();
 #endif
-
-			TSharedPtr<class SConditionWidget> ConditionWidget;
-			auto Factory = ConditionWidgetManager::GetFactoryByConditionClass(Condition->GetClass());
-			if (Factory) {
-#if ENGINE_MAJOR_VERSION > 4
-				ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot(), Index);
-#else
-				ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot, Index);
-#endif
-			}
-			else {
-				ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot(), Index);
-			}
+			
+			TSharedPtr<class SConditionWidget> ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot(), Index);
 			ConditionSlot
 				.AutoHeight()
 				[
@@ -157,45 +146,26 @@ FReply SConditionEditWidget::AddConditionButtonClicked() {
 		if (!FindConditionClassPtr) {
 			return FReply::Unhandled();
 		}
-		TSharedPtr<class SConditionWidget> ConditionWidget;
-#if ENGINE_MAJOR_VERSION > 4
-		auto ConditionSlot = ConditionPage->AddSlot();
+		bool CanCreate = true;
 		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
 		if (ConditionFactory) {
-			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot(), ConditionPtr->Num());
+			CanCreate = ConditionFactory->CanCreateCondition();
 		}
-#else
-		auto& ConditionSlot = ConditionPage->AddSlot();
-		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
-		if (ConditionFactory) {
-			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, &ConditionSlot, ConditionPtr->Num());
-		}
-#endif
-		if (!ConditionWidget.IsValid()) {
-			auto Condition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
-			ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot(), ConditionPtr->Num());
-		}
-
-		if (ConditionWidget.IsValid()) {
-			ConditionSlot
-				.AutoHeight()
-				.VAlign(VAlign_Center)
-				[
-					ConditionWidget.ToSharedRef()
-				];
-
-			ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
-			ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
-
-			ConditionPtr->Add(ConditionWidget->GetWidgetCondition());
-
-			OnConditionChange.ExecuteIfBound();
-
-			return FReply::Handled();
-		}
-		else {
+		if (!CanCreate) {
 			return FReply::Unhandled();
 		}
+		auto NewCondition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
+		if (ConditionFactory) {
+			ConditionFactory->PostInitConditionCreated(NewCondition);
+		}
+		ConditionPtr->Add(NewCondition);
+
+		ConditionPage->ClearChildren();
+		GenerateConditionWidget();
+
+		OnConditionChange.ExecuteIfBound();
+
+		return FReply::Handled();
 	}
 	else {
 		FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
