@@ -676,44 +676,6 @@ namespace ConditionUI {
             NotifyConditionChange();
         }
 	};
-
-	/*玩家技能达到等级任务条件*/
-	class PlayerSkillReachLevelConditionWidget : public SConditionWidgetBase {
-	public:
-		virtual ~PlayerSkillReachLevelConditionWidget() {}
-
-		SLATE_BEGIN_ARGS(PlayerSkillReachLevelConditionWidget) {}
-
-		SLATE_END_ARGS()
-
-		void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int ChildIndex) {
-			SConditionWidgetBase::Construct(SConditionWidgetBase::FArguments(), InWidgetCondition, InParentSlot, ChildIndex);
-
-			UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)WidgetCondition;
-
-			FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-			FDetailsViewArgs DetailsViewArgs;
-			DetailsViewArgs.bAllowSearch = false;
-			DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
-			DetailsViewArgs.bHideSelectionTip = true;
-			DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
-
-			TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-			DetailsView->SetObject(PlayerSkillReachLevelCondition);
-			DetailsView->OnFinishedChangingProperties().AddSP(this, &PlayerSkillReachLevelConditionWidget::OnPropertyChanged);
-
-			(*WidgetSlot)[
-				DetailsView.ToSharedRef()
-			];
-		}
-
-	private:
-        TSharedPtr<SRowTableRefBox> ItemTableRefBox;
-
-        void OnPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent) {
-            NotifyConditionChange();
-        }
-	};
 }
 
 namespace BaseConditionFactory {
@@ -1102,7 +1064,7 @@ namespace BaseConditionFactory {
 			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
 			auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
 			if (Condition) {
-				return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, Condition, ParentSlot, ChildIndex);
+				return SNew(SConditionWidgetDefault, Condition, ParentSlot, ChildIndex);
 			}
 			else {
 				auto SkillSource = EditorWidgetTool->GetSkillSource();
@@ -1115,7 +1077,7 @@ namespace BaseConditionFactory {
 					FSkillConfigTableRow* RowData = (FSkillConfigTableRow*)(SkillSource[0]->ConfigTableRow);
 					PlayerSkillReachLevelCondition->Skill.SkillID = RowData->SkillId;
 
-					return SNew(ConditionUI::PlayerSkillReachLevelConditionWidget, PlayerSkillReachLevelCondition, ParentSlot, ChildIndex);
+					return SNew(SConditionWidgetDefault, PlayerSkillReachLevelCondition, ParentSlot, ChildIndex);
 				}
 			}
 		}
