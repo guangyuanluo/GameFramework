@@ -35,12 +35,12 @@
 #include "Modules/Condition/CoreConditionList.h"
 
 #include "Modules/Skill/SkillInfo.h"
-#include "Modules/Money/MoneyTypeNumPair.h"
-#include "Customization/MoneyTypeNumPairCustomization.h"
-#include "Modules/Item/ItemIDNumPair.h"
-#include "Customization/ItemIDNumPairCustomization.h"
-#include "Modules/Exp/ExpTypeNumPair.h"
-#include "Customization/ExpTypeNumPairCustomization.h"
+#include "Modules/Money/MoneyTypeContainer.h"
+#include "Customization/MoneyTypeContainerCustomization.h"
+#include "Modules/Item/ItemIDContainer.h"
+#include "Customization/ItemIDContainerCustomization.h"
+#include "Modules/Exp/ExpTypeContainer.h"
+#include "Customization/ExpTypeContainerCustomization.h"
 #include "CoreConditionListCustomization.h"
 #include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
@@ -55,6 +55,8 @@
 #include "Customization/CoreGameplayEffectContainerCustomization.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
 #include "AnimSearchTree/AssetTypeActions_AnimSearchTree.h"
+#include "Modules/Unit/UnitIDContainer.h"
+#include "Customization/UnitIDContainerCustomization.h"
 
 static const FName GameFrameworkEditorTabName("GameFrameworkEditor");
 
@@ -251,16 +253,16 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
     FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FMoneyTypeNumPair::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FMoneyTypeNumPairCustomization::MakeInstance));
+		FMoneyTypeContainer::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FMoneyTypeContainerCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FItemIDNumPair::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FItemIDNumPairCustomization::MakeInstance));
+		FItemIDContainer::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FItemIDContainerCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FExpTypeNumPair::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FExpTypeNumPairCustomization::MakeInstance));
+		FExpTypeContainer::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FExpTypeContainerCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomClassLayout(
 		UQuestDetailNodeItem::StaticClass()->GetFName(),
@@ -290,21 +292,26 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
         FCoreGameplayEffectContainer::StaticStruct()->GetFName(),
         FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreGameplayEffectContainerCustomization::MakeInstance));
 
+	PropertyModule.RegisterCustomPropertyTypeLayout(
+		FUnitIDContainer::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FUnitIDContainerCustomization::MakeInstance));
+
     PropertyModule.NotifyCustomizationModuleChanged();
 }
 
 void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
     if (FModuleManager::Get().IsModuleLoaded("PropertyEditor")) {
         FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FMoneyTypeNumPair::StaticStruct()->GetFName());
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FItemIDNumPair::StaticStruct()->GetFName());
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FExpTypeNumPair::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FMoneyTypeContainer::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FItemIDContainer::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FExpTypeContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UQuestDetailNodeItem::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FEffectInfo::StaticStruct()->GetFName());
         PropertyModule.UnregisterCustomClassLayout(UCoreAbility::StaticClass()->GetFName());
         PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreGameplayEffectContainer::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FUnitIDContainer::StaticStruct()->GetFName());
 
         PropertyModule.NotifyCustomizationModuleChanged();
     }

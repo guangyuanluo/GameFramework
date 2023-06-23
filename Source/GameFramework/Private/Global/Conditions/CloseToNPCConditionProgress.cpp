@@ -65,7 +65,7 @@ void UCloseToNPCConditionProgress::OnCharacterMovementUpdate(float DeltaSeconds,
 		if (NPCSystem) {
 			auto CloseToNPCCondition = Cast<UCloseToNPCCondition>(Condition);
 			FNPCInfo NPCInfo;
-			if (NPCSystem->FindNPCInfo(CloseToNPCCondition->UnitID, NPCInfo) && NPCInfo.NPC) {
+			if (NPCSystem->FindNPCInfo(CloseToNPCCondition->UnitIDContainer.UnitID, NPCInfo) && NPCInfo.NPC) {
 				auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 				auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "PlayerHuntCondition.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	* boss id
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int UnitId;
+	FUnitIDContainer UnitIDContainer;
 
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
 	int MasterId;

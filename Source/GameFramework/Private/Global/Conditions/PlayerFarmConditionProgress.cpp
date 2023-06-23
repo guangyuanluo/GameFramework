@@ -38,7 +38,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandl
 void UPlayerFarmConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UActorDiedEvent* ActorDiedEvent = (UActorDiedEvent*)HandleEvent;
 	UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)Condition;
-	if (FarmCondition->UnitId != ActorDiedEvent->DiedUnit->TemplateID) {
+	if (FarmCondition->UnitIDContainer.UnitID != ActorDiedEvent->DiedUnit->TemplateID) {
 		return;
 	}
 	auto KillPlayerState = UGameFrameworkUtils::GetEntityState(ActorDiedEvent->KillUnit);

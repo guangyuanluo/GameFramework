@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "AcquireNPCsCondition.generated.h"
 
 /**
@@ -19,5 +20,5 @@ public:
 	* @brief 占有NPC数组
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	TArray<int> UnitIDs;
+	TArray<FUnitIDContainer> UnitIDContainers;
 };

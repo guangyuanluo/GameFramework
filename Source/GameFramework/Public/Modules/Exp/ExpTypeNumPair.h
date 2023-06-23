@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/Exp/ExpTypeContainer.h"
 #include "ExpTypeNumPair.generated.h"
 
 /**
@@ -14,10 +15,10 @@ struct GAMEFRAMEWORK_API FExpTypeNumPair
 	GENERATED_USTRUCT_BODY()
 
 	/**
-	* 经验类型ID
+	* 经验类型
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Exp", meta = (DisplayName = "经验类型ID"))
-	int32 ExpType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Exp")
+	FExpTypeContainer ExpTypeContainer;
 
 	/**
 	* 经验数量

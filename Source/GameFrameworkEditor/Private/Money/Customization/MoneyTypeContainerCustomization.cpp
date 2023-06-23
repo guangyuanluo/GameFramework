@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MoneyTypeNumPairCustomization.h"
-#include "Modules/Money/MoneyTypeNumPair.h"
+#include "MoneyTypeContainerCustomization.h"
+#include "Modules/Money/MoneyTypeContainer.h"
 #include "IDetailChildrenBuilder.h"
 #include "DetailWidgetRow.h"
 #include "SRowTableRefBox.h"
 #include "Modules/Money/MoneySetting.h"
 
-TSharedRef<IPropertyTypeCustomization> FMoneyTypeNumPairCustomization::MakeInstance() {
+TSharedRef<IPropertyTypeCustomization> FMoneyTypeContainerCustomization::MakeInstance() {
     // Create the instance and returned a SharedRef
-    return MakeShareable(new FMoneyTypeNumPairCustomization());
+    return MakeShareable(new FMoneyTypeContainerCustomization());
 }
 
-void FMoneyTypeNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
+void FMoneyTypeContainerCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class FDetailWidgetRow& HeaderRow,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
     HeaderRow
@@ -28,7 +28,7 @@ void FMoneyTypeNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle>
 	];
 }
 
-void FMoneyTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
+void FMoneyTypeContainerCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class IDetailChildrenBuilder& StructBuilder,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
     const UMoneySetting* MoneySetting = GetDefault<UMoneySetting>();
@@ -38,18 +38,15 @@ void FMoneyTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandl
     }
 
     MoneyTypePropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FMoneyTypeNumPair, MoneyType));
+        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FMoneyTypeContainer, MoneyType));
 
-    TSharedPtr<IPropertyHandle> MoneyNumPropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FMoneyTypeNumPair, Num));
-
-    check(MoneyTypePropertyHandle.IsValid() && MoneyNumPropertyHandle.IsValid());
+    check(MoneyTypePropertyHandle.IsValid());
 
     int CurMoneyType;
     MoneyTypePropertyHandle->GetValue(CurMoneyType);
     
     TSharedPtr<SRowTableRefBox> TableRefBox = SNew(SRowTableRefBox, MoneyTypeDataTable, CurMoneyType);
-    TableRefBox->RowSelectChanged.BindSP(this, &FMoneyTypeNumPairCustomization::OnIDPropertyChange);
+    TableRefBox->RowSelectChanged.BindSP(this, &FMoneyTypeContainerCustomization::OnIDPropertyChange);
 
     StructBuilder.AddCustomRow(FText::FromString(TEXT("ExpTypeNum")))
 	[
@@ -69,26 +66,10 @@ void FMoneyTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandl
                 TableRefBox.ToSharedRef()
             ]
 		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-            SNew(SHorizontalBox)
-            + SHorizontalBox::Slot()
-            .FillWidth(0.35)
-            [
-                MoneyNumPropertyHandle->CreatePropertyNameWidget()
-            ]
-            + SHorizontalBox::Slot()
-            .FillWidth(0.65)
-            [
-                MoneyNumPropertyHandle->CreatePropertyValueWidget()
-            ]
-		]
-		
 	];
 }
 
-void FMoneyTypeNumPairCustomization::OnIDPropertyChange(int NewID) {
+void FMoneyTypeContainerCustomization::OnIDPropertyChange(int NewID) {
     if (MoneyTypePropertyHandle.IsValid()) {
         MoneyTypePropertyHandle->SetValue(NewID);
     }

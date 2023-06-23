@@ -10,6 +10,7 @@
 #include "SkillConfigTableRow.h"
 #include "SkillSetting.h"
 #include "CoreAbilitySystemComponent.h"
+#include "CoreCharacter.h"
 
 void UPlayerSkillReachLevelConditionProgress::PostProgressInitialize_Implementation() {
 

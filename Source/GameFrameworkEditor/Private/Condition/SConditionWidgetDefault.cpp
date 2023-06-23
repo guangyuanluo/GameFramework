@@ -2,10 +2,11 @@
 #include "Modules/Condition/CoreCondition.h"
 #include "PropertyEditorModule.h"
 
-void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot) {
-	SConditionWidget::Construct(SConditionWidget::FArguments(), InWidgetCondition);
+void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, SVerticalBox::FSlot* InParentSlot, int InChildIndex) {
+	SConditionWidget::Construct(SConditionWidget::FArguments(), InWidgetCondition, InChildIndex);
 
 	ParentSlot = InParentSlot;
+	ChildIndex = InChildIndex;
 
 	TSharedRef<SHorizontalBox> Panel = SNew(SHorizontalBox);
 
@@ -77,9 +78,13 @@ void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition
 	FDetailsViewArgs DetailsViewArgs;
 	DetailsViewArgs.bAllowSearch = false;
 	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+	DetailsViewArgs.bHideSelectionTip = true;
+	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
 	TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsView->SetObject(WidgetCondition);
 	DetailsView->OnFinishedChangingProperties().AddSP(this, &SConditionWidgetDefault::OnPropertyChanged);
+	DetailsView->SetIsPropertyVisibleDelegate(FIsPropertyVisible::CreateRaw(this, &SConditionWidgetDefault::GetIsPropertyVisible));
+	DetailsView->SetObject(WidgetCondition);
 
 	(*WidgetSlot)[
 		DetailsView.ToSharedRef()
@@ -88,8 +93,6 @@ void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition
 
 FReply SConditionWidgetDefault::RemoveClick() {
 	SConditionWidget::OnConditionWidgetPreremove.ExecuteIfBound(WidgetCondition);
-
-	ParentSlot->DetachWidget();
 
 	return FReply::Handled();
 }
@@ -100,4 +103,19 @@ void SConditionWidgetDefault::NotifyConditionChange() {
 
 void SConditionWidgetDefault::OnPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent) {
 	NotifyConditionChange();
+}
+
+bool SConditionWidgetDefault::GetIsPropertyVisible(const FPropertyAndParent& PropertyAndParent) const {
+	if (ChildIndex == 0) {
+		if (PropertyAndParent.Property.GetFName() == GET_MEMBER_NAME_CHECKED(UCoreCondition, Relation)) {
+			return false;
+		}
+		else if (PropertyAndParent.Property.GetFName() == GET_MEMBER_NAME_CHECKED(UCoreCondition, bNot)) {
+			return false;
+		}
+		return true;
+	}
+	else {
+		return true;
+	}
 }

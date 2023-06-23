@@ -17,7 +17,7 @@ public:
 	/**
 	* id
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Quest")
 	FGuid ID;
 
 	UPROPERTY()

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "TalkToCondition.generated.h"
 
 /**
@@ -19,5 +20,5 @@ public:
 	* @brief 与哪个npc对话
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int UnitID;
+	FUnitIDContainer UnitIDContainer;
 };

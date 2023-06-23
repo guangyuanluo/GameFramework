@@ -23,7 +23,7 @@ public:
 
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition);
+	void Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, int ChildIndex);
 
 	UCoreCondition* GetWidgetCondition() { return WidgetCondition; }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "PlayerIntimacyRequestCondition.generated.h"
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
@@ -25,7 +26,7 @@ public:
 	* npcid
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	int32 NPCId;
+	FUnitIDContainer NPCIDContainer;
 
 	/**
 	* 好感度需求

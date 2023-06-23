@@ -94,7 +94,7 @@ bool UStoreSystem::BuyGoods(ACoreCharacter* Character, UStoreComponent* StoreCom
             for (auto Item : GoodsRow->ContainItems) {
                 FAddItemInfo AddItem;
                 AddItem.BackpackType = FBackpackTypeConfigTableRow::BackpackTypeMax;
-                AddItem.ItemId = Item.ItemID;
+                AddItem.ItemId = Item.ItemIDContainer.ItemID;
                 AddItem.Count = Item.ItemNum;
                 AddItems.Add(AddItem);
             }

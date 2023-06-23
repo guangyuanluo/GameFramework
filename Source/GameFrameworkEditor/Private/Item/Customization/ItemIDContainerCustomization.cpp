@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemIDNumPairCustomization.h"
-#include "Modules/Item/ItemIDNumPair.h"
+#include "ItemIDContainerCustomization.h"
+#include "Modules/Item/ItemIDContainer.h"
 #include "IDetailChildrenBuilder.h"
 #include "DetailWidgetRow.h"
 #include "SRowTableRefBox.h"
 #include "Modules/Item/ItemSetting.h"
 
-TSharedRef<IPropertyTypeCustomization> FItemIDNumPairCustomization::MakeInstance() {
+TSharedRef<IPropertyTypeCustomization> FItemIDContainerCustomization::MakeInstance() {
     // Create the instance and returned a SharedRef
-    return MakeShareable(new FItemIDNumPairCustomization());
+    return MakeShareable(new FItemIDContainerCustomization());
 }
 
-void FItemIDNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
+void FItemIDContainerCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class FDetailWidgetRow& HeaderRow,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
     HeaderRow
@@ -28,7 +28,7 @@ void FItemIDNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 	];
 }
 
-void FItemIDNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
+void FItemIDContainerCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class IDetailChildrenBuilder& StructBuilder,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
@@ -38,20 +38,17 @@ void FItemIDNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
     }
 
     ItemIDPropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FItemIDNumPair, ItemID));
+        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FItemIDContainer, ItemID));
 
-    TSharedPtr<IPropertyHandle> ItemNumPropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FItemIDNumPair, ItemNum));
-
-    check(ItemIDPropertyHandle.IsValid() && ItemNumPropertyHandle.IsValid());
+    check(ItemIDPropertyHandle.IsValid());
 
     int CurItemID;
     ItemIDPropertyHandle->GetValue(CurItemID);
     
     TSharedPtr<SRowTableRefBox> TableRefBox = SNew(SRowTableRefBox, ItemDataTable, CurItemID);
-    TableRefBox->RowSelectChanged.BindSP(this, &FItemIDNumPairCustomization::OnIDPropertyChange);
+    TableRefBox->RowSelectChanged.BindSP(this, &FItemIDContainerCustomization::OnIDPropertyChange);
 
-    StructBuilder.AddCustomRow(FText::FromString(TEXT("ExpTypeNum")))
+    StructBuilder.AddCustomRow(FText::FromString(TEXT("ItemID")))
 	[
 		SNew(SVerticalBox)
         + SVerticalBox::Slot()
@@ -69,26 +66,10 @@ void FItemIDNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> 
                 TableRefBox.ToSharedRef()
             ]
 		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-            SNew(SHorizontalBox)
-            + SHorizontalBox::Slot()
-            .FillWidth(0.35)
-            [
-                ItemNumPropertyHandle->CreatePropertyNameWidget()
-            ]
-            + SHorizontalBox::Slot()
-            .FillWidth(0.65)
-            [
-                ItemNumPropertyHandle->CreatePropertyValueWidget()
-            ]
-		]
-		
 	];
 }
 
-void FItemIDNumPairCustomization::OnIDPropertyChange(int NewID) {
+void FItemIDContainerCustomization::OnIDPropertyChange(int NewID) {
     if (ItemIDPropertyHandle.IsValid()) {
         ItemIDPropertyHandle->SetValue(NewID);
     }

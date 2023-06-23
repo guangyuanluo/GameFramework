@@ -31,20 +31,20 @@ void FCoreConditionListCustomization::CustomizeHeader(TSharedRef<IPropertyHandle
 void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class IDetailChildrenBuilder& StructBuilder,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
-    //Ìõ¼þ
-	ConditionProperty =
+    //æ¡ä»¶
+	ConditionsProperty =
 		StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FCoreConditionList, Conditions));
 
 	TArray<UPackage*> OutPackages;
-	ConditionProperty->GetOuterPackages(OutPackages);
+	ConditionsProperty->GetOuterPackages(OutPackages);
 	
 	TSharedPtr<SConditionEditWidget> ConditionEditWidget = SNew(SConditionEditWidget, OutPackages[0])
 		.OnConditionChange_Raw(this, &FCoreConditionListCustomization::OnAssetChange);
 
-	void* ConditionPropertyValuePtr;
-	ConditionProperty->GetValueData(ConditionPropertyValuePtr);
-	TArray<UCoreCondition*>* ConditionPtr = (TArray<UCoreCondition*>*)ConditionPropertyValuePtr;
-	ConditionEditWidget->RefreshConditionPtr(ConditionPtr);
+	void* ConditionsPropertyValuePtr;
+	ConditionsProperty->GetValueData(ConditionsPropertyValuePtr);
+	TArray<UCoreCondition*>* ConditionsPtr = (TArray<UCoreCondition*>*)ConditionsPropertyValuePtr;
+	ConditionEditWidget->RefreshConditionPtr(ConditionsPtr);
 
 	StructBuilder.AddCustomRow(FText::FromString(TEXT("ConditionList")))
 	[
@@ -61,7 +61,7 @@ void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHand
             + SHorizontalBox::Slot()
             .FillWidth(0.35)
             [
-				ConditionProperty->CreatePropertyNameWidget()
+				ConditionsProperty->CreatePropertyNameWidget()
             ]
 			+ SHorizontalBox::Slot()
 			.FillWidth(0.65)
@@ -74,7 +74,7 @@ void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHand
 
 void FCoreConditionListCustomization::OnAssetChange() {
 	TArray<UPackage*> OutPackages;
-	ConditionProperty->GetOuterPackages(OutPackages);
+	ConditionsProperty->GetOuterPackages(OutPackages);
 	for (auto Package : OutPackages) {
 		Package->MarkPackageDirty();
 	}

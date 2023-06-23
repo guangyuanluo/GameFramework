@@ -96,39 +96,31 @@ void SConditionEditWidget::RefreshConditionPtr(TArray<class UCoreCondition*>* In
 void SConditionEditWidget::GenerateConditionWidget() {
 	if (ConditionPtr) {
 		bool HaveInvalidData = false;
+
 		for (int Index = ConditionPtr->Num() - 1; Index >= 0; --Index) {
 			auto Condition = (*ConditionPtr)[Index];
-			if (Condition) {
-#if ENGINE_MAJOR_VERSION > 4
-				auto ConditionSlot = ConditionPage->AddSlot();
-#else
-				auto& ConditionSlot = ConditionPage->AddSlot();
-#endif
-
-				TSharedPtr<class SConditionWidget> ConditionWidget;
-				auto Factory = ConditionWidgetManager::GetFactoryByWidgetName(Condition->GetClass());
-				if (Factory) {
-#if ENGINE_MAJOR_VERSION > 4
-					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, ConditionSlot.GetSlot());
-#else
-					ConditionWidget = Factory->CreateConditionWidget(Outer, Condition, &ConditionSlot);
-#endif
-				}
-				else {
-					ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
-				}
-				ConditionSlot
-					.AutoHeight()
-					[
-						ConditionWidget.ToSharedRef()
-					];
-				ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
-				ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
-			}
-			else {
+			if (!Condition) {
 				ConditionPtr->RemoveAt(Index);
 				HaveInvalidData = true;
 			}
+		}
+
+		for (int Index = 0; Index < ConditionPtr->Num(); ++Index) {
+			auto Condition = (*ConditionPtr)[Index];
+#if ENGINE_MAJOR_VERSION > 4
+			auto ConditionSlot = ConditionPage->AddSlot();
+#else
+			auto& ConditionSlot = ConditionPage->AddSlot();
+#endif
+			
+			TSharedPtr<class SConditionWidget> ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot(), Index);
+			ConditionSlot
+				.AutoHeight()
+				[
+					ConditionWidget.ToSharedRef()
+				];
+			ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
+			ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
 		}
 		if (HaveInvalidData) {
 			OnConditionChange.ExecuteIfBound();
@@ -150,49 +142,30 @@ void SConditionEditWidget::ConditionNameComboBox_OnSelectionChanged(TSharedPtr<F
 
 FReply SConditionEditWidget::AddConditionButtonClicked() {
 	if (SelectConditionName.IsValid()) {
-
-		TSharedPtr<class SConditionWidget> ConditionWidget;
-#if ENGINE_MAJOR_VERSION > 4
-		auto ConditionSlot = ConditionPage->AddSlot();
-		auto ConditionFactory = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName);
-		if (ConditionFactory) {
-			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, ConditionSlot.GetSlot());
-		}
-#else
-		auto& ConditionSlot = ConditionPage->AddSlot();
-		auto ConditionFactory = ConditionWidgetManager::GetFactoryByWidgetName(*SelectConditionName);
-		if (ConditionFactory) {
-			ConditionWidget = ConditionFactory->CreateConditionWidget(Outer, nullptr, &ConditionSlot);
-		}
-#endif
-		if (!ConditionWidget.IsValid()) {
-			auto FindConditionClassPtr = ConditionNameMap.Find(*SelectConditionName);
-			if (FindConditionClassPtr) {
-				auto Condition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
-				ConditionWidget = SNew(SConditionWidgetDefault, Condition, ConditionSlot.GetSlot());
-			}
-		}
-
-		if (ConditionWidget.IsValid()) {
-			ConditionSlot
-				.AutoHeight()
-				.VAlign(VAlign_Center)
-				[
-					ConditionWidget.ToSharedRef()
-				];
-
-			ConditionWidget->OnConditionWidgetChange.BindSP(this, &SConditionEditWidget::OnConditionWidgetChange);
-			ConditionWidget->OnConditionWidgetPreremove.BindSP(this, &SConditionEditWidget::OnConditionWidgetRemove);
-
-			ConditionPtr->Add(ConditionWidget->GetWidgetCondition());
-
-			OnConditionChange.ExecuteIfBound();
-
-			return FReply::Handled();
-		}
-		else {
+		auto FindConditionClassPtr = ConditionNameMap.Find(*SelectConditionName);
+		if (!FindConditionClassPtr) {
 			return FReply::Unhandled();
 		}
+		bool CanCreate = true;
+		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
+		if (ConditionFactory) {
+			CanCreate = ConditionFactory->CanCreateCondition();
+		}
+		if (!CanCreate) {
+			return FReply::Unhandled();
+		}
+		auto NewCondition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
+		if (ConditionFactory) {
+			ConditionFactory->PostInitConditionCreated(NewCondition);
+		}
+		ConditionPtr->Add(NewCondition);
+
+		ConditionPage->ClearChildren();
+		GenerateConditionWidget();
+
+		OnConditionChange.ExecuteIfBound();
+
+		return FReply::Handled();
 	}
 	else {
 		FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
@@ -216,6 +189,9 @@ void SConditionEditWidget::OnConditionWidgetChange(class UCoreCondition* CoreCon
 
 void SConditionEditWidget::OnConditionWidgetRemove(class UCoreCondition* CoreCondition) {
 	ConditionPtr->Remove(CoreCondition);
+
+	ConditionPage->ClearChildren();
+	GenerateConditionWidget();
 
 	OnConditionChange.ExecuteIfBound();
 }

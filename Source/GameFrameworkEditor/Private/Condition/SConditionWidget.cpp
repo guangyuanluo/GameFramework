@@ -4,6 +4,6 @@
 
 SConditionWidget::~SConditionWidget() {}
 
-void SConditionWidget::Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition) {
+void SConditionWidget::Construct(const FArguments& InArgs, UCoreCondition* InWidgetCondition, int ChildIndex) {
     WidgetCondition = InWidgetCondition;
 }

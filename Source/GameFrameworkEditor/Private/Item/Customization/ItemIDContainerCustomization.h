@@ -4,7 +4,7 @@
 
 #include "PropertyEditor/Public/IPropertyTypeCustomization.h"
 
-class FMoneyTypeNumPairCustomization : public IPropertyTypeCustomization {
+class FItemIDContainerCustomization : public IPropertyTypeCustomization {
 public:
     /**
      * It is just a convenient helpers which will be used
@@ -24,7 +24,7 @@ public:
     // END IPropertyTypeCustomization interface
 
 private:
-    TSharedPtr<IPropertyHandle> MoneyTypePropertyHandle;
+    TSharedPtr<IPropertyHandle> ItemIDPropertyHandle;
 
     void OnIDPropertyChange(int NewID);
 };

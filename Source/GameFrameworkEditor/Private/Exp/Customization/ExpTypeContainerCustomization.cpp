@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ExpTypeNumPairCustomization.h"
-#include "Modules/Exp/ExpTypeNumPair.h"
+#include "ExpTypeContainerCustomization.h"
+#include "Modules/Exp/ExpTypeContainer.h"
 #include "IDetailChildrenBuilder.h"
 #include "DetailWidgetRow.h"
 #include "SRowTableRefBox.h"
 #include "Modules/Exp/ExpSetting.h"
 
-TSharedRef<IPropertyTypeCustomization> FExpTypeNumPairCustomization::MakeInstance() {
+TSharedRef<IPropertyTypeCustomization> FExpTypeContainerCustomization::MakeInstance() {
     // Create the instance and returned a SharedRef
-    return MakeShareable(new FExpTypeNumPairCustomization());
+    return MakeShareable(new FExpTypeContainerCustomization());
 }
 
-void FExpTypeNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
+void FExpTypeContainerCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class FDetailWidgetRow& HeaderRow,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
     HeaderRow
@@ -28,7 +28,7 @@ void FExpTypeNumPairCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> S
 	];
 }
 
-void FExpTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
+void FExpTypeContainerCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle,
     class IDetailChildrenBuilder& StructBuilder,
     IPropertyTypeCustomizationUtils& StructCustomizationUtils) {
     const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
@@ -38,18 +38,15 @@ void FExpTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle>
     }
 
     ExpTypePropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FExpTypeNumPair, ExpType));
+        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FExpTypeContainer, ExpType));
 
-    TSharedPtr<IPropertyHandle> ExpNumPropertyHandle =
-        StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FExpTypeNumPair, ExpNum));
-
-    check(ExpTypePropertyHandle.IsValid() && ExpNumPropertyHandle.IsValid());
+    check(ExpTypePropertyHandle.IsValid());
 
     int CurExpType;
     ExpTypePropertyHandle->GetValue(CurExpType);
     
     TSharedPtr<SRowTableRefBox> TableRefBox = SNew(SRowTableRefBox, ExpTypeDataTable, CurExpType);
-    TableRefBox->RowSelectChanged.BindSP(this, &FExpTypeNumPairCustomization::OnIDPropertyChange);
+    TableRefBox->RowSelectChanged.BindSP(this, &FExpTypeContainerCustomization::OnIDPropertyChange);
 
     StructBuilder.AddCustomRow(FText::FromString(TEXT("ExpTypeNum")))
 	[
@@ -69,26 +66,10 @@ void FExpTypeNumPairCustomization::CustomizeChildren(TSharedRef<IPropertyHandle>
                 TableRefBox.ToSharedRef()
             ]
 		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-            SNew(SHorizontalBox)
-            + SHorizontalBox::Slot()
-            .FillWidth(0.35)
-            [
-                ExpNumPropertyHandle->CreatePropertyNameWidget()
-            ]
-            + SHorizontalBox::Slot()
-            .FillWidth(0.65)
-            [
-                ExpNumPropertyHandle->CreatePropertyValueWidget()
-            ]
-		]
-		
 	];
 }
 
-void FExpTypeNumPairCustomization::OnIDPropertyChange(int NewID) {
+void FExpTypeContainerCustomization::OnIDPropertyChange(int NewID) {
     if (ExpTypePropertyHandle.IsValid()) {
         ExpTypePropertyHandle->SetValue(NewID);
     }

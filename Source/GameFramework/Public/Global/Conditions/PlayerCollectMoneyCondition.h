@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Money/MoneyTypeContainer.h"
 #include "PlayerCollectMoneyCondition.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	* 金币类型
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	uint8 MoneyType;
+	FMoneyTypeContainer MoneyTypeContainer;
 
 	/**
 	* 金币数量

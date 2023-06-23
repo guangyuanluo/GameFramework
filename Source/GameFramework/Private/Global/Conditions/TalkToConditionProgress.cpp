@@ -61,7 +61,7 @@ void UTalkToConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameI
 	}
 	if (UTalkToNPCEvent* TalkToEvent = Cast<UTalkToNPCEvent>(HandleEvent)) {
 		auto TalkToCondition = Cast<UTalkToCondition>(Condition);
-		if (TalkToCondition->UnitID == TalkToEvent->NPCID) {
+		if (TalkToCondition->UnitIDContainer.UnitID == TalkToEvent->NPCID) {
 			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 			auto ConditionCharacter = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 			if (ConditionCharacter->GetEntityID() == TalkToEvent->EntityId) {

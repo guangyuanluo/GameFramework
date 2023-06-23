@@ -17,7 +17,7 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	/**
 	* id
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务ID"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Quest", meta = (DisplayName = "任务ID"))
 	FGuid ID;
 
 	/**
