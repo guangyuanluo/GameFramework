@@ -94,8 +94,6 @@ void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition
 FReply SConditionWidgetDefault::RemoveClick() {
 	SConditionWidget::OnConditionWidgetPreremove.ExecuteIfBound(WidgetCondition);
 
-	ParentSlot->DetachWidget();
-
 	return FReply::Handled();
 }
 
