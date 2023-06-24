@@ -10,7 +10,9 @@
 #include "Net/UnrealNetwork.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerQuestFinishConditionProgress::PostProgressInitialize_Implementation() {
+void UPlayerQuestFinishConditionProgress::OnStart_Implementation() {
+	Super::OnStart_Implementation();
+
 	HaveComplete = false;
 }
 
@@ -45,10 +47,6 @@ void UPlayerQuestFinishConditionProgress::OnEvent_Implementation(UCoreGameInstan
 
 bool UPlayerQuestFinishConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
-}
-
-void UPlayerQuestFinishConditionProgress::HandleComplete_Implementation() {
-
 }
 
 void UPlayerQuestFinishConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

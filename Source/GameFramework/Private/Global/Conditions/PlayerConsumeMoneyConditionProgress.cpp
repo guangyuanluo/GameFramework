@@ -9,10 +9,6 @@
 #include "Net/UnrealNetwork.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerConsumeMoneyConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
 		return {};
@@ -46,10 +42,6 @@ void UPlayerConsumeMoneyConditionProgress::OnEvent_Implementation(UCoreGameInsta
 bool UPlayerConsumeMoneyConditionProgress::IsComplete_Implementation() {
 	UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
 	return CurrentCount >= ConsumeMoneyCondition->MoneyCount;
-}
-
-void UPlayerConsumeMoneyConditionProgress::HandleComplete_Implementation() {
-
 }
 
 void UPlayerConsumeMoneyConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

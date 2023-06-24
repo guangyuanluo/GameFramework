@@ -7,16 +7,14 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UArrivingAtConditionProgress::PostProgressInitialize_Implementation() {
+void UArrivingAtConditionProgress::OnStart_Implementation() {
+	Super::OnStart_Implementation();
+
 	HaveComplete = false;
 }
 
 bool UArrivingAtConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
-}
-
-void UArrivingAtConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandleEventTypes_Implementation() {

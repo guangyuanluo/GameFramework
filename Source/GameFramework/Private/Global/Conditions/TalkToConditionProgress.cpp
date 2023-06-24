@@ -12,10 +12,6 @@
 #include "ConditionSystem.h"
 #include "ExecutingQuest.h"
 
-void UTalkToConditionProgress::PostProgressInitialize_Implementation() {
-	
-}
-
 bool UTalkToConditionProgress::IsQuestOtherProgressesComplete() {
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetGameInstance());
 	if (GameInstance) {
@@ -38,10 +34,6 @@ bool UTalkToConditionProgress::IsQuestOtherProgressesComplete() {
 
 bool UTalkToConditionProgress::IsComplete_Implementation() {
 	return HaveTalk;
-}
-
-void UTalkToConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEventTypes_Implementation() {

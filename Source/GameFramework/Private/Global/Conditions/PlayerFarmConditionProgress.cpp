@@ -11,17 +11,9 @@
 #include "Net/UnrealNetwork.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerFarmConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 bool UPlayerFarmConditionProgress::IsComplete_Implementation() {
 	UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)Condition;
 	return FinishCount >= FarmCondition->Count;
-}
-
-void UPlayerFarmConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandleEventTypes_Implementation() {

@@ -10,7 +10,9 @@
 #include "GameSystemManager.h"
 #include "ItemOrder.h"
 
-void UPlayerDeductItemConditionProgress::PostProgressInitialize_Implementation() {
+void UPlayerDeductItemConditionProgress::OnStart_Implementation() {
+	Super::OnStart_Implementation();
+
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (!GameInstance) {
 		return;
@@ -30,10 +32,6 @@ void UPlayerDeductItemConditionProgress::PostProgressInitialize_Implementation()
 
 bool UPlayerDeductItemConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
-}
-
-void UPlayerDeductItemConditionProgress::HandleComplete_Implementation() {
-	
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductItemConditionProgress::GetHandleEventTypes_Implementation() {

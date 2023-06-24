@@ -45,34 +45,22 @@ public:
 	FOnConditionProgressPostNetReceive OnConditionProgressPostNetReceive;
 
 	/**
-	* 初始化完成
+	* 生命周期开始
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void PostProgressInitialize();
+	void OnStart();
 
 	/**
-	* 开始监听条件
+	* 生命周期结束
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void StartFollow();
-
-	/**
-	* 停止监听条件
-	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void StopFollow();
+	void OnEnd();
 
 	/*
-	* @brief 是否完成
+	* 是否完成
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ConditionSystem")
 	bool IsComplete();
-
-	/**
-	* @brief 条件完成后的处理
-	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void HandleComplete();
 
 	/**
 	* 刷新满足性
@@ -86,13 +74,19 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
 	void OnSatisfyChange();
 
+	/**
+	* 获取进度对象，带孩子
+	*/
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
+	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses);
+
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
 	virtual void PostNetReceive() override;
 
 private:
 	UPROPERTY(Transient)
-	bool LastSatisfy = false;
+	bool bLastSatisfy = false;
 
 	UFUNCTION()
 	void OnRep_Condition();

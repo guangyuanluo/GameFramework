@@ -16,7 +16,7 @@ class GAMEFRAMEWORK_API UCoreConditionProgress_Event : public UCoreConditionProg
 public:
 	GENERATED_BODY()
 
-	virtual void StartFollow_Implementation() override;
-	virtual void StopFollow_Implementation() override;
+	virtual void OnStart_Implementation() override;
+	virtual void OnEnd_Implementation() override;
 	virtual void OnSatisfyChange_Implementation() override;
 };

@@ -19,9 +19,9 @@ void UConditionSystem::FollowConditions(const TArray<UCoreConditionProgress*>& P
 	auto ObserverObj = Observer.GetObject();
 	check(!FollowMap.Contains(ObserverObj));
 
-	UFollowContent* FollowContent = NewObject<UFollowContent>();
-	FollowContent->Progresses = Progresses;
-	FollowContent->Observer = Observer;
+	FConditionFollowContent FollowContent;
+	FollowContent.Progresses = Progresses;
+	FollowContent.Observer = Observer;
 
 	FollowMap.Add(ObserverObj, FollowContent);
 
@@ -29,11 +29,11 @@ void UConditionSystem::FollowConditions(const TArray<UCoreConditionProgress*>& P
 		bool bComplete = Progresses[Index]->IsComplete();
 
 		FProgressReserveInfo ProgressReserveInfo;;
-		ProgressReserveInfo.ProgressFollowContent = FollowContent;
+		ProgressReserveInfo.ProgressFollowContent = &FollowMap[ObserverObj];
 		ProgressReserveInfo.LastComplete = bComplete;
 		ProgressReserveMap.Add(Progresses[Index], ProgressReserveInfo);
 
-		Progresses[Index]->StartFollow();
+		Progresses[Index]->OnStart();
 
 		//增加监听
 		Progresses[Index]->OnConditionProgressSatisfyUpdate.AddDynamic(this, &UConditionSystem::OnConditionSatisfyChange);
@@ -46,15 +46,15 @@ void UConditionSystem::FollowConditions(const TArray<UCoreConditionProgress*>& P
 
 void UConditionSystem::UnfollowConditions(TScriptInterface<ICoreConditionObserver> Observer) {
 	auto ObserverObj = Observer.GetObject();
-	if (FollowMap.Contains(ObserverObj)) {
-		UFollowContent* FollowContent = FollowMap[ObserverObj];
-		FollowMap.Remove(ObserverObj);
-		for (int Index = 0; Index < FollowContent->Progresses.Num(); ++Index) {
-			FollowContent->Progresses[Index]->StopFollow();
+	auto FindFollowPtr = FollowMap.Find(ObserverObj);
+	if (FindFollowPtr) {
+		for (int Index = 0; Index < FindFollowPtr->Progresses.Num(); ++Index) {
+			FindFollowPtr->Progresses[Index]->OnEnd();
 			//移除监听
-			FollowContent->Progresses[Index]->OnConditionProgressSatisfyUpdate.RemoveDynamic(this, &UConditionSystem::OnConditionSatisfyChange);
-			ProgressReserveMap.Remove(FollowContent->Progresses[Index]);
+			FindFollowPtr->Progresses[Index]->OnConditionProgressSatisfyUpdate.RemoveDynamic(this, &UConditionSystem::OnConditionSatisfyChange);
+			ProgressReserveMap.Remove(FindFollowPtr->Progresses[Index]);
 		}
+		FollowMap.Remove(ObserverObj);
 	}
 }
 
@@ -71,23 +71,23 @@ void UConditionSystem::OnConditionSatisfyChange(UCoreConditionProgress* Progress
 	if (FindReserveInfoPtr && FindReserveInfoPtr->LastComplete != NewSatisfy) {
 		//刷新满足性
 		FindReserveInfoPtr->LastComplete = NewSatisfy;
-		if (IsFollowContentSatisfy(FindReserveInfoPtr->ProgressFollowContent)) {
+		if (IsFollowContentSatisfy(*FindReserveInfoPtr->ProgressFollowContent)) {
 			auto Observer = FindReserveInfoPtr->ProgressFollowContent->Observer;
 			ICoreConditionObserver::Execute_OnSatisfyConditions(Observer.GetObject(), FindReserveInfoPtr->ProgressFollowContent->Progresses);
 		}
 	}
 }
 
-bool UConditionSystem::IsFollowContentSatisfy(UFollowContent* FollowContentObj) {
+bool UConditionSystem::IsFollowContentSatisfy(const FConditionFollowContent& FollowContent) {
 	bool HaveComplete = true;
 
 	TArray<BooleanAlgebraEnum> LoopGroupRelations;
-	for (int ProgressIndex = 0; ProgressIndex < FollowContentObj->Progresses.Num(); ++ProgressIndex) {
-		LoopGroupRelations.Add(FollowContentObj->Progresses[ProgressIndex]->Condition->Relation);
+	for (int ProgressIndex = 0; ProgressIndex < FollowContent.Progresses.Num(); ++ProgressIndex) {
+		LoopGroupRelations.Add(FollowContent.Progresses[ProgressIndex]->Condition->Relation);
 	}
 	FBooleanAlgebraNodeInfo GroupExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopGroupRelations);
-	TFunction<bool(int)> CheckFunction = [this, FollowContentObj](int ProgressIndex) {
-		auto Progress = FollowContentObj->Progresses[ProgressIndex];
+	TFunction<bool(int)> CheckFunction = [this, &FollowContent](int ProgressIndex) {
+		auto Progress = FollowContent.Progresses[ProgressIndex];
 		auto Condition = Progress->Condition;
 
 		bool bLastSatisfy = ProgressReserveMap[Progress].LastComplete;

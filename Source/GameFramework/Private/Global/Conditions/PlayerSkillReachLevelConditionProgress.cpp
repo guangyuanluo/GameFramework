@@ -12,10 +12,6 @@
 #include "CoreAbilitySystemComponent.h"
 #include "CoreCharacter.h"
 
-void UPlayerSkillReachLevelConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation() {
 	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
 
@@ -34,10 +30,6 @@ bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation() {
 		return false;
 	}
 	return ActiveAbilities[0]->GetAbilityLevel() >= PlayerSkillReachLevelCondition->Skill.SkillLevel;
-}
-
-void UPlayerSkillReachLevelConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetHandleEventTypes_Implementation() {

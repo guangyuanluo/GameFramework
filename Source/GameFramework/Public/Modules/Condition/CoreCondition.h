@@ -37,5 +37,5 @@ public:
 	* 生成基于该条件的条件进度
 	*/
     UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-    class UCoreConditionProgress* GenerateConditionProgress(AActor* ProgressOwner);
+    virtual class UCoreConditionProgress* GenerateConditionProgress(AActor* ProgressOwner);
 };

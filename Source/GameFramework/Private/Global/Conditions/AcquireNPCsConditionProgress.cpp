@@ -13,8 +13,8 @@
 #include "CoreGameInstance.h"
 #include "GameSystemManager.h"
 
-void UAcquireNPCsConditionProgress::PostProgressInitialize_Implementation() {
-	Super::PostProgressInitialize_Implementation();
+void UAcquireNPCsConditionProgress::OnStart_Implementation() {
+	Super::OnStart_Implementation();
 
 	UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
@@ -31,11 +31,9 @@ void UAcquireNPCsConditionProgress::PostProgressInitialize_Implementation() {
 	}
 }
 
-bool UAcquireNPCsConditionProgress::IsComplete_Implementation() {
-	return HaveAcquire;
-}
+void UAcquireNPCsConditionProgress::OnEnd_Implementation() {
+	Super::OnEnd_Implementation();
 
-void UAcquireNPCsConditionProgress::HandleComplete_Implementation() {
 	UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (GameInstance) {
@@ -46,6 +44,10 @@ void UAcquireNPCsConditionProgress::HandleComplete_Implementation() {
 			NPCSystem->ReleaseNPCByContainer(ConditionPlayerState, AcquireNPCsCondition->UnitIDContainers);
 		}
 	}
+}
+
+bool UAcquireNPCsConditionProgress::IsComplete_Implementation() {
+	return HaveAcquire;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetHandleEventTypes_Implementation() {

@@ -10,7 +10,9 @@
 #include "GameSystemManager.h"
 #include "MoneyOrder.h"
 
-void UPlayerDeductMoneyConditionProgress::PostProgressInitialize_Implementation() {
+void UPlayerDeductMoneyConditionProgress::OnStart_Implementation() {
+	Super::OnStart_Implementation();
+
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (!GameInstance) {
 		return;
@@ -31,10 +33,6 @@ void UPlayerDeductMoneyConditionProgress::PostProgressInitialize_Implementation(
 
 bool UPlayerDeductMoneyConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
-}
-
-void UPlayerDeductMoneyConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::GetHandleEventTypes_Implementation() {

@@ -13,7 +13,9 @@
 #include "Components/CapsuleComponent.h"
 #include "CorePlayerController.h"
 
-void UCloseToNPCConditionProgress::PostProgressInitialize_Implementation() {
+void UCloseToNPCConditionProgress::OnStart_Implementation() {
+	Super::OnStart_Implementation();
+
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 	auto PlayerController = Cast<ACorePlayerController>(Character->GetController());
@@ -26,7 +28,9 @@ bool UCloseToNPCConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
 }
 
-void UCloseToNPCConditionProgress::HandleComplete_Implementation() {
+void UCloseToNPCConditionProgress::OnEnd_Implementation() {
+	Super::OnEnd_Implementation();
+
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 

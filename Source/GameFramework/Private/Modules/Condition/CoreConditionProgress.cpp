@@ -4,37 +4,33 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UCoreConditionProgress::PostProgressInitialize_Implementation() {
+void UCoreConditionProgress::OnStart_Implementation() {
 
 }
 
-void UCoreConditionProgress::StartFollow_Implementation() {
-
-}
-
-void UCoreConditionProgress::StopFollow_Implementation() {
-
+void UCoreConditionProgress::OnEnd_Implementation() {
+    bLastSatisfy = false;
 }
 
 bool UCoreConditionProgress::IsComplete_Implementation() {
     return false;
 }
 
-void UCoreConditionProgress::HandleComplete_Implementation() {
-
-}
-
 void UCoreConditionProgress::RefreshSatisfy() {
     bool NewSatisfy = IsComplete();
-    if (LastSatisfy != NewSatisfy) {
-        LastSatisfy = NewSatisfy;
+    if (bLastSatisfy != NewSatisfy) {
+        bLastSatisfy = NewSatisfy;
         OnSatisfyChange();
-        OnConditionProgressSatisfyUpdate.Broadcast(this, LastSatisfy);
+        OnConditionProgressSatisfyUpdate.Broadcast(this, bLastSatisfy);
     }
 }
 
 void UCoreConditionProgress::OnSatisfyChange_Implementation() {
 
+}
+
+void UCoreConditionProgress::GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) {
+    OutProgresses.Add(this);
 }
 
 void UCoreConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -51,10 +47,10 @@ bool UCoreConditionProgress::IsSupportedForNetworking() const {
     return true;
 }
 
-void UCoreConditionProgress::OnRep_Condition() {
-    
-}
-
 void UCoreConditionProgress::PostNetReceive() {
     OnConditionProgressPostNetReceive.Broadcast(this);
+}
+
+void UCoreConditionProgress::OnRep_Condition() {
+    
 }

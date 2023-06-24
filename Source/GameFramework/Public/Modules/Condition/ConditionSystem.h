@@ -12,8 +12,8 @@ class UCoreConditionProgress;
 class UCoreGameInstance;
 class UGameEventBase;
 
-UCLASS()
-class UFollowContent : public UObject {
+USTRUCT()
+struct FConditionFollowContent {
 	GENERATED_BODY()
 
 public:
@@ -29,10 +29,7 @@ struct FProgressReserveInfo {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
-	UFollowContent* ProgressFollowContent;
-
-	UPROPERTY()
+	FConditionFollowContent* ProgressFollowContent;
 	bool LastComplete;
 };
 
@@ -70,7 +67,7 @@ public:
 
 private:
 	UPROPERTY()
-	TMap<UObject*, UFollowContent*> FollowMap;
+	TMap<UObject*, FConditionFollowContent> FollowMap;
 	UPROPERTY()
 	TMap<UCoreConditionProgress*, FProgressReserveInfo> ProgressReserveMap;
 
@@ -83,7 +80,7 @@ private:
 	/**
 	* 进度是否满足
 	*/
-	bool IsFollowContentSatisfy(UFollowContent* FollowContentObj);
+	bool IsFollowContentSatisfy(const FConditionFollowContent& FollowContent);
 };
 
 /****************Wait Condition begin******************/

@@ -165,13 +165,19 @@ void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 bool UQuestComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) {
     bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
-    for (const auto ExecutingQuest : ExecutingQuests) {
+    for (auto ExecutingQuest : ExecutingQuests) {
         if (IsValid(ExecutingQuest)) {
             WroteSomething |= Channel->ReplicateSubobject(const_cast<UExecutingQuest*>(ExecutingQuest), *Bunch, *RepFlags);
 
-            for (const auto QuestProgress : ExecutingQuest->GetQuestProgresses()) {
+            for (auto QuestProgress : ExecutingQuest->GetQuestProgresses()) {
                 if (IsValid(QuestProgress)) {
-                    WroteSomething |= Channel->ReplicateSubobject(const_cast<UCoreConditionProgress*>(QuestProgress), *Bunch, *RepFlags);
+                    TArray<UCoreConditionProgress*> ProgressesWithChildren;
+                    QuestProgress->GetProgressesWithChildren(ProgressesWithChildren);
+                    for (auto Progress : ProgressesWithChildren) {
+                        if (IsValid(Progress)) {
+                            WroteSomething |= Channel->ReplicateSubobject(Progress, *Bunch, *RepFlags);
+                        }
+                    }
                 }
             }
         }

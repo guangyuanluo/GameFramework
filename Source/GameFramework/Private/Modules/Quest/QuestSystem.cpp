@@ -85,10 +85,10 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
         return false;
     }
     if (FindQuest->IsLastNode()) {
-        //任务进度完成
+        //todo，任务进度完成
         const auto& QuestProgresses = FindQuest->GetQuestProgresses();
         for (auto QuestProgress : QuestProgresses) {
-            QuestProgress->HandleComplete();
+            //QuestProgress->HandleComplete();
         }
         //发放奖励
         auto& QuestRewards = FindQuest->GetQuestRewards();
@@ -107,10 +107,10 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
         GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>()->UnfollowConditions(FindQuest);
     }
     else {
-        //任务进度完成
+        //todo，任务进度完成
         const auto& QuestProgresses = FindQuest->GetQuestProgresses();
         for (auto QuestProgress : QuestProgresses) {
-            QuestProgress->HandleComplete();
+            //QuestProgress->HandleComplete();
         }
         //发放奖励
         auto& QuestRewards = FindQuest->GetQuestRewards();
