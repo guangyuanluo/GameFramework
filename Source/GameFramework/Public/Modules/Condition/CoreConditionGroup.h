@@ -26,7 +26,7 @@ public:
 };
 
 /**
- * 占有NPC进度
+ * 条件组进度
  */
 UCLASS(BlueprintType)
 class GAMEFRAMEWORK_API UCoreConditionGroupProgress : public UCoreConditionProgress {
