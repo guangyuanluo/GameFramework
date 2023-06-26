@@ -9,20 +9,12 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerReachExpLevelConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation() {
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto ExpLevel = CharacterState->ExpComponent->GetExpLevel(ReachExpLevelCondition->ExpTypeContainer.ExpType);
 	return ExpLevel >= ReachExpLevelCondition->ExpLevel;
-}
-
-void UPlayerReachExpLevelConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {

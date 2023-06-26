@@ -9,10 +9,6 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerConsumeItemConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
 		return {};
@@ -47,10 +43,6 @@ void UPlayerConsumeItemConditionProgress::OnEvent_Implementation(UCoreGameInstan
 bool UPlayerConsumeItemConditionProgress::IsComplete_Implementation() {
 	UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)Condition;
 	return CurrentCount >= ConsumeItemCondition->ItemCount;
-}
-
-void UPlayerConsumeItemConditionProgress::HandleComplete_Implementation() {
-	
 }
 
 void UPlayerConsumeItemConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

@@ -9,11 +9,12 @@
 #include "CoreGameInstance.h"
 #include "GameSystemManager.h"
 #include "NPCSystem.h"
-#include "ConditionSystem.h"
 #include "Components/CapsuleComponent.h"
 #include "CorePlayerController.h"
 
-void UCloseToNPCConditionProgress::PostProgressInitialize_Implementation() {
+void UCloseToNPCConditionProgress::OnInitialize_Implementation() {
+	Super::OnInitialize_Implementation();
+
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 	auto PlayerController = Cast<ACorePlayerController>(Character->GetController());
@@ -26,7 +27,9 @@ bool UCloseToNPCConditionProgress::IsComplete_Implementation() {
 	return HaveComplete;
 }
 
-void UCloseToNPCConditionProgress::HandleComplete_Implementation() {
+void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
+	Super::OnUninitialize_Implementation();
+
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 

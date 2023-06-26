@@ -12,8 +12,6 @@ class UCoreConditionProgress* UCoreCondition::GenerateConditionProgress(AActor* 
     if (ConditionProgress) {
         ConditionProgress->Condition = this;
         ConditionProgress->ProgressOwner = ProgressOwner;
-
-        ConditionProgress->PostProgressInitialize();
     }
     return ConditionProgress;
 }

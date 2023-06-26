@@ -3,7 +3,6 @@
 #include "GameFrameworkUtils.h"
 #include "CoreGameInstance.h"
 #include "CoreCharacter.h"
-#include "ConditionSystem.h"
 #include "CoreCondition.h"
 #include "Engine/World.h"
 #include "QuestSystem.h"
@@ -11,28 +10,11 @@
 #include "CoreGameMode.h"
 #include "Engine/Engine.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "CoreConditionProgress.h"
-#include "GameSystemManager.h"
 #include "CoreCharacterStateBase.h"
 #include "PlayerComponent.h"
 #include "GameWorldSubsystem.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
-
-UWaitCondition* UGameFrameworkUtils::WaitCondition(class ACorePlayerController* PlayerController, const TArray<UCoreCondition*>& Conditions) {
-    auto GameInstance = PlayerController->GetWorld()->GetGameInstance<UCoreGameInstance>();
-
-	UWaitCondition* WaitCondition = NewObject<UWaitCondition>();	
-	for (int Index = 0; Index < Conditions.Num(); ++Index) {
-		auto Condition = Conditions[Index];
-		auto ConditionProgress = Condition->GenerateConditionProgress(PlayerController);
-		WaitCondition->ConditionProgress.Add(ConditionProgress);
-	}
-
-	GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>()->FollowConditions(WaitCondition->ConditionProgress, WaitCondition);
-
-	return WaitCondition;
-}
 
 AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug) {
 	auto Result = GetAllActorsWithinRadius(Source, IgnoreActors, OffsetFromActor, TraceLength, Radius, TraceChannel, TeamAttitude, LimitActorClass, false, DrawDebug);

@@ -4,9 +4,6 @@
 #include "CoreGameInstance.h"
 #include "UE4LogImpl.h"
 #include "EventSystem.h"
-#include "CompleteQuestEvent.h"
-#include "PlayerQuestFinishCondition.h"
-#include "ConditionSystem.h"
 #include "AcceptableQuest.h"
 #include "GameFrameworkUtils.h"
 #include "PlayerComponent.h"
@@ -30,7 +27,9 @@ void UQuestSystem::Initialize(UCoreGameInstance* InGameInstance) {
 }
 
 void UQuestSystem::Uninitialize() {
-    
+    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->UnRegistEventHandler(this);
+
+    Super::Uninitialize();
 }
 
 void UQuestSystem::AcceptQuest(UQuestComponent* QuestComponent, const FGuid& ID) {
@@ -85,10 +84,10 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
         return false;
     }
     if (FindQuest->IsLastNode()) {
-        //任务进度完成
+        //todo，任务进度完成
         const auto& QuestProgresses = FindQuest->GetQuestProgresses();
         for (auto QuestProgress : QuestProgresses) {
-            QuestProgress->HandleComplete();
+            //QuestProgress->HandleComplete();
         }
         //发放奖励
         auto& QuestRewards = FindQuest->GetQuestRewards();
@@ -97,20 +96,20 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
             QuestReward->HandleRewardDispatch(GameInstance, Character);
         }
 
+        //反初始化
+        FindQuest->Uninitiliaize();
+
         //这里表示任务完成
         QuestComponent->ExecutingQuests.RemoveAt(FindIndex);
         QuestComponent->FinishQuests.Add(FindQuest->GetQuest()->ID);
         QuestComponent->OnFinishQuestChanged();
         QuestComponent->OnQuestChanged();
-
-        //取消监听
-        GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>()->UnfollowConditions(FindQuest);
     }
     else {
-        //任务进度完成
+        //todo，任务进度完成
         const auto& QuestProgresses = FindQuest->GetQuestProgresses();
         for (auto QuestProgress : QuestProgresses) {
-            QuestProgress->HandleComplete();
+            //QuestProgress->HandleComplete();
         }
         //发放奖励
         auto& QuestRewards = FindQuest->GetQuestRewards();

@@ -21,9 +21,7 @@ public:
 	UPROPERTY(Replicated, Category = "ConditionSystem", EditAnywhere, BlueprintReadOnly)
 	int32 CurrentCount;
 
-	virtual void PostProgressInitialize_Implementation() override;
 	virtual bool IsComplete_Implementation() override;
-	virtual void HandleComplete_Implementation() override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
 	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;

@@ -4,37 +4,38 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UCoreConditionProgress::PostProgressInitialize_Implementation() {
-
+void UCoreConditionProgress::OnInitialize_Implementation() {
+    bInitialized = true;
 }
 
-void UCoreConditionProgress::StartFollow_Implementation() {
-
+void UCoreConditionProgress::OnUninitialize_Implementation() {
+    bInitialized = false;
+    bLastSatisfy = false;
 }
 
-void UCoreConditionProgress::StopFollow_Implementation() {
-
+bool UCoreConditionProgress::IsInitialized() const {
+    return bInitialized;
 }
 
 bool UCoreConditionProgress::IsComplete_Implementation() {
     return false;
 }
 
-void UCoreConditionProgress::HandleComplete_Implementation() {
-
-}
-
 void UCoreConditionProgress::RefreshSatisfy() {
     bool NewSatisfy = IsComplete();
-    if (LastSatisfy != NewSatisfy) {
-        LastSatisfy = NewSatisfy;
+    if (bLastSatisfy != NewSatisfy) {
+        bLastSatisfy = NewSatisfy;
         OnSatisfyChange();
-        OnConditionProgressSatisfyUpdate.Broadcast(this, LastSatisfy);
+        OnConditionProgressSatisfyUpdate.Broadcast(this, bLastSatisfy);
     }
 }
 
 void UCoreConditionProgress::OnSatisfyChange_Implementation() {
 
+}
+
+void UCoreConditionProgress::GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) {
+    OutProgresses.Add(this);
 }
 
 void UCoreConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -49,10 +50,6 @@ void UCoreConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 bool UCoreConditionProgress::IsSupportedForNetworking() const {
     return true;
-}
-
-void UCoreConditionProgress::OnRep_Condition() {
-    
 }
 
 void UCoreConditionProgress::PostNetReceive() {

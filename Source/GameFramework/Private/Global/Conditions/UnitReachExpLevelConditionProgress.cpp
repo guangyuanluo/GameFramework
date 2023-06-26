@@ -6,10 +6,6 @@
 #include "CoreCharacter.h"
 #include "CorePlayerController.h"
 
-void UUnitReachExpLevelConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
 	if (IsComplete()) {
 		return {};
@@ -36,8 +32,4 @@ void UUnitReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstan
 
 bool UUnitReachExpLevelConditionProgress::IsComplete_Implementation() {
 	return false;
-}
-
-void UUnitReachExpLevelConditionProgress::HandleComplete_Implementation() {
-
 }

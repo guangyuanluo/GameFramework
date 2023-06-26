@@ -10,19 +10,11 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerCollectMoneyConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 bool UPlayerCollectMoneyConditionProgress::IsComplete_Implementation() {
 	UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)Condition;
     auto PlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 
     return CollectMoneyCondition->MoneyCount <= PlayerState->WalletComponent->GetMoneyCount(CollectMoneyCondition->MoneyTypeContainer.MoneyType);
-}
-
-void UPlayerCollectMoneyConditionProgress::HandleComplete_Implementation() {
-	
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectMoneyConditionProgress::GetHandleEventTypes_Implementation() {

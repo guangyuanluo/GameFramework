@@ -5,17 +5,9 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UPlayerHuntConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 bool UPlayerHuntConditionProgress::IsComplete_Implementation() {
 	UPlayerHuntCondition* huntCondition = (UPlayerHuntCondition*)Condition;
 	return ContributionDegree >= huntCondition->ContributionDegree;
-}
-
-void UPlayerHuntConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandleEventTypes_Implementation() {

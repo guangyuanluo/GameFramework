@@ -7,16 +7,8 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerIntimacyRequestConditionProgress::PostProgressInitialize_Implementation() {
-
-}
-
 bool UPlayerIntimacyRequestConditionProgress::IsComplete_Implementation() {
 	return false;
-}
-
-void UPlayerIntimacyRequestConditionProgress::HandleComplete_Implementation() {
-
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerIntimacyRequestConditionProgress::GetHandleEventTypes_Implementation() {

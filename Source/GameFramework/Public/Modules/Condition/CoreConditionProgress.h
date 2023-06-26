@@ -23,7 +23,7 @@ public:
 	/**
 	* 条件
 	*/
-	UPROPERTY(ReplicatedUsing = OnRep_Condition, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
 	UCoreCondition* Condition;
 
 	/**
@@ -45,34 +45,28 @@ public:
 	FOnConditionProgressPostNetReceive OnConditionProgressPostNetReceive;
 
 	/**
-	* 初始化完成
+	* 初始化
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void PostProgressInitialize();
+	void OnInitialize();
 
 	/**
-	* 开始监听条件
+	* 反初始化
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void StartFollow();
+	void OnUninitialize();
 
 	/**
-	* 停止监听条件
+	* 是否完成初始化
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void StopFollow();
+	UFUNCTION(BlueprintPure, Category = "ConditionSystem")
+	bool IsInitialized() const;
 
 	/*
-	* @brief 是否完成
+	* 是否完成
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ConditionSystem")
 	bool IsComplete();
-
-	/**
-	* @brief 条件完成后的处理
-	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void HandleComplete();
 
 	/**
 	* 刷新满足性
@@ -86,14 +80,19 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
 	void OnSatisfyChange();
 
+	/**
+	* 获取进度对象，带孩子
+	*/
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
+	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses);
+
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
 	virtual void PostNetReceive() override;
 
 private:
-	UPROPERTY(Transient)
-	bool LastSatisfy = false;
+	bool bInitialized = false;
 
-	UFUNCTION()
-	void OnRep_Condition();
+	UPROPERTY(Transient)
+	bool bLastSatisfy = false;
 };

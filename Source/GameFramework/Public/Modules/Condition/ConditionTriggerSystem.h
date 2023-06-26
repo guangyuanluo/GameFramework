@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "Modules/Condition/CoreConditionObserver.h"
+#include "Modules/Condition/ConditionTriggerHandler.h"
 #include "Base/ECS/SystemBase.h"
-#include "ConditionSystem.generated.h"
+#include "ConditionTriggerSystem.generated.h"
 
 class UCoreConditionProgress;
 class UCoreGameInstance;
-class UGameEventBase;
 
-UCLASS()
-class UFollowContent : public UObject {
+USTRUCT()
+struct FConditionFollowContent {
 	GENERATED_BODY()
 
 public:
@@ -21,7 +20,7 @@ public:
 	TArray<UCoreConditionProgress*> Progresses;
 
 	UPROPERTY()
-	TScriptInterface<ICoreConditionObserver> Observer;
+	FConditionTriggerHandler Handler;
 };
 
 USTRUCT()
@@ -29,18 +28,15 @@ struct FProgressReserveInfo {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
-	UFollowContent* ProgressFollowContent;
-
-	UPROPERTY()
+	FConditionFollowContent* ProgressFollowContent;
 	bool LastComplete;
 };
 
 /*
-* @brief 条件系统
+* @brief 条件触发系统
 */
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UConditionSystem : public USystemBase {
+class GAMEFRAMEWORK_API UConditionTriggerSystem : public USystemBase {
 public:
 	GENERATED_BODY()
 
@@ -49,30 +45,31 @@ public:
 
 	/**
 	* @brief 关注条件
+	* @param InOutHandler 监听句柄
 	* @param progresses 关注的条件进度
-	* @param observer 关注的条件观察者
 	*/
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-	void FollowConditions(const TArray<UCoreConditionProgress*>& Progresses, TScriptInterface<ICoreConditionObserver> Observer);
+	void FollowConditions(FConditionTriggerHandler& InOutHandler, const TArray<UCoreConditionProgress*>& Progresses);
 
 	/**
 	* @brief 取消关注条件
-	* @param observer 关注的条件观察者
+	* @param InOutHandler 监听句柄
 	*/
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-	void UnfollowConditions(TScriptInterface<ICoreConditionObserver> Observer);
-
-	/**
-	* @brief 从进度反向获取到观察者
-	*/
-	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-	TScriptInterface<ICoreConditionObserver> GetObserverFromProgress(UCoreConditionProgress* InProgress);
+	void UnfollowConditions(FConditionTriggerHandler& InOutHandler);
 
 private:
+	/** the last serial number we assigned from this condition system */
+	static uint64 LastAssignedSerialNumber;
 	UPROPERTY()
-	TMap<UObject*, UFollowContent*> FollowMap;
+	TMap<FConditionTriggerHandler, FConditionFollowContent> FollowMap;
 	UPROPERTY()
 	TMap<UCoreConditionProgress*, FProgressReserveInfo> ProgressReserveMap;
+
+	/**
+	* 生成句柄
+	*/
+	void GenerateHandler(FConditionTriggerHandler& InOutHandler);
 
 	/**
 	* 条件进度满足性变化回调
@@ -83,32 +80,34 @@ private:
 	/**
 	* 进度是否满足
 	*/
-	bool IsFollowContentSatisfy(UFollowContent* FollowContentObj);
+	bool IsFollowContentSatisfy(const FConditionFollowContent& FollowContent);
 };
 
 /****************Wait Condition begin******************/
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSatisfyConditionDelegate);
 
 UCLASS()
-class GAMEFRAMEWORK_API UWaitCondition : public UBlueprintAsyncActionBase, public ICoreConditionObserver
+class GAMEFRAMEWORK_API UWaitCondition : public UBlueprintAsyncActionBase
 {
 	GENERATED_UCLASS_BODY()
 
 public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
-	static UWaitCondition* StartWaitCondition(UWaitCondition* WaitCondition);
+	static UWaitCondition* StartWaitCondition(class ACorePlayerController* PlayerController, const TArray<UCoreCondition*>& Conditions);
 
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	void Cancel();
 
 	UPROPERTY(BlueprintAssignable)
 	FSatisfyConditionDelegate OnSatisfy;
-
-	//ICoreConditionObserver implement begine
-	virtual void OnSatisfyConditions_Implementation(const TArray<UCoreConditionProgress*>& Progresses) override;
-	virtual void OnProgressRefresh_Implementation(UCoreConditionProgress* ChangeProgress) override;
+private:
+	FConditionTriggerHandler ConditionTriggerHandler;
 
 	UPROPERTY()
-	TArray<UCoreConditionProgress*> ConditionProgress;
+	TArray<UCoreConditionProgress*> ConditionProgresses;
+
+	UFUNCTION()
+	void OnAllProgressesSatisfy();
+
 };
 /****************Wait Condition end******************/

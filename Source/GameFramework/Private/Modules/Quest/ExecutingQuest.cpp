@@ -16,7 +16,7 @@
 #include "QuestForestSubsystem.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "QuestDetailNodeItem.h"
-#include "ConditionSystem.h"
+#include "ConditionTriggerSystem.h"
 #include "ScenarioSystem.h"
 #include "AsyncPlayScenario.h"
 #include "Scenario.h"
@@ -25,6 +25,8 @@
 void UExecutingQuest::Initialize(UQuest* InQuest) {
 	Quest = InQuest;
 	ID = Quest->ID;
+	ConditionTriggerHandler.OnAllProgressesSatisfy.AddDynamic(this, &UExecutingQuest::OnAllProgressesSatisfy);
+
 	auto QuestComponent = GetQuestComponent();
 
 	if (Quest.IsValid() && Quest->QuestDetail.Get() && Quest->QuestDetail->Root) {
@@ -33,6 +35,20 @@ void UExecutingQuest::Initialize(UQuest* InQuest) {
 	else {
 		UE_LOG(GameCore, Error, TEXT("[UExecutingQuest::Initialize]非法任务"));
 	}
+}
+
+void UExecutingQuest::Uninitiliaize() {
+	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveDynamic(this, &UExecutingQuest::OnAllProgressesSatisfy);
+
+	for (auto QuestProgress : QuestProgresses) {
+		QuestProgress->OnUninitialize();
+	}
+
+	QuestProgresses.Empty();
+
+	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+	auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+	ConditionTriggerSystem->UnfollowConditions(ConditionTriggerHandler);
 }
 
 const FGuid& UExecutingQuest::GetID() const {
@@ -99,18 +115,6 @@ void UExecutingQuest::SetNodeID(const FGuid& InNodeID) {
 	}
 }
 
-void UExecutingQuest::OnSatisfyConditions_Implementation(const TArray<UCoreConditionProgress*>& Progresses) {
-	//已经接受的任务
-	//所有任务进度都变成完成
-	if (GetWorld()->GetNetMode() == ENetMode::NM_Standalone) {
-		NotifyPlayScenario();
-	}
-}
-
-void UExecutingQuest::OnProgressRefresh_Implementation(UCoreConditionProgress* ChangeProgress) {
-	
-}
-
 void UExecutingQuest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -125,6 +129,13 @@ void UExecutingQuest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 bool UExecutingQuest::IsSupportedForNetworking() const {
     return true;
+}
+
+void UExecutingQuest::OnAllProgressesSatisfy() {
+	//所有任务进度都变成完成
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Standalone) {
+		NotifyPlayScenario();
+	}
 }
 
 void UExecutingQuest::OnRep_QuestID() {
@@ -209,6 +220,11 @@ void UExecutingQuest::PlayScenarioCompleted(UScenario* PlayScenario, int ReturnI
 
 void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	NodeID = InNode->ID;
+
+	for (auto QuestProgress : QuestProgresses) {
+		QuestProgress->OnUninitialize();
+	}
+
 	QuestProgresses.Empty();
 	QuestRewards.Empty();
 
@@ -218,6 +234,7 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	if (NodeItem) {
 		for (auto Condition : NodeItem->ConditionList.Conditions) {
 			auto ConditionProgress = Condition->GenerateConditionProgress(Owner);
+			ConditionProgress->OnInitialize();
 			QuestProgresses.Add(ConditionProgress);
 		}
 		QuestRewards = NodeItem->Rewards;
@@ -227,9 +244,10 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	}
 
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-	auto ConditionSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>();
-	ConditionSystem->UnfollowConditions(this);
-	ConditionSystem->FollowConditions(QuestProgresses, this);
+	auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+
+	ConditionTriggerSystem->UnfollowConditions(ConditionTriggerHandler);
+	ConditionTriggerSystem->FollowConditions(ConditionTriggerHandler, QuestProgresses);
 }
 
 void UExecutingQuest::OnProgressPostNetReceive(UCoreConditionProgress* Progress) {

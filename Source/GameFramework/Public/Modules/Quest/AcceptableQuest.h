@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/Condition/CoreConditionObserver.h"
+#include "Modules/Condition/ConditionTriggerHandler.h"
 #include "AcceptableQuest.generated.h"
 
 class UCoreConditionProgress;
@@ -14,12 +14,13 @@ class UQuest;
  * 可接受的任务
  */
 UCLASS()
-class GAMEFRAMEWORK_API UAcceptableQuest : public UObject, public ICoreConditionObserver
+class GAMEFRAMEWORK_API UAcceptableQuest : public UObject
 {
 public:
 	GENERATED_BODY()
 
 	void Initialize(UQuest* InQuestPtr, UQuestComponent* InQuestComponent);
+	void Uninitialize();
 	void StartListen();
 	void StopListen();
 
@@ -41,11 +42,7 @@ public:
 	/**
 	* @brief 是否完成
 	*/
-	bool IsComplete() const;
-
-	//继承
-	virtual void OnSatisfyConditions_Implementation(const TArray<UCoreConditionProgress*>& Progresses) override;
-	virtual void OnProgressRefresh_Implementation(UCoreConditionProgress* ChangeProgress) override;
+	bool IsComplete() const;	
 
 private:
 	/** 基本信息 */
@@ -53,4 +50,12 @@ private:
 	/** 完成条件进度 */
 	UPROPERTY()
 	TArray<UCoreConditionProgress*> QuestProgresses;
+	/** 条件触发句柄 */
+	FConditionTriggerHandler ConditionTriggerHandler;
+
+	/**
+	* 所有进度满足
+	*/
+	UFUNCTION()
+	void OnAllProgressesSatisfy();
 };

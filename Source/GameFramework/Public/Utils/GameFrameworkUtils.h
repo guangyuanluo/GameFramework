@@ -11,8 +11,6 @@
 #include "GameFrameworkUtils.generated.h"
 
 class UCoreGameInstance;
-class UWaitCondition;
-class UCoreCondition;
 class AActor;
 class ACoreCharacter;
 
@@ -24,9 +22,6 @@ class GAMEFRAMEWORK_API UGameFrameworkUtils : public UBlueprintFunctionLibrary
 {
 public:
 	GENERATED_BODY()
-
-	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static UWaitCondition* WaitCondition(class ACorePlayerController* PlayerController, const TArray<UCoreCondition*>& Conditions);
 
 	/*
 	* @brief 得到半径内最近的actor
