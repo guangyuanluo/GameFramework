@@ -5,16 +5,16 @@
 #include "GameSystemManager.h"
 #include "EventSystem.h"
 
-void UCoreConditionProgress_Event::OnStart_Implementation() {
-    Super::OnStart_Implementation();
+void UCoreConditionProgress_Event::OnInitialize_Implementation() {
+    Super::OnInitialize_Implementation();
 
     auto GameInstance = ProgressOwner->GetGameInstance<UCoreGameInstance>();
     auto EventSystem = GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
     EventSystem->RegistEventHandler(this);
 }
 
-void UCoreConditionProgress_Event::OnEnd_Implementation() {
-    Super::OnEnd_Implementation();
+void UCoreConditionProgress_Event::OnUninitialize_Implementation() {
+    Super::OnUninitialize_Implementation();
 
     auto GameInstance = ProgressOwner->GetGameInstance<UCoreGameInstance>();
     auto EventSystem = GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();

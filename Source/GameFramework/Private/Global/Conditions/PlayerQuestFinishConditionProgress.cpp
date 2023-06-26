@@ -10,8 +10,8 @@
 #include "Net/UnrealNetwork.h"
 #include "CoreCharacterStateBase.h"
 
-void UPlayerQuestFinishConditionProgress::OnStart_Implementation() {
-	Super::OnStart_Implementation();
+void UPlayerQuestFinishConditionProgress::OnInitialize_Implementation() {
+	Super::OnInitialize_Implementation();
 
 	HaveComplete = false;
 }

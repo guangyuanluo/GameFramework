@@ -23,7 +23,7 @@ public:
 	/**
 	* 条件
 	*/
-	UPROPERTY(ReplicatedUsing = OnRep_Condition, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
+	UPROPERTY(Replicated, BlueprintReadOnly, VisibleAnywhere, Category = "ConditionSystem")
 	UCoreCondition* Condition;
 
 	/**
@@ -45,16 +45,22 @@ public:
 	FOnConditionProgressPostNetReceive OnConditionProgressPostNetReceive;
 
 	/**
-	* 生命周期开始
+	* 初始化
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnStart();
+	void OnInitialize();
 
 	/**
-	* 生命周期结束
+	* 反初始化
 	*/
 	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnEnd();
+	void OnUninitialize();
+
+	/**
+	* 是否完成初始化
+	*/
+	UFUNCTION(BlueprintPure, Category = "ConditionSystem")
+	bool IsInitialized() const;
 
 	/*
 	* 是否完成
@@ -85,9 +91,8 @@ public:
 	virtual void PostNetReceive() override;
 
 private:
+	bool bInitialized = false;
+
 	UPROPERTY(Transient)
 	bool bLastSatisfy = false;
-
-	UFUNCTION()
-	void OnRep_Condition();
 };

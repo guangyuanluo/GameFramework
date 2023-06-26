@@ -21,27 +21,27 @@ class UCoreConditionProgress* UCoreConditionGroup::GenerateConditionProgress(AAc
     return ConditionGroupProgress;
 }
 
-void UCoreConditionGroupProgress::OnStart_Implementation() {
-    Super::OnStart_Implementation();
+void UCoreConditionGroupProgress::OnInitialize_Implementation() {
+    Super::OnInitialize_Implementation();
     
     for (auto ChildProgress : ChildProgresses) {
         ChildProgress->OnConditionProgressSatisfyUpdate.AddDynamic(this, &UCoreConditionGroupProgress::OnChildConditionSatisfyChange);
     }
 
     for (auto ChildProgress : ChildProgresses) {
-        ChildProgress->OnStart();
+        ChildProgress->OnInitialize();
     }
 }
 
-void UCoreConditionGroupProgress::OnEnd_Implementation() {
-    Super::OnEnd_Implementation();
+void UCoreConditionGroupProgress::OnUninitialize_Implementation() {
+    Super::OnUninitialize_Implementation();
 
     for (auto ChildProgress : ChildProgresses) {
         ChildProgress->OnConditionProgressSatisfyUpdate.RemoveDynamic(this, &UCoreConditionGroupProgress::OnChildConditionSatisfyChange);
     }
 
     for (auto ChildProgress : ChildProgresses) {
-        ChildProgress->OnEnd();
+        ChildProgress->OnUninitialize();
     }
 }
 

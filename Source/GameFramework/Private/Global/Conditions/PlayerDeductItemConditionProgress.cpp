@@ -10,8 +10,8 @@
 #include "GameSystemManager.h"
 #include "ItemOrder.h"
 
-void UPlayerDeductItemConditionProgress::OnStart_Implementation() {
-	Super::OnStart_Implementation();
+void UPlayerDeductItemConditionProgress::OnInitialize_Implementation() {
+	Super::OnInitialize_Implementation();
 
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (!GameInstance) {

@@ -15,7 +15,7 @@ class GAMEFRAMEWORK_API UPlayerCollectItemConditionProgress : public UCoreCondit
 public:
 	GENERATED_BODY()
 
-	virtual void OnEnd_Implementation() override;
+	virtual void OnUninitialize_Implementation() override;
 	virtual bool IsComplete_Implementation() override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;

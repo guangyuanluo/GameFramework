@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/Condition/CoreConditionObserver.h"
+#include "Modules/Condition/ConditionTriggerHandler.h"
 #include "ExecutingQuest.generated.h"
 
 class UCoreConditionProgress;
@@ -17,12 +17,13 @@ class UScenario;
  * 
  */
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UExecutingQuest : public UObject, public ICoreConditionObserver
+class GAMEFRAMEWORK_API UExecutingQuest : public UObject
 {
 public:
 	GENERATED_BODY()
 
 	void Initialize(UQuest* InQuest);
+	void Uninitiliaize();
 
 	/**
 	* @brief 获得任务id
@@ -81,8 +82,6 @@ public:
 	void SetNodeID(const FGuid& InNodeID);
 
 	//继承
-	virtual void OnSatisfyConditions_Implementation(const TArray<UCoreConditionProgress*>& Progresses) override;
-	virtual void OnProgressRefresh_Implementation(UCoreConditionProgress* ChangeProgress) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
 
@@ -115,6 +114,13 @@ private:
 	*/
 	UPROPERTY(ReplicatedUsing = OnRep_Rewards)
 	TArray<UCoreReward*> QuestRewards;
+
+	FConditionTriggerHandler ConditionTriggerHandler;
+	/**
+	* 所有进度完成
+	*/
+	UFUNCTION()
+	void OnAllProgressesSatisfy();
 
 	UFUNCTION()
 	void OnRep_QuestID();

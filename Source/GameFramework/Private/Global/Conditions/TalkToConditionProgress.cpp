@@ -8,29 +8,7 @@
 #include "TalkToNPCEvent.h"
 #include "CoreCharacterStateBase.h"
 #include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "ConditionSystem.h"
 #include "ExecutingQuest.h"
-
-bool UTalkToConditionProgress::IsQuestOtherProgressesComplete() {
-	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetGameInstance());
-	if (GameInstance) {
-		auto ConditionSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionSystem>();
-		if (ConditionSystem) {
-			auto Observer = ConditionSystem->GetObserverFromProgress(this);
-			auto ExecutingQuest = Cast<UExecutingQuest>(Observer.GetObject());
-			bool IsQuestOtherProgressesComplete = true;
-			for (auto Progress : ExecutingQuest->GetQuestProgresses()) {
-				if (Progress != this && !Progress->IsComplete()) {
-					IsQuestOtherProgressesComplete = false;
-					break;
-				}
-			}
-			return IsQuestOtherProgressesComplete;
-		}
-	}
-	return false;
-}
 
 bool UTalkToConditionProgress::IsComplete_Implementation() {
 	return HaveTalk;
@@ -57,11 +35,9 @@ void UTalkToConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameI
 			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 			auto ConditionCharacter = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 			if (ConditionCharacter->GetEntityID() == TalkToEvent->EntityId) {
-				if (IsQuestOtherProgressesComplete()) {
-					HaveTalk = true;
+				HaveTalk = true;
 
-					RefreshSatisfy();
-				}
+				RefreshSatisfy();
 			}
 		}
 	}

@@ -7,8 +7,8 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UArrivingAtConditionProgress::OnStart_Implementation() {
-	Super::OnStart_Implementation();
+void UArrivingAtConditionProgress::OnInitialize_Implementation() {
+	Super::OnInitialize_Implementation();
 
 	HaveComplete = false;
 }

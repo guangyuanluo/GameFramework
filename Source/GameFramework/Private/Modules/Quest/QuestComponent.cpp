@@ -4,7 +4,6 @@
 #include "QuestComponent.h"
 #include "CoreGameInstance.h"
 #include "QuestSystem.h"
-#include "ConditionSystem.h"
 #include "AcceptableQuest.h"
 #include "ExecutingQuest.h"
 #include "GameSystemManager.h"
@@ -205,6 +204,7 @@ void UQuestComponent::RefreshAcceptQuests() {
         auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
         for (auto Iter = AcceptQuests.CreateConstIterator(); Iter; ++Iter) {
             Iter->Value->StopListen();
+            Iter->Value->Uninitialize();
         }
         AcceptQuests.Empty();
 

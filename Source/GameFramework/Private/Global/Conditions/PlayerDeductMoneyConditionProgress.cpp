@@ -10,8 +10,8 @@
 #include "GameSystemManager.h"
 #include "MoneyOrder.h"
 
-void UPlayerDeductMoneyConditionProgress::OnStart_Implementation() {
-	Super::OnStart_Implementation();
+void UPlayerDeductMoneyConditionProgress::OnInitialize_Implementation() {
+	Super::OnInitialize_Implementation();
 
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (!GameInstance) {

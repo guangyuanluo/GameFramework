@@ -32,8 +32,8 @@ bool UPlayerCollectItemConditionProgress::IsComplete_Implementation() {
 	return CurrentCount >= CollectItemCondition->ItemCount;
 }
 
-void UPlayerCollectItemConditionProgress::OnEnd_Implementation() {
-    Super::OnEnd_Implementation();
+void UPlayerCollectItemConditionProgress::OnUninitialize_Implementation() {
+    Super::OnUninitialize_Implementation();
 
 	UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
     auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);

@@ -18,9 +18,6 @@ public:
 	UPROPERTY(Replicated, Transient, BlueprintReadOnly, VisibleAnywhere)
 	bool HaveTalk = false;
 
-	UFUNCTION(BlueprintCallable)
-	bool IsQuestOtherProgressesComplete();
-
 	virtual bool IsComplete_Implementation() override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;

@@ -27,7 +27,7 @@ public:
 	UPROPERTY(Replicated, Category = "ConditionSystem", EditAnywhere, BlueprintReadOnly)
 	FGuid OrderID;
 
-	virtual void OnStart_Implementation() override;
+	virtual void OnInitialize_Implementation() override;
 	virtual bool IsComplete_Implementation() override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;

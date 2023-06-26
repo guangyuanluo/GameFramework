@@ -13,8 +13,8 @@
 #include "CoreGameInstance.h"
 #include "GameSystemManager.h"
 
-void UAcquireNPCsConditionProgress::OnStart_Implementation() {
-	Super::OnStart_Implementation();
+void UAcquireNPCsConditionProgress::OnInitialize_Implementation() {
+	Super::OnInitialize_Implementation();
 
 	UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
@@ -31,8 +31,8 @@ void UAcquireNPCsConditionProgress::OnStart_Implementation() {
 	}
 }
 
-void UAcquireNPCsConditionProgress::OnEnd_Implementation() {
-	Super::OnEnd_Implementation();
+void UAcquireNPCsConditionProgress::OnUninitialize_Implementation() {
+	Super::OnUninitialize_Implementation();
 
 	UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());

@@ -4,12 +4,17 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-void UCoreConditionProgress::OnStart_Implementation() {
-
+void UCoreConditionProgress::OnInitialize_Implementation() {
+    bInitialized = true;
 }
 
-void UCoreConditionProgress::OnEnd_Implementation() {
+void UCoreConditionProgress::OnUninitialize_Implementation() {
+    bInitialized = false;
     bLastSatisfy = false;
+}
+
+bool UCoreConditionProgress::IsInitialized() const {
+    return bInitialized;
 }
 
 bool UCoreConditionProgress::IsComplete_Implementation() {
@@ -49,8 +54,4 @@ bool UCoreConditionProgress::IsSupportedForNetworking() const {
 
 void UCoreConditionProgress::PostNetReceive() {
     OnConditionProgressPostNetReceive.Broadcast(this);
-}
-
-void UCoreConditionProgress::OnRep_Condition() {
-    
 }
