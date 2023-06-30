@@ -23,15 +23,6 @@ public:
 	FConditionTriggerHandler Handler;
 };
 
-USTRUCT()
-struct FProgressReserveInfo {
-	GENERATED_BODY()
-
-public:
-	FConditionFollowContent* ProgressFollowContent;
-	bool LastComplete;
-};
-
 /*
 * @brief 条件触发系统
 */
@@ -64,7 +55,7 @@ private:
 	UPROPERTY()
 	TMap<FConditionTriggerHandler, FConditionFollowContent> FollowMap;
 	UPROPERTY()
-	TMap<UCoreConditionProgress*, FProgressReserveInfo> ProgressReserveMap;
+	TMap<UCoreConditionProgress*, FConditionTriggerHandler> ProgressReserveMap;
 
 	/**
 	* 生成句柄

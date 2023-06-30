@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "ConditionTriggerHandler.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAllProgressesSatisfyDynamicDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnAllProgressesSatisfyDelegate);
 
 /** Unique handle that can be used to distinguish timers that have identical delegates. */
 USTRUCT(BlueprintType)
@@ -29,8 +29,7 @@ struct FConditionTriggerHandler {
 	/**
 	* 所有进度满足时的回调
 	*/
-	UPROPERTY(BlueprintAssignable)
-	FOnAllProgressesSatisfyDynamicDelegate OnAllProgressesSatisfy;
+	FOnAllProgressesSatisfyDelegate OnAllProgressesSatisfy;
 
 	/** True if this handle was ever initialized by the timer manager */
 	bool IsValid() const {

@@ -23,10 +23,6 @@ void UCloseToNPCConditionProgress::OnInitialize_Implementation() {
 	Character->OnCharacterMovementUpdated.AddDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
 }
 
-bool UCloseToNPCConditionProgress::IsComplete_Implementation() {
-	return HaveComplete;
-}
-
 void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
 	Super::OnUninitialize_Implementation();
 
@@ -34,6 +30,11 @@ void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 
 	Character->OnCharacterMovementUpdated.RemoveDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
+}
+
+bool UCloseToNPCConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
+	return HaveComplete;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UCloseToNPCConditionProgress::GetHandleEventTypes_Implementation() {

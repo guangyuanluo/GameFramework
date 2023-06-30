@@ -10,12 +10,18 @@
 #include "CoreGameInstance.h"
 #include "ExecutingQuest.h"
 
-bool UTalkToConditionProgress::IsComplete_Implementation() {
+bool UTalkToConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return HaveTalk;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

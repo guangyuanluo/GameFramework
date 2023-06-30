@@ -2,9 +2,9 @@
 #include "CoreGameInstance.h"
 #include "CoreCondition.h"
 #include "CoreConditionProgress.h"
-#include "BooleanAlgebraUtil.h"
 #include "GameSystemManager.h"
 #include "CorePlayerController.h"
+#include "ConditionBlueprintLibrary.h"
 
 /** track the last assigned handle globally */
 uint64 UConditionTriggerSystem::LastAssignedSerialNumber = 0;
@@ -32,16 +32,10 @@ void UConditionTriggerSystem::FollowConditions(FConditionTriggerHandler& InOutHa
 	for (int Index = 0; Index < Progresses.Num(); ++Index) {
 		check(Progresses[Index]->IsInitialized());
 
-		bool bComplete = Progresses[Index]->IsComplete();
-
-		FProgressReserveInfo ProgressReserveInfo;;
-		ProgressReserveInfo.ProgressFollowContent = &FollowMap[InOutHandler];
-		ProgressReserveInfo.LastComplete = bComplete;
-		ProgressReserveMap.Add(Progresses[Index], ProgressReserveInfo);
-
+		ProgressReserveMap.Add(Progresses[Index], InOutHandler);
 		//增加监听
 		Progresses[Index]->OnConditionProgressSatisfyUpdate.AddDynamic(this, &UConditionTriggerSystem::OnConditionSatisfyChange);
-	}
+	}	
 	//最后通知，防止在通知中unfollow
 	if (IsFollowContentSatisfy(FollowContent)) {
 		InOutHandler.OnAllProgressesSatisfy.Broadcast();
@@ -72,35 +66,17 @@ void UConditionTriggerSystem::GenerateHandler(FConditionTriggerHandler& InOutHan
 
 void UConditionTriggerSystem::OnConditionSatisfyChange(UCoreConditionProgress* Progress, bool NewSatisfy) {
 	auto FindReserveInfoPtr = ProgressReserveMap.Find(Progress);
-	if (FindReserveInfoPtr && FindReserveInfoPtr->LastComplete != NewSatisfy) {
+	if (FindReserveInfoPtr) {
 		//刷新满足性
-		FindReserveInfoPtr->LastComplete = NewSatisfy;
-		if (IsFollowContentSatisfy(*FindReserveInfoPtr->ProgressFollowContent)) {
-			auto Handler = FindReserveInfoPtr->ProgressFollowContent->Handler;
-			Handler.OnAllProgressesSatisfy.Broadcast();
+		auto& FollowContent = FollowMap[*FindReserveInfoPtr];
+		if (IsFollowContentSatisfy(FollowContent)) {
+			FollowContent.Handler.OnAllProgressesSatisfy.Broadcast();
 		}
 	}
 }
 
 bool UConditionTriggerSystem::IsFollowContentSatisfy(const FConditionFollowContent& FollowContent) {
-	bool HaveComplete = true;
-
-	TArray<BooleanAlgebraEnum> LoopGroupRelations;
-	for (int ProgressIndex = 0; ProgressIndex < FollowContent.Progresses.Num(); ++ProgressIndex) {
-		LoopGroupRelations.Add(FollowContent.Progresses[ProgressIndex]->Condition->Relation);
-	}
-	FBooleanAlgebraNodeInfo GroupExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopGroupRelations);
-	TFunction<bool(int)> CheckFunction = [this, &FollowContent](int ProgressIndex) {
-		auto Progress = FollowContent.Progresses[ProgressIndex];
-		auto Condition = Progress->Condition;
-
-		bool bLastSatisfy = ProgressReserveMap[Progress].LastComplete;
-		return bLastSatisfy != Condition->bNot;
-	};
-
-	HaveComplete = UBooleanAlgebraUtil::ExecuteConditionRelationTree(GroupExecuteRoot, CheckFunction);
-
-	return HaveComplete;
+	return UConditionBlueprintLibrary::DoesProgressesSatisfy(FollowContent.Progresses);
 }
 
 /****************Wait Condition begin******************/
@@ -126,7 +102,7 @@ UWaitCondition* UWaitCondition::StartWaitCondition(class ACorePlayerController* 
 	auto World = WaitCondition->ConditionProgresses[0]->GetWorld();
 	auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
 
-	WaitCondition->ConditionTriggerHandler.OnAllProgressesSatisfy.AddDynamic(WaitCondition, &UWaitCondition::OnAllProgressesSatisfy);
+	WaitCondition->ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(WaitCondition, &UWaitCondition::OnAllProgressesSatisfy);
 
 	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->FollowConditions(WaitCondition->ConditionTriggerHandler, WaitCondition->ConditionProgresses);
 
@@ -138,7 +114,7 @@ void UWaitCondition::Cancel() {
 		return;
 	}
 
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveDynamic(this, &UWaitCondition::OnAllProgressesSatisfy);
+	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
 
 	auto World = ConditionProgresses[0]->GetWorld();
 	auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
@@ -153,7 +129,7 @@ void UWaitCondition::Cancel() {
 void UWaitCondition::OnAllProgressesSatisfy() {
 	OnSatisfy.Broadcast();
 	
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveDynamic(this, &UWaitCondition::OnAllProgressesSatisfy);
+	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
 
 	auto World = ConditionProgresses[0]->GetWorld();
 	auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());

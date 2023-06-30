@@ -11,13 +11,19 @@
 #include "Net/UnrealNetwork.h"
 #include "CoreCharacterStateBase.h"
 
-bool UPlayerFarmConditionProgress::IsComplete_Implementation() {
+bool UPlayerFarmConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)Condition;
 	return FinishCount >= FarmCondition->Count;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

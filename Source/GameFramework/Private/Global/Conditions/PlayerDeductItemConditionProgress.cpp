@@ -30,12 +30,18 @@ void UPlayerDeductItemConditionProgress::OnInitialize_Implementation() {
 	OrderID = ItemOrder->ID;
 }
 
-bool UPlayerDeductItemConditionProgress::IsComplete_Implementation() {
+bool UPlayerDeductItemConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return HaveComplete;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductItemConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

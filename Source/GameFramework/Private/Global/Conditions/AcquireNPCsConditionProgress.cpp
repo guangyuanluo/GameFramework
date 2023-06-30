@@ -46,12 +46,18 @@ void UAcquireNPCsConditionProgress::OnUninitialize_Implementation() {
 	}
 }
 
-bool UAcquireNPCsConditionProgress::IsComplete_Implementation() {
+bool UAcquireNPCsConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return HaveAcquire;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

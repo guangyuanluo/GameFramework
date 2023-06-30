@@ -17,12 +17,16 @@ bool UCoreConditionProgress::IsInitialized() const {
     return bInitialized;
 }
 
-bool UCoreConditionProgress::IsComplete_Implementation() {
+bool UCoreConditionProgress::IsComplete_Implementation(bool& IsValid) {
     return false;
 }
 
 void UCoreConditionProgress::RefreshSatisfy() {
-    bool NewSatisfy = IsComplete();
+    bool IsValid;
+    bool NewSatisfy = IsComplete(IsValid);
+    if (!IsValid) {
+        return;
+    }
     if (bLastSatisfy != NewSatisfy) {
         bLastSatisfy = NewSatisfy;
         OnSatisfyChange();

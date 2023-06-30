@@ -102,6 +102,7 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Modules/NPC",
             "GameFramework/Public/Modules/CustomizableSearchTree",
             "GameFramework/Public/Modules/AnimSearchTree",
+            "GameFramework/Public/Modules/TriggerAction",
             //Global
             "GameFramework/Public/Global/Events",
             "GameFramework/Public/Global/Conditions",

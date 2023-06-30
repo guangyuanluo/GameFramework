@@ -45,7 +45,9 @@ void UCoreConditionGroupProgress::OnUninitialize_Implementation() {
     }
 }
 
-bool UCoreConditionGroupProgress::IsComplete_Implementation() {
+bool UCoreConditionGroupProgress::IsComplete_Implementation(bool& IsValid) {
+    IsValid = true;
+
     bool HaveComplete = true;
 
     TArray<BooleanAlgebraEnum> LoopGroupRelations;
@@ -56,12 +58,16 @@ bool UCoreConditionGroupProgress::IsComplete_Implementation() {
         LoopGroupRelations.Add(ChildProgress->Condition->Relation);
     }
     FBooleanAlgebraNodeInfo GroupExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopGroupRelations);
-    TFunction<bool(int)> CheckFunction = [this](int ProgressIndex) {
+    TFunction<bool(int)> CheckFunction = [this, &IsValid](int ProgressIndex) {
         auto Progress = ChildProgresses[ProgressIndex];
         auto Condition = Progress->Condition;
 
-        bool bLastSatisfy = Progress->IsComplete();
-        return bLastSatisfy != Condition->bNot;
+        bool bChildValid;
+        bool bLastSatisfy = Progress->IsComplete(bChildValid);
+        if (!bChildValid) {
+            IsValid = false;
+        }
+        return bChildValid && bLastSatisfy != Condition->bNot;
     };
 
     HaveComplete = UBooleanAlgebraUtil::ExecuteConditionRelationTree(GroupExecuteRoot, CheckFunction);

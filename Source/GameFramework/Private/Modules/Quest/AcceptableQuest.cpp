@@ -10,6 +10,7 @@
 #include "CoreGameInstance.h"
 #include "GameSystemManager.h"
 #include "ConditionTriggerSystem.h"
+#include "ConditionBlueprintLibrary.h"
 
 void UAcceptableQuest::Initialize(UQuest* InQuestPtr, UQuestComponent* InQuestComponent) {
 	QuestPtr = InQuestPtr;
@@ -30,14 +31,14 @@ void UAcceptableQuest::Uninitialize() {
 }
 
 void UAcceptableQuest::StartListen() {
-	ConditionTriggerHandler.OnAllProgressesSatisfy.AddDynamic(this, &UAcceptableQuest::OnAllProgressesSatisfy);
+	ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(this, &UAcceptableQuest::OnAllProgressesSatisfy);
 
 	auto GameInstance = Cast<UCoreGameInstance>(UGameplayStatics::GetGameInstance(QuestComponent));
 	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->FollowConditions(ConditionTriggerHandler, QuestProgresses);
 }
 
 void UAcceptableQuest::StopListen() {
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveDynamic(this, &UAcceptableQuest::OnAllProgressesSatisfy);
+	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
 
 	auto GameInstance = Cast<UCoreGameInstance>(UGameplayStatics::GetGameInstance(QuestComponent));
 	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->UnfollowConditions(ConditionTriggerHandler);
@@ -52,14 +53,7 @@ const TArray<UCoreConditionProgress*>& UAcceptableQuest::GetQuestProgresses() co
 }
 
 bool UAcceptableQuest::IsComplete() const {
-	bool isComplete = true;
-	for (int Index = 0; Index < QuestProgresses.Num(); ++Index) {
-		if (!QuestProgresses[Index]->IsComplete()) {
-			isComplete = false;
-			break;
-		}
-	}
-	return isComplete;
+	return UConditionBlueprintLibrary::DoesProgressesSatisfy(QuestProgresses);
 }
 
 void UAcceptableQuest::OnAllProgressesSatisfy() {

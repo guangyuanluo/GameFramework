@@ -4,8 +4,8 @@
 
 #include "CoreAbilityInterface.h"
 #include "Abilities/GameplayAbility.h"
-#include "GameplayTagContainer.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
+#include "Modules/TriggerAction/CoreConditionActionTrigger.h"
 #include "CoreAbility.generated.h"
 
 /** delegate define */
@@ -24,14 +24,28 @@ class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbil
 
 public:
     /**
+ * 技能触发方式
+ */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发方式"))
+    CoreAbilityTriggerEnum TriggerWay = CoreAbilityTriggerEnum::E_InputKey;
+
+    /**
     * 技能触发条件
     */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件"))
-    TArray<FCoreAbilityConditionGroupInfo> GroupConditionConfigs;
+    FCoreConditionList TriggerConditions;
 
-	/** gameplay tags 映射触发的 gameplay effect containers */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能事件配置"))
-	TMap<FGameplayTag, FCoreGameplayEffectContainer> EffectContainerMap;
+    /**
+    * 技能响应触发动作
+    */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能响应触发动作"))
+    TArray<FCoreConditionActionTriggerConfig> ConditionActionTriggerConfigs;
+
+    /**
+    * 技能额外终止条件
+    */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能额外终止条件"))
+    FCoreConditionList ExternFinishConditions;
 
 	/**
     * 技能排序优先级
@@ -42,7 +56,7 @@ public:
     /**
      * 技能结束自动清空cd
      */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Default", meta = (DisplayName = "技能结束自动清空cd"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能结束自动清空cd"))
     bool bClearCooldownOnEnd = true;
 
     /**
@@ -73,17 +87,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Ability, meta=(AutoCreateRefTerm = "EventData"))
 	virtual FCoreGameplayEffectContainerSpec MakeEffectContainerSpecFromContainer(const FCoreGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
 
-	/** Search for and make a gameplay effect container spec to be applied later, from the EffectContainerMap */
-	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
-	virtual FCoreGameplayEffectContainerSpec MakeEffectContainerSpec(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
-
 	/** Applies a gameplay effect container spec that was previously created */
 	UFUNCTION(BlueprintCallable, Category = Ability)
 	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec);
-
-	/** Applies a gameplay effect container, by creating and then applying the spec */
-	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
-	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
 
 	/**
 	* 是否激活
@@ -115,15 +121,37 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputReleased", meta = (ScriptName = "InputReleased"))
 	void K2_InputReleased();
 
+    virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+    virtual void OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
     virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const override;
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void CallEndAbility() override;
 	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
 	virtual void CallInputReleased(const FGameplayAbilitySpecHandle Handle);
 
+    void SetCurrentReceivedEventData(const FGameplayEventData& GameEventData);
+
+protected:
+    UPROPERTY(Transient)
+    FGameplayEventData CurrentReceivedEventData;
+
 private:
     FTimerHandle LimitActiveTimeHandle;
     TArray<FActiveGameplayEffectHandle> FollowGAPeriodEffectHandles;
+
+    /** 技能满足条件进度 */
+    UPROPERTY(Transient)
+    TArray<UCoreConditionProgress*> RequireConditionProgresses;
+    struct FConditionTriggerHandler PassiveConditionHandler;
+
+    /** 技能触发信息 */
+    UPROPERTY(Transient)
+    TArray<FCoreConditionActionTriggerInfo> TriggerConditionProgressInfos;
+
+    /** 额外技能终止条件进度 */
+    UPROPERTY(Transient)
+    TArray<class UCoreConditionProgress*> ExternFinishConditionProgresses;
+    struct FConditionTriggerHandler ExternFinishConditionHandler;
 
     /**
     * 剩余计数
@@ -140,5 +168,27 @@ private:
     UFUNCTION()
     void OnAbilityEnd(UGameplayAbility* Ability);
 
-    
+    /**
+    * 被动条件监听
+    */
+    UFUNCTION()
+    void OnPassiveConditionTriggerCallback();
+
+    /**
+    * 条件触发器监听
+    */
+    void StartConditionTriggerListen();
+    void StopConditionTriggerListen();
+    UFUNCTION()
+    void OnConditionTriggerCallback(int TriggerIndex);
+    /**
+    * 额度终止条件监听
+    */
+    void StartExternFinishConditionListen();
+    void StopExternFinishConditionListen();
+    UFUNCTION()
+    void OnExternFinishTriggerCallback();
+
+    /** 给进度赋值技能变量 */
+    void SetProgressesWithAbility(const TArray<class UCoreConditionProgress*>& Progresses);
 };

@@ -14,6 +14,7 @@
 #include "PlayerComponent.h"
 #include "GameWorldSubsystem.h"
 #include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 
 AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug) {

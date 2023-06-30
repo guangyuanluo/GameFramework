@@ -10,7 +10,12 @@
 #include "CoreCharacterStateBase.h"
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {
@@ -39,7 +44,8 @@ void UPlayerConsumeMoneyConditionProgress::OnEvent_Implementation(UCoreGameInsta
     }
 }
 
-bool UPlayerConsumeMoneyConditionProgress::IsComplete_Implementation() {
+bool UPlayerConsumeMoneyConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
 	return CurrentCount >= ConsumeMoneyCondition->MoneyCount;
 }

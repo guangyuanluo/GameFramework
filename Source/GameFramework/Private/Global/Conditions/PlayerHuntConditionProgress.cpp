@@ -5,13 +5,19 @@
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
-bool UPlayerHuntConditionProgress::IsComplete_Implementation() {
+bool UPlayerHuntConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	UPlayerHuntCondition* huntCondition = (UPlayerHuntCondition*)Condition;
 	return ContributionDegree >= huntCondition->ContributionDegree;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

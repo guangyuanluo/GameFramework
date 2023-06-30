@@ -9,6 +9,15 @@
 #include "CoreAbilityCondition.h"
 #include "SkillBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
+#include "ConditionBlueprintLibrary.h"
+#include "CoreGameInstance.h"
+#include "GameSystemManager.h"
+#include "ConditionTriggerSystem.h"
+#include "CoreCondition.h"
+#include "CoreConditionProgress.h"
+#include "CoreTriggerAction.h"
+#include "CoreAbilityCondition.h"
+#include "CoreConditionGroup.h"
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -31,9 +40,7 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		TArray<FHitResult> HitResults;
 		TArray<AActor*> TargetActors;
 		const UCoreTargetType* TargetTypeCDO = Container.TargetType.GetDefaultObject();
-		ACoreCharacter* TargetingCharacter = Cast<ACoreCharacter>(GetAvatarActorFromActorInfo());
-		ACoreCharacterStateBase* TargetingState = Cast<ACoreCharacterStateBase>(GetOwningActorFromActorInfo());
-		TargetTypeCDO->GetTargets(TargetingCharacter, TargetingState, EventData, HitResults, TargetActors);
+		TargetTypeCDO->GetTargets(this, EventData, HitResults, TargetActors);
 		ReturnSpec.AddTargets(HitResults, TargetActors);
 	}
 
@@ -48,21 +55,14 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 		int EffectLevel = OverrideGameplayLevel == -1 ? EffectInfo.EffectLevel : OverrideGameplayLevel;
         auto EffectSpec = MakeOutgoingGameplayEffectSpec(EffectRow->GameplayEffectClass, EffectLevel);
 
-        CoreAbilitySystemComponent->EffectPreAddDynMutiDelegate.Broadcast(CoreAbilitySystemComponent, EffectSpec, EffectRow->GameplayEffectClass);
+        if (EffectSpec.IsValid()) {
+            CoreAbilitySystemComponent->EffectPreAddDynMutiDelegate.Broadcast(CoreAbilitySystemComponent, EffectSpec, EffectRow->GameplayEffectClass);
 
-		ReturnSpec.TargetGameplayEffectSpecs.Add(EffectSpec);
+            ReturnSpec.TargetGameplayEffectSpecs.Add(EffectSpec);
+        }
 	}
 
 	return ReturnSpec;
-}
-
-FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpec(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel) {
-	FCoreGameplayEffectContainer* FoundContainer = EffectContainerMap.Find(ContainerTag);
-
-	if (FoundContainer) {
-		return MakeEffectContainerSpecFromContainer(*FoundContainer, EventData, OverrideGameplayLevel);
-	}
-	return FCoreGameplayEffectContainerSpec();
 }
 
 TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
@@ -117,71 +117,63 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
 	return AllEffects;
 }
 
-TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainer(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel) {
-	FCoreGameplayEffectContainerSpec Spec = MakeEffectContainerSpec(ContainerTag, EventData, OverrideGameplayLevel);
-	return ApplyEffectContainerSpec(Spec);
-}
-
 bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
 }
 
 bool UCoreAbility::K2_IsConditionSatisfy() {
-    auto AbilitySystemComponent = Cast<UCoreAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-    bool bSatisfy = true;
-
-    if (GroupConditionConfigs.Num() > 0) {
-        //对组进行逻辑运算
-        TArray<BooleanAlgebraEnum> LoopGroupRelations;
-        for (int GroupIndex = 0; GroupIndex < GroupConditionConfigs.Num(); ++GroupIndex) {
-            LoopGroupRelations.Add(GroupConditionConfigs[GroupIndex].Relation);
-        }
-        FBooleanAlgebraNodeInfo GroupExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopGroupRelations);
-
-        //组的检查函数里对里面的condition构建逻辑运算
-        TFunction<bool(int)> GroupConditionCheckFunction = [this, AbilitySystemComponent](int GroupIndex){
-            bool bCheckConditionResult = true;
-
-            const auto& Group = GroupConditionConfigs[GroupIndex];
-            if (Group.ConditionConfigs.Num() > 0) {
-                TArray<BooleanAlgebraEnum> LoopConditionRelations;
-                for (int ConditionIndex = 0; ConditionIndex < Group.ConditionConfigs.Num(); ++ConditionIndex) {
-                    const auto& ConditionConfig = Group.ConditionConfigs[ConditionIndex];
-                    LoopConditionRelations.Add(ConditionConfig.Relation);
-                }
-                FBooleanAlgebraNodeInfo ConditionExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopConditionRelations);
-
-                //条件的检查函数里面，对condition cdo判断是否满足
-                TFunction<bool(int)> ConditionCheckFunc = [this, GroupIndex, AbilitySystemComponent](int ConditionIndex){
-                    const auto& ConditionConfig = GroupConditionConfigs[GroupIndex].ConditionConfigs[ConditionIndex];
-                    auto CoreAbilityConditionCDO = ConditionConfig.Condition->GetDefaultObject<UCoreAbilityCondition>();
-                    bool bValid;
-                    bool bConditionSatisfy;
-                    CoreAbilityConditionCDO->DoesSatisfy(AbilitySystemComponent, this, bValid, bConditionSatisfy);
-                    if (!bValid || bConditionSatisfy == ConditionConfig.bNot) {
-                        return false;
-                    }
-                    return true;
-                };
-
-                bCheckConditionResult = UBooleanAlgebraUtil::ExecuteConditionRelationTree(ConditionExecuteRoot, ConditionCheckFunc);
-            }
-
-            return bCheckConditionResult;
-        };
-
-        bSatisfy = UBooleanAlgebraUtil::ExecuteConditionRelationTree(GroupExecuteRoot, GroupConditionCheckFunction);
-    }
-
-    return bSatisfy;
+    return UConditionBlueprintLibrary::DoesProgressesSatisfy(RequireConditionProgresses);
 }
 
 void UCoreAbility::OnActivateNative_Implementation() {
-
+    
 }
 
 void UCoreAbility::OnEndNative_Implementation() {
 
+}
+
+void UCoreAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) {
+    //生成进度对象
+    auto OwnerActor = ActorInfo->OwnerActor.Get();
+    for (auto TriggerCondition : TriggerConditions.Conditions) {
+        auto ConditionProgress = TriggerCondition->GenerateConditionProgress(OwnerActor);
+        RequireConditionProgresses.Add(ConditionProgress);
+    }
+    SetProgressesWithAbility(RequireConditionProgresses);
+    for (auto ConditionProgress : RequireConditionProgresses) {
+        ConditionProgress->OnInitialize();
+    }
+
+    Super::OnGiveAbility(ActorInfo, Spec);
+
+    if (TriggerWay == CoreAbilityTriggerEnum::E_Passive) {
+        auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
+        auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+        PassiveConditionHandler.OnAllProgressesSatisfy.AddUObject(this, &UCoreAbility::OnPassiveConditionTriggerCallback);
+        ConditionTriggerSystem->FollowConditions(PassiveConditionHandler, RequireConditionProgresses);
+    }
+}
+
+void UCoreAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) {
+    if (TriggerWay == CoreAbilityTriggerEnum::E_Passive) {
+        auto World = GetWorld();
+        if (World) {
+            auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
+            auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+            if (ConditionTriggerSystem) {
+                PassiveConditionHandler.OnAllProgressesSatisfy.RemoveAll(this);
+                ConditionTriggerSystem->UnfollowConditions(PassiveConditionHandler);
+            }
+        }
+    }
+    //清空进度对象
+    for (auto RequireConditionProgress : RequireConditionProgresses) {
+        RequireConditionProgress->OnUninitialize();
+    }
+    RequireConditionProgresses.Empty();
+
+    Super::OnRemoveAbility(ActorInfo, Spec);
 }
 
 bool UCoreAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const {
@@ -247,6 +239,12 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
             return;
         }
 
+        StartExternFinishConditionListen();
+        if (!IsActive()) {
+            //有可能开始就被终止了
+            return;
+        }
+        StartConditionTriggerListen();
         OnActivateNative();
     }
 }
@@ -271,6 +269,10 @@ void UCoreAbility::CallInputReleased(const FGameplayAbilitySpecHandle Handle) {
     auto Spec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
 
     OnAbilityInputReleased.Broadcast(this, Spec->InputID);
+}
+
+void UCoreAbility::SetCurrentReceivedEventData(const FGameplayEventData& GameEventData) {
+    CurrentReceivedEventData = GameEventData;
 }
 
 void UCoreAbility::LimitActiveTimeCallback() {
@@ -301,5 +303,135 @@ void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
         AbilitySystemComponent->ClearAbilityCooldown(this);
     }
 
+    StopConditionTriggerListen();
+    StopExternFinishConditionListen();
+
     OnEndNative();
+}
+
+void UCoreAbility::OnPassiveConditionTriggerCallback() {
+    K2_ActivateAbility();
+}
+
+void UCoreAbility::StartConditionTriggerListen() {
+    if (ConditionActionTriggerConfigs.Num() == 0) {
+        return;
+    }
+    auto OwnerActor = GetOwningActorFromActorInfo();    
+    //生成触发器的进度监听
+    for (int Index = 0; Index < ConditionActionTriggerConfigs.Num(); ++Index) {
+        auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[Index];
+        if (ConditionActionTriggerConfig.ExecuteActions.Actions.Num() == 0) {
+            //没有执行动作，监听无意义，多半是配错了
+            continue;
+        }
+        FCoreConditionActionTriggerInfo& TriggerInfo = TriggerConditionProgressInfos.AddDefaulted_GetRef();
+        TriggerInfo.ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(this, &UCoreAbility::OnConditionTriggerCallback, Index);
+        for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
+            auto Progress = Condition->GenerateConditionProgress(OwnerActor);
+            TriggerInfo.TriggerConditionProgresses.Add(Progress);
+        }
+        SetProgressesWithAbility(TriggerInfo.TriggerConditionProgresses);
+        for (auto ConditionProgress : TriggerInfo.TriggerConditionProgresses) {
+            ConditionProgress->OnInitialize();
+        }
+    }
+    auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
+    auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+    for (auto& TriggerConditionProgressInfo : TriggerConditionProgressInfos) {
+        ConditionTriggerSystem->FollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler, TriggerConditionProgressInfo.TriggerConditionProgresses);
+    }
+}
+
+void UCoreAbility::StopConditionTriggerListen() {
+    if (ConditionActionTriggerConfigs.Num() == 0) {
+        return;
+    }
+    auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
+    auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+    if (!ConditionTriggerSystem) {
+        return;
+    }
+    for (auto& TriggerConditionProgressInfo : TriggerConditionProgressInfos) {
+        ConditionTriggerSystem->UnfollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler);
+        TriggerConditionProgressInfo.ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
+        for (auto Progress : TriggerConditionProgressInfo.TriggerConditionProgresses) {
+            Progress->OnUninitialize();
+        }
+    }
+    TriggerConditionProgressInfos.Empty();
+}
+
+void UCoreAbility::OnConditionTriggerCallback(int TriggerIndex) {
+    if (!IsActive()) {
+        return;
+    }
+    if (!CurrentReceivedEventData.ContextHandle.IsValid()) {
+        CurrentReceivedEventData.ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+    }
+    FGameplayEventData ActionEventData = CurrentReceivedEventData;
+    const auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[TriggerIndex];
+    for (auto ExecuteAction : ConditionActionTriggerConfig.ExecuteActions.Actions) {
+        FLogicObjectLoadWorldScope LoadWorldScope(ExecuteAction, this);
+        ExecuteAction->OnExecute(ActionEventData);
+    }
+}
+
+void UCoreAbility::StartExternFinishConditionListen() {
+    if (ExternFinishConditions.Conditions.Num() == 0) {
+        return;
+    }
+    auto OwnerActor = GetOwningActorFromActorInfo();
+
+    for (const auto& ExternFinishCondition : ExternFinishConditions.Conditions) {
+        auto Progress = ExternFinishCondition->GenerateConditionProgress(OwnerActor);
+        Progress->OnInitialize();
+        ExternFinishConditionProgresses.Add(Progress);
+    }
+    auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
+    auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+    ExternFinishConditionHandler.OnAllProgressesSatisfy.AddUObject(this, &UCoreAbility::OnExternFinishTriggerCallback);
+    ConditionTriggerSystem->FollowConditions(ExternFinishConditionHandler, ExternFinishConditionProgresses);
+}
+
+void UCoreAbility::StopExternFinishConditionListen() {
+    if (ExternFinishConditions.Conditions.Num() == 0) {
+        return;
+    }
+    for (auto ExternFinishConditionProgress : ExternFinishConditionProgresses) {
+        ExternFinishConditionProgress->OnUninitialize();
+    }
+    auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
+    auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
+    ConditionTriggerSystem->UnfollowConditions(ExternFinishConditionHandler);
+    ExternFinishConditionHandler.OnAllProgressesSatisfy.RemoveAll(this);
+    ExternFinishConditionProgresses.Empty();
+}
+
+void UCoreAbility::OnExternFinishTriggerCallback() {
+    K2_EndAbility();
+}
+
+void UCoreAbility::SetProgressesWithAbility(const TArray<class UCoreConditionProgress*>& Progresses) {
+    TArray<UCoreConditionProgress*> SearchProgresses;
+    for (auto Progress : Progresses) {
+        SearchProgresses.Add(Progress);
+    }
+    while (SearchProgresses.Num() > 0) {
+        auto SearchProgress = SearchProgresses[SearchProgresses.Num() - 1];
+        SearchProgresses.RemoveAt(SearchProgresses.Num() - 1);
+        if (auto AbilityConditionProgress = Cast<UCoreAbilityConditionProgress>(SearchProgress)) {
+            AbilityConditionProgress->OwnerAbility = this;
+        }
+        else
+        {
+            if (auto ConditionGroupProgress = Cast<UCoreConditionGroupProgress>(SearchProgress)) {
+                TArray<UCoreConditionProgress*> ChildProgresses;
+                ConditionGroupProgress->GetProgressesWithChildren(ChildProgresses);
+                for (auto ChildProgress : ChildProgresses) {
+                    SearchProgresses.Add(ChildProgress);
+                }
+            }
+        }
+    }
 }

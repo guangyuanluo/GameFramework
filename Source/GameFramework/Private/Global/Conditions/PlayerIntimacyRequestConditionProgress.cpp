@@ -7,7 +7,8 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-bool UPlayerIntimacyRequestConditionProgress::IsComplete_Implementation() {
+bool UPlayerIntimacyRequestConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return false;
 }
 

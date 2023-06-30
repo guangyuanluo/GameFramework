@@ -5,6 +5,7 @@
 #include "CoreAbility.h"
 #include "Modules/Skill/CoreAbilityConditionGlobal.h"
 #include "AbilitySystemComponent.h"
+#include "CoreConditionGroup.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -68,13 +69,24 @@ float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpec(FGameplayEffectSpe
 }
 
 bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
-	for (const auto& Group : Ability->GroupConditionConfigs) {
-		for (const auto& ConditionConfig : Group.ConditionConfigs) {
-			if (ConditionConfig.Condition->IsChildOf(UCoreAbilityCondition_CurrentComboSectionLimit::StaticClass())) {
-				return true;
+	TArray<UCoreCondition*> SearchConditions;
+	for (auto TriggerCondition : Ability->TriggerConditions.Conditions) {
+		SearchConditions.Add(TriggerCondition);
+	}
+	auto ComboConditionClass = UCoreAbilityCondition_CurrentComboSectionLimit::StaticClass();
+	while (SearchConditions.Num() > 0) {
+		auto SearchCondition = SearchConditions[SearchConditions.Num() - 1];
+		SearchConditions.RemoveAt(SearchConditions.Num() - 1);
+		if (SearchCondition->IsA(ComboConditionClass)) {
+			return true;
+		}
+		if (auto ConditionGroup = Cast<UCoreConditionGroup>(SearchCondition)) {
+			for (auto ChildCondition : ConditionGroup->ConditionList.Conditions) {
+				SearchConditions.Add(ChildCondition);
 			}
 		}
 	}
+
 	return false;
 }
 

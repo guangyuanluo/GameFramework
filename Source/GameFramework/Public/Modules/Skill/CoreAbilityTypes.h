@@ -12,13 +12,18 @@
 #include "GameplayEffectTypes.h"
 #include "Abilities/GameplayAbilityTargetTypes.h"
 #include "Modules/Skill/EffectInfo.h"
-#include "Utils/Algorithm/BooleanAlgebraUtil.h"
 #include "CoreAbilityTypes.generated.h"
 
-class UCoreAbilitySystemComponent;
-class UGameplayEffect;
 class UCoreTargetType;
-class UCoreAbility;
+
+/**
+* 技能触发方式
+*/
+UENUM(BlueprintType)
+enum class CoreAbilityTriggerEnum :uint8 {
+    E_InputKey UMETA(DisplayName = "按键触发"),
+    E_Passive UMETA(DisplayName = "被动触发"),
+};
 
 UENUM(BlueprintType)
 enum class CoreAbilityCounterEnum :uint8 {
@@ -49,7 +54,7 @@ public:
 
 #if WITH_EDITORONLY_DATA
     UPROPERTY(EditAnywhere, AdvancedDisplay, Category = GameplayEffectContainer, meta = (DisplayName = "是否显示计数相关属性"))
-    bool ShowCounterEdit = false;
+    bool ShowCounterEdit = true;
 #endif
 
     /**
@@ -75,17 +80,6 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (DisplayName = "是否自动激活GE上的Granted GA"))
 	bool AutoActiveGrantedAbility = false;
-};
-
-/**
- * Container配置
- */
-USTRUCT(BlueprintType)
-struct FCoreGameplayEffectContainerConfig {
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = GameplayEffectContainer, meta = (ShowDisplayNames))
-	TArray<FCoreGameplayEffectContainer> Containers;
 };
 
 /** A "processed" version of CoreGameplayEffectContainer that can be passed around and eventually applied */
@@ -121,44 +115,4 @@ public:
 
     /** clear targets */
     void ClearTargets();
-};
-
-/**
-* 条件配置
-*/
-USTRUCT(BlueprintType)
-struct FCoreAbilityConditionConfig {
-	GENERATED_BODY()
-
-    /**
-     * 运算符
-     */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
-    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "条件类型", ShowDisplayNames))
-    TSubclassOf<class UCoreAbilityCondition> Condition;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "取反"))
-	bool bNot = false;
-};
-
-/**
- * 条件组信息
- */
-USTRUCT(BlueprintType)
-struct FCoreAbilityConditionGroupInfo {
-	GENERATED_BODY()
-
-    /**
-     * 组关系运算符
-     */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayName = "运算符"))
-    BooleanAlgebraEnum Relation = BooleanAlgebraEnum::E_AND;
-
-    /**
-     * 条件
-     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件", ShowDisplayNames))
-    TArray<FCoreAbilityConditionConfig> ConditionConfigs;
 };

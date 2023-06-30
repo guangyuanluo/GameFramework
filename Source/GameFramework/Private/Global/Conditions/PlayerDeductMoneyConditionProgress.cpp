@@ -31,12 +31,18 @@ void UPlayerDeductMoneyConditionProgress::OnInitialize_Implementation() {
 	OrderID = MoneyOrder->ID;
 }
 
-bool UPlayerDeductMoneyConditionProgress::IsComplete_Implementation() {
+bool UPlayerDeductMoneyConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return HaveComplete;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

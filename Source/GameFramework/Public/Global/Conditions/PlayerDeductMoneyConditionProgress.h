@@ -28,7 +28,7 @@ public:
 	FGuid OrderID;
 
 	virtual void OnInitialize_Implementation() override;
-	virtual bool IsComplete_Implementation() override;
+	virtual bool IsComplete_Implementation(bool& IsValid) override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
 	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
