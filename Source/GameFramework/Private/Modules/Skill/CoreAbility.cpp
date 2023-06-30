@@ -323,6 +323,7 @@ void UCoreAbility::StartConditionTriggerListen() {
         auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[Index];
         if (ConditionActionTriggerConfig.ExecuteActions.Actions.Num() == 0) {
             //没有执行动作，监听无意义，多半是配错了
+            ensureMsgf(false, TEXT("动作配置为空，将不生效"));
             continue;
         }
         FCoreConditionActionTriggerInfo& TriggerInfo = TriggerConditionProgressInfos.AddDefaulted_GetRef();
