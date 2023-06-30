@@ -12,7 +12,8 @@
 #include "CoreAbilitySystemComponent.h"
 #include "CoreCharacter.h"
 
-bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation() {
+bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
 
 	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
@@ -33,7 +34,12 @@ bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation() {
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

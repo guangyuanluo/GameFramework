@@ -10,7 +10,8 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-bool UPlayerCollectMoneyConditionProgress::IsComplete_Implementation() {
+bool UPlayerCollectMoneyConditionProgress::IsComplete_Implementation(bool& IsValid) {
+    IsValid = true;
 	UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)Condition;
     auto PlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 

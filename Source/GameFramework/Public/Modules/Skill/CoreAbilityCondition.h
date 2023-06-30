@@ -3,22 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Base/Structure/LogicObjectBase.h"
+#include "Modules/Condition/CoreCondition.h"
+#include "Modules/Condition/CoreConditionProgress.h"
 #include "CoreAbilityCondition.generated.h"
-
-class UCoreAbility;
 
 /**
 * 技能条件
 */
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class GAMEFRAMEWORK_API UCoreAbilityCondition : public ULogicObjectBase {
+class GAMEFRAMEWORK_API UCoreAbilityCondition : public UCoreCondition {
+    GENERATED_BODY()
+
+public:
+};
+
+/**
+* 技能条件进度 
+*/
+UCLASS(BlueprintType, Blueprintable, Abstract)
+class GAMEFRAMEWORK_API UCoreAbilityConditionProgress : public UCoreConditionProgress {
     GENERATED_BODY()
 
 public:
     /**
-    * 是否满足
+    * 获取条件关联的Ability
     */
-    UFUNCTION(BlueprintNativeEvent, Category = "Skill")
-    void DoesSatisfy(class UCoreAbilitySystemComponent* AbilityComponent, UCoreAbility* Ability, bool& bValid, bool& bSatisfy);
+    UFUNCTION(BlueprintCallable)
+    class UCoreAbility* GetConditionAbility() const;
+    
+    TWeakObjectPtr<class UCoreAbility> OwnerAbility;
 };

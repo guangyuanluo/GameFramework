@@ -9,7 +9,8 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation() {
+bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -18,7 +19,12 @@ bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation() {
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

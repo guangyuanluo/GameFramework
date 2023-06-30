@@ -4,17 +4,17 @@
 #include "CoreAbility.h"
 #include "CoreCharacter.h"
 
-void UCoreTargetType::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType::GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	return;
 }
 
-void UCoreTargetType_UseOwner::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType_UseOwner::GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
-	OutActors.Add(TargetingCharacter);
+	OutActors.Add(Ability->GetAvatarActorFromActorInfo());
 }
 
-void UCoreTargetType_UseEventData::GetTargets_Implementation(ACoreCharacter* TargetingCharacter, ACoreCharacterStateBase* TargetingState, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType_UseEventData::GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	bool AddTarget = false;
 	if (EventData.TargetData.Num() > 0) {

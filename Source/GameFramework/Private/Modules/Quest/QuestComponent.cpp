@@ -286,7 +286,8 @@ void UQuestComponent::RefreshNPCAcquire() {
             for (int ProgressIndex = 0; ProgressIndex < QuestProgresses.Num(); ++ProgressIndex) {
                 auto Progress = QuestProgresses[ProgressIndex];
                 auto QuestProgress = Cast<UAcquireNPCsConditionProgress>(Progress);
-                if (QuestProgress && !QuestProgress->IsComplete()) {
+                bool IsValid;
+                if (QuestProgress && !QuestProgress->IsComplete(IsValid) && IsValid) {
                     auto AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(QuestProgress->Condition);
                     if (AcquireNPCsCondition && NPCSystem->IsNPCReleaseByContainer(AcquireNPCsCondition->UnitIDContainers)) {
                         AcquireNPCQuests.Add(ExecutingQuest);
@@ -319,7 +320,8 @@ void UQuestComponent::RefreshNPCAcquire() {
                 for (int ProgressIndex = 0; ProgressIndex < QuestProgresses.Num(); ++ProgressIndex) {
                     auto Progress = QuestProgresses[ProgressIndex];
                     auto AcquireNPCsConditionProgress = Cast<UAcquireNPCsConditionProgress>(Progress);
-                    if (AcquireNPCsConditionProgress && !AcquireNPCsConditionProgress->IsComplete()) {
+                    bool IsValid;
+                    if (AcquireNPCsConditionProgress && !AcquireNPCsConditionProgress->IsComplete(IsValid) && IsValid) {
                         auto AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(AcquireNPCsConditionProgress->Condition);
                         NPCSystem->TryAcquireNPCByContainer(GetOwner(), AcquireNPCsCondition->UnitIDContainers, AcquireNPCsConditionProgress);
                     }

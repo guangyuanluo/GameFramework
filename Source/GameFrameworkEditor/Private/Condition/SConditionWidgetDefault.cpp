@@ -110,9 +110,6 @@ bool SConditionWidgetDefault::GetIsPropertyVisible(const FPropertyAndParent& Pro
 		if (PropertyAndParent.Property.GetFName() == GET_MEMBER_NAME_CHECKED(UCoreCondition, Relation)) {
 			return false;
 		}
-		else if (PropertyAndParent.Property.GetFName() == GET_MEMBER_NAME_CHECKED(UCoreCondition, bNot)) {
-			return false;
-		}
 		return true;
 	}
 	else {

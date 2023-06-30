@@ -17,7 +17,12 @@ void UPlayerQuestFinishConditionProgress::OnInitialize_Implementation() {
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {
@@ -45,7 +50,8 @@ void UPlayerQuestFinishConditionProgress::OnEvent_Implementation(UCoreGameInstan
 	}
 }
 
-bool UPlayerQuestFinishConditionProgress::IsComplete_Implementation() {
+bool UPlayerQuestFinishConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return HaveComplete;
 }
 

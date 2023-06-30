@@ -14,7 +14,19 @@
 #include "PlayerComponent.h"
 #include "CoreCharacterStateBase.h"
 
-bool UPlayerCollectItemConditionProgress::IsComplete_Implementation() {
+void UPlayerCollectItemConditionProgress::OnUninitialize_Implementation() {
+    Super::OnUninitialize_Implementation();
+
+    UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
+    auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+    UBackpackComponent* BackpackComponent = CharacterState->BackpackComponent;
+    FString Error;
+    auto GameInstance = ProgressOwner->GetWorld()->GetGameInstance<UCoreGameInstance>();
+    GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
+}
+
+bool UPlayerCollectItemConditionProgress::IsComplete_Implementation(bool& IsValid) {
+    IsValid = true;
 	UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
     
     auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -30,17 +42,6 @@ bool UPlayerCollectItemConditionProgress::IsComplete_Implementation() {
 		}
 	}
 	return CurrentCount >= CollectItemCondition->ItemCount;
-}
-
-void UPlayerCollectItemConditionProgress::OnUninitialize_Implementation() {
-    Super::OnUninitialize_Implementation();
-
-	UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
-    auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-    UBackpackComponent* BackpackComponent = CharacterState->BackpackComponent;
-	FString Error;
-    auto GameInstance = ProgressOwner->GetWorld()->GetGameInstance<UCoreGameInstance>();
-    GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetHandleEventTypes_Implementation() {

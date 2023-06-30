@@ -13,12 +13,18 @@ void UArrivingAtConditionProgress::OnInitialize_Implementation() {
 	HaveComplete = false;
 }
 
-bool UArrivingAtConditionProgress::IsComplete_Implementation() {
+bool UArrivingAtConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return HaveComplete;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {

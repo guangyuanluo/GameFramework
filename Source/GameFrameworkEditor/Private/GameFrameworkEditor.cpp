@@ -57,6 +57,8 @@
 #include "AnimSearchTree/AssetTypeActions_AnimSearchTree.h"
 #include "Modules/Unit/UnitIDContainer.h"
 #include "Customization/UnitIDContainerCustomization.h"
+#include "Modules/TriggerAction/CoreTriggerActionList.h"
+#include "Customization/CoreTriggerActionListCustomization.h"
 
 static const FName GameFrameworkEditorTabName("GameFrameworkEditor");
 
@@ -296,6 +298,10 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 		FUnitIDContainer::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FUnitIDContainerCustomization::MakeInstance));
 
+	PropertyModule.RegisterCustomPropertyTypeLayout(
+		FCoreTriggerActionList::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreTriggerActionListCustomization::MakeInstance));
+
     PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -312,6 +318,7 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
         PropertyModule.UnregisterCustomClassLayout(UCoreAbility::StaticClass()->GetFName());
         PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreGameplayEffectContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FUnitIDContainer::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreTriggerActionList::StaticStruct()->GetFName());
 
         PropertyModule.NotifyCustomizationModuleChanged();
     }

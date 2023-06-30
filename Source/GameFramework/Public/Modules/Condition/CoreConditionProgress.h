@@ -64,9 +64,10 @@ public:
 
 	/*
 	* 是否完成
+	* @param IsValid 是否判断合法
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ConditionSystem")
-	bool IsComplete();
+	bool IsComplete(bool& IsValid);
 
 	/**
 	* 刷新满足性

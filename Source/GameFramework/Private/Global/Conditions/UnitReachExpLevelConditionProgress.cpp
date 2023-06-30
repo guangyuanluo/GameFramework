@@ -7,7 +7,12 @@
 #include "CorePlayerController.h"
 
 TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
-	if (IsComplete()) {
+	bool IsValid;
+	bool bComplete = IsComplete(IsValid);
+	if (!IsValid) {
+		return {};
+	}
+	if (bComplete) {
 		return {};
 	}
 	else {
@@ -30,6 +35,7 @@ void UUnitReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstan
 	}
 }
 
-bool UUnitReachExpLevelConditionProgress::IsComplete_Implementation() {
+bool UUnitReachExpLevelConditionProgress::IsComplete_Implementation(bool& IsValid) {
+	IsValid = true;
 	return false;
 }

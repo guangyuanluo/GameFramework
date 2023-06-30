@@ -21,11 +21,12 @@
 #include "AsyncPlayScenario.h"
 #include "Scenario.h"
 #include "GameFrameworkUtils.h"
+#include "ConditionBlueprintLibrary.h"
 
 void UExecutingQuest::Initialize(UQuest* InQuest) {
 	Quest = InQuest;
 	ID = Quest->ID;
-	ConditionTriggerHandler.OnAllProgressesSatisfy.AddDynamic(this, &UExecutingQuest::OnAllProgressesSatisfy);
+	ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(this, &UExecutingQuest::OnAllProgressesSatisfy);
 
 	auto QuestComponent = GetQuestComponent();
 
@@ -38,7 +39,7 @@ void UExecutingQuest::Initialize(UQuest* InQuest) {
 }
 
 void UExecutingQuest::Uninitiliaize() {
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveDynamic(this, &UExecutingQuest::OnAllProgressesSatisfy);
+	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
 
 	for (auto QuestProgress : QuestProgresses) {
 		QuestProgress->OnUninitialize();
@@ -72,14 +73,7 @@ const TArray<UCoreReward*>& UExecutingQuest::GetQuestRewards() const {
 }
 
 bool UExecutingQuest::IsComplete() const {
-	bool IsComplete = true;
-	for (int Index = 0; Index < QuestProgresses.Num(); ++Index) {
-		if (!IsValid(QuestProgresses[Index]) || !QuestProgresses[Index]->IsComplete()) {
-            IsComplete = false;
-			break;
-		}
-	}
-	return IsComplete;
+	return UConditionBlueprintLibrary::DoesProgressesSatisfy(QuestProgresses);
 }
 
 UQuestComponent* UExecutingQuest::GetQuestComponent() {

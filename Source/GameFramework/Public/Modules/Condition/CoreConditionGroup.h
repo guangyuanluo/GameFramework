@@ -35,7 +35,7 @@ public:
 
 	virtual void OnInitialize_Implementation() override;
 	virtual void OnUninitialize_Implementation() override;
-	virtual bool IsComplete_Implementation() override;
+	virtual bool IsComplete_Implementation(bool& IsValid) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) override;
 
