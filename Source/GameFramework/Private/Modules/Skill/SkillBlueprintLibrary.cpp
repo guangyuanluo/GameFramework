@@ -82,7 +82,9 @@ bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
 		}
 		if (auto ConditionGroup = Cast<UCoreConditionGroup>(SearchCondition)) {
 			for (auto ChildCondition : ConditionGroup->ConditionList.Conditions) {
-				SearchConditions.Add(ChildCondition);
+				if (ChildCondition != ConditionGroup) {
+					SearchConditions.Add(ChildCondition);
+				}
 			}
 		}
 	}

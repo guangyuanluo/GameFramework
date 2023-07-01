@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/Structure/LogicObjectBase.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "CoreTriggerAction.generated.h"
 
 /**
