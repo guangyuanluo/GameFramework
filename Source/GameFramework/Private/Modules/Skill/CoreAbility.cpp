@@ -310,7 +310,10 @@ void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
 }
 
 void UCoreAbility::OnPassiveConditionTriggerCallback() {
-    K2_ActivateAbility();
+    auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
+    if (AbilitySystemComponent) {
+        AbilitySystemComponent->TryActivateAbilityByClass(GetClass());
+    }
 }
 
 void UCoreAbility::StartConditionTriggerListen() {
@@ -386,8 +389,11 @@ void UCoreAbility::StartExternFinishConditionListen() {
 
     for (const auto& ExternFinishCondition : ExternFinishConditions.Conditions) {
         auto Progress = ExternFinishCondition->GenerateConditionProgress(OwnerActor);
-        Progress->OnInitialize();
         ExternFinishConditionProgresses.Add(Progress);
+    }
+    SetProgressesWithAbility(ExternFinishConditionProgresses);
+    for (auto Progress : ExternFinishConditionProgresses) {
+        Progress->OnInitialize();
     }
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
@@ -430,7 +436,9 @@ void UCoreAbility::SetProgressesWithAbility(const TArray<class UCoreConditionPro
                 TArray<UCoreConditionProgress*> ChildProgresses;
                 ConditionGroupProgress->GetProgressesWithChildren(ChildProgresses);
                 for (auto ChildProgress : ChildProgresses) {
-                    SearchProgresses.Add(ChildProgress);
+                    if (ChildProgress != ConditionGroupProgress) {
+                        SearchProgresses.Add(ChildProgress);
+                    }
                 }
             }
         }

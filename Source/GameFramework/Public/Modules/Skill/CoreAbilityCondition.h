@@ -31,5 +31,6 @@ public:
     UFUNCTION(BlueprintCallable)
     class UCoreAbility* GetConditionAbility() const;
     
-    TWeakObjectPtr<class UCoreAbility> OwnerAbility;
+    UPROPERTY()
+    TObjectPtr<class UCoreAbility> OwnerAbility;
 };

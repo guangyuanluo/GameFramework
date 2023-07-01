@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreCondition.h"
+#include "Modules/Condition/CoreCondition.h"
 #include "CoreConditionProgress.generated.h"
 
 class ACharacter;
@@ -87,6 +87,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses);
 
+	virtual UWorld* GetWorld() const override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
 	virtual void PostNetReceive() override;

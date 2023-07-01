@@ -42,6 +42,13 @@ void UCoreConditionProgress::GetProgressesWithChildren(TArray<UCoreConditionProg
     OutProgresses.Add(this);
 }
 
+UWorld* UCoreConditionProgress::GetWorld() const {
+    if (ProgressOwner) {
+        return ProgressOwner->GetWorld();
+    }
+    return nullptr;
+}
+
 void UCoreConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
