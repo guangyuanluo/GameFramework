@@ -57,5 +57,5 @@ private:
 	* 所有进度满足
 	*/
 	UFUNCTION()
-	void OnAllProgressesSatisfy();
+	void OnAllProgressesSatisfy(FConditionTriggerHandler Handler);
 };

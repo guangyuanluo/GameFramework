@@ -26,7 +26,6 @@
 void UExecutingQuest::Initialize(UQuest* InQuest) {
 	Quest = InQuest;
 	ID = Quest->ID;
-	ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(this, &UExecutingQuest::OnAllProgressesSatisfy);
 
 	auto QuestComponent = GetQuestComponent();
 
@@ -39,8 +38,6 @@ void UExecutingQuest::Initialize(UQuest* InQuest) {
 }
 
 void UExecutingQuest::Uninitiliaize() {
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
-
 	for (auto QuestProgress : QuestProgresses) {
 		QuestProgress->OnUninitialize();
 	}
@@ -125,7 +122,7 @@ bool UExecutingQuest::IsSupportedForNetworking() const {
     return true;
 }
 
-void UExecutingQuest::OnAllProgressesSatisfy() {
+void UExecutingQuest::OnAllProgressesSatisfy(FConditionTriggerHandler Handler) {
 	//所有任务进度都变成完成
 	if (GetWorld()->GetNetMode() == ENetMode::NM_Standalone) {
 		NotifyPlayScenario();
@@ -241,7 +238,11 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
 
 	ConditionTriggerSystem->UnfollowConditions(ConditionTriggerHandler);
-	ConditionTriggerSystem->FollowConditions(ConditionTriggerHandler, QuestProgresses);
+
+	FOnAllProgressesSatisfyDelegate Callback;
+	Callback.BindUFunction(this, TEXT("OnAllProgressesSatisfy"));
+
+	ConditionTriggerSystem->FollowConditions(ConditionTriggerHandler, QuestProgresses, Callback);
 }
 
 void UExecutingQuest::OnProgressPostNetReceive(UCoreConditionProgress* Progress) {

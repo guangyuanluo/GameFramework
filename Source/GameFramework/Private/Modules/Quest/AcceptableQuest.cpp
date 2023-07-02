@@ -31,15 +31,14 @@ void UAcceptableQuest::Uninitialize() {
 }
 
 void UAcceptableQuest::StartListen() {
-	ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(this, &UAcceptableQuest::OnAllProgressesSatisfy);
+	FOnAllProgressesSatisfyDelegate Callback;
+	Callback.BindUFunction(this, TEXT("OnAllProgressesSatisfy"));
 
 	auto GameInstance = Cast<UCoreGameInstance>(UGameplayStatics::GetGameInstance(QuestComponent));
-	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->FollowConditions(ConditionTriggerHandler, QuestProgresses);
+	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->FollowConditions(ConditionTriggerHandler, QuestProgresses, Callback);
 }
 
 void UAcceptableQuest::StopListen() {
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
-
 	auto GameInstance = Cast<UCoreGameInstance>(UGameplayStatics::GetGameInstance(QuestComponent));
 	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->UnfollowConditions(ConditionTriggerHandler);
 }
@@ -56,7 +55,7 @@ bool UAcceptableQuest::IsComplete() const {
 	return UConditionBlueprintLibrary::DoesProgressesSatisfy(QuestProgresses);
 }
 
-void UAcceptableQuest::OnAllProgressesSatisfy() {
+void UAcceptableQuest::OnAllProgressesSatisfy(FConditionTriggerHandler Handler) {
 	//所有任务进度都变成完成，接受任务，开启后续流程
 	QuestComponent->AcceptQuest(GetID());
 }
