@@ -120,7 +120,7 @@ private:
 	* 所有进度完成
 	*/
 	UFUNCTION()
-	void OnAllProgressesSatisfy();
+	void OnAllProgressesSatisfy(FConditionTriggerHandler Handler);
 
 	UFUNCTION()
 	void OnRep_QuestID();

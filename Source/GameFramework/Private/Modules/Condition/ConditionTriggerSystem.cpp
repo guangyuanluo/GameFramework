@@ -20,12 +20,13 @@ void UConditionTriggerSystem::Uninitialize() {
     Super::Uninitialize();
 }
 
-void UConditionTriggerSystem::FollowConditions(FConditionTriggerHandler& InOutHandler, const TArray<UCoreConditionProgress*>& Progresses) {
+void UConditionTriggerSystem::FollowConditions(FConditionTriggerHandler& InOutHandler, const TArray<UCoreConditionProgress*>& Progresses, const FOnAllProgressesSatisfyDelegate& InDelegate) {
 	GenerateHandler(InOutHandler);
 
 	FConditionFollowContent FollowContent;
 	FollowContent.Progresses = Progresses;
 	FollowContent.Handler = InOutHandler;
+	FollowContent.Callback = InDelegate;
 
 	FollowMap.Add(InOutHandler, FollowContent);
 
@@ -38,7 +39,7 @@ void UConditionTriggerSystem::FollowConditions(FConditionTriggerHandler& InOutHa
 	}	
 	//最后通知，防止在通知中unfollow
 	if (IsFollowContentSatisfy(FollowContent)) {
-		InOutHandler.OnAllProgressesSatisfy.Broadcast();
+		InDelegate.ExecuteIfBound(InOutHandler);
 	}
 }
 
@@ -70,7 +71,7 @@ void UConditionTriggerSystem::OnConditionSatisfyChange(UCoreConditionProgress* P
 		//刷新满足性
 		auto& FollowContent = FollowMap[*FindReserveInfoPtr];
 		if (IsFollowContentSatisfy(FollowContent)) {
-			FollowContent.Handler.OnAllProgressesSatisfy.Broadcast();
+			FollowContent.Callback.ExecuteIfBound(FollowContent.Handler);
 		}
 	}
 }
@@ -102,9 +103,10 @@ UWaitCondition* UWaitCondition::StartWaitCondition(class ACorePlayerController* 
 	auto World = WaitCondition->ConditionProgresses[0]->GetWorld();
 	auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
 
-	WaitCondition->ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(WaitCondition, &UWaitCondition::OnAllProgressesSatisfy);
+	FOnAllProgressesSatisfyDelegate Callback;
+	Callback.BindUFunction(WaitCondition, TEXT("OnAllProgressesSatisfy"));
 
-	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->FollowConditions(WaitCondition->ConditionTriggerHandler, WaitCondition->ConditionProgresses);
+	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->FollowConditions(WaitCondition->ConditionTriggerHandler, WaitCondition->ConditionProgresses, Callback);
 
 	return WaitCondition;
 }
@@ -113,8 +115,6 @@ void UWaitCondition::Cancel() {
 	if (ConditionProgresses.Num() == 0) {
 		return;
 	}
-
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
 
 	auto World = ConditionProgresses[0]->GetWorld();
 	auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
@@ -128,8 +128,6 @@ void UWaitCondition::Cancel() {
 
 void UWaitCondition::OnAllProgressesSatisfy() {
 	OnSatisfy.Broadcast();
-	
-	ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
 
 	auto World = ConditionProgresses[0]->GetWorld();
 	auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());

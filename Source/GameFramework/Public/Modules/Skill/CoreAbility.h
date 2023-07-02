@@ -172,7 +172,7 @@ private:
     * 被动条件监听
     */
     UFUNCTION()
-    void OnPassiveConditionTriggerCallback();
+    void OnPassiveConditionTriggerCallback(FConditionTriggerHandler Handler);
 
     /**
     * 条件触发器监听
@@ -180,14 +180,14 @@ private:
     void StartConditionTriggerListen();
     void StopConditionTriggerListen();
     UFUNCTION()
-    void OnConditionTriggerCallback(int TriggerIndex);
+    void OnConditionTriggerCallback(FConditionTriggerHandler Handler);
     /**
     * 额度终止条件监听
     */
     void StartExternFinishConditionListen();
     void StopExternFinishConditionListen();
     UFUNCTION()
-    void OnExternFinishTriggerCallback();
+    void OnExternFinishTriggerCallback(FConditionTriggerHandler Handler);
 
     /** 给进度赋值技能变量 */
     void SetProgressesWithAbility(const TArray<class UCoreConditionProgress*>& Progresses);

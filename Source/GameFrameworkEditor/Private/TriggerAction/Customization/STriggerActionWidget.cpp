@@ -6,7 +6,16 @@ void STriggerActionWidget::Construct(const FArguments& InArgs, UCoreTriggerActio
 	ParentSlot = InParentSlot;
 	WidgetAction = InWidgetAction;
 
-	TSharedRef<SHorizontalBox> Panel = SNew(SHorizontalBox);
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FDetailsViewArgs DetailsViewArgs;
+	DetailsViewArgs.bAllowSearch = false;
+	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+	DetailsViewArgs.bHideSelectionTip = true;
+	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
+	TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	DetailsView->OnFinishedChangingProperties().AddSP(this, &STriggerActionWidget::OnPropertyChanged);
+	DetailsView->SetObject(WidgetAction);
 
 	ChildSlot
 	[
@@ -49,34 +58,8 @@ void STriggerActionWidget::Construct(const FArguments& InArgs, UCoreTriggerActio
 		]
 		.BodyContent()
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.HAlign(HAlign_Fill)
-			[
-				Panel
-			]
+			DetailsView.ToSharedRef()
 		]
-	];
-
-	SHorizontalBox::FScopedWidgetSlotArguments AddWidgetSlot = Panel->AddSlot();
-	AddWidgetSlot.AutoWidth();
-	AddWidgetSlot.HAlign(HAlign_Fill);
-	WidgetSlot = AddWidgetSlot.GetSlot();
-
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	FDetailsViewArgs DetailsViewArgs;
-	DetailsViewArgs.bAllowSearch = false;
-	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
-	DetailsViewArgs.bHideSelectionTip = true;
-	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
-
-	TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsView->OnFinishedChangingProperties().AddSP(this, &STriggerActionWidget::OnPropertyChanged);
-	DetailsView->SetObject(WidgetAction);
-
-	(*WidgetSlot)[
-		DetailsView.ToSharedRef()
 	];
 }
 

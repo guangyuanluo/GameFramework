@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "ConditionTriggerHandler.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnAllProgressesSatisfyDelegate);
-
 /** Unique handle that can be used to distinguish timers that have identical delegates. */
 USTRUCT(BlueprintType)
 struct FConditionTriggerHandler {
@@ -15,21 +13,6 @@ struct FConditionTriggerHandler {
 	FConditionTriggerHandler()
 		: Handle(0) {
 	}
-
-	FConditionTriggerHandler(const FConditionTriggerHandler& Other) {
-		Handle = Other.Handle;
-		OnAllProgressesSatisfy = Other.OnAllProgressesSatisfy;
-	}
-	FConditionTriggerHandler& operator=(const FConditionTriggerHandler& Other) {
-		Handle = Other.Handle;
-		OnAllProgressesSatisfy = Other.OnAllProgressesSatisfy;
-		return *this;
-	}
-
-	/**
-	* 所有进度满足时的回调
-	*/
-	FOnAllProgressesSatisfyDelegate OnAllProgressesSatisfy;
 
 	/** True if this handle was ever initialized by the timer manager */
 	bool IsValid() const {

@@ -11,6 +11,8 @@
 class UCoreConditionProgress;
 class UCoreGameInstance;
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAllProgressesSatisfyDelegate, FConditionTriggerHandler, Handler);
+
 USTRUCT()
 struct FConditionFollowContent {
 	GENERATED_BODY()
@@ -21,6 +23,9 @@ public:
 
 	UPROPERTY()
 	FConditionTriggerHandler Handler;
+
+	UPROPERTY()
+	FOnAllProgressesSatisfyDelegate Callback;
 };
 
 /*
@@ -39,8 +44,8 @@ public:
 	* @param InOutHandler 监听句柄
 	* @param progresses 关注的条件进度
 	*/
-	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-	void FollowConditions(FConditionTriggerHandler& InOutHandler, const TArray<UCoreConditionProgress*>& Progresses);
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem", meta = (AutoCreateRefTerm = "InDelegate"))
+	void FollowConditions(FConditionTriggerHandler& InOutHandler, const TArray<UCoreConditionProgress*>& Progresses, const FOnAllProgressesSatisfyDelegate& InDelegate);
 
 	/**
 	* @brief 取消关注条件

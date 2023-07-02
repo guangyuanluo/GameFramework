@@ -8,7 +8,17 @@ void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition
 	ParentSlot = InParentSlot;
 	ChildIndex = InChildIndex;
 
-	TSharedRef<SHorizontalBox> Panel = SNew(SHorizontalBox);
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FDetailsViewArgs DetailsViewArgs;
+	DetailsViewArgs.bAllowSearch = false;
+	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
+	DetailsViewArgs.bHideSelectionTip = true;
+	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+
+	TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+	DetailsView->OnFinishedChangingProperties().AddSP(this, &SConditionWidgetDefault::OnPropertyChanged);
+	DetailsView->SetIsPropertyVisibleDelegate(FIsPropertyVisible::CreateRaw(this, &SConditionWidgetDefault::GetIsPropertyVisible));
+	DetailsView->SetObject(WidgetCondition);
 
 	ChildSlot
 	[
@@ -59,35 +69,8 @@ void SConditionWidgetDefault::Construct(const FArguments& InArgs, UCoreCondition
 		]
 		.BodyContent()
 		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.HAlign(HAlign_Fill)
-			[
-				Panel
-			]
+			DetailsView.ToSharedRef()
 		]
-	];
-
-	SHorizontalBox::FScopedWidgetSlotArguments AddWidgetSlot = Panel->AddSlot();
-	AddWidgetSlot.AutoWidth();
-	AddWidgetSlot.HAlign(HAlign_Fill);
-	WidgetSlot = AddWidgetSlot.GetSlot();
-
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-	FDetailsViewArgs DetailsViewArgs;
-	DetailsViewArgs.bAllowSearch = false;
-	DetailsViewArgs.DefaultsOnlyVisibility = EEditDefaultsOnlyNodeVisibility::Hide;
-	DetailsViewArgs.bHideSelectionTip = true;
-	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
-
-	TSharedPtr<class IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
-	DetailsView->OnFinishedChangingProperties().AddSP(this, &SConditionWidgetDefault::OnPropertyChanged);
-	DetailsView->SetIsPropertyVisibleDelegate(FIsPropertyVisible::CreateRaw(this, &SConditionWidgetDefault::GetIsPropertyVisible));
-	DetailsView->SetObject(WidgetCondition);
-
-	(*WidgetSlot)[
-		DetailsView.ToSharedRef()
 	];
 }
 

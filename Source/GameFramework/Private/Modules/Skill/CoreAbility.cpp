@@ -150,8 +150,10 @@ void UCoreAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, con
     if (TriggerWay == CoreAbilityTriggerEnum::E_Passive) {
         auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
         auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
-        PassiveConditionHandler.OnAllProgressesSatisfy.AddUObject(this, &UCoreAbility::OnPassiveConditionTriggerCallback);
-        ConditionTriggerSystem->FollowConditions(PassiveConditionHandler, RequireConditionProgresses);
+
+        FOnAllProgressesSatisfyDelegate Callback;
+        Callback.BindUFunction(this, TEXT("OnPassiveConditionTriggerCallback"));
+        ConditionTriggerSystem->FollowConditions(PassiveConditionHandler, RequireConditionProgresses, Callback);
     }
 }
 
@@ -162,7 +164,6 @@ void UCoreAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, c
             auto GameInstance = Cast<UCoreGameInstance>(World->GetGameInstance());
             auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
             if (ConditionTriggerSystem) {
-                PassiveConditionHandler.OnAllProgressesSatisfy.RemoveAll(this);
                 ConditionTriggerSystem->UnfollowConditions(PassiveConditionHandler);
             }
         }
@@ -309,7 +310,7 @@ void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
     OnEndNative();
 }
 
-void UCoreAbility::OnPassiveConditionTriggerCallback() {
+void UCoreAbility::OnPassiveConditionTriggerCallback(FConditionTriggerHandler Handler) {
     auto AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
     if (AbilitySystemComponent) {
         AbilitySystemComponent->TryActivateAbilityByClass(GetClass());
@@ -320,7 +321,7 @@ void UCoreAbility::StartConditionTriggerListen() {
     if (ConditionActionTriggerConfigs.Num() == 0) {
         return;
     }
-    auto OwnerActor = GetOwningActorFromActorInfo();    
+    auto OwnerActor = GetOwningActorFromActorInfo();
     //生成触发器的进度监听
     for (int Index = 0; Index < ConditionActionTriggerConfigs.Num(); ++Index) {
         auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[Index];
@@ -330,7 +331,6 @@ void UCoreAbility::StartConditionTriggerListen() {
             continue;
         }
         FCoreConditionActionTriggerInfo& TriggerInfo = TriggerConditionProgressInfos.AddDefaulted_GetRef();
-        TriggerInfo.ConditionTriggerHandler.OnAllProgressesSatisfy.AddUObject(this, &UCoreAbility::OnConditionTriggerCallback, Index);
         for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
             auto Progress = Condition->GenerateConditionProgress(OwnerActor);
             TriggerInfo.TriggerConditionProgresses.Add(Progress);
@@ -343,7 +343,9 @@ void UCoreAbility::StartConditionTriggerListen() {
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
     for (auto& TriggerConditionProgressInfo : TriggerConditionProgressInfos) {
-        ConditionTriggerSystem->FollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler, TriggerConditionProgressInfo.TriggerConditionProgresses);
+        FOnAllProgressesSatisfyDelegate Callback;
+        Callback.BindUFunction(this, TEXT("OnConditionTriggerCallback"));
+        ConditionTriggerSystem->FollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler, TriggerConditionProgressInfo.TriggerConditionProgresses, Callback);
     }
 }
 
@@ -358,7 +360,6 @@ void UCoreAbility::StopConditionTriggerListen() {
     }
     for (auto& TriggerConditionProgressInfo : TriggerConditionProgressInfos) {
         ConditionTriggerSystem->UnfollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler);
-        TriggerConditionProgressInfo.ConditionTriggerHandler.OnAllProgressesSatisfy.RemoveAll(this);
         for (auto Progress : TriggerConditionProgressInfo.TriggerConditionProgresses) {
             Progress->OnUninitialize();
         }
@@ -366,15 +367,26 @@ void UCoreAbility::StopConditionTriggerListen() {
     TriggerConditionProgressInfos.Empty();
 }
 
-void UCoreAbility::OnConditionTriggerCallback(int TriggerIndex) {
+void UCoreAbility::OnConditionTriggerCallback(FConditionTriggerHandler Handler) {
     if (!IsActive()) {
+        return;
+    }
+    int FindTriggerIndex = INDEX_NONE;
+    for (int Index = 0; Index < TriggerConditionProgressInfos.Num(); ++Index) {
+        const auto& TriggerConditionProgressInfo = TriggerConditionProgressInfos[Index];
+        if (TriggerConditionProgressInfo.ConditionTriggerHandler == Handler) {
+            FindTriggerIndex = Index;
+            break;
+        }
+    }
+    if (FindTriggerIndex == INDEX_NONE) {
         return;
     }
     if (!CurrentReceivedEventData.ContextHandle.IsValid()) {
         CurrentReceivedEventData.ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
     }
     FGameplayEventData ActionEventData = CurrentReceivedEventData;
-    const auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[TriggerIndex];
+    const auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[FindTriggerIndex];
     for (auto ExecuteAction : ConditionActionTriggerConfig.ExecuteActions.Actions) {
         FLogicObjectLoadWorldScope LoadWorldScope(ExecuteAction, this);
         ExecuteAction->OnExecute(ActionEventData);
@@ -397,8 +409,9 @@ void UCoreAbility::StartExternFinishConditionListen() {
     }
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
-    ExternFinishConditionHandler.OnAllProgressesSatisfy.AddUObject(this, &UCoreAbility::OnExternFinishTriggerCallback);
-    ConditionTriggerSystem->FollowConditions(ExternFinishConditionHandler, ExternFinishConditionProgresses);
+    FOnAllProgressesSatisfyDelegate Callback;
+    Callback.BindUFunction(this, TEXT("OnExternFinishTriggerCallback"));
+    ConditionTriggerSystem->FollowConditions(ExternFinishConditionHandler, ExternFinishConditionProgresses, Callback);
 }
 
 void UCoreAbility::StopExternFinishConditionListen() {
@@ -411,11 +424,10 @@ void UCoreAbility::StopExternFinishConditionListen() {
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
     ConditionTriggerSystem->UnfollowConditions(ExternFinishConditionHandler);
-    ExternFinishConditionHandler.OnAllProgressesSatisfy.RemoveAll(this);
     ExternFinishConditionProgresses.Empty();
 }
 
-void UCoreAbility::OnExternFinishTriggerCallback() {
+void UCoreAbility::OnExternFinishTriggerCallback(FConditionTriggerHandler Handler) {
     K2_EndAbility();
 }
 
