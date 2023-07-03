@@ -128,6 +128,12 @@ public:
 	virtual void CallEndAbility() override;
 	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
 	virtual void CallInputReleased(const FGameplayAbilitySpecHandle Handle);
+    //~ Begin UObject Interface
+#if WITH_EDITOR
+    virtual void PostEditImport() override;
+    virtual void PostDuplicate(bool bDuplicateForPIE) override;
+#endif
+    // End UObject
 
     void SetCurrentReceivedEventData(const FGameplayEventData& GameEventData);
 
