@@ -23,6 +23,12 @@ public:
 	FCoreConditionList ConditionList;
 
 	virtual class UCoreConditionProgress* GenerateConditionProgress(AActor* ProgressOwner) override;
+	//~ Begin UObject Interface
+#if WITH_EDITOR
+	virtual void PostEditImport() override;
+	virtual void PostDuplicate(bool bDuplicateForPIE) override;
+#endif
+	// End UObject
 };
 
 /**
