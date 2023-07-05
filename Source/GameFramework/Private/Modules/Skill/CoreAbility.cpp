@@ -272,56 +272,6 @@ void UCoreAbility::CallInputReleased(const FGameplayAbilitySpecHandle Handle) {
     OnAbilityInputReleased.Broadcast(this, Spec->InputID);
 }
 
-#if WITH_EDITOR
-
-void UCoreAbility::PostEditImport() {
-    auto Outer = GetOuter();
-    if (TriggerConditions.Conditions.Num() > 0) {
-        TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : TriggerConditions.Conditions) {
-            auto NewCondition = DuplicateObject(Condition, Outer);
-            NewConditions.Add(NewCondition);
-        }
-        TriggerConditions.Conditions = NewConditions;
-    }
-    if (ConditionActionTriggerConfigs.Num() > 0) {
-        for (auto& ConditionActionTriggerConfig : ConditionActionTriggerConfigs) {
-            if (ConditionActionTriggerConfig.TriggerConditions.Conditions.Num() > 0) {
-                TArray<UCoreCondition*> NewConditions;
-                for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
-                    auto NewCondition = DuplicateObject(Condition, Outer);
-                    NewConditions.Add(NewCondition);
-                }
-                ConditionActionTriggerConfig.TriggerConditions.Conditions = NewConditions;
-            }
-            if (ConditionActionTriggerConfig.ExecuteActions.Actions.Num() > 0) {
-                TArray<UCoreTriggerAction*> NewActions;
-                for (auto Action : ConditionActionTriggerConfig.ExecuteActions.Actions) {
-                    auto NewAction = DuplicateObject(Action, Outer);
-                    NewActions.Add(NewAction);
-                }
-                ConditionActionTriggerConfig.ExecuteActions.Actions = NewActions;
-            }
-        }
-    }
-    if (ExternFinishConditions.Conditions.Num() > 0) {
-        TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : ExternFinishConditions.Conditions) {
-            auto NewCondition = DuplicateObject(Condition, Outer);
-            NewConditions.Add(NewCondition);
-        }
-        ExternFinishConditions.Conditions = NewConditions;
-    }
-}
-
-void UCoreAbility::PostDuplicate(bool bDuplicateForPIE) {
-    Super::PostDuplicate(bDuplicateForPIE);
-
-    PostEditImport();
-}
-
-#endif
-
 void UCoreAbility::SetCurrentReceivedEventData(const FGameplayEventData& GameEventData) {
     CurrentReceivedEventData = GameEventData;
 }
