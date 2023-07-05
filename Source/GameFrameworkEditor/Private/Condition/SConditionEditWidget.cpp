@@ -11,6 +11,8 @@
 #include "Modules/Condition/CoreCondition.h"
 #include "SConditionWidgetDefault.h"
 #include "Graph/GameFrameworkGraphTypes.h"
+#include "JsonObjectConverter.h"
+#include "Modules/Condition/CoreConditionList.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -70,8 +72,80 @@ void SConditionEditWidget::Construct(const FArguments& InArgs, UObject* InOuter)
 						[
 							SNew(STextBlock)
 							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
-							.ColorAndOpacity(FLinearColor(0, 0, 0, 1.0f))
+							.ColorAndOpacity(FLinearColor::White)
 							.Text(FText::FromString(TEXT("添加条件")))
+						]
+					]
+				]
+			]
+			+ SHorizontalBox::Slot()
+			[
+				SNew(SButton)
+				.ContentPadding(-3)
+				.ForegroundColor(FSlateColor::UseForeground())
+				.OnClicked(this, &SConditionEditWidget::CopyButtonClicked)
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.HAlign(HAlign_Fill)
+					.VAlign(VAlign_Fill)
+					[
+						SNew(SBorder)
+						.HAlign(HAlign_Center)
+						.VAlign(VAlign_Center)
+						[
+							SNew(STextBlock)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.ColorAndOpacity(FLinearColor::White)
+							.Text(FText::FromString(TEXT("复制")))
+						]
+					]
+				]
+			]
+			+ SHorizontalBox::Slot()
+			[
+				SNew(SButton)
+				.ContentPadding(-3)
+				.ForegroundColor(FSlateColor::UseForeground())
+				.OnClicked(this, &SConditionEditWidget::PasteButtonClicked)
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.HAlign(HAlign_Fill)
+					.VAlign(VAlign_Fill)
+					[
+						SNew(SBorder)
+						.HAlign(HAlign_Center)
+						.VAlign(VAlign_Center)
+						[
+							SNew(STextBlock)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.ColorAndOpacity(FLinearColor::White)
+							.Text(FText::FromString(TEXT("粘贴")))
+						]
+					]
+				]
+			]
+			+ SHorizontalBox::Slot()
+			[
+				SNew(SButton)
+				.ContentPadding(-3)
+				.ForegroundColor(FSlateColor::UseForeground())
+				.OnClicked(this, &SConditionEditWidget::ClearButtonClicked)
+				[
+					SNew(SVerticalBox)
+					+ SVerticalBox::Slot()
+					.HAlign(HAlign_Fill)
+					.VAlign(VAlign_Fill)
+					[
+						SNew(SBorder)
+						.HAlign(HAlign_Center)
+						.VAlign(VAlign_Center)
+						[
+							SNew(STextBlock)
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 8))
+							.ColorAndOpacity(FLinearColor::White)
+							.Text(FText::FromString(TEXT("清空")))
 						]
 					]
 				]
@@ -172,6 +246,60 @@ FReply SConditionEditWidget::AddConditionButtonClicked() {
 		GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("请先选择条件类型")), 5.0);
 		return FReply::Unhandled();
 	}
+}
+
+FReply SConditionEditWidget::CopyButtonClicked() {
+	TSharedRef<FJsonObject> RootJsonObject = MakeShareable(new FJsonObject());
+
+	FCoreConditionList ConditionList;
+	ConditionList.Conditions = *ConditionPtr;
+
+	FJsonObjectConverter::UStructToJsonObject(FCoreConditionList::StaticStruct(), &ConditionList, RootJsonObject, 0, 0);
+
+	typedef TJsonWriter<TCHAR, TPrettyJsonPrintPolicy<TCHAR>> FStringWriter;
+	typedef TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>> FStringWriterFactory;
+	
+	FString SerializeStr;
+	TSharedRef<FStringWriter> Writer = FStringWriterFactory::Create(&SerializeStr);
+	FJsonSerializer::Serialize(RootJsonObject, Writer);
+
+	FWindowsPlatformMisc::ClipboardCopy(*SerializeStr);
+
+	return FReply::Handled();
+}
+
+FReply SConditionEditWidget::PasteButtonClicked() {
+	FString SerializeStr;
+
+	FWindowsPlatformMisc::ClipboardPaste(SerializeStr);
+
+	FCoreConditionList ConditionList;
+	if (!FJsonObjectConverter::JsonObjectStringToUStruct<FCoreConditionList>(SerializeStr, &ConditionList)) {
+		return FReply::Unhandled();
+	}
+
+	for (auto Condition : ConditionList.Conditions) {
+		auto NewCondition = DuplicateObject(Condition, Outer);
+		ConditionPtr->Add(NewCondition);
+	}
+
+	ConditionPage->ClearChildren();
+	GenerateConditionWidget();
+
+	OnConditionChange.ExecuteIfBound();
+
+	return FReply::Handled();
+}
+
+FReply SConditionEditWidget::ClearButtonClicked() {
+	ConditionPtr->Empty();
+
+	ConditionPage->ClearChildren();
+	GenerateConditionWidget();
+
+	OnConditionChange.ExecuteIfBound();
+
+	return FReply::Handled();
 }
 
 FText SConditionEditWidget::GetConditionTypeComboText() const {

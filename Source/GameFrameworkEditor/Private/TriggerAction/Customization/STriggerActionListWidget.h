@@ -39,6 +39,9 @@ private:
 	TSharedRef<SWidget> GenerateActionTypeComboItem(TSharedPtr<FString> InItem);
 	void ActionNameComboBox_OnSelectionChanged(TSharedPtr<FString> NewGroupingMode, ESelectInfo::Type SelectInfo);
 	FReply AddActionButtonClicked();
+	FReply CopyButtonClicked();
+	FReply PasteButtonClicked();
+	FReply ClearButtonClicked();
 	FText GetActionTypeComboText() const;
 	void OnActionWidgetChange(class UCoreTriggerAction* TriggerAction);
 	void OnActionWidgetRemove(class UCoreTriggerAction* TriggerAction);

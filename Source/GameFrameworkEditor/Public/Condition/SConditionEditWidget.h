@@ -39,6 +39,9 @@ private:
 	TSharedRef<SWidget> GenerateConditionTypeComboItem(TSharedPtr<FString> InItem);
 	void ConditionNameComboBox_OnSelectionChanged(TSharedPtr<FString> NewGroupingMode, ESelectInfo::Type SelectInfo);
 	FReply AddConditionButtonClicked();
+	FReply CopyButtonClicked();
+	FReply PasteButtonClicked();
+	FReply ClearButtonClicked();
 	FText GetConditionTypeComboText() const;
 	void OnConditionWidgetChange(class UCoreCondition* CoreCondition);
 	void OnConditionWidgetRemove(class UCoreCondition* CoreCondition);
