@@ -73,6 +73,9 @@ void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHand
 }
 
 void FCoreConditionListCustomization::OnAssetChange() {
+	ConditionsProperty->NotifyPostChange(EPropertyChangeType::ValueSet);
+	ConditionsProperty->NotifyFinishedChangingProperties();
+
 	TArray<UPackage*> OutPackages;
 	ConditionsProperty->GetOuterPackages(OutPackages);
 	for (auto Package : OutPackages) {
