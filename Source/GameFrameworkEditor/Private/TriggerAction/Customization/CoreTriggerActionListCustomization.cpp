@@ -73,6 +73,9 @@ void FCoreTriggerActionListCustomization::CustomizeChildren(TSharedRef<IProperty
 }
 
 void FCoreTriggerActionListCustomization::OnAssetChange() {
+	ActionsProperty->NotifyPostChange(EPropertyChangeType::ValueSet);
+	ActionsProperty->NotifyFinishedChangingProperties();
+
 	TArray<UPackage*> OutPackages;
 	ActionsProperty->GetOuterPackages(OutPackages);
 	for (auto Package : OutPackages) {
