@@ -297,6 +297,22 @@ float UCoreAbilitySystemComponent::GetInputPressTime(int32 InputID) const {
     return 0.f;
 }
 
+void UCoreAbilitySystemComponent::SetAbilityLimitCounter(UCoreAbility* Ability, int LimitCounter) {
+    AbilityRestCounterMap.Add(Ability, LimitCounter);
+}
+
+void UCoreAbilitySystemComponent::RemoveAbilityLimitCounter(UCoreAbility* Ability) {
+    AbilityRestCounterMap.Remove(Ability);
+}
+
+void UCoreAbilitySystemComponent::ChangeAbilityRestCounter(UCoreAbility* Ability, int Num) {
+    auto FindRestCounterInfo = AbilityRestCounterMap.Find(Ability);
+    if (FindRestCounterInfo) {
+        *FindRestCounterInfo = *FindRestCounterInfo + Num;
+        OnAbilityRestCounterUpdateDelegate.Broadcast(this, Ability, *FindRestCounterInfo);
+    }
+}
+
 void UCoreAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) {
     Super::OnGiveAbility(AbilitySpec);
 

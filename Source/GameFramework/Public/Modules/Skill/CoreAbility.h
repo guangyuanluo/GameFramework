@@ -59,18 +59,6 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能结束自动清空cd"))
     bool bClearCooldownOnEnd = true;
 
-    /**
-    * 单次激活生效时长
-    */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "生效限制", meta = (DisplayName = "限制时长", Tooltip = "单次激活生效时长"))
-    float LimitActiveTime = 0.f;
-
-    /**
-    * 单次激活生效次数
-    */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "生效限制", meta = (DisplayName = "限制次数", Tooltip = "单次激活生效次数"))
-    int LimitActiveCounter = 0;
-
 	/**
 	* 按键按下通知
 	*/
@@ -155,15 +143,6 @@ private:
     UPROPERTY(Transient)
     TArray<class UCoreConditionProgress*> ExternFinishConditionProgresses;
     struct FConditionTriggerHandler ExternFinishConditionHandler;
-
-    /**
-    * 剩余计数
-    */
-    UPROPERTY()
-    int RestCounter = 0;
-
-    UFUNCTION()
-    void LimitActiveTimeCallback();
 
     /**
     * 技能结束处理

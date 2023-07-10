@@ -52,8 +52,6 @@
 #include "Customization/EffectInfoCustomization.h"
 #include "Customization/CoreAbilityCustomization.h"
 #include "Modules/Skill/CoreAbility.h"
-#include "Customization/CoreGameplayEffectContainerCustomization.h"
-#include "Modules/Skill/CoreAbilityTypes.h"
 #include "AnimSearchTree/AssetTypeActions_AnimSearchTree.h"
 #include "Modules/Unit/UnitIDContainer.h"
 #include "Customization/UnitIDContainerCustomization.h"
@@ -290,10 +288,6 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
         UCoreAbility::StaticClass()->GetFName(),
         FOnGetDetailCustomizationInstance::CreateStatic(&FCoreAbilityCustomization::MakeInstance));
 
-    PropertyModule.RegisterCustomPropertyTypeLayout(
-        FCoreGameplayEffectContainer::StaticStruct()->GetFName(),
-        FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreGameplayEffectContainerCustomization::MakeInstance));
-
 	PropertyModule.RegisterCustomPropertyTypeLayout(
 		FUnitIDContainer::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FUnitIDContainerCustomization::MakeInstance));
@@ -316,7 +310,6 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FEffectInfo::StaticStruct()->GetFName());
         PropertyModule.UnregisterCustomClassLayout(UCoreAbility::StaticClass()->GetFName());
-        PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreGameplayEffectContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FUnitIDContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreTriggerActionList::StaticStruct()->GetFName());
 
