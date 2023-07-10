@@ -14,6 +14,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FSkillTemplatePostInit, class UCoreAbilitySy
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEffectPreAddDynMutiDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FEffectPreAddDynDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
 DECLARE_DELEGATE_ThreeParams(FEffectPreAddDelegate, class UCoreAbilitySystemComponent*, const FGameplayEffectSpecHandle&, TSubclassOf<class UGameplayEffect>);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityRestCounterUpdateDelegate, class UCoreAbilitySystemComponent*, UCoreAbility*, int);
 
 /**
  * Subclass of ability system component with game-specific data
@@ -128,15 +129,40 @@ public:
     float GetInputPressTime(int32 InputID) const;
 
     /**
+    * 设置限制技能生效次数
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void SetAbilityLimitCounter(UCoreAbility* Ability, int LimitCounter);
+
+    /**
+    * 移除限制技能生效次数
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void RemoveAbilityLimitCounter(UCoreAbility* Ability);
+
+    /**
+    * 变更技能生效次数
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    void ChangeAbilityRestCounter(UCoreAbility* Ability, int Num);
+
+    /**
     * 技能模板初始化委托
     */
     FSkillTemplatePostInit OnSkillTemplatePostInit;
+    /**
+    * 技能生效次数变革委托
+    */
+    FOnAbilityRestCounterUpdateDelegate OnAbilityRestCounterUpdateDelegate;
 
     virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
     virtual void OnRemoveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
 private:
     TMap<int32, FDateTime> InputTimeMap;
+
+    UPROPERTY()
+    TMap<UCoreAbility*, int> AbilityRestCounterMap;
 
     UPROPERTY()
     TArray<UCoreAbility*> SortCoreAbilities;

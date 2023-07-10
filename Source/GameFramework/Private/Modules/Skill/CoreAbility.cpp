@@ -68,22 +68,7 @@ FCoreGameplayEffectContainerSpec UCoreAbility::MakeEffectContainerSpecFromContai
 TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
 	TArray<FActiveGameplayEffectHandle> AllEffects;
 
-    bool NeedCheckCounter = false;
     FCoreGameplayEffectContainer* FoundContainer = ContainerSpec.ContainerPtr;
-    switch (FoundContainer->CounterEnum) {
-    case CoreAbilityCounterEnum::E_None:
-        break;
-    case CoreAbilityCounterEnum::E_Fixed:
-        NeedCheckCounter = true;
-        RestCounter -= FoundContainer->FixedCounter;
-        break;
-    case CoreAbilityCounterEnum::E_Trigger:
-        NeedCheckCounter = true;
-        break;
-    default:
-        check(false && "not support");
-        break;
-    }
 
 	// Iterate list of effect specs and apply them to their target data
 	for (const FGameplayEffectSpecHandle& SpecHandle : ContainerSpec.TargetGameplayEffectSpecs) {
@@ -109,10 +94,6 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
             }
         }
 	}
-
-    if (NeedCheckCounter && RestCounter <= 0) {
-        K2_EndAbility();
-    }
 
 	return AllEffects;
 }
@@ -186,14 +167,6 @@ bool UCoreAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const 
 }
 
 void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) {
-    if (!FMath::IsNearlyZero(LimitActiveTime)) {
-        if (LimitActiveTimeHandle.IsValid()) {
-            GetWorld()->GetTimerManager().ClearTimer(LimitActiveTimeHandle);
-        }
-
-        GetWorld()->GetTimerManager().SetTimer(LimitActiveTimeHandle, this, &UCoreAbility::LimitActiveTimeCallback, LimitActiveTime, false);
-    }
-
     OnGameplayAbilityEnded.AddUObject(this, &UCoreAbility::OnAbilityEnd);
 
     if (bHasBlueprintActivate) {
@@ -214,8 +187,6 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
         }
     }
     else {
-        RestCounter = LimitActiveCounter;
-
         if (!K2_IsConditionSatisfy()) {
             K2_EndAbility();
             return;
@@ -274,12 +245,6 @@ void UCoreAbility::CallInputReleased(const FGameplayAbilitySpecHandle Handle) {
 
 void UCoreAbility::SetCurrentReceivedEventData(const FGameplayEventData& GameEventData) {
     CurrentReceivedEventData = GameEventData;
-}
-
-void UCoreAbility::LimitActiveTimeCallback() {
-    if (IsActive()) {
-        K2_EndAbility();
-    }
 }
 
 void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {

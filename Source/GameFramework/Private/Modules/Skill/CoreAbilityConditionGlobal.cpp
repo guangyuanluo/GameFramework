@@ -13,15 +13,14 @@ UCoreAbilityCondition_CurrentComboSectionLimit::UCoreAbilityCondition_CurrentCom
 
 bool UCoreAbilityConditionProgress_CurrentComboSectionLimit::IsComplete_Implementation(bool& IsValid) {
     IsValid = false;
-    auto Ability = GetConditionAbility();
-    auto AbilityComponent = Ability->GetAbilitySystemComponentFromActorInfo();
-    auto MeshComponent = Ability->GetOwningComponentFromActorInfo();
+    auto AbilitySystemComponent = GetAbilitySystemComponent();
+    auto MeshComponent = AbilitySystemComponent->AbilityActorInfo->SkeletalMeshComponent.Get();
     if (MeshComponent) {
         IsValid = true;
 
         auto ThisCondition = Cast<UCoreAbilityCondition_CurrentComboSectionLimit>(Condition);
 
-        return AbilityComponent->GetCurrentMontageSectionName() == ThisCondition->SectionName && UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(MeshComponent, UAnimNotifyState_ComboEnable::StaticClass()) != nullptr;
+        return AbilitySystemComponent->GetCurrentMontageSectionName() == ThisCondition->SectionName && UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(MeshComponent, UAnimNotifyState_ComboEnable::StaticClass()) != nullptr;
     }
     else {
         IsValid = false;
@@ -36,13 +35,47 @@ UCoreAbilityCondition_InputTime::UCoreAbilityCondition_InputTime(const class FOb
 
 bool UCoreAbilityConditionProgress_InputTime::IsComplete_Implementation(bool& IsValid) {
     IsValid = false;
+    auto AbilitySystemComponent = GetAbilitySystemComponent();
+    IsValid = true;
+    auto ThisCondition = Cast<UCoreAbilityCondition_InputTime>(Condition);
+    return AbilitySystemComponent->GetInputPressTime(ThisCondition->InputID) >= ThisCondition->InputTimeLimit;
+}
+
+UCoreAbilityCondition_AbilityLimitCounter::UCoreAbilityCondition_AbilityLimitCounter(const class FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer) {
+    ProgressClass = UCoreAbilityConditionProgress_AbilityLimitCounter::StaticClass();
+}
+
+void UCoreAbilityConditionProgress_AbilityLimitCounter::OnInitialize_Implementation() {
+    Super::OnInitialize_Implementation();
+
+    auto ThisCondition = Cast<UCoreAbilityCondition_AbilityLimitCounter>(Condition);
+
+    CurrentCounter = ThisCondition->LimitCounter;
+
     auto Ability = GetConditionAbility();
-    auto AbilityComponent = Cast<UCoreAbilitySystemComponent>(Ability->GetAbilitySystemComponentFromActorInfo());
-    auto FindSpec = AbilityComponent->FindAbilitySpecFromClass(Ability->GetClass());
-    if (FindSpec) {
-        IsValid = true;
-        auto ThisCondition = Cast<UCoreAbilityCondition_InputTime>(Condition);
-        return AbilityComponent->GetInputPressTime(FindSpec->InputID) >= ThisCondition->InputTimeLimit;
+    auto AbilitySystemComponent = GetAbilitySystemComponent();
+    AbilitySystemComponent->SetAbilityLimitCounter(Ability, ThisCondition->LimitCounter);
+    AbilitySystemComponent->OnAbilityRestCounterUpdateDelegate.AddUObject(this, &UCoreAbilityConditionProgress_AbilityLimitCounter::OnAbilityRestCounterUpdate);
+}
+
+void UCoreAbilityConditionProgress_AbilityLimitCounter::OnUninitialize_Implementation() {
+    Super::OnUninitialize_Implementation();
+    
+    auto Ability = GetConditionAbility();
+    auto AbilitySystemComponent = GetAbilitySystemComponent();
+    AbilitySystemComponent->RemoveAbilityLimitCounter(Ability);
+    AbilitySystemComponent->OnAbilityRestCounterUpdateDelegate.RemoveAll(this);
+}
+
+bool UCoreAbilityConditionProgress_AbilityLimitCounter::IsComplete_Implementation(bool& IsValid) {
+    IsValid = true;
+    return CurrentCounter <= 0;
+}
+
+void UCoreAbilityConditionProgress_AbilityLimitCounter::OnAbilityRestCounterUpdate(class UCoreAbilitySystemComponent* AbilitySystemComponent, class UCoreAbility* Ability, int NowCounter) {
+    CurrentCounter = NowCounter;
+    if (CurrentCounter <= 0) {
+        RefreshSatisfy();
     }
-    return false;
 }
