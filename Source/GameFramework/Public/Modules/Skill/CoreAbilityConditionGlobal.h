@@ -65,5 +65,5 @@ private:
     int CurrentCounter;
 
     UFUNCTION()
-    void OnAbilityRestCounterUpdate(class UCoreAbilitySystemComponent* AbilitySystemComponent, class UCoreAbility* Ability, int NowCounter);
+    void OnAbilityRestCounterUpdate(class UCoreAbilitySystemComponent* InAbilitySystemComponent, class UCoreAbility* InAbility, int NowCounter);
 };

@@ -73,7 +73,11 @@ bool UCoreAbilityConditionProgress_AbilityLimitCounter::IsComplete_Implementatio
     return CurrentCounter <= 0;
 }
 
-void UCoreAbilityConditionProgress_AbilityLimitCounter::OnAbilityRestCounterUpdate(class UCoreAbilitySystemComponent* AbilitySystemComponent, class UCoreAbility* Ability, int NowCounter) {
+void UCoreAbilityConditionProgress_AbilityLimitCounter::OnAbilityRestCounterUpdate(class UCoreAbilitySystemComponent* InAbilitySystemComponent, class UCoreAbility* InAbility, int NowCounter) {
+    auto Ability = GetConditionAbility();
+    if (Ability != InAbility) {
+        return;
+    }
     CurrentCounter = NowCounter;
     if (CurrentCounter <= 0) {
         RefreshSatisfy();
