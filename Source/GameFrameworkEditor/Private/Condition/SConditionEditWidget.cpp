@@ -10,9 +10,9 @@
 #include "SConditionWidget.h"
 #include "Modules/Condition/CoreCondition.h"
 #include "SConditionWidgetDefault.h"
-#include "Graph/GameFrameworkGraphTypes.h"
 #include "JsonObjectConverter.h"
 #include "Modules/Condition/CoreConditionList.h"
+#include "PropertyCustomizationHelpers.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -20,21 +20,7 @@ void SConditionEditWidget::Construct(const FArguments& InArgs, UObject* InOuter)
 	Outer = InOuter;
 	OnConditionChange = InArgs._OnConditionChange;
 
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(UCoreCondition::StaticClass()));
-	ClassCache->UpdateAvailableBlueprintClasses();
-
 	FCategorizedGraphActionListBuilder ConditionBuilder(TEXT("Condition"));
-
-	TArray<FGameFrameworkGraphNodeClassData> ConditionClassDatas;
-	ClassCache->GatherClasses(UCoreCondition::StaticClass(), ConditionClassDatas);
-
-	for (auto& ConditionClassData : ConditionClassDatas) {
-		auto ConditionClass = ConditionClassData.GetClass();
-		if (ConditionClass->HasAnyClassFlags(CLASS_Abstract)) continue;
-		auto ConditionClassName = ConditionClass->GetDisplayNameText().ToString();
-		ConditionNameSource.Add(MakeShareable(new FString(ConditionClassName)));
-		ConditionNameMap.Add(ConditionClassName, ConditionClass);
-	}
 
 	ChildSlot
 	[
@@ -45,14 +31,18 @@ void SConditionEditWidget::Construct(const FArguments& InArgs, UObject* InOuter)
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
 			[
-				SNew(SComboBox<TSharedPtr<FString>>)
-				.OptionsSource(&ConditionNameSource)
-				.OnGenerateWidget(this, &SConditionEditWidget::GenerateConditionTypeComboItem)
-				.OnSelectionChanged(this, &SConditionEditWidget::ConditionNameComboBox_OnSelectionChanged)
-				[
-					SNew(STextBlock)
-					.Text(this, &SConditionEditWidget::GetConditionTypeComboText)
-				]
+				SNew(SClassPropertyEntryBox)
+					.MetaClass(UCoreCondition::StaticClass())
+					.ShowDisplayNames(true)
+					.ShowTreeView(true)
+					.SelectedClass_Lambda([this]()
+					{
+						return SelectConditionClass;
+					})
+					.OnSetClass_Lambda([this](const UClass* SelectedClass)
+					{
+						SelectConditionClass = const_cast<UClass*>(SelectedClass);
+					})
 			]
 			+ SHorizontalBox::Slot()
 			[
@@ -202,33 +192,17 @@ void SConditionEditWidget::GenerateConditionWidget() {
 	}
 }
 
-TSharedRef<SWidget> SConditionEditWidget::GenerateConditionTypeComboItem(TSharedPtr<FString> InItem) {
-	return SNew(STextBlock)
-		.Text(FText::FromString(*InItem));
-}
-
-void SConditionEditWidget::ConditionNameComboBox_OnSelectionChanged(TSharedPtr<FString> NewGroupingMode, ESelectInfo::Type SelectInfo) {
-	if (!NewGroupingMode.IsValid()) {
-		return;
-	}
-	SelectConditionName = NewGroupingMode;
-}
-
 FReply SConditionEditWidget::AddConditionButtonClicked() {
-	if (SelectConditionName.IsValid()) {
-		auto FindConditionClassPtr = ConditionNameMap.Find(*SelectConditionName);
-		if (!FindConditionClassPtr) {
-			return FReply::Unhandled();
-		}
+	if (SelectConditionClass) {
 		bool CanCreate = true;
-		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(*FindConditionClassPtr);
+		auto ConditionFactory = ConditionWidgetManager::GetFactoryByConditionClass(SelectConditionClass);
 		if (ConditionFactory) {
 			CanCreate = ConditionFactory->CanCreateCondition();
 		}
 		if (!CanCreate) {
 			return FReply::Unhandled();
 		}
-		auto NewCondition = NewObject<UCoreCondition>(Outer, *FindConditionClassPtr);
+		auto NewCondition = NewObject<UCoreCondition>(Outer, SelectConditionClass);
 		if (ConditionFactory) {
 			ConditionFactory->PostInitConditionCreated(NewCondition);
 		}
@@ -300,15 +274,6 @@ FReply SConditionEditWidget::ClearButtonClicked() {
 	OnConditionChange.ExecuteIfBound();
 
 	return FReply::Handled();
-}
-
-FText SConditionEditWidget::GetConditionTypeComboText() const {
-	if (SelectConditionName.IsValid()) {
-		return FText::FromString(*SelectConditionName);
-	}
-	else {
-		return FText::GetEmpty();
-	}
 }
 
 void SConditionEditWidget::OnConditionWidgetChange(class UCoreCondition* CoreCondition) {

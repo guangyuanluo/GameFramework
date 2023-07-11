@@ -32,7 +32,7 @@ TArray<TSharedPtr<ConditionWidgetFactory>> ConditionWidgetManager::GetAllFactori
     return Factories;
 }
 
-TSharedPtr<ConditionWidgetFactory> ConditionWidgetManager::GetFactoryByConditionClass(TSubclassOf<class UCoreCondition> ConditionClass)
+TSharedPtr<ConditionWidgetFactory> ConditionWidgetManager::GetFactoryByConditionClass(UClass* ConditionClass)
 {
     auto FindFactory = FactoryMap.Find(ConditionClass);
     if (FindFactory) {

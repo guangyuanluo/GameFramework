@@ -9,31 +9,15 @@
 #include "GameFrameworkEditorWidgetTool.h"
 #include "STriggerActionWidget.h"
 #include "Modules/TriggerAction/CoreTriggerAction.h"
-#include "Graph/GameFrameworkGraphTypes.h"
 #include "JsonObjectConverter.h"
 #include "Modules/TriggerAction/CoreTriggerActionList.h"
+#include "PropertyCustomizationHelpers.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
 void STriggerActionListWidget::Construct(const FArguments& InArgs, UObject* InOuter) {
 	Outer = InOuter;
 	OnActionChange = InArgs._OnActionChange;
-
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(UCoreTriggerAction::StaticClass()));
-	ClassCache->UpdateAvailableBlueprintClasses();
-
-	FCategorizedGraphActionListBuilder ActionBuilder(TEXT("TriggerAction"));
-
-	TArray<FGameFrameworkGraphNodeClassData> TriggerActionClassDatas;
-	ClassCache->GatherClasses(UCoreTriggerAction::StaticClass(), TriggerActionClassDatas);
-
-	for (auto& ActionClassData : TriggerActionClassDatas) {
-		auto ActionClass = ActionClassData.GetClass();
-		if (ActionClass->HasAnyClassFlags(CLASS_Abstract)) continue;
-		auto ActionClassName = ActionClass->GetDisplayNameText().ToString();
-		ActionNameSource.Add(MakeShareable(new FString(ActionClassName)));
-		ActionNameMap.Add(ActionClassName, ActionClass);
-	}
 
 	ChildSlot
 	[
@@ -44,14 +28,18 @@ void STriggerActionListWidget::Construct(const FArguments& InArgs, UObject* InOu
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
 			[
-				SNew(SComboBox<TSharedPtr<FString>>)
-				.OptionsSource(&ActionNameSource)
-				.OnGenerateWidget(this, &STriggerActionListWidget::GenerateActionTypeComboItem)
-				.OnSelectionChanged(this, &STriggerActionListWidget::ActionNameComboBox_OnSelectionChanged)
-				[
-					SNew(STextBlock)
-					.Text(this, &STriggerActionListWidget::GetActionTypeComboText)
-				]
+				SNew(SClassPropertyEntryBox)
+					.MetaClass(UCoreTriggerAction::StaticClass())
+					.ShowDisplayNames(true)
+					.ShowTreeView(true)
+					.SelectedClass_Lambda([this]()
+					{
+						return SelectActionClass;
+					})
+					.OnSetClass_Lambda([this](const UClass* SelectedClass)
+					{
+						SelectActionClass = const_cast<UClass*>(SelectedClass);
+					})
 			]
 			+ SHorizontalBox::Slot()
 			[
@@ -197,25 +185,9 @@ void STriggerActionListWidget::GenerateActionWidget() {
 	}
 }
 
-TSharedRef<SWidget> STriggerActionListWidget::GenerateActionTypeComboItem(TSharedPtr<FString> InItem) {
-	return SNew(STextBlock)
-		.Text(FText::FromString(*InItem));
-}
-
-void STriggerActionListWidget::ActionNameComboBox_OnSelectionChanged(TSharedPtr<FString> NewGroupingMode, ESelectInfo::Type SelectInfo) {
-	if (!NewGroupingMode.IsValid()) {
-		return;
-	}
-	SelectActionName = NewGroupingMode;
-}
-
 FReply STriggerActionListWidget::AddActionButtonClicked() {
-	if (SelectActionName.IsValid()) {
-		auto FindConditionClassPtr = ActionNameMap.Find(*SelectActionName);
-		if (!FindConditionClassPtr) {
-			return FReply::Unhandled();
-		}
-		auto NewAction = NewObject<UCoreTriggerAction>(Outer, *FindConditionClassPtr);
+	if (SelectActionClass) {
+		auto NewAction = NewObject<UCoreTriggerAction>(Outer, SelectActionClass);
 		ActionArrayPtr->Add(NewAction);
 
 		TriggerActionPage->ClearChildren();
@@ -284,15 +256,6 @@ FReply STriggerActionListWidget::ClearButtonClicked() {
 	OnActionChange.ExecuteIfBound();
 
 	return FReply::Handled();
-}
-
-FText STriggerActionListWidget::GetActionTypeComboText() const {
-	if (SelectActionName.IsValid()) {
-		return FText::FromString(*SelectActionName);
-	}
-	else {
-		return FText::GetEmpty();
-	}
 }
 
 void STriggerActionListWidget::OnActionWidgetChange(class UCoreTriggerAction* CoreAction) {

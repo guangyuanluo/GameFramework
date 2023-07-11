@@ -27,22 +27,17 @@ public:
 	void RefreshActionArrayPtr(TArray<class UCoreTriggerAction*>* InActionArrayPtr);
 
 private:
-	TArray<TSharedPtr<FString>> ActionNameSource;
-	TMap<FString, TSubclassOf<class UCoreTriggerAction>> ActionNameMap;
-	TSharedPtr<FString> SelectActionName;
+	UClass* SelectActionClass;
 	TSharedPtr<SVerticalBox> TriggerActionPage;
 	TArray<class UCoreTriggerAction*>* ActionArrayPtr;
 	FOnActionChange OnActionChange;
 	UObject* Outer;
 
 	void GenerateActionWidget();
-	TSharedRef<SWidget> GenerateActionTypeComboItem(TSharedPtr<FString> InItem);
-	void ActionNameComboBox_OnSelectionChanged(TSharedPtr<FString> NewGroupingMode, ESelectInfo::Type SelectInfo);
 	FReply AddActionButtonClicked();
 	FReply CopyButtonClicked();
 	FReply PasteButtonClicked();
 	FReply ClearButtonClicked();
-	FText GetActionTypeComboText() const;
 	void OnActionWidgetChange(class UCoreTriggerAction* TriggerAction);
 	void OnActionWidgetRemove(class UCoreTriggerAction* TriggerAction);
 };
