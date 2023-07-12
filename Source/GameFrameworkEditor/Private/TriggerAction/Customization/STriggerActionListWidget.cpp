@@ -12,6 +12,7 @@
 #include "JsonObjectConverter.h"
 #include "Modules/TriggerAction/CoreTriggerActionList.h"
 #include "SSubClassSelectWidget.h"
+#include "HAL/PlatformApplicationMisc.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -217,7 +218,7 @@ FReply STriggerActionListWidget::CopyButtonClicked() {
 	TSharedRef<FStringWriter> Writer = FStringWriterFactory::Create(&SerializeStr);
 	FJsonSerializer::Serialize(RootJsonObject, Writer);
 
-	FWindowsPlatformMisc::ClipboardCopy(*SerializeStr);
+	FPlatformApplicationMisc::ClipboardCopy(*SerializeStr);
 
 	return FReply::Handled();
 }
@@ -225,7 +226,7 @@ FReply STriggerActionListWidget::CopyButtonClicked() {
 FReply STriggerActionListWidget::PasteButtonClicked() {
 	FString SerializeStr;
 
-	FWindowsPlatformMisc::ClipboardPaste(SerializeStr);
+	FPlatformApplicationMisc::ClipboardPaste(SerializeStr);
 
 	FCoreTriggerActionList ActionList;
 	if (!FJsonObjectConverter::JsonObjectStringToUStruct<FCoreTriggerActionList>(SerializeStr, &ActionList)) {

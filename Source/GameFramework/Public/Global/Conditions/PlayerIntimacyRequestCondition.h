@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Condition/CoreConditionProgress_Event.h"
 #include "Modules/Unit/UnitIDContainer.h"
 #include "PlayerIntimacyRequestCondition.generated.h"
 
@@ -39,4 +40,20 @@ public:
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
 	EIntimacyCompare Compare;
+};
+
+/**
+ * 玩家好感度需求条件进度
+ */
+UCLASS(BlueprintType)
+class GAMEFRAMEWORK_API UPlayerIntimacyRequestConditionProgress : public UCoreConditionProgress_Event
+{
+public:
+	GENERATED_BODY()
+
+	virtual bool IsComplete_Implementation(bool& IsValid) override;
+	/**************EventHandler interface define begin*************/
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
+	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
+	/**************EventHandler interface define end*************/
 };
