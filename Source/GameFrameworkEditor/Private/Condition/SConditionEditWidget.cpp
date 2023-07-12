@@ -13,6 +13,7 @@
 #include "JsonObjectConverter.h"
 #include "Modules/Condition/CoreConditionList.h"
 #include "SSubClassSelectWidget.h"
+#include "HAL/PlatformApplicationMisc.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -235,7 +236,7 @@ FReply SConditionEditWidget::CopyButtonClicked() {
 	TSharedRef<FStringWriter> Writer = FStringWriterFactory::Create(&SerializeStr);
 	FJsonSerializer::Serialize(RootJsonObject, Writer);
 
-	FWindowsPlatformMisc::ClipboardCopy(*SerializeStr);
+	FPlatformApplicationMisc::ClipboardCopy(*SerializeStr);
 
 	return FReply::Handled();
 }
@@ -243,7 +244,7 @@ FReply SConditionEditWidget::CopyButtonClicked() {
 FReply SConditionEditWidget::PasteButtonClicked() {
 	FString SerializeStr;
 
-	FWindowsPlatformMisc::ClipboardPaste(SerializeStr);
+	FPlatformApplicationMisc::ClipboardPaste(SerializeStr);
 
 	FCoreConditionList ConditionList;
 	if (!FJsonObjectConverter::JsonObjectStringToUStruct<FCoreConditionList>(SerializeStr, &ConditionList)) {

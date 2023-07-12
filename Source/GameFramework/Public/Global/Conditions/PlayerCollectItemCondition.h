@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
+#include "Modules/Condition/CoreConditionProgress_Event.h"
 #include "Modules/Item/ItemIDContainer.h"
 #include "PlayerCollectItemCondition.generated.h"
 
@@ -27,5 +28,21 @@ public:
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
 	int32 ItemCount;
+};
 
+/**
+ * 玩家收集物品条件进度
+ */
+UCLASS(BlueprintType)
+class GAMEFRAMEWORK_API UPlayerCollectItemConditionProgress : public UCoreConditionProgress_Event
+{
+public:
+	GENERATED_BODY()
+
+	virtual void OnUninitialize_Implementation() override;
+	virtual bool IsComplete_Implementation(bool& IsValid) override;
+	/**************EventHandler interface define begin*************/
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
+	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
+	/**************EventHandler interface define end*************/
 };

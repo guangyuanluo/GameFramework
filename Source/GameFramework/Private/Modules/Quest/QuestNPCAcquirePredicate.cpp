@@ -3,8 +3,8 @@
 #include "QuestNPCAcquirePredicate.h"
 #include "QuestComponent.h"
 #include "ExecutingQuest.h"
-#include "AcquireNPCsConditionProgress.h"
-#include "TalkToConditionProgress.h"
+#include "AcquireNPCsCondition.h"
+#include "TalkToCondition.h"
 
 bool UQuestNPCAcquirePredicate::Compare_Implementation(UQuestComponent* QuestComponent, UExecutingQuest* A, UExecutingQuest* B) {
     bool IsAHaveOtherCondition = true;
@@ -17,10 +17,10 @@ bool UQuestNPCAcquirePredicate::Compare_Implementation(UQuestComponent* QuestCom
     }
 
     if (IsAHaveOtherCondition) {
-        // AÃ»ÓĞÆäËûÌõ¼ş£¬ÓÅÏÈ¼¶¾ÍÊÇ¸ßµÄ
+        // Aæ²¡æœ‰å…¶ä»–æ¡ä»¶ï¼Œä¼˜å…ˆçº§å°±æ˜¯é«˜çš„
         return true;
     }
-    //AÓĞÆäËûÌõ¼ş
+    //Aæœ‰å…¶ä»–æ¡ä»¶
     bool IsBHaveOtherCondition = true;
     for (auto QuestProgress : A->GetQuestProgresses()) {
         if (!QuestProgress->IsA<UAcquireNPCsConditionProgress>()
@@ -30,10 +30,10 @@ bool UQuestNPCAcquirePredicate::Compare_Implementation(UQuestComponent* QuestCom
         }
     }
     if (IsBHaveOtherCondition) {
-        //BÃ»ÓĞÆäËûÌõ¼ş
+        //Bæ²¡æœ‰å…¶ä»–æ¡ä»¶
         return false;
     }
-    //A B¶¼ÓĞÆäËûÌõ¼ş£¬¾Í±£³ÖAÔÚBºó
+    //A Béƒ½æœ‰å…¶ä»–æ¡ä»¶ï¼Œå°±ä¿æŒAåœ¨Bå
    
     return true;
 }

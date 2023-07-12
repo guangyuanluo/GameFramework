@@ -3,55 +3,38 @@
 #include "ConditionWidgetManager.h"
 //farm
 #include "Global/Conditions/PlayerFarmCondition.h"
-#include "Global/Conditions/PlayerFarmConditionProgress.h"
 //finish quest
 #include "Global/Conditions/PlayerQuestFinishCondition.h"
-#include "Global/Conditions/PlayerQuestFinishConditionProgress.h"
 //collect item
 #include "Global/Conditions/PlayerCollectItemCondition.h"
-#include "Global/Conditions/PlayerCollectItemConditionProgress.h"
 //collect money
 #include "Global/Conditions/PlayerCollectMoneyCondition.h"
-#include "Global/Conditions/PlayerCollectMoneyConditionProgress.h"
 //hunt
 #include "Global/Conditions/PlayerHuntCondition.h"
-#include "Global/Conditions/PlayerHuntConditionProgress.h"
 //move to
 #include "Global/Conditions/ArrivingAtCondition.h"
-#include "Global/Conditions/ArrivingAtConditionProgress.h"
 //consume item
 #include "Global/Conditions/PlayerConsumeItemCondition.h"
-#include "Global/Conditions/PlayerConsumeItemConditionProgress.h"
 //consume money
 #include "Global/Conditions/PlayerConsumeMoneyCondition.h"
-#include "Global/Conditions/PlayerConsumeMoneyConditionProgress.h"
 //player reach exp level
 #include "Global/Conditions/PlayerReachExpLevelCondition.h"
-#include "Global/Conditions/PlayerReachExpLevelConditionProgress.h"
 //intimacy request
 #include "Global/Conditions/PlayerIntimacyRequestCondition.h"
-#include "Global/Conditions/PlayerIntimacyRequestConditionProgress.h"
 //unit reach exp level
 #include "Global/Conditions/UnitReachExpLevelCondition.h"
-#include "Global/Conditions/UnitReachExpLevelConditionProgress.h"
 //talk to
 #include "Global/Conditions/TalkToCondition.h"
-#include "Global/Conditions/TalkToConditionProgress.h"
 //acquire npcs
 #include "Global/Conditions/AcquireNPCsCondition.h"
-#include "Global/Conditions/AcquireNPCsConditionProgress.h"
 //deduct item
 #include "Global/Conditions/PlayerDeductItemCondition.h"
-#include "Global/Conditions/PlayerDeductItemConditionProgress.h"
 //deduct money
 #include "Global/Conditions/PlayerDeductMoneyCondition.h"
-#include "Global/Conditions/PlayerDeductMoneyConditionProgress.h"
 //clost to npc
 #include "Global/Conditions/CloseToNPCCondition.h"
-#include "Global/Conditions/CloseToNPCConditionProgress.h"
 //skill reach level
 #include "Global/Conditions/PlayerSkillReachLevelCondition.h"
-#include "Global/Conditions/PlayerSkillReachLevelConditionProgress.h"
 
 #include "GameInstance/CoreGameInstance.h"
 

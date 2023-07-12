@@ -21,7 +21,6 @@
 #include "UE4LogImpl.h"
 #include "QuestSetting.h"
 #include "QuestNPCAcquirePredicate.h"
-#include "AcquireNPCsConditionProgress.h"
 #include "AcquireNPCsCondition.h"
 #include "NPCSystem.h"
 #include "SortUtils.h"
