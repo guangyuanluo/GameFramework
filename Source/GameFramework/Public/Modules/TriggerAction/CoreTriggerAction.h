@@ -21,4 +21,10 @@ public:
 	*/
 	UFUNCTION(BlueprintNativeEvent)
 	void OnExecute(const FGameplayEventData& EventData) const;
+
+	/**
+	* 如果是技能动作，可以通过此方法获取技能
+	*/
+	UFUNCTION(BlueprintPure)
+	class UCoreAbility* GetExecuteAbility(const FGameplayEventData& EventData) const;
 };

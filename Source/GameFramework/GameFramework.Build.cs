@@ -103,11 +103,13 @@ public class GameFramework : ModuleRules
             "GameFramework/Public/Modules/CustomizableSearchTree",
             "GameFramework/Public/Modules/AnimSearchTree",
             "GameFramework/Public/Modules/TriggerAction",
+            "GameFramework/Public/Modules/AbilityCounter",
             //Global
             "GameFramework/Public/Global/Events",
             "GameFramework/Public/Global/Conditions",
             "GameFramework/Public/Global/Orders",
             "GameFramework/Public/Global/Rewards",
+            "GameFramework/Public/Global/Actions",
             //Other
             "GameFramework/Public/UI",
             "GameFramework/Public/Utils",

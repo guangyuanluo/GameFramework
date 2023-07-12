@@ -30,12 +30,6 @@ public:
     */
     UFUNCTION(BlueprintCallable)
     class UCoreAbility* GetConditionAbility() const;
-
-    /**
-    * 获取条件关联的ASC
-    */
-    UFUNCTION(BlueprintPure)
-    class UCoreAbilitySystemComponent* GetAbilitySystemComponent() const;
     
     UPROPERTY()
     TObjectPtr<class UCoreAbility> OwnerAbility;

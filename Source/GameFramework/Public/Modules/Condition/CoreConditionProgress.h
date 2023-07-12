@@ -87,6 +87,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses);
 
+	/**
+    * 获取条件关联的ASC
+    */
+    UFUNCTION(BlueprintPure)
+    class UCoreAbilitySystemComponent* GetAbilitySystemComponent() const;
+
 	virtual UWorld* GetWorld() const override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
