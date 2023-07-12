@@ -39,8 +39,8 @@ class GAMEFRAMEWORK_API UCoreConditionGroupProgress : public UCoreConditionProgr
 public:
 	GENERATED_BODY()
 
-	virtual void OnInitialize_Implementation() override;
-	virtual void OnUninitialize_Implementation() override;
+	virtual void Initialize() override;
+	virtual void Uninitialize() override;
 	virtual bool IsComplete_Implementation(bool& IsValid) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) override;

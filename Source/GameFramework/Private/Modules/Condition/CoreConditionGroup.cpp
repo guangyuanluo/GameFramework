@@ -43,28 +43,29 @@ void UCoreConditionGroup::PostDuplicate(bool bDuplicateForPIE) {
 
 #endif
 
-void UCoreConditionGroupProgress::OnInitialize_Implementation() {
-    Super::OnInitialize_Implementation();
+void UCoreConditionGroupProgress::Initialize() {
+    Super::Initialize();
     
     for (auto ChildProgress : ChildProgresses) {
         ChildProgress->OnConditionProgressSatisfyUpdate.AddDynamic(this, &UCoreConditionGroupProgress::OnChildConditionSatisfyChange);
     }
 
     for (auto ChildProgress : ChildProgresses) {
-        ChildProgress->OnInitialize();
+        ChildProgress->Initialize();
     }
 }
 
-void UCoreConditionGroupProgress::OnUninitialize_Implementation() {
-    Super::OnUninitialize_Implementation();
+void UCoreConditionGroupProgress::Uninitialize() {
+    Super::Uninitialize();
 
     for (auto ChildProgress : ChildProgresses) {
         ChildProgress->OnConditionProgressSatisfyUpdate.RemoveDynamic(this, &UCoreConditionGroupProgress::OnChildConditionSatisfyChange);
     }
 
     for (auto ChildProgress : ChildProgresses) {
-        ChildProgress->OnUninitialize();
+        ChildProgress->Uninitialize();
     }
+    ChildProgresses.Empty();
 }
 
 bool UCoreConditionGroupProgress::IsComplete_Implementation(bool& IsValid) {

@@ -45,17 +45,16 @@ public:
 	FOnConditionProgressPostNetReceive OnConditionProgressPostNetReceive;
 
 	/**
-	* 初始化
+	* 初始化覆写
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnInitialize();
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
+	virtual void Initialize();
 
 	/**
-	* 反初始化
+	* 反初始化覆写
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnUninitialize();
-
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
+	virtual void Uninitialize();
 	/**
 	* 是否完成初始化
 	*/
@@ -97,6 +96,19 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
 	virtual void PostNetReceive() override;
+
+protected:
+	/**
+	* 初始化覆写
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
+	void OnInitialize();
+
+	/**
+	* 反初始化覆写
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
+	void OnUninitialize();
 
 private:
 	bool bInitialized = false;

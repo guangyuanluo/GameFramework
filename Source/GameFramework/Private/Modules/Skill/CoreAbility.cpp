@@ -123,7 +123,7 @@ void UCoreAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, con
     }
     SetProgressesWithAbility(RequireConditionProgresses);
     for (auto ConditionProgress : RequireConditionProgresses) {
-        ConditionProgress->OnInitialize();
+        ConditionProgress->Initialize();
     }
 
     Super::OnGiveAbility(ActorInfo, Spec);
@@ -151,7 +151,7 @@ void UCoreAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, c
     }
     //清空进度对象
     for (auto RequireConditionProgress : RequireConditionProgresses) {
-        RequireConditionProgress->OnUninitialize();
+        RequireConditionProgress->Uninitialize();
     }
     RequireConditionProgresses.Empty();
 
@@ -303,7 +303,7 @@ void UCoreAbility::StartConditionTriggerListen() {
         }
         SetProgressesWithAbility(TriggerInfo.TriggerConditionProgresses);
         for (auto ConditionProgress : TriggerInfo.TriggerConditionProgresses) {
-            ConditionProgress->OnInitialize();
+            ConditionProgress->Initialize();
         }
     }
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
@@ -327,7 +327,7 @@ void UCoreAbility::StopConditionTriggerListen() {
     for (auto& TriggerConditionProgressInfo : TriggerConditionProgressInfos) {
         ConditionTriggerSystem->UnfollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler);
         for (auto Progress : TriggerConditionProgressInfo.TriggerConditionProgresses) {
-            Progress->OnUninitialize();
+            Progress->Uninitialize();
         }
     }
     TriggerConditionProgressInfos.Empty();
@@ -371,7 +371,7 @@ void UCoreAbility::StartExternFinishConditionListen() {
     }
     SetProgressesWithAbility(ExternFinishConditionProgresses);
     for (auto Progress : ExternFinishConditionProgresses) {
-        Progress->OnInitialize();
+        Progress->Initialize();
     }
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
@@ -385,7 +385,7 @@ void UCoreAbility::StopExternFinishConditionListen() {
         return;
     }
     for (auto ExternFinishConditionProgress : ExternFinishConditionProgresses) {
-        ExternFinishConditionProgress->OnUninitialize();
+        ExternFinishConditionProgress->Uninitialize();
     }
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
