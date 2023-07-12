@@ -58,7 +58,7 @@ void SSubClassSelectWidget::Construct(const FArguments& InArgs)
 
 TSharedRef<SWidget> SSubClassSelectWidget::GenerateClassPicker() {
 	FilterText.Empty();
-	return SNew(SBox)
+	TSharedRef<SWidget> PickerWidget = SNew(SBox)
 		.WidthOverride(280)
 		[
 			SNew(SVerticalBox)
@@ -80,6 +80,12 @@ TSharedRef<SWidget> SSubClassSelectWidget::GenerateClassPicker() {
 				.OnSelectionChanged(this, &SSubClassSelectWidget::OnSelectionChanged)
 			]			
 		];
+
+	for (const auto Item : ClassTreeItemSource) {
+		TreeView->SetItemExpansion(Item, true);
+	}
+
+	return PickerWidget;
 }
 
 FText SSubClassSelectWidget::GetDisplayValueAsString() const {
