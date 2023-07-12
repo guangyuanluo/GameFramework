@@ -10,7 +10,7 @@
 /**
  * 砍怪
  */
-UCLASS(BlueprintType, meta = (DisplayName = "砍怪"))
+UCLASS(BlueprintType, meta = (DisplayName = "砍怪", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerFarmCondition : public UCoreCondition
 {
 public:

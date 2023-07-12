@@ -10,7 +10,7 @@
 /**
  * 收集物品条件
  */
-UCLASS(BlueprintType, meta = (DisplayName = "收集物品"))
+UCLASS(BlueprintType, meta = (DisplayName = "收集物品", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerCollectItemCondition : public UCoreCondition
 {
 public:

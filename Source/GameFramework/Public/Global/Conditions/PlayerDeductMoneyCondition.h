@@ -10,7 +10,7 @@
 /**
  * 玩家扣除货币
  */
-UCLASS(BlueprintType, meta = (DisplayName = "玩家扣除货币"))
+UCLASS(BlueprintType, meta = (DisplayName = "玩家扣除货币", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerDeductMoneyCondition : public UCoreCondition
 {
 public:

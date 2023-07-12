@@ -10,7 +10,7 @@
 /**
  * 玩家消耗物品
  */
-UCLASS(BlueprintType, meta = (DisplayName = "玩家消耗物品"))
+UCLASS(BlueprintType, meta = (DisplayName = "玩家消耗物品", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerConsumeItemCondition : public UCoreCondition
 {
 public:

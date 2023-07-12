@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType, meta=(DisplayName = "占有NPC"))
+UCLASS(BlueprintType, meta=(DisplayName = "占有NPC", Category = "任务条件"))
 class GAMEFRAMEWORK_API UAcquireNPCsCondition : public UCoreCondition
 {
 public:

@@ -10,7 +10,7 @@
 /**
 * 技能条件
 */
-UCLASS(BlueprintType, Blueprintable, Abstract)
+UCLASS(BlueprintType, Blueprintable, Abstract, meta = (DisplayName = "技能条件"))
 class GAMEFRAMEWORK_API UCoreAbilityCondition : public UCoreCondition {
     GENERATED_BODY()
 

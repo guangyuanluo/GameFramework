@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType, meta = (DisplayName = "靠近NPC"))
+UCLASS(BlueprintType, meta = (DisplayName = "靠近NPC", Category = "通用条件"))
 class GAMEFRAMEWORK_API UCloseToNPCCondition : public UCoreCondition
 {
 public:

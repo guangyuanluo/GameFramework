@@ -8,7 +8,7 @@
 
 class UCoreAbility;
 
-UCLASS(meta = (DisplayName = "变更技能剩余计数", ShowDisplayNames))
+UCLASS(meta = (DisplayName = "变更技能剩余计数", ShowDisplayNames, Category = "技能动作"))
 class GAMEFRAMEWORK_API UAbilityTriggerAction_ChangeRestCounter : public UCoreTriggerAction {
     GENERATED_BODY()
 

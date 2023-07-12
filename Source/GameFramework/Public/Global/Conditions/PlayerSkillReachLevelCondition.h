@@ -10,7 +10,7 @@
 /**
  * 玩家技能达到等级条件
  */
-UCLASS(BlueprintType, meta = (DisplayName = "技能达到等级"))
+UCLASS(BlueprintType, meta = (DisplayName = "技能达到等级", Category = "通用条件"))
 class GAMEFRAMEWORK_API UPlayerSkillReachLevelCondition : public UCoreCondition
 {
 public:
