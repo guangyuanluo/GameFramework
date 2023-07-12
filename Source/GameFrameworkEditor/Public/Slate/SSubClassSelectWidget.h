@@ -46,8 +46,13 @@ private:
 	TMap<FString, TArray<FString>> CategoryClassMap;
 	TSharedPtr<FString> SelectClassName;
 
+	/** The tree view widget for our plugin categories tree */
+	TSharedPtr<STreeView<TSharedPtr<FString>>> TreeView;
 	/** Used when the property deals with Classes and will display a Class Picker. */
 	TSharedPtr<class SComboButton> ComboButton;
+	/** The Class Search Box, used for filtering the classes visible. */
+	TSharedPtr<class SSearchBox> SearchBox;
+	FString FilterText;
 
 	/**
 	 * Generates a class picker with a filter to show only classes allowed to be selected.
@@ -63,4 +68,6 @@ private:
 	TSharedRef<ITableRow> MakeTableRowWidget(TSharedPtr<FString> Item, const TSharedRef<STableViewBase>& OwnerTable);
 	void HandleGetChildrenForTree(TSharedPtr<FString> InItem, TArray<TSharedPtr<FString>>& OutChildren);
 	void OnSelectionChanged(TSharedPtr<FString> Selection, ESelectInfo::Type SelectInfo);
+
+	void OnFilterTextChanged(const FText& InFilterText);
 };

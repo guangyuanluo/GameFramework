@@ -1,5 +1,7 @@
 #include "SSubClassSelectWidget.h"
 #include "Graph/GameFrameworkGraphTypes.h"
+#include "Widgets/Input/SComboButton.h"
+#include "Widgets/Input/SSearchBox.h"
 
 void SSubClassSelectWidget::Construct(const FArguments& InArgs)
 {
@@ -55,15 +57,22 @@ void SSubClassSelectWidget::Construct(const FArguments& InArgs)
 }
 
 TSharedRef<SWidget> SSubClassSelectWidget::GenerateClassPicker() {
+	FilterText.Empty();
 	return SNew(SBox)
 		.WidthOverride(280)
 		[
 			SNew(SVerticalBox)
 			+SVerticalBox::Slot()
 			.AutoHeight()
+			[
+				SAssignNew(SearchBox, SSearchBox)
+				.OnTextChanged( this, &SSubClassSelectWidget::OnFilterTextChanged )
+			]
+			+SVerticalBox::Slot()
+			.AutoHeight()
 			.MaxHeight(500)
 			[
-				SNew(STreeView<TSharedPtr<FString>>)
+				SAssignNew(TreeView, STreeView<TSharedPtr<FString>>)
 				.TreeItemsSource(&ClassTreeItemSource)
 				.SelectionMode(ESelectionMode::Single)
 				.OnGenerateRow(this, &SSubClassSelectWidget::MakeTableRowWidget)
@@ -93,7 +102,9 @@ void SSubClassSelectWidget::HandleGetChildrenForTree(TSharedPtr<FString> InItem,
 	TArray<FString>* FindPtr = CategoryClassMap.Find(*InItem);
 	if (FindPtr) {
 		for (const auto& Child : *FindPtr) {
-			OutChildren.Add(MakeShareable(new FString(Child)));
+			if (FilterText.IsEmpty() || Child.Find(FilterText) >= 0) {
+				OutChildren.Add(MakeShareable(new FString(Child)));
+			}
 		}
 	}
 }
@@ -113,4 +124,9 @@ void SSubClassSelectWidget::OnSelectionChanged(TSharedPtr<FString> Selection, ES
 		}
 	}
 	ComboButton->SetIsOpen(false);
+}
+
+void SSubClassSelectWidget::OnFilterTextChanged(const FText& InFilterText) {
+	FilterText = InFilterText.ToString();
+	TreeView->RequestTreeRefresh();
 }
