@@ -211,12 +211,13 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
             return;
         }
 
+        StartConditionTriggerListen();
+
         StartExternFinishConditionListen();
         if (!IsActive()) {
             //有可能开始就被终止了
             return;
         }
-        StartConditionTriggerListen();
         OnActivateNative();
     }
 }

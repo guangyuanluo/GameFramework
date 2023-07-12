@@ -3,9 +3,9 @@
 #include "SkillBlueprintLibrary.h"
 #include "Abilities/GameplayAbility.h"
 #include "CoreAbility.h"
-#include "Modules/Skill/CoreAbilityConditionGlobal.h"
 #include "AbilitySystemComponent.h"
 #include "CoreConditionGroup.h"
+#include "CurrentComboSectionLimitCondition.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -73,7 +73,7 @@ bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
 	for (auto TriggerCondition : Ability->TriggerConditions.Conditions) {
 		SearchConditions.Add(TriggerCondition);
 	}
-	auto ComboConditionClass = UCoreAbilityCondition_CurrentComboSectionLimit::StaticClass();
+	auto ComboConditionClass = UCurrentComboSectionLimitCondition::StaticClass();
 	while (SearchConditions.Num() > 0) {
 		auto SearchCondition = SearchConditions[SearchConditions.Num() - 1];
 		SearchConditions.RemoveAt(SearchConditions.Num() - 1);

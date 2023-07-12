@@ -3,6 +3,8 @@
 #include "CoreConditionProgress.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+#include "CoreCharacterStateBase.h"
+#include "CoreAbilitySystemComponent.h"
 
 void UCoreConditionProgress::OnInitialize_Implementation() {
     bInitialized = true;
@@ -40,6 +42,14 @@ void UCoreConditionProgress::OnSatisfyChange_Implementation() {
 
 void UCoreConditionProgress::GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) {
     OutProgresses.Add(this);
+}
+
+class UCoreAbilitySystemComponent* UCoreConditionProgress::GetAbilitySystemComponent() const {
+    auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+    if (CharacterState) {
+        return Cast<UCoreAbilitySystemComponent>(CharacterState->GetAbilitySystemComponent());
+    }
+    return nullptr;
 }
 
 UWorld* UCoreConditionProgress::GetWorld() const {
