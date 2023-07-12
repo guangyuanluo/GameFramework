@@ -11,7 +11,7 @@
 /**
  * 单位达到经验等级条件
  */
-UCLASS(BlueprintType, meta = (DisplayName = "单位达到经验等级"))
+UCLASS(BlueprintType, meta = (DisplayName = "单位达到经验等级", Category = "通用条件"))
 class GAMEFRAMEWORK_API UUnitReachExpLevelCondition : public UCoreCondition
 {
 public:

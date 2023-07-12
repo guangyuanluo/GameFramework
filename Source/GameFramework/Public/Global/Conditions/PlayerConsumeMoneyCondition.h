@@ -10,7 +10,7 @@
 /**
  * 玩家消耗货币
  */
-UCLASS(BlueprintType, meta = (DisplayName = "玩家消耗货币"))
+UCLASS(BlueprintType, meta = (DisplayName = "玩家消耗货币", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerConsumeMoneyCondition : public UCoreCondition
 {
 public:

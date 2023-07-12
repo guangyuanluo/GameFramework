@@ -11,7 +11,7 @@
 #include "Modules/TriggerAction/CoreTriggerAction.h"
 #include "JsonObjectConverter.h"
 #include "Modules/TriggerAction/CoreTriggerActionList.h"
-#include "PropertyCustomizationHelpers.h"
+#include "SSubClassSelectWidget.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -28,10 +28,8 @@ void STriggerActionListWidget::Construct(const FArguments& InArgs, UObject* InOu
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
 			[
-				SNew(SClassPropertyEntryBox)
+				SNew(SSubClassSelectWidget)
 					.MetaClass(UCoreTriggerAction::StaticClass())
-					.ShowDisplayNames(true)
-					.ShowTreeView(true)
 					.SelectedClass_Lambda([this]()
 					{
 						return SelectActionClass;

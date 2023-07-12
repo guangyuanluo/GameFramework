@@ -6,7 +6,7 @@
 #include "Modules/Skill/CoreAbilityCondition.h"
 #include "CoreAbilityConditionGlobal.generated.h"
 
-UCLASS(Category = "Ability", meta = (DisplayName = "前置连招检查", ToolTip = "前置连招检查", ShowDisplayNames))
+UCLASS(meta = (DisplayName = "前置连招检查", ToolTip = "前置连招检查", ShowDisplayNames, Category = "技能条件"))
 class GAMEFRAMEWORK_API UCoreAbilityCondition_CurrentComboSectionLimit : public UCoreAbilityCondition {
     GENERATED_UCLASS_BODY()
 
@@ -23,7 +23,7 @@ public:
     virtual bool IsComplete_Implementation(bool& IsValid) override;
 };
 
-UCLASS(Category = "Ability", meta = (DisplayName = "按下时间", ToolTip = "按下时间", ShowDisplayNames))
+UCLASS(meta = (DisplayName = "按下时间", ToolTip = "按下时间", ShowDisplayNames, Category = "通用条件"))
 class GAMEFRAMEWORK_API UCoreAbilityCondition_InputTime : public UCoreAbilityCondition {
     GENERATED_UCLASS_BODY()
 
@@ -43,7 +43,7 @@ public:
     virtual bool IsComplete_Implementation(bool& IsValid) override;
 };
 
-UCLASS(Category = "Ability", meta = (DisplayName = "技能限制生效次数", ToolTip = "技能限制生效次数", ShowDisplayNames))
+UCLASS(meta = (DisplayName = "技能限制生效次数", ToolTip = "技能限制生效次数", ShowDisplayNames, Category = "技能条件"))
 class GAMEFRAMEWORK_API UCoreAbilityCondition_AbilityLimitCounter : public UCoreAbilityCondition {
     GENERATED_UCLASS_BODY()
 

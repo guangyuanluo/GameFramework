@@ -10,7 +10,7 @@
 /**
  * 玩家收集货币
  */
-UCLASS(BlueprintType, meta = (DisplayName = "收集货币"))
+UCLASS(BlueprintType, meta = (DisplayName = "收集货币", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerCollectMoneyCondition : public UCoreCondition
 {
 public:

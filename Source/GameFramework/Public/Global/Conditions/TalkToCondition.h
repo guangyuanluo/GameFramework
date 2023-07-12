@@ -10,7 +10,7 @@
 /**
  * NPC谈话
  */
-UCLASS(BlueprintType, meta = (DisplayName = "NPC谈话"))
+UCLASS(BlueprintType, meta = (DisplayName = "NPC谈话", Category = "任务条件"))
 class GAMEFRAMEWORK_API UTalkToCondition : public UCoreCondition
 {
 public:

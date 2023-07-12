@@ -9,7 +9,7 @@
 /**
  * 条件
  */
-UCLASS(BlueprintType, Blueprintable, Abstract)
+UCLASS(BlueprintType, Blueprintable, Abstract, meta = (DisplayName = "条件"))
 class GAMEFRAMEWORK_API UCoreCondition : public UObject
 {
 public:

@@ -12,7 +12,7 @@
 #include "SConditionWidgetDefault.h"
 #include "JsonObjectConverter.h"
 #include "Modules/Condition/CoreConditionList.h"
-#include "PropertyCustomizationHelpers.h"
+#include "SSubClassSelectWidget.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -31,10 +31,8 @@ void SConditionEditWidget::Construct(const FArguments& InArgs, UObject* InOuter)
 			SNew(SHorizontalBox)
 			+ SHorizontalBox::Slot()
 			[
-				SNew(SClassPropertyEntryBox)
+				SNew(SSubClassSelectWidget)
 					.MetaClass(UCoreCondition::StaticClass())
-					.ShowDisplayNames(true)
-					.ShowTreeView(true)
 					.SelectedClass_Lambda([this]()
 					{
 						return SelectConditionClass;
