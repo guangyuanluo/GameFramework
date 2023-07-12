@@ -17,17 +17,19 @@ void UAcceptableQuest::Initialize(UQuest* InQuestPtr, UQuestComponent* InQuestCo
 	QuestComponent = InQuestComponent;
 
 	//未接受的任务
+	auto ProgressOwner = QuestComponent->GetOwner();
 	for (auto PreCondition : QuestPtr->PreConditionList.Conditions) {
-		auto ConditionProgress = PreCondition->GenerateConditionProgress(QuestComponent->GetOwner());
-		ConditionProgress->OnInitialize();
+		auto ConditionProgress = PreCondition->GenerateConditionProgress(ProgressOwner);
+		ConditionProgress->Initialize();
 		QuestProgresses.Add(ConditionProgress);
 	}
 }
 
 void UAcceptableQuest::Uninitialize() {
 	for (auto QuestProgress : QuestProgresses) {
-		QuestProgress->OnUninitialize();
+		QuestProgress->Uninitialize();
 	}
+	QuestProgresses.Empty();
 }
 
 void UAcceptableQuest::StartListen() {

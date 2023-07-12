@@ -2,16 +2,14 @@
 
 #include "CoreCondition.h"
 #include "CoreConditionProgress.h"
+#include "Subsystems/SubsystemBlueprintLibrary.h"
+#include "ConditionGlobalSystem.h"
 
 UCoreCondition::UCoreCondition(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     
 }
 
 class UCoreConditionProgress* UCoreCondition::GenerateConditionProgress(AActor* ProgressOwner) {
-    auto ConditionProgress = NewObject<UCoreConditionProgress>(ProgressOwner, ProgressClass);
-    if (ConditionProgress) {
-        ConditionProgress->Condition = this;
-        ConditionProgress->ProgressOwner = ProgressOwner;
-    }
-    return ConditionProgress;
+    auto ConditionGlobalSystem = Cast<UConditionGlobalSystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(ProgressOwner, UConditionGlobalSystem::StaticClass()));
+    return ConditionGlobalSystem->MallocProgress(ProgressOwner, this);
 }

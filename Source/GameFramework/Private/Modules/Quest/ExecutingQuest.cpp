@@ -39,7 +39,7 @@ void UExecutingQuest::Initialize(UQuest* InQuest) {
 
 void UExecutingQuest::Uninitiliaize() {
 	for (auto QuestProgress : QuestProgresses) {
-		QuestProgress->OnUninitialize();
+		QuestProgress->Uninitialize();
 	}
 
 	QuestProgresses.Empty();
@@ -213,19 +213,19 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	NodeID = InNode->ID;
 
 	for (auto QuestProgress : QuestProgresses) {
-		QuestProgress->OnUninitialize();
+		QuestProgress->Uninitialize();
 	}
 
 	QuestProgresses.Empty();
 	QuestRewards.Empty();
 
-	auto Owner = Cast<ACoreCharacterStateBase>(GetOuter());
+	auto Owner = Cast<AActor>(GetOuter());
 
 	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(InNode);
 	if (NodeItem) {
 		for (auto Condition : NodeItem->ConditionList.Conditions) {
 			auto ConditionProgress = Condition->GenerateConditionProgress(Owner);
-			ConditionProgress->OnInitialize();
+			ConditionProgress->Initialize();
 			QuestProgresses.Add(ConditionProgress);
 		}
 		QuestRewards = NodeItem->Rewards;

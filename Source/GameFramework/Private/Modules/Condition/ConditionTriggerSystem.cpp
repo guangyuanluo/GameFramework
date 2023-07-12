@@ -5,6 +5,7 @@
 #include "GameSystemManager.h"
 #include "CorePlayerController.h"
 #include "ConditionBlueprintLibrary.h"
+#include "GameFramework/PlayerState.h"
 
 /** track the last assigned handle globally */
 uint64 UConditionTriggerSystem::LastAssignedSerialNumber = 0;
@@ -93,10 +94,12 @@ UWaitCondition::UWaitCondition(const FObjectInitializer& ObjectInitializer)
 UWaitCondition* UWaitCondition::StartWaitCondition(class ACorePlayerController* PlayerController, const TArray<UCoreCondition*>& Conditions) {
 	UWaitCondition* WaitCondition = NewObject<UWaitCondition>();
 	
+	auto CharacterState = PlayerController->GetPlayerState<APlayerState>();
 	for (int Index = 0; Index < Conditions.Num(); ++Index) {
 		auto Condition = Conditions[Index];
-		auto ConditionProgress = Condition->GenerateConditionProgress(PlayerController);
-		ConditionProgress->OnInitialize();
+
+		auto ConditionProgress = Condition->GenerateConditionProgress(CharacterState);
+		ConditionProgress->Initialize();
 		WaitCondition->ConditionProgresses.Add(ConditionProgress);
 	}
 
@@ -121,7 +124,7 @@ void UWaitCondition::Cancel() {
 	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->UnfollowConditions(ConditionTriggerHandler);
 
 	for (auto ConditionProgress : ConditionProgresses) {
-		ConditionProgress->OnUninitialize();
+		ConditionProgress->Uninitialize();
 	}
 	ConditionProgresses.Empty();
 }
@@ -134,7 +137,7 @@ void UWaitCondition::OnAllProgressesSatisfy() {
 	GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>()->UnfollowConditions(ConditionTriggerHandler);
 
 	for (auto ConditionProgress : ConditionProgresses) {
-		ConditionProgress->OnUninitialize();
+		ConditionProgress->Uninitialize();
 	}
 	ConditionProgresses.Empty();
 

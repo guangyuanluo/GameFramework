@@ -5,12 +5,22 @@
 #include "Net/UnrealNetwork.h"
 #include "CoreCharacterStateBase.h"
 #include "CoreAbilitySystemComponent.h"
+#include "Subsystems/SubsystemBlueprintLibrary.h"
+#include "AbilitySystemGlobals.h"
+#include "ConditionGlobalSystem.h"
 
-void UCoreConditionProgress::OnInitialize_Implementation() {
+void UCoreConditionProgress::Initialize() {
+    OnInitialize();
+
     bInitialized = true;
 }
 
-void UCoreConditionProgress::OnUninitialize_Implementation() {
+void UCoreConditionProgress::Uninitialize() {
+    OnUninitialize();
+
+    auto ConditionGlobalSystem = Cast<UConditionGlobalSystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(ProgressOwner, UConditionGlobalSystem::StaticClass()));
+    ConditionGlobalSystem->FreeProgress(this);
+
     bInitialized = false;
     bLastSatisfy = false;
 }
@@ -45,11 +55,7 @@ void UCoreConditionProgress::GetProgressesWithChildren(TArray<UCoreConditionProg
 }
 
 class UCoreAbilitySystemComponent* UCoreConditionProgress::GetAbilitySystemComponent() const {
-    auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-    if (CharacterState) {
-        return Cast<UCoreAbilitySystemComponent>(CharacterState->GetAbilitySystemComponent());
-    }
-    return nullptr;
+    return Cast<UCoreAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(ProgressOwner));
 }
 
 UWorld* UCoreConditionProgress::GetWorld() const {
@@ -75,4 +81,12 @@ bool UCoreConditionProgress::IsSupportedForNetworking() const {
 
 void UCoreConditionProgress::PostNetReceive() {
     OnConditionProgressPostNetReceive.Broadcast(this);
+}
+
+void UCoreConditionProgress::OnInitialize_Implementation() {
+
+}
+
+void UCoreConditionProgress::OnUninitialize_Implementation() {
+
 }
