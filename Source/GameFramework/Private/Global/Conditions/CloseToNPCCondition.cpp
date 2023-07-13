@@ -23,8 +23,12 @@ void UCloseToNPCConditionProgress::OnInitialize_Implementation() {
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 	auto PlayerController = Cast<ACorePlayerController>(Character->GetController());
 	
-	PlayerController->OnCharacterTemplateUpdated.AddDynamic(this, &UCloseToNPCConditionProgress::OnCharacterTemplateUpdate);
+	if (PlayerController) {
+		PlayerController->OnCharacterTemplateUpdated.AddDynamic(this, &UCloseToNPCConditionProgress::OnCharacterTemplateUpdate);
+	}
 	Character->OnCharacterMovementUpdated.AddDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
+
+	UpdateSatisfy();
 }
 
 void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
@@ -32,7 +36,11 @@ void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
 
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
+	auto PlayerController = Cast<ACorePlayerController>(Character->GetController());
 
+	if (PlayerController) {
+		PlayerController->OnCharacterTemplateUpdated.RemoveDynamic(this, &UCloseToNPCConditionProgress::OnCharacterTemplateUpdate);
+	}
 	Character->OnCharacterMovementUpdated.RemoveDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
 }
 
@@ -67,6 +75,10 @@ void UCloseToNPCConditionProgress::OnCharacterTemplateUpdate(class ACorePlayerCo
 
 void UCloseToNPCConditionProgress::OnCharacterMovementUpdate(float DeltaSeconds, FVector OldLocation, FVector OldVelocity) {
 	if (OldVelocity.IsNearlyZero()) return;
+	UpdateSatisfy();
+}
+
+void UCloseToNPCConditionProgress::UpdateSatisfy() {
 	auto GameInstance = ProgressOwner->GetWorld()->GetGameInstance<UCoreGameInstance>();
 	if (GameInstance) {
 		auto NPCSystem = GameInstance->GameSystemManager->GetSystemByClass<UNPCSystem>();
