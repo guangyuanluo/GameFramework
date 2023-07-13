@@ -58,4 +58,6 @@ private:
 
 	UFUNCTION()
 	void OnCharacterMovementUpdate(float DeltaSeconds, FVector OldLocation, FVector OldVelocity);
+
+	void UpdateSatisfy();
 };

@@ -45,13 +45,13 @@ public:
 	FOnConditionProgressPostNetReceive OnConditionProgressPostNetReceive;
 
 	/**
-	* 初始化覆写
+	* 初始化
 	*/
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	virtual void Initialize();
 
 	/**
-	* 反初始化覆写
+	* 反初始化
 	*/
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	virtual void Uninitialize();
