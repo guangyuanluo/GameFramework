@@ -7,6 +7,8 @@
 #include "GameplayTagContainer.h"
 #include "FindEnemyComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnTargetEnemyUpdate, class UFindEnemyComponent*, FindEnemyComponent, class ACoreCharacter*, OldTarget, class ACoreCharacter*, NewTarget);
+
 class UFindEnemyBase;
 class ACoreCharacter;
 
@@ -78,6 +80,12 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Skill")
 	void SetAutoUpdateInterval(float NewInterval);
+
+	/**
+	* 索敌变化回调
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnTargetEnemyUpdate OnTargetEnemyUpdate;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
