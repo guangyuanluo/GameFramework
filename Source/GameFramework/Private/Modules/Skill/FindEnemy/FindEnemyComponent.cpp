@@ -25,11 +25,12 @@ ACoreCharacter* UFindEnemyComponent::FindOrGetEnemy() {
 			}
 			else {
 				if (FindEnemyClass.Get()) {
+					auto OldEnemy = Enemy;
 					auto NewEnemy = FindEnemyObject->FindEnemy(this);
-					if (NewEnemy != Enemy) {
+					if (NewEnemy != OldEnemy) {
+						SetEnemy(NewEnemy);
 						ServerSyncEnemy(NewEnemy);
 					}
-					Enemy = NewEnemy;
 				}
 			}
         }
@@ -42,7 +43,11 @@ ACoreCharacter* UFindEnemyComponent::JustGetEnemy() const {
 }
 
 void UFindEnemyComponent::SetEnemy(ACoreCharacter* InEnemy) {
+	auto OldEnemy = Enemy;
 	Enemy = InEnemy;
+	if (OldEnemy != Enemy) {
+		OnTargetEnemyUpdate.Broadcast(this, OldEnemy, Enemy);
+	}
 }
 
 void UFindEnemyComponent::ClearEnemy() {
@@ -109,11 +114,12 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 
 			//更新索敌
 			if (FindEnemyClass.Get()) {
+				auto OldEnemy = Enemy;
 				auto NewEnemy = FindEnemyObject->FindEnemy(this);
-				if (NewEnemy != Enemy) {
+				if (NewEnemy != OldEnemy) {
+					SetEnemy(NewEnemy);
 					ServerSyncEnemy(NewEnemy);
 				}
-				Enemy = NewEnemy;
 			}
 		}
 	}
