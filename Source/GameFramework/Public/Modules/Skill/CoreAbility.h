@@ -57,7 +57,7 @@ public:
      * 技能结束自动清空cd
      */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能结束自动清空cd"))
-    bool bClearCooldownOnEnd = true;
+    bool bClearCooldownOnEnd = false;
 
 	/**
 	* 按键按下通知
