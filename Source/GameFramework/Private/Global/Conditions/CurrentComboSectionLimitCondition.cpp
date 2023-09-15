@@ -4,6 +4,8 @@
 #include "GameFrameworkUtils.h"
 #include "AnimNotifyState_ComboEnable.h"
 #include "CoreAbilitySystemComponent.h"
+#include "SkillBlueprintLibrary.h"
+#include "SkillComboCacheComponent.h"
 
 UCurrentComboSectionLimitCondition::UCurrentComboSectionLimitCondition(const class FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -17,8 +19,12 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete_Implementation(bool&
     if (!MeshComponent) {
         return false;
     }
+    auto SkillComboCacheComponent = USkillBlueprintLibrary::GetSkillComboCacheComponent(AbilitySystemComponent);
+    if (!SkillComboCacheComponent) {
+        return false;
+    }
     IsValid = true;
 
     auto ThisCondition = Cast<UCurrentComboSectionLimitCondition>(Condition);
-    return AbilitySystemComponent->GetCurrentMontageSectionName() == ThisCondition->SectionName && UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(MeshComponent, UAnimNotifyState_ComboEnable::StaticClass()) != nullptr;
+    return SkillComboCacheComponent->GetCurrentSectionName() == ThisCondition->SectionName && UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(MeshComponent, UAnimNotifyState_ComboEnable::StaticClass()) != nullptr;
 }

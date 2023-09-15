@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "CoreConditionGroup.h"
 #include "CurrentComboSectionLimitCondition.h"
+#include "SkillComboCacheComponent.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -121,4 +122,20 @@ const UGameplayAbility* USkillBlueprintLibrary::EffectContextGetAbilityCDO(const
 
 const UGameplayAbility* USkillBlueprintLibrary::EffectContextGetAbilityInstance_NotReplicated(const FGameplayEffectContextHandle& EffectContext) {
 	return EffectContext.GetAbilityInstance_NotReplicated();
+}
+
+class USkillComboCacheComponent* USkillBlueprintLibrary::GetSkillComboCacheComponent(UAbilitySystemComponent* AbilitySystemComponent) {
+	if (!AbilitySystemComponent) {
+		return nullptr;
+	}
+
+	auto OwnerActor = AbilitySystemComponent->GetOwnerActor();
+	if (!OwnerActor) {
+		return nullptr;
+	}
+	auto SkillComboCacheComponent = Cast<USkillComboCacheComponent>(OwnerActor->GetComponentByClass(USkillComboCacheComponent::StaticClass()));
+	if (!SkillComboCacheComponent) {
+		SkillComboCacheComponent = Cast<USkillComboCacheComponent>(OwnerActor->AddComponentByClass(USkillComboCacheComponent::StaticClass(), false, FTransform::Identity, false));
+	}
+	return SkillComboCacheComponent;
 }

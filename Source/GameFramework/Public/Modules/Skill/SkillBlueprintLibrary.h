@@ -60,4 +60,8 @@ public:
 	/** 从effectcontext里面获取Ability Instance */
 	UFUNCTION(BlueprintPure, Category = "Ability|EffectContext", Meta = (DisplayName = "GetAbilityInstance_NotReplicated"))
 	static const UGameplayAbility* EffectContextGetAbilityInstance_NotReplicated(const FGameplayEffectContextHandle& EffectContext);
+
+	/** 获取技能连招缓存组件 */
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	static class USkillComboCacheComponent* GetSkillComboCacheComponent(UAbilitySystemComponent* AbilitySystemComponent);
 };
