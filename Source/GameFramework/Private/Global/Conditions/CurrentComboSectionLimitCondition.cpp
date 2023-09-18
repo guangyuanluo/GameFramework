@@ -15,10 +15,6 @@ UCurrentComboSectionLimitCondition::UCurrentComboSectionLimitCondition(const cla
 bool UCurrentComboSectionLimitConditionProgress::IsComplete_Implementation(bool& IsValid) {
     IsValid = false;
     auto AbilitySystemComponent = GetAbilitySystemComponent();
-    auto MeshComponent = AbilitySystemComponent->AbilityActorInfo->SkeletalMeshComponent.Get();
-    if (!MeshComponent) {
-        return false;
-    }
     auto SkillComboCacheComponent = USkillBlueprintLibrary::GetSkillComboCacheComponent(AbilitySystemComponent);
     if (!SkillComboCacheComponent) {
         return false;
@@ -26,5 +22,5 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete_Implementation(bool&
     IsValid = true;
 
     auto ThisCondition = Cast<UCurrentComboSectionLimitCondition>(Condition);
-    return SkillComboCacheComponent->GetCurrentSectionName() == ThisCondition->SectionName && UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(MeshComponent, UAnimNotifyState_ComboEnable::StaticClass()) != nullptr;
+    return SkillComboCacheComponent->GetCurrentSectionName() == ThisCondition->SectionName;
 }
