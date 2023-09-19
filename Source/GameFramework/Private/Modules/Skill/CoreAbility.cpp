@@ -167,7 +167,7 @@ bool UCoreAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const 
 }
 
 void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) {
-    OnGameplayAbilityEnded.AddUObject(this, &UCoreAbility::OnAbilityEnd);
+    OnGameplayAbilityEndedWithData.AddUObject(this, &UCoreAbility::OnAbilityEnd);
 
     if (bHasBlueprintActivate) {
         //子类覆写了，走子类
@@ -188,12 +188,12 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
     }
     else {
         if (!K2_IsConditionSatisfy()) {
-            K2_EndAbility();
+            K2_CancelAbility();
             return;
         }
 
         if (!K2_CheckAbilityCost()) {
-            K2_EndAbility();
+            K2_CancelAbility();
             return;
         }
 
@@ -207,7 +207,7 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
         //先检查是否满足触发条件，这里要调到父类的check
         bool CheckCooldown = UAbilitySystemGlobals::Get().ShouldIgnoreCooldowns() || Super::CheckCooldown(CurrentSpecHandle, CurrentActorInfo);
         if (!CheckCooldown) {
-            K2_EndAbility();
+            K2_CancelAbility();
             return;
         }
 
@@ -220,10 +220,6 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
         }
         OnActivateNative();
     }
-}
-
-void UCoreAbility::CallEndAbility() {
-	K2_EndAbility();
 }
 
 void UCoreAbility::CallInputPressed(const FGameplayAbilitySpecHandle Handle) {
@@ -248,7 +244,11 @@ void UCoreAbility::SetCurrentReceivedEventData(const FGameplayEventData& GameEve
     CurrentReceivedEventData = GameEventData;
 }
 
-void UCoreAbility::OnAbilityEnd(UGameplayAbility* Ability) {
+void UCoreAbility::OnAbilityEnd(const FAbilityEndedData& AbilityEndedData) {
+    if (!AbilityEndedData.bWasCancelled) {
+        OnAbilityFinish.Broadcast();
+    }
+
     if (LimitActiveTimeHandle.IsValid()) {
         GetWorld()->GetTimerManager().ClearTimer(LimitActiveTimeHandle);
     }
