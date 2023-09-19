@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreAbilityInterface.h"
 #include "Abilities/GameplayAbility.h"
 #include "Modules/Skill/CoreAbilityTypes.h"
 #include "Modules/TriggerAction/CoreConditionActionTrigger.h"
@@ -11,6 +10,7 @@
 /** delegate define */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputPressed, class UCoreAbility*, Ability, int32, InputID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputReleased, class UCoreAbility*, Ability, int32, InputID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAbilityFinish);
 
 /**
  * Subclass of ability blueprint type with game-specific data
@@ -18,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputReleased, class UCor
  * Most games will need to implement a subclass to support their game-specific code
  */
 UCLASS(Abstract)
-class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility, public ICoreAbilityInterface
+class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility
 {
 	GENERATED_UCLASS_BODY()
 
@@ -71,6 +71,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnAbilityInputReleased OnAbilityInputReleased;
 
+    /**
+    * 技能结束
+    */
+    UPROPERTY(BlueprintAssignable)
+    FOnAbilityFinish OnAbilityFinish;
+
 	/** Make gameplay effect container spec to be applied later, using the passed in container */
 	UFUNCTION(BlueprintCallable, Category = Ability, meta=(AutoCreateRefTerm = "EventData"))
 	virtual FCoreGameplayEffectContainerSpec MakeEffectContainerSpecFromContainer(const FCoreGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
@@ -113,7 +119,6 @@ public:
     virtual void OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
     virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const override;
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void CallEndAbility() override;
 	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
 	virtual void CallInputReleased(const FGameplayAbilitySpecHandle Handle);
 
@@ -148,7 +153,7 @@ private:
     * 技能结束处理
     */
     UFUNCTION()
-    void OnAbilityEnd(UGameplayAbility* Ability);
+    void OnAbilityEnd(const FAbilityEndedData& AbilityEndedData);
 
     /**
     * 被动条件监听
