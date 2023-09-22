@@ -63,9 +63,15 @@ void UCustomizableSearchTreeBlueprintLibrary::VisitAnimSearchTree(class UCustomi
 	if (CustomizableSearchTree->Root->FollowNodes.Num() == 0) {
 		return;
 	}
+	TSet<UCustomizableSearchTreeNodeBase*> NodeSet;
 	TArray<UCustomizableSearchTreeNodeBase*> VisitStack;
 	for (int Index = CustomizableSearchTree->Root->FollowNodes.Num() - 1; Index >= 0; --Index) {
-		VisitStack.Add(CustomizableSearchTree->Root->FollowNodes[Index]);
+		auto Node = CustomizableSearchTree->Root->FollowNodes[Index];
+		if (NodeSet.Contains(Node)) {
+			continue;
+		}
+		NodeSet.Add(Node);
+		VisitStack.Add(Node);
 	}
 	while (VisitStack.Num() > 0) {
 		auto NowNode = VisitStack[VisitStack.Num() - 1];
@@ -84,7 +90,12 @@ void UCustomizableSearchTreeBlueprintLibrary::VisitAnimSearchTree(class UCustomi
 		}
 		if (NeedSearchChildren && NowNode->FollowNodes.Num() > 0) {
 			for (int ChildIndex = NowNode->FollowNodes.Num() - 1; ChildIndex >= 0; --ChildIndex) {
-				VisitStack.Add(NowNode->FollowNodes[ChildIndex]);
+				auto Node = NowNode->FollowNodes[ChildIndex];
+				if (NodeSet.Contains(Node)) {
+					continue;
+				}
+				NodeSet.Add(Node);
+				VisitStack.Add(Node);
 			}
 		}
 	}
