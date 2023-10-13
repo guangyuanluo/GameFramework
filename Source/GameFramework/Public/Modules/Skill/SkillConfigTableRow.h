@@ -45,7 +45,7 @@ struct GAMEFRAMEWORK_API FSkillConfigTableRow : public FConfigTableRowBase
     int32 InputID = INDEX_NONE;
 
     /** 技能类 */
-    UPROPERTY(Category = "Skill", EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Skill")
     TSubclassOf<class UGameplayAbility> GameplayAbilityClass;
 
     virtual int GetUniqueId() override;
