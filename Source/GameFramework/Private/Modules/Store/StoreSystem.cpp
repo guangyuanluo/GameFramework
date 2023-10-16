@@ -140,13 +140,13 @@ bool UStoreSystem::BuyGoods(ACoreCharacter* Character, UStoreComponent* StoreCom
     return false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UStoreSystem::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UStoreSystem::GetHandleEventTypes() {
     return {
         UBuyGoodsRequestEvent::StaticClass()
     };
 }
 
-void UStoreSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UStoreSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
     if (HandleEvent->IsA(UBuyGoodsRequestEvent::StaticClass())) {
         auto Request = Cast<UBuyGoodsRequestEvent>(HandleEvent);
         auto SourceEntity = InGameInstance->GameEntityManager->GetEntityById(Request->EntityID);

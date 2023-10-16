@@ -24,12 +24,16 @@ public:
 	/*
 	* 获取处理的event type列表
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "EventSystem")
-	TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes();
+	UFUNCTION(BlueprintImplementableEvent, Category = "EventSystem", DisplayName = "GetHandleEventTypes", meta = (ScriptName = "GetHandleEventTypes"))
+	TArray<TSubclassOf<class UGameEventBase>> K2_GetHandleEventTypes();
+
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes();
 
 	/*
 	* 处理event实现
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "EventSystem")
-	void OnEvent(UCoreGameInstance* GameInstance, UGameEventBase* HandleEvent);
+	UFUNCTION(BlueprintImplementableEvent, Category = "EventSystem", DisplayName = "OnEvent", meta = (ScriptName = "OnEvent"))
+	void K2_OnEvent(UCoreGameInstance* GameInstance, UGameEventBase* HandleEvent);
+
+	virtual void OnEvent(UCoreGameInstance* GameInstance, UGameEventBase* HandleEvent);
 };

@@ -19,8 +19,10 @@ public:
 	/**
 	* 动作执行
 	*/
-	UFUNCTION(BlueprintNativeEvent)
-	void OnExecute(const FGameplayEventData& EventData) const;
+	UFUNCTION(BlueprintImplementableEvent, DisplayName = "OnExecute", meta = (ScriptName = "OnExecute"))
+	void K2_OnExecute(const FGameplayEventData& EventData) const;
+
+	virtual void OnExecute(const FGameplayEventData& EventData) const;
 
 	/**
 	* 如果是技能动作，可以通过此方法获取技能

@@ -158,13 +158,13 @@ bool UExpSystem::AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent
     return false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UExpSystem::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UExpSystem::GetHandleEventTypes() {
     return {
 		UAddExpRequesEvent::StaticClass(),
 	};
 }
 
-void UExpSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UExpSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	if (HandleEvent->IsA(UAddExpRequesEvent::StaticClass())) {
 		auto Request = Cast<UAddExpRequesEvent>(HandleEvent);
 

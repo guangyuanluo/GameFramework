@@ -4,17 +4,17 @@
 #include "CoreAbility.h"
 #include "CoreCharacter.h"
 
-void UCoreTargetType::GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType::GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
-	return;
+	K2_GetTargets(Ability, EventData, OutHitResults, OutActors);
 }
 
-void UCoreTargetType_UseOwner::GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType_UseOwner::GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	OutActors.Add(Ability->GetAvatarActorFromActorInfo());
 }
 
-void UCoreTargetType_UseEventData::GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
+void UCoreTargetType_UseEventData::GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {
 	bool AddTarget = false;
 	if (EventData.TargetData.Num() > 0) {

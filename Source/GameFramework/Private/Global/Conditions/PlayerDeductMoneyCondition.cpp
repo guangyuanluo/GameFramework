@@ -14,8 +14,8 @@ UPlayerDeductMoneyCondition::UPlayerDeductMoneyCondition(const class FObjectInit
 	ProgressClass = UPlayerDeductMoneyConditionProgress::StaticClass();
 }
 
-void UPlayerDeductMoneyConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UPlayerDeductMoneyConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (!GameInstance) {
@@ -35,12 +35,12 @@ void UPlayerDeductMoneyConditionProgress::OnInitialize_Implementation() {
 	OrderID = MoneyOrder->ID;
 }
 
-bool UPlayerDeductMoneyConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerDeductMoneyConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveComplete;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -56,7 +56,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductMoneyConditionProgress::G
 	}
 }
 
-void UPlayerDeductMoneyConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerDeductMoneyConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UOrderCompleteEvent* OrderCompleteEvent = Cast<UOrderCompleteEvent>(HandleEvent);
 	if (OrderCompleteEvent) {
 		if (OrderCompleteEvent->OrderID == OrderID) {

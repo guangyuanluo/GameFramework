@@ -3,8 +3,8 @@
 #include "CoreTriggerAction.h"
 #include "CoreAbility.h"
 
-void UCoreTriggerAction::OnExecute_Implementation(const FGameplayEventData& EventData) const {
-    
+void UCoreTriggerAction::OnExecute(const FGameplayEventData& EventData) const {
+    K2_OnExecute(EventData);
 }
 
 class UCoreAbility* UCoreTriggerAction::GetExecuteAbility(const FGameplayEventData& EventData) const {

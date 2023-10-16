@@ -48,9 +48,9 @@ class GAMEFRAMEWORK_API UAbilityCounterCompareConditionProgress : public UCoreCo
 public:
 	GENERATED_BODY()
 
-	virtual void OnInitialize_Implementation() override;
-	virtual void OnUninitialize_Implementation() override;
-	virtual bool IsComplete_Implementation(bool& IsValid) override;
+	virtual void OnInitialize() override;
+	virtual void OnUninitialize() override;
+	virtual bool IsComplete(bool& IsValid) override;
 
 private:
 	FString CounterName;

@@ -18,8 +18,8 @@ UPlayerCollectItemCondition::UPlayerCollectItemCondition(const class FObjectInit
 	ProgressClass = UPlayerCollectItemConditionProgress::StaticClass();
 }
 
-void UPlayerCollectItemConditionProgress::OnUninitialize_Implementation() {
-    Super::OnUninitialize_Implementation();
+void UPlayerCollectItemConditionProgress::OnUninitialize() {
+    Super::OnUninitialize();
 
     UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
     auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -29,7 +29,7 @@ void UPlayerCollectItemConditionProgress::OnUninitialize_Implementation() {
     GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
 }
 
-bool UPlayerCollectItemConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerCollectItemConditionProgress::IsComplete(bool& IsValid) {
     IsValid = true;
 	UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
     
@@ -48,11 +48,11 @@ bool UPlayerCollectItemConditionProgress::IsComplete_Implementation(bool& IsVali
 	return CurrentCount >= CollectItemCondition->ItemCount;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetHandleEventTypes() {
     return { UChangeItemEvent::StaticClass() };
 }
 
-void UPlayerCollectItemConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerCollectItemConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
     UChangeItemEvent* ChangeItemEvent = (UChangeItemEvent*)HandleEvent;
 
     auto SourcePlayerState = UGameFrameworkUtils::GetEntityState(ChangeItemEvent->Source);

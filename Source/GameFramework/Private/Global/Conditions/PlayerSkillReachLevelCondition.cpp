@@ -16,7 +16,7 @@ UPlayerSkillReachLevelCondition::UPlayerSkillReachLevelCondition(const class FOb
 	ProgressClass = UPlayerSkillReachLevelConditionProgress::StaticClass();
 }
 
-bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerSkillReachLevelConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
 
@@ -37,7 +37,7 @@ bool UPlayerSkillReachLevelConditionProgress::IsComplete_Implementation(bool& Is
 	return ActiveAbilities[0]->GetAbilityLevel() >= PlayerSkillReachLevelCondition->Skill.SkillLevel;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -53,7 +53,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgres
 	}
 }
 
-void UPlayerSkillReachLevelConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerSkillReachLevelConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	USkillLevelUpEvent* SkillLevelUpEvent = (USkillLevelUpEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(SkillLevelUpEvent->Unit);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {

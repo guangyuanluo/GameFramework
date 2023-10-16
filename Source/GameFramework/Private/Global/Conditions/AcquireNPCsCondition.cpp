@@ -17,8 +17,8 @@ UAcquireNPCsCondition::UAcquireNPCsCondition(const class FObjectInitializer& Obj
 	ProgressClass = UAcquireNPCsConditionProgress::StaticClass();
 }
 
-void UAcquireNPCsConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UAcquireNPCsConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
@@ -35,8 +35,8 @@ void UAcquireNPCsConditionProgress::OnInitialize_Implementation() {
 	}
 }
 
-void UAcquireNPCsConditionProgress::OnUninitialize_Implementation() {
-	Super::OnUninitialize_Implementation();
+void UAcquireNPCsConditionProgress::OnUninitialize() {
+	Super::OnUninitialize();
 
 	UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
@@ -50,12 +50,12 @@ void UAcquireNPCsConditionProgress::OnUninitialize_Implementation() {
 	}
 }
 
-bool UAcquireNPCsConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UAcquireNPCsConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveAcquire;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -72,7 +72,7 @@ TArray<TSubclassOf<class UGameEventBase>> UAcquireNPCsConditionProgress::GetHand
 	}
 }
 
-void UAcquireNPCsConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UAcquireNPCsConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	if (HaveAcquire) {
 		return;
 	}

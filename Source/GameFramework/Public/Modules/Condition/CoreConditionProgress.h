@@ -65,8 +65,11 @@ public:
 	* 是否完成
 	* @param IsValid 是否判断合法
 	*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "ConditionSystem")
-	bool IsComplete(bool& IsValid);
+	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem")
+	bool K2_IsComplete(bool& IsValid);
+
+	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
+	virtual bool IsComplete(bool& IsValid);
 
 	/**
 	* 刷新满足性
@@ -77,8 +80,10 @@ public:
 	/**
 	* 满足性变更
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnSatisfyChange();
+	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem", DisplayName = "OnSatisfyChange", meta = (ScriptName = "OnSatisfyChange"))
+	void K2_OnSatisfyChange();
+
+	virtual void OnSatisfyChange();
 
 	/**
 	* 获取进度对象，带孩子
@@ -101,14 +106,19 @@ protected:
 	/**
 	* 初始化覆写
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnInitialize();
+	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem", DisplayName = "OnInitialize", meta = (ScriptName = "OnInitialize"))
+	void K2_OnInitialize();
+
+	virtual void OnInitialize();
+
 
 	/**
 	* 反初始化覆写
 	*/
-	UFUNCTION(BlueprintNativeEvent, Category = "ConditionSystem")
-	void OnUninitialize();
+	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem", DisplayName = "OnUninitialize", meta = (ScriptName = "OnUninitialize"))
+	void K2_OnUninitialize();
+
+	virtual void OnUninitialize();
 
 private:
 	bool bInitialized = false;

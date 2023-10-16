@@ -9,8 +9,8 @@ UAbilityCounterCompareCondition::UAbilityCounterCompareCondition(const class FOb
 	ProgressClass = UAbilityCounterCompareConditionProgress::StaticClass();
 }
 
-void UAbilityCounterCompareConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UAbilityCounterCompareConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	auto ThisCondition = Cast<UAbilityCounterCompareCondition>(Condition);
 	if (ThisCondition->IsGlobal) {
@@ -24,14 +24,14 @@ void UAbilityCounterCompareConditionProgress::OnInitialize_Implementation() {
 	AbilityCounterSubsystem->OnAbilityCounterNumChange.AddDynamic(this, &UAbilityCounterCompareConditionProgress::OnCounterChange);
 }
 
-void UAbilityCounterCompareConditionProgress::OnUninitialize_Implementation() {
-	Super::OnUninitialize_Implementation();
+void UAbilityCounterCompareConditionProgress::OnUninitialize() {
+	Super::OnUninitialize();
 
 	auto AbilityCounterSubsystem = Cast<UAbilityCounterSubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UAbilityCounterSubsystem::StaticClass()));
 	AbilityCounterSubsystem->OnAbilityCounterNumChange.RemoveDynamic(this, &UAbilityCounterCompareConditionProgress::OnCounterChange);
 }
 
-bool UAbilityCounterCompareConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UAbilityCounterCompareConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	auto AbilityCounterSubsystem = Cast<UAbilityCounterSubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UAbilityCounterSubsystem::StaticClass()));
 	auto ThisCondition = Cast<UAbilityCounterCompareCondition>(Condition);

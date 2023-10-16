@@ -5,7 +5,7 @@
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Modules/AbilityCounter/AbilityCounterSubsystem.h"
 
-void UDestroyAbilityCounterAction::OnExecute_Implementation(const FGameplayEventData& EventData) const {
+void UDestroyAbilityCounterAction::OnExecute(const FGameplayEventData& EventData) const {
     auto Ability = GetExecuteAbility(EventData);
     if (!Ability) {
         return;

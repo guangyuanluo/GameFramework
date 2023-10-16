@@ -12,7 +12,7 @@ UCurrentComboSectionLimitCondition::UCurrentComboSectionLimitCondition(const cla
     ProgressClass = UCurrentComboSectionLimitConditionProgress::StaticClass();
 }
 
-bool UCurrentComboSectionLimitConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
     IsValid = false;
     auto AbilitySystemComponent = GetAbilitySystemComponent();
     auto SkillComboCacheComponent = USkillBlueprintLibrary::GetSkillComboCacheComponent(AbilitySystemComponent);

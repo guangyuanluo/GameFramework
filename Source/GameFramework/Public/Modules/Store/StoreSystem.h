@@ -26,6 +26,6 @@ public:
 
 private:
 	/** 覆写事件监听 */
-	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
-	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;
+	virtual void OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
 };

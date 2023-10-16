@@ -78,7 +78,7 @@ void UEventSystem::RegistEventHandler(TScriptInterface<IEventHandlerInterface> E
 		UnRegistEventHandler(EventHandler);
 	}
 
-	auto EventTypeList = IEventHandlerInterface::Execute_GetHandleEventTypes(EventHandler.GetObject());
+	auto EventTypeList = EventHandler->GetHandleEventTypes();
 	{
 		HandlerEventTypeMap.Add(EventHandlerObj, EventTypeList);
 		for (auto& EventType : EventTypeList) {
@@ -160,7 +160,9 @@ void UEventSystem::OnTick_Implementation(float DeltaTime) {
 		}
 		if (HandlerList.Num() != 0) {
 			for (auto Iter = HandlerList.CreateConstIterator(); Iter; ++Iter) {
-				IEventHandlerInterface::Execute_OnEvent(*Iter, GameInstance, HandleEvent);
+				if (auto EventHandlerInterface = Cast<IEventHandlerInterface>(*Iter)) {
+					EventHandlerInterface->OnEvent(GameInstance, HandleEvent);
+				}
 			}
 		}
 		HandleEvent->RemoveFromRoot();

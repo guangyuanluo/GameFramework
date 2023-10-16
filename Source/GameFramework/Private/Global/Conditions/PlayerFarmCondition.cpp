@@ -15,13 +15,13 @@ UPlayerFarmCondition::UPlayerFarmCondition(const class FObjectInitializer& Objec
 	ProgressClass = UPlayerFarmConditionProgress::StaticClass();
 }
 
-bool UPlayerFarmConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerFarmConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)Condition;
 	return FinishCount >= FarmCondition->Count;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -37,7 +37,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandl
 	}
 }
 
-void UPlayerFarmConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerFarmConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UActorDiedEvent* ActorDiedEvent = (UActorDiedEvent*)HandleEvent;
 	UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)Condition;
 	if (FarmCondition->UnitIDContainer.UnitID != ActorDiedEvent->DiedUnit->TemplateID) {

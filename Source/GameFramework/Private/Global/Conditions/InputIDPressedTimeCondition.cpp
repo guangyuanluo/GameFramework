@@ -8,7 +8,7 @@ UInputIDPressedTimeCondition::UInputIDPressedTimeCondition(const class FObjectIn
     ProgressClass = UInputIDPressedTimeConditionProgress::StaticClass();
 }
 
-bool UInputIDPressedTimeConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UInputIDPressedTimeConditionProgress::IsComplete(bool& IsValid) {
     IsValid = false;
     auto AbilitySystemComponent = GetAbilitySystemComponent();
     IsValid = true;
