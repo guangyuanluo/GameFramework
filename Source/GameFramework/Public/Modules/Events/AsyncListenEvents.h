@@ -29,7 +29,7 @@ public:
 	* 事件回调
 	*/
 	UPROPERTY(BlueprintAssignable)
-	FOnEvent OnEvent;
+	FOnEvent OnEventCallback;
 
 	/**
 	* 监听的事件
@@ -44,8 +44,8 @@ public:
 	void Abort();
 
 	/**************EventHandler interface define begin*************/
-	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
-	virtual void OnEvent_Implementation(UCoreGameInstance* gameInstance, UGameEventBase* handleEvent) override;
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;
+	virtual void OnEvent(UCoreGameInstance* gameInstance, UGameEventBase* handleEvent) override;
 	/**************EventHandler interface define end*************/
 
 #if WITH_EDITORONLY_DATA

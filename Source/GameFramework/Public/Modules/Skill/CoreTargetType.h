@@ -27,8 +27,10 @@ public:
 	UCoreTargetType() {}
 
 	/** Called to determine targets to apply gameplay effects to */
-	UFUNCTION(BlueprintNativeEvent)
-	void GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const;
+	UFUNCTION(BlueprintImplementableEvent, DisplayName = "GetTargets", meta = (ScriptName = "GetTargets"))
+	void K2_GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const;
+
+	virtual void GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const;
 };
 
 /** Trivial target type that uses the owner */
@@ -42,7 +44,7 @@ public:
 	UCoreTargetType_UseOwner() {}
 
 	/** Uses the passed in event data */
-	virtual void GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
+	virtual void GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
 };
 
 /** Trivial target type that pulls the target out of the event data */
@@ -56,5 +58,5 @@ public:
 	UCoreTargetType_UseEventData() {}
 
 	/** Uses the passed in event data */
-	virtual void GetTargets_Implementation(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
+	virtual void GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const override;
 };

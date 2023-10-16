@@ -40,12 +40,12 @@ void UAsyncListenEvents::Abort() {
     RemoveFromRoot();
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UAsyncListenEvents::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UAsyncListenEvents::GetHandleEventTypes() {
     return ListenEvents;
 }
 
-void UAsyncListenEvents::OnEvent_Implementation(UCoreGameInstance* gameInstance, UGameEventBase* handleEvent) {
-    OnEvent.Broadcast(gameInstance, handleEvent);
+void UAsyncListenEvents::OnEvent(UCoreGameInstance* gameInstance, UGameEventBase* handleEvent) {
+    OnEventCallback.Broadcast(gameInstance, handleEvent);
 }
 
 #if WITH_EDITORONLY_DATA

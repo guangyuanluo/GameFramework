@@ -68,7 +68,7 @@ void UCoreConditionGroupProgress::Uninitialize() {
     ChildProgresses.Empty();
 }
 
-bool UCoreConditionGroupProgress::IsComplete_Implementation(bool& IsValid) {
+bool UCoreConditionGroupProgress::IsComplete(bool& IsValid) {
     IsValid = true;
 
     bool HaveComplete = true;

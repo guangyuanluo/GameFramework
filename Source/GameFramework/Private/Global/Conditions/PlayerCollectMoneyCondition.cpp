@@ -14,7 +14,7 @@ UPlayerCollectMoneyCondition::UPlayerCollectMoneyCondition(const class FObjectIn
 	ProgressClass = UPlayerCollectMoneyConditionProgress::StaticClass();
 }
 
-bool UPlayerCollectMoneyConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerCollectMoneyConditionProgress::IsComplete(bool& IsValid) {
     IsValid = true;
 	UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)Condition;
     auto PlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -22,11 +22,11 @@ bool UPlayerCollectMoneyConditionProgress::IsComplete_Implementation(bool& IsVal
     return CollectMoneyCondition->MoneyCount <= PlayerState->WalletComponent->GetMoneyCount(CollectMoneyCondition->MoneyTypeContainer.MoneyType);
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectMoneyConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectMoneyConditionProgress::GetHandleEventTypes() {
     return { UChangeMoneyEvent::StaticClass() };
 }
 
-void UPlayerCollectMoneyConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerCollectMoneyConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
     UChangeMoneyEvent* ChangeMoneyEvent = (UChangeMoneyEvent*)HandleEvent;
     auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ChangeMoneyEvent->Source);
     if (!EventPlayerState || !EventPlayerState->PlayerComponent) {

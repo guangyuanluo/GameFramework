@@ -48,10 +48,10 @@ public:
 	UPROPERTY(Replicated, Category = "ConditionSystem", EditAnywhere, BlueprintReadOnly)
 	float ContributionDegree;
 
-	virtual bool IsComplete_Implementation(bool& IsValid) override;
+	virtual bool IsComplete(bool& IsValid) override;
 	/**************EventHandler interface define begin*************/
-	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes_Implementation() override;
-	virtual void OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
+	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;
+	virtual void OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;
 	/**************EventHandler interface define end*************/
 
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

@@ -9,13 +9,13 @@ UPlayerHuntCondition::UPlayerHuntCondition(const class FObjectInitializer& Objec
 	ProgressClass = UPlayerHuntConditionProgress::StaticClass();
 }
 
-bool UPlayerHuntConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerHuntConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	UPlayerHuntCondition* huntCondition = (UPlayerHuntCondition*)Condition;
 	return ContributionDegree >= huntCondition->ContributionDegree;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -29,7 +29,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandl
 	}
 }
 
-void UPlayerHuntConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerHuntConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 
 }
 

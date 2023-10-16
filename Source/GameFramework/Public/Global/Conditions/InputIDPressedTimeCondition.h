@@ -24,5 +24,5 @@ class GAMEFRAMEWORK_API UInputIDPressedTimeConditionProgress : public UCoreCondi
     GENERATED_BODY()
 
 public:
-    virtual bool IsComplete_Implementation(bool& IsValid) override;
+    virtual bool IsComplete(bool& IsValid) override;
 };

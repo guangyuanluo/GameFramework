@@ -14,13 +14,13 @@ UPlayerQuestFinishCondition::UPlayerQuestFinishCondition(const class FObjectInit
 	ProgressClass = UPlayerQuestFinishConditionProgress::StaticClass();
 }
 
-void UPlayerQuestFinishConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UPlayerQuestFinishConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	HaveComplete = false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -36,7 +36,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::G
 	}
 }
 
-void UPlayerQuestFinishConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerQuestFinishConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UCompleteQuestEvent* CompleteQuestEvent = (UCompleteQuestEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(CompleteQuestEvent->Source);
 	if (EventPlayerState == nullptr && EventPlayerState->PlayerComponent) {
@@ -54,7 +54,7 @@ void UPlayerQuestFinishConditionProgress::OnEvent_Implementation(UCoreGameInstan
 	}
 }
 
-bool UPlayerQuestFinishConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerQuestFinishConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveComplete;
 }

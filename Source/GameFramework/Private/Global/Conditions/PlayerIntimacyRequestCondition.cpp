@@ -11,16 +11,16 @@ UPlayerIntimacyRequestCondition::UPlayerIntimacyRequestCondition(const class FOb
 	ProgressClass = UPlayerIntimacyRequestConditionProgress::StaticClass();
 }
 
-bool UPlayerIntimacyRequestConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerIntimacyRequestConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return false;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerIntimacyRequestConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerIntimacyRequestConditionProgress::GetHandleEventTypes() {
 	return { UIntimacyChangeEvent::StaticClass() };
 }
 
-void UPlayerIntimacyRequestConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerIntimacyRequestConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UIntimacyChangeEvent* IntimacyChangeEvent = (UIntimacyChangeEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(IntimacyChangeEvent->Source);
 	if (EventPlayerState == nullptr && EventPlayerState->PlayerComponent == nullptr) {

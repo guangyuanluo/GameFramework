@@ -13,7 +13,7 @@ UPlayerReachExpLevelCondition::UPlayerReachExpLevelCondition(const class FObject
 	ProgressClass = UPlayerReachExpLevelConditionProgress::StaticClass();
 }
 
-bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerReachExpLevelConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
 
@@ -22,7 +22,7 @@ bool UPlayerReachExpLevelConditionProgress::IsComplete_Implementation(bool& IsVa
 	return ExpLevel >= ReachExpLevelCondition->ExpLevel;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -38,7 +38,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress:
 	}
 }
 
-void UPlayerReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerReachExpLevelConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ExpLevelUpEvent->Source);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {

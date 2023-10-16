@@ -75,13 +75,13 @@ void UOrderSystem::CancelOrder(const FGuid& OrderID) {
     }
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UOrderSystem::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UOrderSystem::GetHandleEventTypes() {
     return {
         UPayOrderRequestEvent::StaticClass(),
     };
 }
 
-void UOrderSystem::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UOrderSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
     if (HandleEvent->IsA(UPayOrderRequestEvent::StaticClass())) {
         auto PayOrderRequestEvent = Cast<UPayOrderRequestEvent>(HandleEvent);
         PayOrder(PayOrderRequestEvent->Source, PayOrderRequestEvent->OrderID);

@@ -27,5 +27,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsGlobal = false;
 
-	virtual void OnExecute_Implementation(const FGameplayEventData& EventData) const override;
+	virtual void OnExecute(const FGameplayEventData& EventData) const override;
 };

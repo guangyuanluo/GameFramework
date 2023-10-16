@@ -13,7 +13,7 @@ UPlayerConsumeMoneyCondition::UPlayerConsumeMoneyCondition(const class FObjectIn
 	ProgressClass = UPlayerConsumeMoneyConditionProgress::StaticClass();
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -29,7 +29,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::
 	}
 }
 
-void UPlayerConsumeMoneyConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerConsumeMoneyConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UConsumeMoneyEvent* ConsumeMoneyEvent = (UConsumeMoneyEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ConsumeMoneyEvent->Source);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
@@ -48,7 +48,7 @@ void UPlayerConsumeMoneyConditionProgress::OnEvent_Implementation(UCoreGameInsta
     }
 }
 
-bool UPlayerConsumeMoneyConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerConsumeMoneyConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
 	return CurrentCount >= ConsumeMoneyCondition->MoneyCount;

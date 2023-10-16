@@ -16,8 +16,8 @@ UCloseToNPCCondition::UCloseToNPCCondition(const class FObjectInitializer& Objec
 	ProgressClass = UCloseToNPCConditionProgress::StaticClass();
 }
 
-void UCloseToNPCConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UCloseToNPCConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
@@ -31,8 +31,8 @@ void UCloseToNPCConditionProgress::OnInitialize_Implementation() {
 	UpdateSatisfy();
 }
 
-void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
-	Super::OnUninitialize_Implementation();
+void UCloseToNPCConditionProgress::OnUninitialize() {
+	Super::OnUninitialize();
 
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
@@ -44,16 +44,16 @@ void UCloseToNPCConditionProgress::OnUninitialize_Implementation() {
 	Character->OnCharacterMovementUpdated.RemoveDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
 }
 
-bool UCloseToNPCConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UCloseToNPCConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveComplete;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UCloseToNPCConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UCloseToNPCConditionProgress::GetHandleEventTypes() {
 	return {};
 }
 
-void UCloseToNPCConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UCloseToNPCConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 
 }
 

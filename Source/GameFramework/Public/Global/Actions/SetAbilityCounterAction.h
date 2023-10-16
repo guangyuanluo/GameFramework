@@ -33,5 +33,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Num;
 
-	virtual void OnExecute_Implementation(const FGameplayEventData& EventData) const override;
+	virtual void OnExecute(const FGameplayEventData& EventData) const override;
 };

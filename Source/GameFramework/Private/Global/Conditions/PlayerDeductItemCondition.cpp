@@ -14,8 +14,8 @@ UPlayerDeductItemCondition::UPlayerDeductItemCondition(const class FObjectInitia
 	ProgressClass = UPlayerDeductItemConditionProgress::StaticClass();
 }
 
-void UPlayerDeductItemConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UPlayerDeductItemConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	auto GameInstance = Cast<UCoreGameInstance>(ProgressOwner->GetWorld()->GetGameInstance());
 	if (!GameInstance) {
@@ -34,12 +34,12 @@ void UPlayerDeductItemConditionProgress::OnInitialize_Implementation() {
 	OrderID = ItemOrder->ID;
 }
 
-bool UPlayerDeductItemConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerDeductItemConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveComplete;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductItemConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductItemConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -55,7 +55,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductItemConditionProgress::Ge
 	}
 }
 
-void UPlayerDeductItemConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerDeductItemConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UOrderCompleteEvent* OrderCompleteEvent = Cast<UOrderCompleteEvent>(HandleEvent);
 	if (OrderCompleteEvent) {
 		if (OrderCompleteEvent->OrderID == OrderID) {

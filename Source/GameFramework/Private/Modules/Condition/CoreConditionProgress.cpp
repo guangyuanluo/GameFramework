@@ -29,8 +29,8 @@ bool UCoreConditionProgress::IsInitialized() const {
     return bInitialized;
 }
 
-bool UCoreConditionProgress::IsComplete_Implementation(bool& IsValid) {
-    return false;
+bool UCoreConditionProgress::IsComplete(bool& IsValid) {
+    return K2_IsComplete(IsValid);
 }
 
 void UCoreConditionProgress::RefreshSatisfy() {
@@ -46,8 +46,8 @@ void UCoreConditionProgress::RefreshSatisfy() {
     }
 }
 
-void UCoreConditionProgress::OnSatisfyChange_Implementation() {
-
+void UCoreConditionProgress::OnSatisfyChange() {
+    K2_OnSatisfyChange();
 }
 
 void UCoreConditionProgress::GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) {
@@ -83,10 +83,10 @@ void UCoreConditionProgress::PostNetReceive() {
     OnConditionProgressPostNetReceive.Broadcast(this);
 }
 
-void UCoreConditionProgress::OnInitialize_Implementation() {
-
+void UCoreConditionProgress::OnInitialize() {
+    K2_OnInitialize();
 }
 
-void UCoreConditionProgress::OnUninitialize_Implementation() {
-
+void UCoreConditionProgress::OnUninitialize() {
+    K2_OnUninitialize();
 }

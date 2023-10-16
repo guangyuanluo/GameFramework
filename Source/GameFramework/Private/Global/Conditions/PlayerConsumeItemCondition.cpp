@@ -13,7 +13,7 @@ UPlayerConsumeItemCondition::UPlayerConsumeItemCondition(const class FObjectInit
 	ProgressClass = UPlayerConsumeItemConditionProgress::StaticClass();
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -29,7 +29,7 @@ TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::G
 	}
 }
 
-void UPlayerConsumeItemConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UPlayerConsumeItemConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UChangeItemEvent* ChangeItemEvent = (UChangeItemEvent*)HandleEvent;
 	auto EventPlayerState = UGameFrameworkUtils::GetEntityState(ChangeItemEvent->Source);
 	if (!EventPlayerState || !EventPlayerState->PlayerComponent) {
@@ -49,7 +49,7 @@ void UPlayerConsumeItemConditionProgress::OnEvent_Implementation(UCoreGameInstan
 	}
 }
 
-bool UPlayerConsumeItemConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UPlayerConsumeItemConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)Condition;
 	return CurrentCount >= ConsumeItemCondition->ItemCount;

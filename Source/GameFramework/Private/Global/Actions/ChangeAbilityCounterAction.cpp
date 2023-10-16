@@ -5,7 +5,7 @@
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Modules/AbilityCounter/AbilityCounterSubsystem.h"
 
-void UChangeAbilityCounterAction::OnExecute_Implementation(const FGameplayEventData& EventData) const {
+void UChangeAbilityCounterAction::OnExecute(const FGameplayEventData& EventData) const {
     auto Ability = GetExecuteAbility(EventData);
     if (!Ability) {
         return;

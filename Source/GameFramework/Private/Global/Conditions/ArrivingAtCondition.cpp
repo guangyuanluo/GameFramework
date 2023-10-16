@@ -11,18 +11,18 @@ UArrivingAtCondition::UArrivingAtCondition(const class FObjectInitializer& Objec
 	ProgressClass = UArrivingAtConditionProgress::StaticClass();
 }
 
-void UArrivingAtConditionProgress::OnInitialize_Implementation() {
-	Super::OnInitialize_Implementation();
+void UArrivingAtConditionProgress::OnInitialize() {
+	Super::OnInitialize();
 
 	HaveComplete = false;
 }
 
-bool UArrivingAtConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UArrivingAtConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveComplete;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -38,7 +38,7 @@ TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandl
 	}
 }
 
-void UArrivingAtConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UArrivingAtConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UEnterAreaEvent* EnterAreaEvent = (UEnterAreaEvent*)HandleEvent;
 	UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
 	if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitIDContainer.UnitID

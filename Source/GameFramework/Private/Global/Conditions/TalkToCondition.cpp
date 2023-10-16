@@ -14,12 +14,12 @@ UTalkToCondition::UTalkToCondition(const class FObjectInitializer& ObjectInitial
 	ProgressClass = UTalkToConditionProgress::StaticClass();
 }
 
-bool UTalkToConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UTalkToConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return HaveTalk;
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -35,7 +35,7 @@ TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEve
 	}
 }
 
-void UTalkToConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UTalkToConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	if (HaveTalk) {
 		return;
 	}

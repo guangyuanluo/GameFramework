@@ -10,7 +10,7 @@ UUnitReachExpLevelCondition::UUnitReachExpLevelCondition(const class FObjectInit
 	ProgressClass = UUnitReachExpLevelConditionProgress::StaticClass();
 }
 
-TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetHandleEventTypes_Implementation() {
+TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetHandleEventTypes() {
 	bool IsValid;
 	bool bComplete = IsComplete(IsValid);
 	if (!IsValid) {
@@ -26,7 +26,7 @@ TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::G
 	}
 }
 
-void UUnitReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
+void UUnitReachExpLevelConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
 	UExpLevelUpEvent* ExpLevelUpEvent = (UExpLevelUpEvent*)HandleEvent;
 	ACoreCharacter* Unit = Cast<ACoreCharacter>(ExpLevelUpEvent->Source);
 	if (Unit == nullptr) {
@@ -39,7 +39,7 @@ void UUnitReachExpLevelConditionProgress::OnEvent_Implementation(UCoreGameInstan
 	}
 }
 
-bool UUnitReachExpLevelConditionProgress::IsComplete_Implementation(bool& IsValid) {
+bool UUnitReachExpLevelConditionProgress::IsComplete(bool& IsValid) {
 	IsValid = true;
 	return false;
 }
