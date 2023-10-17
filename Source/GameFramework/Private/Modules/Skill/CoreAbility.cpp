@@ -98,6 +98,10 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
 	return AllEffects;
 }
 
+void UCoreAbility::CallEndAbility() {
+    K2_EndAbility();
+}
+
 bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
 }

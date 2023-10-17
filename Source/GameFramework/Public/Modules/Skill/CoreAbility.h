@@ -85,6 +85,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Ability)
 	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainerSpec(const FCoreGameplayEffectContainerSpec& ContainerSpec);
 
+    UFUNCTION(BlueprintCallable, Category = Ability)
+    void CallEndAbility();
+
 	/**
 	* 是否激活
 	*/
@@ -137,7 +140,7 @@ private:
 
     /** 技能满足条件进度 */
     UPROPERTY(Transient)
-    TArray<UCoreConditionProgress*> RequireConditionProgresses;
+    TArray<class UCoreConditionProgress*> RequireConditionProgresses;
     struct FConditionTriggerHandler PassiveConditionHandler;
 
     /** 技能触发信息 */
