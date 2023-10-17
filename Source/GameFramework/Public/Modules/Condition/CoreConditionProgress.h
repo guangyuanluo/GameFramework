@@ -65,9 +65,6 @@ public:
 	* 是否完成
 	* @param IsValid 是否判断合法
 	*/
-	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem")
-	bool K2_IsComplete(bool& IsValid);
-
 	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
 	virtual bool IsComplete(bool& IsValid);
 
@@ -80,9 +77,6 @@ public:
 	/**
 	* 满足性变更
 	*/
-	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem", DisplayName = "OnSatisfyChange", meta = (ScriptName = "OnSatisfyChange"))
-	void K2_OnSatisfyChange();
-
 	virtual void OnSatisfyChange();
 
 	/**
@@ -119,6 +113,12 @@ protected:
 	void K2_OnUninitialize();
 
 	virtual void OnUninitialize();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem")
+	bool K2_IsComplete(bool& IsValid);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem", DisplayName = "OnSatisfyChange", meta = (ScriptName = "OnSatisfyChange"))
+	void K2_OnSatisfyChange();
 
 private:
 	bool bInitialized = false;

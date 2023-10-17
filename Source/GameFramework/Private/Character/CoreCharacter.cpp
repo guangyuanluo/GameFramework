@@ -51,17 +51,6 @@ void ACoreCharacter::BeginPlay() {
         InitTemplate(TemplateID);
 	}
 
-    auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
-    if (CharacterState) {
-        auto SkillComponent = CharacterState->SkillComponent;
-        if (GetLocalRole() == ENetRole::ROLE_Authority) {
-            if (!SkillComponent->AbilityActorInfo.IsValid()) {
-                SkillComponent->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(UAbilitySystemGlobals::Get().AllocAbilityActorInfo());
-            }
-            SkillComponent->InitAbilityActorInfo(CharacterState, this);
-        }
-    }
-
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
     GameInstance->GameEntityManager->OnEntityAdd(this);
 }
@@ -207,6 +196,14 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
                 CharacterState->ExpComponent->Exps.Add(ExpInfo);
             }
         }
+    }
+
+    auto SkillComponent = CharacterState->SkillComponent;
+    if (GetLocalRole() == ENetRole::ROLE_Authority) {
+        if (!SkillComponent->AbilityActorInfo.IsValid()) {
+            SkillComponent->AbilityActorInfo = TSharedPtr<FGameplayAbilityActorInfo>(UAbilitySystemGlobals::Get().AllocAbilityActorInfo());
+        }
+        SkillComponent->InitAbilityActorInfo(CharacterState, this);
     }
 
     InitSkill();
