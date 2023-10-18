@@ -13,6 +13,11 @@
 #include "SGlobalSkillInfoWidget.h"
 
 void FCoreAbilityCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBuilder) {
+	TArray< TWeakObjectPtr<UObject> > OutObjects;
+	LayoutBuilder.GetObjectsBeingCustomized(OutObjects);
+
+	auto ComplexAbility = Cast<UCoreAbility>(OutObjects[0]);
+
 	auto SortPriorityProperty = LayoutBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(UCoreAbility, SortPriority));
 
     LayoutBuilder.HideProperty(GET_MEMBER_NAME_CHECKED(UCoreAbility, SortPriority));
@@ -45,7 +50,7 @@ void FCoreAbilityCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBui
 					[
 						SNew(SButton)
 							.Text(FText::FromString(TEXT("查看全局优先级")))
-							.OnClicked_Lambda([](){
+							.OnClicked_Lambda([ComplexAbility](){
 								const FVector2D BrowserWindowSize(1280, 720);
 								TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
 								FSlateApplication::Get().AddModalWindow(
@@ -54,7 +59,7 @@ void FCoreAbilityCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBui
 									.HasCloseButton(true)
 									.ClientSize(BrowserWindowSize)
 									[
-										SNew(SGlobalSkillInfoWidget)
+										SNew(SGlobalSkillInfoWidget, ComplexAbility->GetClass())
 									], RootWindow);
 								return FReply::Handled();
 							})

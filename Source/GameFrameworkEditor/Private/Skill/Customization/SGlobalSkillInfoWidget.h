@@ -18,12 +18,11 @@ public:
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	void Construct(const FArguments& InArgs, TSubclassOf<class UCoreAbility> CurrentAbility);
 
 private:
 	TArray<TSharedPtr<TSubclassOf<class UCoreAbility>> > AbilityData;
 	TSharedPtr<SListView< TSharedPtr<TSubclassOf<class UCoreAbility>> >> ListView;
 
-	void OnSkillInfoSelectionChanged(TSharedPtr<TSubclassOf<class UCoreAbility>> InNewSelection, ESelectInfo::Type InSelectInfo);
 	TSharedRef<ITableRow> SkillInfoListViewOnGenerateRow(TSharedPtr<TSubclassOf<class UCoreAbility>> Item, const TSharedRef<STableViewBase>& OwnerTable);
 };

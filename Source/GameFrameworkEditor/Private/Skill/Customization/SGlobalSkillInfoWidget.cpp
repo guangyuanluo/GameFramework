@@ -47,7 +47,7 @@ private:
 	TSharedPtr<TSubclassOf<class UCoreAbility>> SkillPtr;
 };
 
-void SGlobalSkillInfoWidget::Construct(const FArguments& InArgs) {
+void SGlobalSkillInfoWidget::Construct(const FArguments& InArgs, TSubclassOf<class UCoreAbility> CurrentAbility) {
 	auto FilterClass = UCoreAbility::StaticClass();
 
 	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(FilterClass));
@@ -78,7 +78,6 @@ void SGlobalSkillInfoWidget::Construct(const FArguments& InArgs) {
 				.ListItemsSource(&AbilityData)
 				.SelectionMode(ESelectionMode::Single)
 				.OnGenerateRow(this, &SGlobalSkillInfoWidget::SkillInfoListViewOnGenerateRow)
-				.OnSelectionChanged(this, &SGlobalSkillInfoWidget::OnSkillInfoSelectionChanged)
 				.HeaderRow
 				(
 					SNew(SHeaderRow)
@@ -90,14 +89,12 @@ void SGlobalSkillInfoWidget::Construct(const FArguments& InArgs) {
 					.FillWidth(10.0f)
 				)
 		];
-}
 
-void SGlobalSkillInfoWidget::OnSkillInfoSelectionChanged(TSharedPtr<TSubclassOf<class UCoreAbility>> InNewSelection, ESelectInfo::Type InSelectInfo) {
-	if (InNewSelection.IsValid()) {
-		ListView->SetSelection(InNewSelection);
-	}
-	else {
-		ListView->ClearSelection();
+	for (const auto& AbilityClass : AbilityData) {
+		if (AbilityClass->Get() == CurrentAbility) {
+			ListView->SetSelection(AbilityClass);
+			break;
+		}
 	}
 }
 
