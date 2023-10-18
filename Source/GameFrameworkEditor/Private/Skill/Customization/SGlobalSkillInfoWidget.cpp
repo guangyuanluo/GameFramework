@@ -93,6 +93,7 @@ void SGlobalSkillInfoWidget::Construct(const FArguments& InArgs, TSubclassOf<cla
 	for (const auto& AbilityClass : AbilityData) {
 		if (AbilityClass->Get() == CurrentAbility) {
 			ListView->SetSelection(AbilityClass);
+			ListView->RequestScrollIntoView(AbilityClass);
 			break;
 		}
 	}
