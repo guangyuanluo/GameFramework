@@ -1,9 +1,9 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "GraphEditorModes.h"
-#include "GameEditorTabs.h"
-#include "GraphEditorTabFactory.h"
-#include "GraphEditorBase.h"
+#include "Graph/GraphEditorModes.h"
+#include "Graph/GameEditorTabs.h"
+#include "Graph/GraphEditorTabFactory.h"
+#include "Graph/GraphEditorBase.h"
 
 /////////////////////////////////////////////////////
 // FScenarioEditorApplicationMode

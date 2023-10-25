@@ -1,6 +1,6 @@
 #include "SGlobalSkillInfoWidget.h"
 #include "Modules/Skill/CoreAbility.h"
-#include "GameFrameworkGraphTypes.h"
+#include "Graph/GameFrameworkGraphTypes.h"
 
 namespace SkillUI
 {

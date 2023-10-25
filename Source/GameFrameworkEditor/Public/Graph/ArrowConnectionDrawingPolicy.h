@@ -10,7 +10,7 @@
 class FSlateWindowElementList;
 class UEdGraph;
 
-class FArrowConnectionDrawingPolicy : public FConnectionDrawingPolicy {
+class GAMEFRAMEWORKEDITOR_API FArrowConnectionDrawingPolicy : public FConnectionDrawingPolicy {
 protected:
     UEdGraph* GraphObj;
     TMap<UEdGraphNode*, int32> NodeWidgetMap;

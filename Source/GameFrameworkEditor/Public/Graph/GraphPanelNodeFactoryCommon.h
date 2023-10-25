@@ -5,6 +5,6 @@
 #include "CoreMinimal.h"
 #include "EdGraphUtilities.h"
 
-class FGraphPanelNodeFactoryCommon : public FGraphPanelNodeFactory {
+class GAMEFRAMEWORKEDITOR_API FGraphPanelNodeFactoryCommon : public FGraphPanelNodeFactory {
 	virtual TSharedPtr<class SGraphNode> CreateNode(UEdGraphNode* Node) const override;
 };

@@ -1,8 +1,8 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "GameFrameworkGraph.h"
-#include "GameFrameworkGraphSchema.h"
-#include "GameFrameworkGraphNode.h"
+#include "Graph/GameFrameworkGraph.h"
+#include "Graph/GameFrameworkGraphSchema.h"
+#include "Graph/GameFrameworkGraphNode.h"
 
 UGameFrameworkGraph::UGameFrameworkGraph(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

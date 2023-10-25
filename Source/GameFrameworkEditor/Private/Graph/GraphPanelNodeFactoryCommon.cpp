@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GraphPanelNodeFactoryCommon.h"
-#include "SGameGraphNode.h"
-#include "GameFrameworkGraphNode.h"
+#include "Graph/GraphPanelNodeFactoryCommon.h"
+#include "Graph/SGameGraphNode.h"
+#include "Graph/GameFrameworkGraphNode.h"
 
 TSharedPtr<class SGraphNode> FGraphPanelNodeFactoryCommon::CreateNode(UEdGraphNode* Node) const {
 	if (Cast<UGameFrameworkGraphNode>(Node)) {

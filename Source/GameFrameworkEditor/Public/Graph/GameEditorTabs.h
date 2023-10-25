@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-struct FGameEditorTabs
+struct GAMEFRAMEWORKEDITOR_API FGameEditorTabs
 {
 	// Tab identifiers
 	static const FName GraphDetailsID;

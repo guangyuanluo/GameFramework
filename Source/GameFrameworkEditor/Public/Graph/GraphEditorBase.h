@@ -17,7 +17,7 @@ class UGameFrameworkGraph;
 /**
  * 
  */
-class FGraphEditorBase : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
+class GAMEFRAMEWORKEDITOR_API FGraphEditorBase : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 public:
 	FGraphEditorBase();
@@ -32,7 +32,7 @@ public:
 	void SaveEditedObjectState();
 	/** Restores the scenario graph we were editing or creates a new one if none is available */
 	void RestoreObject();
-	UObject* GetObjectToEdit() { return ObjectToEdit; }
+	virtual UObject* GetObjectToEdit() { return ObjectToEdit; }
 
 	//~ Begin FEditorUndoClient Interface
 	virtual void PostUndo(bool bSuccess) override;

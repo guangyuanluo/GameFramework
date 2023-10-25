@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 
-#include "SGameGraphNode.h"
+#include "Graph/SGameGraphNode.h"
 #include "SlateCore.h"
 #include "ScenarioGraphNode.h"
 #include "Widgets/Text/SInlineEditableTextBlock.h"

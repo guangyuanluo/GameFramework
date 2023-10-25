@@ -6,7 +6,7 @@
 #include "Modules/CustomizableSearchTree/CustomizableSearchTree.h"
 #include "CustomizableSearchTreeGraph.h"
 #include "CustomizableSearchTreeGraphSchema.h"
-#include "GraphEditorModes.h"
+#include "Graph/GraphEditorModes.h"
 
 const FName FCustomizableSearchTreeEditor::CustomizableSearchTreeMode(TEXT("CustomizableSearchTree"));
 const FName CustomizableSearchTreeEditorAppIdentifier(TEXT("CustomizableSearchTreeEditorApp"));

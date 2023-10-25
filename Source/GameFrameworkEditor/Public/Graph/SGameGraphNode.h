@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "SGraphNode.h"
 
-class SGameGraphNode : public SGraphNode {
+class GAMEFRAMEWORKEDITOR_API SGameGraphNode : public SGraphNode {
 public:
     SLATE_BEGIN_ARGS(SGameGraphNode) {}
     SLATE_END_ARGS()

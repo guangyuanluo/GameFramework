@@ -11,7 +11,7 @@ class FSlateRect;
 class UEdGraph;
 
 UCLASS()
-class UGameFrameworkGraphSchema : public UEdGraphSchema
+class GAMEFRAMEWORKEDITOR_API UGameFrameworkGraphSchema : public UEdGraphSchema
 {
 	GENERATED_UCLASS_BODY()
 };

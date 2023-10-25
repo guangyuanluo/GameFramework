@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "GraphEditorBase.h"
+#include "Graph/GraphEditorBase.h"
 
 class UScenario;
 

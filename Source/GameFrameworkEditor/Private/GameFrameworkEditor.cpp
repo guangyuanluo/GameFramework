@@ -12,7 +12,7 @@
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "Scenario/AssetTypeActions_Scenario.h"
 #include "Modules/Scenario/ScenarioNode.h"
-#include "GraphPanelNodeFactoryCommon.h"
+#include "Graph/GraphPanelNodeFactoryCommon.h"
 #include "Scenario/ScenarioEditor.h"
 #include "PropertyEditorModule.h"
 #include "BaseConditionWidgetFactories.h"

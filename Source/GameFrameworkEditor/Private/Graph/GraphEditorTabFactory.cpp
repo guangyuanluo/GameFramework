@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GraphEditorTabFactory.h"
+#include "Graph/GraphEditorTabFactory.h"
 
 #include "Widgets/Docking/SDockTab.h"
 #include "EditorStyleSet.h"
-#include "GraphEditorBase.h"
+#include "Graph/GraphEditorBase.h"
 #include "Engine/Blueprint.h"
-#include "GameEditorTabs.h"
+#include "Graph/GameEditorTabs.h"
 
 FGraphEditorSummoner::FGraphEditorSummoner(TSharedPtr<class FGraphEditorBase> InEditorPtr, FOnCreateGraphEditorWidget CreateGraphEditorWidgetCallback)
 	: FDocumentTabFactoryForObjects<UEdGraph>(FGameEditorTabs::GraphEditorID, InEditorPtr)

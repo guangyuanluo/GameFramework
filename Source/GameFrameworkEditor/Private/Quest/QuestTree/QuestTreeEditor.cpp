@@ -4,7 +4,7 @@
 #include "Modules/Quest/QuestTree.h"
 #include "QuestTreeGraph.h"
 #include "QuestTreeGraphSchema.h"
-#include "GraphEditorModes.h"
+#include "Graph/GraphEditorModes.h"
 
 const FName FQuestTreeEditor::QuestTreeMode(TEXT("QuestTree"));
 const FName QuestTreeEditorAppIdentifier(TEXT("QuestTreeEditorApp"));

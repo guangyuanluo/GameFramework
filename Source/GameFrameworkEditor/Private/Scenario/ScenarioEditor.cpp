@@ -6,7 +6,7 @@
 #include "Modules/Scenario/Scenario.h"
 #include "ScenarioGraph.h"
 #include "ScenarioGraphSchema.h"
-#include "GraphEditorModes.h"
+#include "Graph/GraphEditorModes.h"
 
 const FName FScenarioEditor::ScenarioMode(TEXT("Scenario"));
 const FName ScenarioEditorAppIdentifier(TEXT("ScenarioEditorApp"));
