@@ -8,7 +8,7 @@
 #include "WorkflowOrientedApp/ApplicationMode.h"
 
 /** Application mode for main scenario editing mode */
-class FGraphEditorApplicationMode : public FApplicationMode
+class GAMEFRAMEWORKEDITOR_API FGraphEditorApplicationMode : public FApplicationMode
 {
 public:
 	FGraphEditorApplicationMode(TSharedPtr<class FGraphEditorBase> InEditor, FName InModeName, FText(*GetLocalizedMode)(const FName));

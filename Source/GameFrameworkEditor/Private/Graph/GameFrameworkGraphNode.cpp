@@ -1,12 +1,12 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "GameFrameworkGraphNode.h"
+#include "Graph/GameFrameworkGraphNode.h"
 #include "UObject/Class.h"
 #include "UObject/UnrealType.h"
 #include "Engine/Blueprint.h"
 #include "AssetRegistry/AssetData.h"
 #include "EdGraph/EdGraphSchema.h"
-#include "GameFrameworkGraph.h"
+#include "Graph/GameFrameworkGraph.h"
 #include "DiffResults.h"
 #include "ScopedTransaction.h"
 #include "BlueprintNodeHelpers.h"

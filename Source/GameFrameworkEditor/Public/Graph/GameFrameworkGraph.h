@@ -8,7 +8,7 @@
 #include "GameFrameworkGraph.generated.h"
 
 UCLASS()
-class UGameFrameworkGraph : public UEdGraph
+class GAMEFRAMEWORKEDITOR_API UGameFrameworkGraph : public UEdGraph
 {
 	GENERATED_UCLASS_BODY()
 
@@ -16,7 +16,7 @@ public:
 	class FGraphEditorBase* Editor;
 
 	/**
-	* Êı¾İ±ä»¯Ë¢ĞÂËùÓĞ½Úµã
+	* æ•°æ®å˜åŒ–åˆ·æ–°æ‰€æœ‰èŠ‚ç‚¹
 	*/
 	virtual void RefreshAllNodesOnDataChanged();
 	virtual void NotifyGraphPinConnectionChanged() { }

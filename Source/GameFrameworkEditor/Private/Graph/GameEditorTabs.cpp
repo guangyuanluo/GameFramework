@@ -1,6 +1,6 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
-#include "GameEditorTabs.h"
+#include "Graph/GameEditorTabs.h"
 
 
 // Tab identifiers

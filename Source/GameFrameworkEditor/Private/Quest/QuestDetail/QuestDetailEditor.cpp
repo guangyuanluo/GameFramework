@@ -4,7 +4,7 @@
 #include "Modules/Quest/QuestDetail.h"
 #include "QuestDetailGraph.h"
 #include "QuestDetailGraphSchema.h"
-#include "GraphEditorModes.h"
+#include "Graph/GraphEditorModes.h"
 
 const FName FQuestDetailEditor::QuestDetailMode(TEXT("QuestDetail"));
 const FName QuestDetailEditorAppIdentifier(TEXT("QuestDetailEditorApp"));

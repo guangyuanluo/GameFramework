@@ -8,7 +8,7 @@
 #include "GameFrameworkGraphTypes.generated.h"
 
 USTRUCT()
-struct FGameFrameworkGraphNodeClassData
+struct GAMEFRAMEWORKEDITOR_API FGameFrameworkGraphNodeClassData
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -58,7 +58,7 @@ private:
 	FString DeprecatedMessage;
 };
 
-struct FGraphNodeClassNode
+struct GAMEFRAMEWORKEDITOR_API FGraphNodeClassNode
 {
 	FGameFrameworkGraphNodeClassData Data;
 	FString ParentClassName;
@@ -69,7 +69,7 @@ struct FGraphNodeClassNode
 	void AddUniqueSubNode(TSharedPtr<FGraphNodeClassNode> SubNode);
 };
 
-struct FGraphNodeClassHelper
+struct GAMEFRAMEWORKEDITOR_API FGraphNodeClassHelper
 {
 	DECLARE_MULTICAST_DELEGATE(FOnPackageListUpdated);
 

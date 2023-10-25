@@ -15,7 +15,7 @@ struct FDiffResults;
 struct FDiffSingleResult;
 
 UCLASS()
-class UGameFrameworkGraphNode : public UEdGraphNode
+class GAMEFRAMEWORKEDITOR_API UGameFrameworkGraphNode : public UEdGraphNode
 {
 	GENERATED_UCLASS_BODY()
 

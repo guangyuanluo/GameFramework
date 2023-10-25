@@ -11,7 +11,7 @@ class UEdGraph;
 
 /** Action to add a node to the graph */
 USTRUCT()
-struct FGameSchemaAction_NewNode : public FEdGraphSchemaAction {
+struct GAMEFRAMEWORKEDITOR_API FGameSchemaAction_NewNode : public FEdGraphSchemaAction {
 	GENERATED_USTRUCT_BODY();
 
 	/** Template of node we want to create */

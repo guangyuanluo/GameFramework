@@ -8,7 +8,7 @@
 #include "EdGraph/EdGraph.h"
 #include "GraphEditor.h"
 
-struct FGraphEditorSummoner : public FDocumentTabFactoryForObjects<UEdGraph>
+struct GAMEFRAMEWORKEDITOR_API FGraphEditorSummoner : public FDocumentTabFactoryForObjects<UEdGraph>
 {
 public:
 	DECLARE_DELEGATE_RetVal_OneParam(TSharedRef<SGraphEditor>, FOnCreateGraphEditorWidget, UEdGraph*);
@@ -29,7 +29,7 @@ protected:
 	FOnCreateGraphEditorWidget OnCreateGraphEditorWidget;
 };
 
-struct FGraphDetailsSummoner : public FWorkflowTabFactory
+struct GAMEFRAMEWORKEDITOR_API FGraphDetailsSummoner : public FWorkflowTabFactory
 {
 public:
 	FGraphDetailsSummoner(TSharedPtr<class FGraphEditorBase> InEditorPtr);
