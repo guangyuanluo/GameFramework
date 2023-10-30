@@ -18,6 +18,7 @@
 #include "CoreTriggerAction.h"
 #include "CoreAbilityCondition.h"
 #include "CoreConditionGroup.h"
+#include "CoreAbilitiesGameplayEffectComponent.h"
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -80,14 +81,20 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
         }
 
         //grant ability 自动激活
-        if (FoundContainer->AutoActiveGrantedAbility && SpecHandle.Data.IsValid() && SpecHandle.Data->Def && SpecHandle.Data->Def->GrantedAbilities.Num() > 0) {
-            auto AllTargetActors = ContainerSpec.GetAllTargetActors();
-            if (AllTargetActors.Num() > 0) {
-                for (const auto& TargetActor : AllTargetActors) {
-                    auto TargetAbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
-                    if (TargetAbilitySystemComponent) {
-                        for (const auto& GrantedAbility : SpecHandle.Data->Def->GrantedAbilities) {
-                            TargetAbilitySystemComponent->TryActivateAbilityByClass(GrantedAbility.Ability);
+        if (FoundContainer->AutoActiveGrantedAbility && SpecHandle.Data.IsValid() && SpecHandle.Data->Def) {
+            auto GrantedGEComponent = SpecHandle.Data->Def->FindComponent<UCoreAbilitiesGameplayEffectComponent>();
+            if (GrantedGEComponent) {
+                const auto& GrantAbilityConfigs = GrantedGEComponent->GetGrantAbilityConfigs();
+                if (GrantAbilityConfigs.Num() > 0) {
+                    auto AllTargetActors = ContainerSpec.GetAllTargetActors();
+                    if (AllTargetActors.Num() > 0) {
+                        for (const auto& TargetActor : AllTargetActors) {
+                            auto TargetAbilitySystemComponent = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
+                            if (TargetAbilitySystemComponent) {
+                                for (const auto& GrantAbilityConfig : GrantAbilityConfigs) {
+                                    TargetAbilitySystemComponent->TryActivateAbilityByClass(GrantAbilityConfig.Ability);
+                                }
+                            }
                         }
                     }
                 }
