@@ -43,6 +43,7 @@ public:
 	virtual UEdGraphPin* GetInputPin(int32 InputIndex = 0) const;
 	// @return the output pin for this state
 	virtual UEdGraphPin* GetOutputPin(int32 InputIndex = 0) const;
+	virtual bool AllowCreateByAction() const;
 
 	/** initialize instance object  */
 	virtual void InitializeInstance();

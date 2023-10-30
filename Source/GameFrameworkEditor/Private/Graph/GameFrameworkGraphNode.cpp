@@ -119,6 +119,10 @@ UEdGraphPin* UGameFrameworkGraphNode::GetOutputPin(int32 InputIndex) const
 	return nullptr;
 }
 
+bool UGameFrameworkGraphNode::AllowCreateByAction() const {
+	return true;
+}
+
 void UGameFrameworkGraphNode::InitializeInstance()
 {
 
