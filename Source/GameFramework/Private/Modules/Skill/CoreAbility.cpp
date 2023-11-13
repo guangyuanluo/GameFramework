@@ -223,6 +223,9 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
         }
 
         StartConditionTriggerListen();
+        if (!IsActive()) {
+            return;
+        }
 
         StartExternFinishConditionListen();
         if (!IsActive()) {
@@ -323,6 +326,9 @@ void UCoreAbility::StartConditionTriggerListen() {
         FOnAllProgressesSatisfyDelegate Callback;
         Callback.BindUFunction(this, TEXT("OnConditionTriggerCallback"));
         ConditionTriggerSystem->FollowConditions(TriggerConditionProgressInfo.ConditionTriggerHandler, TriggerConditionProgressInfo.TriggerConditionProgresses, Callback);
+        if (!IsActive()) {
+            break;
+        }
     }
 }
 
