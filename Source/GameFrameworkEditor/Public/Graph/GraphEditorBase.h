@@ -46,6 +46,8 @@ public:
 	/** Spawns the tab with the update graph inside */
 	TSharedRef<SWidget> SpawnProperties();
 
+	virtual bool GetBoundsForSelectedNodes(class FSlateRect& Rect, float Padding);
+
 	virtual FName GetAppIdentifier() = 0;
 	virtual TSharedRef<FApplicationMode> GetApplicationMode() = 0;
 	virtual UGameFrameworkGraph* GetGraph() = 0;
@@ -88,6 +90,7 @@ private:
 	bool CanDuplicateNodes() const;
 	void DeleteSelectedNodes();
 	bool CanDeleteNodes() const;
+	void CreateComment();
 	// End Delegates for graph editor commands
 	/** Creates all internal widgets for the tabs to point at */
 	void CreateInternalWidgets();
@@ -96,6 +99,7 @@ private:
 	void OnFinishedChangingProperties(const FPropertyChangedEvent& PropertyChangedEvent);
 	bool InEditingMode(bool bGraphIsEditable) const;
 	void OnSelectedNodesChanged(const TSet<class UObject*>& NewSelection);
+	void OnNodeTitleCommitted(const FText& NewText, ETextCommit::Type CommitInfo, UEdGraphNode* NodeBeingChanged);
 	//~ Begin IToolkit Interface
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetBaseToolkitName() const override;
