@@ -13,6 +13,7 @@
 #include "EdGraphUtilities.h"
 #include "HAL/PlatformApplicationMisc.h"
 #include "Widgets/Layout/SScrollBox.h"
+#include "Graph/GameSchemaAction_NewComment.h"
 
 FGraphEditorBase::FGraphEditorBase() {
 
@@ -155,6 +156,14 @@ TSharedRef<SWidget> FGraphEditorBase::SpawnProperties() {
 		];
 }
 
+bool FGraphEditorBase::GetBoundsForSelectedNodes(class FSlateRect& Rect, float Padding) {
+	TSharedPtr<SGraphEditor> FocusedGraphEd = UpdateGraphEdPtr.Pin();
+	if (FocusedGraphEd.IsValid()) {
+		return FocusedGraphEd->GetBoundsForSelectedNodes(Rect, Padding);
+	}
+	return false;
+}
+
 void FGraphEditorBase::OnGraphEditorFocused(const TSharedRef<SGraphEditor>& InGraphEditor) {
 	UpdateGraphEdPtr = InGraphEditor;
 
@@ -174,6 +183,7 @@ TSharedRef<class SGraphEditor> FGraphEditorBase::CreateGraphEditorWidget(UEdGrap
 
 	SGraphEditor::FGraphEditorEvents InEvents;
 	InEvents.OnSelectionChanged = SGraphEditor::FOnSelectionChanged::CreateSP(this, &FGraphEditorBase::OnSelectedNodesChanged);
+	InEvents.OnTextCommitted = FOnNodeTextCommitted::CreateSP(this, &FGraphEditorBase::OnNodeTitleCommitted);
 
 	// Make title bar
 	TSharedRef<SWidget> TitleBarWidget =
@@ -245,6 +255,10 @@ void FGraphEditorBase::CreateCommandList() {
 	GraphEditorCommands->MapAction(FGenericCommands::Get().Delete,
 		FExecuteAction::CreateRaw(this, &FGraphEditorBase::DeleteSelectedNodes),
 		FCanExecuteAction::CreateRaw(this, &FGraphEditorBase::CanDeleteNodes)
+	);
+
+	GraphEditorCommands->MapAction(FGraphEditorCommands::Get().CreateComment,
+		FExecuteAction::CreateRaw(this, &FGraphEditorBase::CreateComment)
 	);
 }
 
@@ -418,6 +432,22 @@ bool FGraphEditorBase::CanDeleteNodes() const {
 	return false;
 }
 
+void FGraphEditorBase::CreateComment()
+{
+	TSharedPtr<SGraphEditor> CurrentGraphEditor = UpdateGraphEdPtr.Pin();
+	if (!CurrentGraphEditor) {
+		return;
+	}
+	const FVector2D PasteLocation = CurrentGraphEditor->GetPasteLocation();
+	auto Graph = GetGraph();
+	if (Graph) {
+		if (const UEdGraphSchema* Schema = Graph->GetSchema()) {
+			FGameSchemaAction_NewComment CommentAction;
+			CommentAction.PerformAction(Graph, nullptr, PasteLocation);
+		}
+	}
+}
+
 void FGraphEditorBase::CreateInternalWidgets() {
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	FDetailsViewArgs DetailsViewArgs;
@@ -464,6 +494,14 @@ void FGraphEditorBase::OnSelectedNodesChanged(const TSet<class UObject*>& NewSel
 	}
 	else {
 		DetailsView->SetObject(nullptr);
+	}
+}
+
+void FGraphEditorBase::OnNodeTitleCommitted(const FText& NewText, ETextCommit::Type CommitInfo, UEdGraphNode* NodeBeingChanged) {
+	if (NodeBeingChanged) {
+		const FScopedTransaction Transaction(NSLOCTEXT("K2_RenameNode", "RenameNode", "Rename Node"));
+		NodeBeingChanged->Modify();
+		NodeBeingChanged->OnRenameNode(NewText.ToString());
 	}
 }
 
