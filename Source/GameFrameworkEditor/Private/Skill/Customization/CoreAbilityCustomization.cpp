@@ -33,6 +33,9 @@ void FCoreAbilityCustomization::CustomizeDetails(IDetailLayoutBuilder& LayoutBui
 		IDetailCategoryBuilder& SimpleCategoryBuilder = LayoutBuilder.EditCategory(*CategoryName);
 
 		if (Property->GetProperty()->GetFName() == GET_MEMBER_NAME_CHECKED(UCoreAbility, SortPriority)) {
+			if (!LayoutBuilder.IsPropertyVisible(Property)) {
+				continue;
+			}
 			SimpleCategoryBuilder.AddCustomRow(SortPriorityProperty->GetPropertyDisplayName())
 				.NameContent()
 				[
