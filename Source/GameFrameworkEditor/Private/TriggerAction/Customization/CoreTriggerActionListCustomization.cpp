@@ -57,17 +57,12 @@ void FCoreTriggerActionListCustomization::CustomizeChildren(TSharedRef<IProperty
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
-            SNew(SHorizontalBox)
-            + SHorizontalBox::Slot()
-            .FillWidth(0.35)
-            [
-				ActionsProperty->CreatePropertyNameWidget()
-            ]
-			+ SHorizontalBox::Slot()
-			.FillWidth(0.65)
-			[
-				TriggerActionListWidget.ToSharedRef()
-            ]
+			ActionsProperty->CreatePropertyNameWidget()
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			TriggerActionListWidget.ToSharedRef()
 		]
 	];
 }

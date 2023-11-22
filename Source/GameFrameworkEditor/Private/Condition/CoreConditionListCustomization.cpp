@@ -57,17 +57,12 @@ void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHand
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
-            SNew(SHorizontalBox)
-            + SHorizontalBox::Slot()
-            .FillWidth(0.35)
-            [
-				ConditionsProperty->CreatePropertyNameWidget()
-            ]
-			+ SHorizontalBox::Slot()
-			.FillWidth(0.65)
-			[
-				ConditionEditWidget.ToSharedRef()
-            ]
+			ConditionsProperty->CreatePropertyNameWidget()
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		[
+			ConditionEditWidget.ToSharedRef()
 		]
 	];
 }
