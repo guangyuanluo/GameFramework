@@ -4,7 +4,7 @@
 
 #include "PropertyEditor/Public/IPropertyTypeCustomization.h"
 
-class FCoreConditionListCustomization : public IPropertyTypeCustomization {
+class GAMEFRAMEWORKEDITOR_API FCoreConditionListCustomization : public IPropertyTypeCustomization {
 public:
     /**
      * It is just a convenient helpers which will be used
