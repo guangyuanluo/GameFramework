@@ -73,12 +73,29 @@ TArray<FActiveGameplayEffectHandle> UCoreAbility::ApplyEffectContainerSpec(const
 
 	// Iterate list of effect specs and apply them to their target data
 	for (const FGameplayEffectSpecHandle& SpecHandle : ContainerSpec.TargetGameplayEffectSpecs) {
-        auto EffectSpecHandles = K2_ApplyGameplayEffectSpecToTarget(SpecHandle, ContainerSpec.TargetData);
-        AllEffects.Append(EffectSpecHandles);
         if (FoundContainer->FollowGAPeriod) {
+            //如果ga已经结束，跟随生命周期的就不用apply
+            if (!IsActive()) {
+                continue;
+            }
+        }
+        auto EffectSpecHandles = K2_ApplyGameplayEffectSpecToTarget(SpecHandle, ContainerSpec.TargetData);
+        if (FoundContainer->FollowGAPeriod) {
+            //有可能在apply之后终止了ga，所以要判断下
+            if (!IsActive()) {
+                //ga被终止了，就要将跟随生命周期的再移除
+                for (auto EffectSpecHandle : EffectSpecHandles) {
+                    auto TargetAbilitySystemComponent = EffectSpecHandle.GetOwningAbilitySystemComponent();
+                    if (IsValid(TargetAbilitySystemComponent)) {
+                        TargetAbilitySystemComponent->RemoveActiveGameplayEffect(EffectSpecHandle);
+                    }
+                }
+                continue;
+            }
             //如果跟随技能生命周期，那么要记录下
             FollowGAPeriodEffectHandles.Append(EffectSpecHandles);
         }
+        AllEffects.Append(EffectSpecHandles);
 
         //grant ability 自动激活
         if (FoundContainer->AutoActiveGrantedAbility && SpecHandle.Data.IsValid() && SpecHandle.Data->Def) {
@@ -373,6 +390,10 @@ void UCoreAbility::OnConditionTriggerCallback(FConditionTriggerHandler Handler) 
     for (auto ExecuteAction : ConditionActionTriggerConfig.ExecuteActions.Actions) {
         FLogicObjectLoadWorldScope LoadWorldScope(ExecuteAction, this);
         ExecuteAction->OnExecute(ActionEventData);
+        if (!IsActive()) {
+            //有可能动作执行过程中结束了ga，不需要继续执行了
+            return;
+        }
     }
 }
 
