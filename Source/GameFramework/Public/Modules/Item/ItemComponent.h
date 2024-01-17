@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/ECS/GameEntityComponent.h"
+#include "Modules/Item/ItemIDNumPair.h"
 #include "ItemComponent.generated.h"
 
 
@@ -17,10 +18,7 @@ public:
 	UItemComponent();
 
 	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere, Category = "Asset")
-	int32 ItemId;					///< ÎïÆ·id
-
-	UPROPERTY(Replicated, BlueprintReadWrite, EditAnywhere, Category = "Asset")
-	int32 ItemCount;				///< ÎïÆ·ÊýÁ¿
+	FItemIDNumPair IDNumPair;		///< ç‰©å“idå’Œæ•°é‡
 
 protected:
     virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;

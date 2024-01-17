@@ -49,7 +49,7 @@ int32 UAssetSystem::AddItem(UBackpackComponent* BackpackComponent, uint8 Backpac
     if (ItemDataTable && ItemTypeDataTable) {
         auto AddItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
         if (AddItemInfo) {
-            if (BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
+            if (BackpackType == 0 || BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
                 auto AddItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, AddItemInfo->ItemType);
                 if (AddItemTypeInfo) {
                     BackpackType = AddItemTypeInfo->DefaultBackpackType;
@@ -458,7 +458,7 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-    if (BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
+    if (BackpackType == 0 || BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
         //换成默认背包
         auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
         if (ItemInfo) {
@@ -570,7 +570,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
     TMap<int, TMap<int, int>> TotalItems;
     for (int Index = 0; Index < AddItems.Num(); ++Index) {
         int BackpackType = AddItems[Index].BackpackType;
-        if (BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
+        if (BackpackType == 0 || BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
             //换成默认背包
             auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, AddItems[Index].ItemId);
             if (ItemInfo) {
@@ -1249,11 +1249,11 @@ void UAssetSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
 
 				if (DropItem->HasAnyFlags(RF_BeginDestroyed)) return;
 				int RealPickupCount = Request->Count;
-				if (RealPickupCount <= 0 || RealPickupCount > DropItem->ItemComponent->ItemCount)
-					RealPickupCount = DropItem->ItemComponent->ItemCount;
+				if (RealPickupCount <= 0 || RealPickupCount > DropItem->ItemComponent->IDNumPair.ItemNum)
+					RealPickupCount = DropItem->ItemComponent->IDNumPair.ItemNum;
 				FString Error;
-				int AddCount = InGameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->AddItem(CharacterState->BackpackComponent, Request->BackpackType, DropItem->ItemComponent->ItemId, RealPickupCount, -1, false, TEXT("Pickup"), Error);
-				if (AddCount == DropItem->ItemComponent->ItemCount) {
+				int AddCount = InGameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->AddItem(CharacterState->BackpackComponent, Request->BackpackType, DropItem->ItemComponent->IDNumPair.ItemIDContainer.ItemID, RealPickupCount, -1, false, TEXT("Pickup"), Error);
+				if (AddCount == DropItem->ItemComponent->IDNumPair.ItemNum) {
 					DropItem->Destroy();
 				}
 				else {

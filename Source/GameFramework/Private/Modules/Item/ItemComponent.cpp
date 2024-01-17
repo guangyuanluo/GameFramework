@@ -19,6 +19,5 @@ UItemComponent::UItemComponent()
 void UItemComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(UItemComponent, ItemId);
-    DOREPLIFETIME(UItemComponent, ItemCount);
+    DOREPLIFETIME(UItemComponent, IDNumPair);
 }
