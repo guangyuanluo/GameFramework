@@ -18,12 +18,12 @@ ACoreSceneItem::ACoreSceneItem(const FObjectInitializer& ObjectInitializer)
 }
 
 void ACoreSceneItem::UpdateItem(int ItemId, int ItemCount) {
-    ItemComponent->ItemId = ItemId;
+    ItemComponent->IDNumPair.ItemIDContainer.ItemID = ItemId;
     bool HaveSet = false;
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
 
-    auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemComponent->ItemId);
+    auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemComponent->IDNumPair.ItemIDContainer.ItemID);
     if (ItemInfo) {
         auto StaticMesh = ItemInfo->ItemMesh.LoadSynchronous();
         if (StaticMesh) {
@@ -40,5 +40,5 @@ void ACoreSceneItem::UpdateItem(int ItemId, int ItemCount) {
 void ACoreSceneItem::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 
-    UpdateItem(ItemComponent->ItemId, ItemComponent->ItemCount);
+    UpdateItem(ItemComponent->IDNumPair.ItemIDContainer.ItemID, ItemComponent->IDNumPair.ItemNum);
 }

@@ -588,7 +588,7 @@ int32 SGameFrameworkWidget_Item::ApplyPackageTypeId() {
 	if (PackageTypeIdSeed == nullptr) {
 		PackageTypeIdSeed = new FDataTableSeedConfigTableRow();
 		PackageTypeIdSeed->SeedKey = "PackageTypeIdSeed";
-		PackageTypeIdSeed->SeedValue = 0;
+		PackageTypeIdSeed->SeedValue = 1;
 		SeedTable->AddRow("PackageTypeIdSeed", *PackageTypeIdSeed);
 		PackageTypeIdSeed = SeedTable->FindRow<FDataTableSeedConfigTableRow>("PackageTypeIdSeed", "");
 	}
@@ -611,7 +611,7 @@ int32 SGameFrameworkWidget_Item::ApplyPackageTypeId() {
 	else {
 		do {
 			BackpackTypeId = (++PackageTypeIdSeed->SeedValue) % 100;
-		} while (BackpackTypeIdSet.Contains(BackpackTypeId));
+		} while (BackpackTypeIdSet.Contains(BackpackTypeId) || BackpackTypeId == 0);
 	}
 
 	SeedTable->MarkPackageDirty();

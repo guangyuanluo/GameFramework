@@ -78,7 +78,13 @@ void UEventSystem::RegistEventHandler(TScriptInterface<IEventHandlerInterface> E
 		UnRegistEventHandler(EventHandler);
 	}
 
-	auto EventTypeList = EventHandler->GetHandleEventTypes();
+	TArray<TSubclassOf<class UGameEventBase>> EventTypeList;
+	if (EventHandler.GetInterface()) {
+		EventTypeList = EventHandler->GetHandleEventTypes();
+	}
+	else {
+		EventTypeList = IEventHandlerInterface::Execute_K2_GetHandleEventTypes(EventHandlerObj);
+	}
 	{
 		HandlerEventTypeMap.Add(EventHandlerObj, EventTypeList);
 		for (auto& EventType : EventTypeList) {
@@ -160,8 +166,12 @@ void UEventSystem::OnTick_Implementation(float DeltaTime) {
 		}
 		if (HandlerList.Num() != 0) {
 			for (auto Iter = HandlerList.CreateConstIterator(); Iter; ++Iter) {
-				if (auto EventHandlerInterface = Cast<IEventHandlerInterface>(*Iter)) {
+				TScriptInterface<IEventHandlerInterface> EventHandlerInterface(*Iter);
+				if (EventHandlerInterface.GetInterface()) {
 					EventHandlerInterface->OnEvent(GameInstance, HandleEvent);
+				}
+				else {
+					IEventHandlerInterface::Execute_K2_OnEvent(*Iter, GameInstance, HandleEvent);
 				}
 			}
 		}
