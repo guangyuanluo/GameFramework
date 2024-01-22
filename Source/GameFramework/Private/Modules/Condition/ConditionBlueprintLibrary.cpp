@@ -9,6 +9,9 @@ bool UConditionBlueprintLibrary::DoesProgressesSatisfy(const TArray<class UCoreC
 
 	TArray<BooleanAlgebraEnum> LoopGroupRelations;
 	for (int ProgressIndex = 0; ProgressIndex < Progresses.Num(); ++ProgressIndex) {
+		if (!Progresses[ProgressIndex]) {
+			return false;
+		}
 		LoopGroupRelations.Add(Progresses[ProgressIndex]->Condition->Relation);
 	}
 	FBooleanAlgebraNodeInfo GroupExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopGroupRelations);
