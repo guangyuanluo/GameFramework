@@ -82,6 +82,12 @@ public:
 	void SetAutoUpdateInterval(float NewInterval);
 
 	/**
+	* 获取索敌实例
+	*/
+	UFUNCTION(BlueprintPure, Category = "Skill")
+	UFindEnemyBase* GetFindEnemyInstance() const;
+
+	/**
 	* 索敌变化回调
 	*/
 	UPROPERTY(BlueprintAssignable)

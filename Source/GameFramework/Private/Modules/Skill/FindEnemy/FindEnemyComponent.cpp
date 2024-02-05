@@ -58,6 +58,10 @@ void UFindEnemyComponent::SetAutoUpdateInterval(float NewInterval) {
 	AutoUpdateInterval = NewInterval;
 }
 
+UFindEnemyBase* UFindEnemyComponent::GetFindEnemyInstance() const {
+	return FindEnemyObject;
+}
+
 void UFindEnemyComponent::SetLock(bool bNewLock) {
 	bLock = bNewLock;
 }
