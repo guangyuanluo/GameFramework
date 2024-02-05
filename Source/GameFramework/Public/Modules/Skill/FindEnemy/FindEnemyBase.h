@@ -15,6 +15,6 @@ public:
 	/**
 	* 查找敌人
 	*/
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	class ACoreCharacter* FindEnemy(class UFindEnemyComponent* OwnerComponent);
 };
