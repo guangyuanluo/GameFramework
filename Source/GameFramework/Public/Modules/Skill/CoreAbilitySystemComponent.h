@@ -96,7 +96,11 @@ public:
 
     /** 返回指定条件拥有指定InputID的优先级最高技能class */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    TSubclassOf<UCoreAbility> GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true, bool SortByOrder = true);
+    TSubclassOf<UCoreAbility> GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true);
+
+    /** 返回用来运行的指定条件拥有指定InputID的优先级最高技能class */
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    TSubclassOf<UCoreAbility> GetActiveAbilityToRunWithInputID(int32 InputID);
 
     /**
     * 重置技能冷却
