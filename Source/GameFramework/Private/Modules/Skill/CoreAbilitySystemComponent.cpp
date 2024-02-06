@@ -241,13 +241,31 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
     }
 }
 
-TSubclassOf<UCoreAbility> UCoreAbilitySystemComponent::GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy, bool SortByOrder) {
+TSubclassOf<UCoreAbility> UCoreAbilitySystemComponent::GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy) {
     FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
 
     for (const auto& ActiveAbility : SortCoreAbilities) {
         auto AbilitySpec = ActiveAbility->GetCurrentAbilitySpec();
         if (AbilitySpec->InputID == InputID) {
             if (DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, ForceFilterActive, bOnlyAbilitiesThatSatisfy)) {
+                return ActiveAbility->GetClass();
+            }
+        }
+    }
+    return nullptr;
+}
+
+TSubclassOf<UCoreAbility> UCoreAbilitySystemComponent::GetActiveAbilityToRunWithInputID(int32 InputID) {
+    FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
+
+    for (const auto& ActiveAbility : SortCoreAbilities) {
+        auto AbilitySpec = ActiveAbility->GetCurrentAbilitySpec();
+        if (AbilitySpec->InputID == InputID) {
+            if (ActiveAbility->IsActive() && !ActiveAbility->K2_IsRetriggerInstancedAbility()) {
+                //如果高优先级的技能已经激活，又不能重入，那就不用考虑低优先级的技能了
+                return nullptr;
+            }
+            if (DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, false, true)) {
                 return ActiveAbility->GetClass();
             }
         }

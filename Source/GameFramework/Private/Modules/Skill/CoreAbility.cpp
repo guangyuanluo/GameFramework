@@ -134,6 +134,10 @@ bool UCoreAbility::K2_IsConditionSatisfy() {
     return UConditionBlueprintLibrary::DoesProgressesSatisfy(RequireConditionProgresses);
 }
 
+bool UCoreAbility::K2_IsRetriggerInstancedAbility() const {
+    return bRetriggerInstancedAbility;
+}
+
 void UCoreAbility::OnActivateNative_Implementation() {
     
 }

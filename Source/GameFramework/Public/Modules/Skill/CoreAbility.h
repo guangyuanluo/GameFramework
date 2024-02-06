@@ -101,6 +101,12 @@ public:
     bool K2_IsConditionSatisfy();
 
     /**
+    * 是否能重新触发
+    */
+    UFUNCTION(BlueprintPure, Category = Ability)
+    bool K2_IsRetriggerInstancedAbility() const;
+
+    /**
     * 技能激活
     */
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Ability, DisplayName = "OnActivateNative", meta = (ScriptName = "OnActivateNative"))
