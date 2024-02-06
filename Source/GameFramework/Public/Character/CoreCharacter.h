@@ -45,6 +45,14 @@ public:
     UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
     void RPC_ReplicatePlayMontageToActorOwingClient(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
 
+    /** 添加角色输入 */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void AddInputContext(const TScriptInterface<class IEnhancedInputSubsystemInterface>& SubsystemInterface);
+
+    /** 移除角色输入 */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void RemoveInputContext(const TScriptInterface<class IEnhancedInputSubsystemInterface>& SubsystemInterface);
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -59,6 +67,7 @@ public:
     virtual void UnPossessed() override;
     virtual void OnRep_Controller() override;
     virtual void OnRep_PlayerState() override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;    
 
 private:
     UPROPERTY(ReplicatedUsing = OnReq_EntityID)
@@ -66,6 +75,15 @@ private:
 
     UPROPERTY()
     bool bSkillInit = false;
+
+    UPROPERTY(Category = "Input", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    TObjectPtr<class UCoreInputCacheComponent> CoreInputCacheComponent;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputMappingContext* CommonMappingContext;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    int32 CommonMappingPriority = 1;
 
     UFUNCTION()
     void OnReq_EntityID(const FString& OldID);
