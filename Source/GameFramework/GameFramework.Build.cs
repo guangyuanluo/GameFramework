@@ -26,6 +26,7 @@ public class GameFramework : ModuleRules
                 "GameplayAbilities",
                 "GameplayTasks",
                 "GameplayTags",
+                "EnhancedInput",
             }
 			);
 			

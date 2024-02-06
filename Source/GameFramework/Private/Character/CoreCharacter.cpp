@@ -25,9 +25,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "SkillPostInitComponentListener.h"
 #include "NPCComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Input/CoreInputCacheComponent.h"
 
 ACoreCharacter::ACoreCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-    
+    CoreInputCacheComponent = CreateDefaultSubobject<UCoreInputCacheComponent>("InputCacheComponent");
 }
 
 void ACoreCharacter::PostSkillTemplateInit_Implementation() {
@@ -42,6 +44,16 @@ void ACoreCharacter::RPC_ReplicatePlayMontageToActorOwingClient_Implementation(c
     if (GetLocalRole() == ENetRole::ROLE_SimulatedProxy) {
         PlayAnimMontage(AnimMontage, InPlayRate, StartSectionName);
     }
+}
+
+void ACoreCharacter::AddInputContext(const TScriptInterface<class IEnhancedInputSubsystemInterface>& SubsystemInterface) {
+    FModifyContextOptions Options;
+    Options.bForceImmediately = true;
+    SubsystemInterface->AddMappingContext(CommonMappingContext, CommonMappingPriority, Options);
+}
+
+void ACoreCharacter::RemoveInputContext(const TScriptInterface<class IEnhancedInputSubsystemInterface>& SubsystemInterface) {
+    SubsystemInterface->RemoveMappingContext(CommonMappingContext);
 }
 
 void ACoreCharacter::BeginPlay() {
@@ -129,6 +141,12 @@ void ACoreCharacter::OnRep_PlayerState() {
             }
         }
     }
+}
+
+void ACoreCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
+    Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+    CoreInputCacheComponent->InitializePlayerInput(PlayerInputComponent, CommonMappingContext);
 }
 
 void ACoreCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID) {

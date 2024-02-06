@@ -19,9 +19,13 @@
 #include "ConfigTableCache.h"
 #include "UnitInfoConfigTableRow.h"
 #include "Components/InputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Input/CorePlayerInput.h"
 
 ACorePlayerController::ACorePlayerController(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     GMComponent = CreateDefaultSubobject<UGMComponent>(TEXT("GMComponent"));
+
+	OverridePlayerInputClass = UCorePlayerInput::StaticClass();
 }
 
 void ACorePlayerController::InitRoleId(const FString& RoleID)
@@ -120,6 +124,46 @@ void ACorePlayerController::JumpExecute() {
 
 void ACorePlayerController::StopJumpingExecute() {
 	StopJumping();
+}
+
+void ACorePlayerController::AddPawnInputContext(APawn* ToAdd)
+{
+	if (!ToAdd)
+	{
+		return;
+	}
+
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			const TScriptInterface<IEnhancedInputSubsystemInterface> EnhancedInputInterface = PlayerSubsystem;
+			if (auto CoreCharacter = Cast<ACoreCharacter>(ToAdd))
+			{
+				CoreCharacter->AddInputContext(EnhancedInputInterface);
+			}
+		}
+	}
+}
+
+void ACorePlayerController::RemovePawnInputContext(APawn* ToRemove)
+{
+	if (!ToRemove)
+	{
+		return;
+	}
+
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			const TScriptInterface<IEnhancedInputSubsystemInterface> EnhancedInputInterface = PlayerSubsystem;
+			if (auto CoreCharacter = Cast<ACoreCharacter>(ToRemove))
+			{
+				CoreCharacter->RemoveInputContext(EnhancedInputInterface);
+			}
+		}
+	}
 }
 
 bool ACorePlayerController::ProcessConsoleExec(const TCHAR * Cmd, FOutputDevice & Ar, UObject * Executor) {
@@ -276,4 +320,15 @@ void ACorePlayerController::SetupInputComponent()
 
 void ACorePlayerController::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
+}
+
+void ACorePlayerController::SetPawn(APawn* InPawn) {
+	APawn* PrevPawn = GetPawn();
+	RemovePawnInputContext(PrevPawn);
+
+	Super::SetPawn(InPawn);
+
+	if (InPawn) {
+		AddPawnInputContext(GetPawn());
+	}
 }

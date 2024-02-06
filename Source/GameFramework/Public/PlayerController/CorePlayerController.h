@@ -77,6 +77,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopJumpingExecute();
 
+	/** 添加角色输入 */
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void AddPawnInputContext(APawn* ToAdd);
+
+	/** 移除角色输入 */
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void RemovePawnInputContext(APawn* ToRemove);
+
 public:
 	/** 覆写接口 */
     virtual void OnRep_Pawn() override;
@@ -102,4 +110,6 @@ protected:
 	
 	virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void SetPawn(APawn* InPawn) override;
 };
