@@ -23,6 +23,7 @@ UENUM(BlueprintType)
 enum class CoreAbilityTriggerEnum :uint8 {
     E_InputKey UMETA(DisplayName = "按键触发"),
     E_Passive UMETA(DisplayName = "被动触发"),
+	E_SystemCall UMETA(DisplayName = "系统调用"),
 };
 
 /**
