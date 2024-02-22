@@ -431,7 +431,9 @@ void UCoreAbility::StopExternFinishConditionListen() {
     }
     auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
     auto ConditionTriggerSystem = GameInstance->GameSystemManager->GetSystemByClass<UConditionTriggerSystem>();
-    ConditionTriggerSystem->UnfollowConditions(ExternFinishConditionHandler);
+    if (ConditionTriggerSystem) {
+        ConditionTriggerSystem->UnfollowConditions(ExternFinishConditionHandler);
+    }
     ExternFinishConditionProgresses.Empty();
 }
 
