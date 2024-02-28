@@ -40,6 +40,13 @@ public:
 	FGameplayTagContainer IgnoreAutoUpdateTagContainer;
 
 	/**
+	* 运行端
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill", DisplayName = "限制的World网络类型", Meta = (ToolTip = "1.Client 2.Server"))
+	uint8 LimitNetMode = 1;
+
+
+	/**
 	* 查找或者获取敌人
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Skill")

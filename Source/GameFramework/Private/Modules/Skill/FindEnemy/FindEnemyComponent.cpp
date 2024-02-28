@@ -92,9 +92,18 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	auto NetMode = GetWorld()->GetNetMode();
-	if (NetMode != ENetMode::NM_Client && NetMode != ENetMode::NM_Standalone) {
-		//索敌逻辑完全听客户端的
-		return;
+	if (LimitNetMode == 1) {
+		//限制客户端
+		if (NetMode != ENetMode::NM_Client && NetMode != ENetMode::NM_Standalone) {
+			//索敌逻辑完全听客户端的
+			return;
+		}
+	}
+	else if (LimitNetMode == 2) {
+		if (NetMode == ENetMode::NM_Client) {
+			//索敌逻辑完全服务器的
+			return;
+		}
 	}
 
 	if (AutoUpdate) {
