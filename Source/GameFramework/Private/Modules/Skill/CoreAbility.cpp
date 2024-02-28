@@ -19,6 +19,7 @@
 #include "CoreAbilityCondition.h"
 #include "CoreConditionGroup.h"
 #include "CoreAbilitiesGameplayEffectComponent.h"
+#include "CoreCharacter.h"
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -147,6 +148,15 @@ void UCoreAbility::OnEndNative_Implementation() {
 }
 
 void UCoreAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) {
+    Super::OnGiveAbility(ActorInfo, Spec);
+}
+
+void UCoreAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) {
+    //有角色的时候再赋值
+    auto OwnerCharacter = Cast<ACoreCharacter>(ActorInfo->AvatarActor.Get());
+    if (!OwnerCharacter) {
+        return;
+    }
     //生成进度对象
     auto OwnerActor = ActorInfo->OwnerActor.Get();
     for (auto TriggerCondition : TriggerConditions.Conditions) {
@@ -157,8 +167,6 @@ void UCoreAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, con
     for (auto ConditionProgress : RequireConditionProgresses) {
         ConditionProgress->Initialize();
     }
-
-    Super::OnGiveAbility(ActorInfo, Spec);
 
     if (TriggerWay == CoreAbilityTriggerEnum::E_Passive) {
         auto GameInstance = Cast<UCoreGameInstance>(GetWorld()->GetGameInstance());
@@ -219,6 +227,12 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
         }
     }
     else {
+        auto OwnerCharacter = Cast<ACoreCharacter>(ActorInfo->AvatarActor.Get());
+        if (!OwnerCharacter) {
+            //角色还没准备
+            K2_CancelAbility();
+            return;
+        }
         if (!K2_IsConditionSatisfy()) {
             K2_CancelAbility();
             return;
