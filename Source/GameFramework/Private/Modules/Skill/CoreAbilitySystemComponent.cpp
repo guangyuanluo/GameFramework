@@ -332,8 +332,18 @@ void UCoreAbilitySystemComponent::ChangeAbilityRestCounter(UCoreAbility* Ability
     }
 }
 
-void UCoreAbilitySystemComponent::NetMulticast_SendGameplayEventToActor_Implementation(AActor* Actor, FGameplayTag EventTag, FGameplayEventData Payload) {
-    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Actor, EventTag, Payload);
+void UCoreAbilitySystemComponent::Client_SendGameplayEventToActor_Implementation(FGameplayTag EventTag, FGameplayEventData Payload) {
+    auto ThisAvatarActor = GetAvatarActor();
+    if (ThisAvatarActor) {
+        UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(ThisAvatarActor, EventTag, Payload);
+    }
+}
+
+void UCoreAbilitySystemComponent::Client_CurrentMontageJumpToSection_Implementation(class UAnimMontage* InMontage, FName SectionName) {
+    auto CurrentMontage = GetCurrentMontage();
+    if (CurrentMontage == InMontage) {
+        CurrentMontageJumpToSection(SectionName);
+    }
 }
 
 void UCoreAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) {

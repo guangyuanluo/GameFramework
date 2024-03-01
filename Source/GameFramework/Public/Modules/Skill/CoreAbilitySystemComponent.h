@@ -153,8 +153,14 @@ public:
     /**
     * 给客户端的actor发送
     */
-    UFUNCTION(BlueprintCallable, Category = "Character", NetMulticast, Reliable)
-    void NetMulticast_SendGameplayEventToActor(AActor* Actor, FGameplayTag EventTag, FGameplayEventData Payload);
+    UFUNCTION(BlueprintCallable, Category = "Character", Client, Reliable)
+    void Client_SendGameplayEventToActor(FGameplayTag EventTag, FGameplayEventData Payload);
+
+    /**
+    * 给客户端跳转蒙太奇
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character", Client, Reliable)
+    void Client_CurrentMontageJumpToSection(class UAnimMontage* InMontage, FName SectionName);
 
     /**
     * 技能模板初始化委托
