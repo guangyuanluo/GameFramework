@@ -16,6 +16,7 @@
 #include "CoreAbilityCondition.h"
 #include "SortUtils.h"
 #include "FindEnemyComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = GetOwner();
@@ -329,6 +330,10 @@ void UCoreAbilitySystemComponent::ChangeAbilityRestCounter(UCoreAbility* Ability
         *FindRestCounterInfo = *FindRestCounterInfo + Num;
         OnAbilityRestCounterUpdateDelegate.Broadcast(this, Ability, *FindRestCounterInfo);
     }
+}
+
+void UCoreAbilitySystemComponent::NetMulticast_SendGameplayEventToActor_Implementation(AActor* Actor, FGameplayTag EventTag, FGameplayEventData Payload) {
+    UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Actor, EventTag, Payload);
 }
 
 void UCoreAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) {
