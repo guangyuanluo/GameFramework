@@ -151,6 +151,12 @@ public:
     void ChangeAbilityRestCounter(UCoreAbility* Ability, int Num);
 
     /**
+    * 给客户端的actor发送
+    */
+    UFUNCTION(BlueprintCallable, Category = "Character", NetMulticast, Reliable)
+    void NetMulticast_SendGameplayEventToActor(AActor* Actor, FGameplayTag EventTag, FGameplayEventData Payload);
+
+    /**
     * 技能模板初始化委托
     */
     FSkillTemplatePostInit OnSkillTemplatePostInit;
