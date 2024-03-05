@@ -159,8 +159,8 @@ public:
     /**
     * 给客户端跳转蒙太奇
     */
-    UFUNCTION(BlueprintCallable, Category = "Character", Client, Reliable)
-    void Client_CurrentMontageJumpToSection(class UAnimMontage* InMontage, FName SectionName);
+    UFUNCTION(BlueprintCallable, Category = "Character", NetMulticast, Reliable)
+    void Multicast_CurrentMontageJumpToSection(class UAnimMontage* InMontage, FName SectionName);
 
     /**
     * 技能模板初始化委托
