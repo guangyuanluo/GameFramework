@@ -339,7 +339,7 @@ void UCoreAbilitySystemComponent::Client_SendGameplayEventToActor_Implementation
     }
 }
 
-void UCoreAbilitySystemComponent::Client_CurrentMontageJumpToSection_Implementation(class UAnimMontage* InMontage, FName SectionName) {
+void UCoreAbilitySystemComponent::Multicast_CurrentMontageJumpToSection_Implementation(class UAnimMontage* InMontage, FName SectionName) {
     auto CurrentMontage = GetCurrentMontage();
     if (CurrentMontage == InMontage) {
         CurrentMontageJumpToSection(SectionName);
