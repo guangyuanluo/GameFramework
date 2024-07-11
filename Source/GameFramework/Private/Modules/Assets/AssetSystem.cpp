@@ -440,6 +440,7 @@ void UAssetSystem::ChangeMoney(UWalletComponent* WalletComponent, const TArray<F
 
 UCoreItem* UAssetSystem::GenerateNewItem(UBackpackComponent* BackpackComponent, int ItemId, UClass* ItemClass) {
     auto AddItem = NewObject<UCoreItem>(BackpackComponent, ItemClass);
+    AddItem->InstanceID = FGuid::NewGuid().ToString();
     AddItem->ItemId = ItemId;
 
     return AddItem;
@@ -490,14 +491,26 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
     if (SpecialSlot == -1) {
         //这里没有指定槽位
         //用临时数据先模拟一边添加
+        int NowOwnerCount = 0;
         TArray<int32> ItemIndexArray;
         for (int Index = 0; Index != Backpack.Num(); ++Index) {
             if (Backpack[Index] && Backpack[Index]->ItemId == ItemId) {
                 ItemIndexArray.Add(Index);
                 TempChangeItems.Add(Index, Backpack[Index]->ItemNum);
+                NowOwnerCount += Backpack[Index]->ItemNum;
+            }
+        }        
+        int RestCount = Count;
+        if (AddItemInfo->MaxOwner != 0) {
+            //最大拥有上限
+            if (NowOwnerCount + Count > AddItemInfo->MaxOwner) {
+                RestCount = AddItemInfo->MaxOwner - NowOwnerCount;
+                if (RestCount == 0) {
+                    Error = TEXT("添加物品已达到拥有上限");
+                    return TempChangeItems;
+                }
             }
         }
-        int RestCount = Count;
         for (int Index = 0; Index < ItemIndexArray.Num(); ++Index) {
             int OldCount = TempChangeItems[ItemIndexArray[Index]];
             int NewCount = FMath::Min(MaxStack, OldCount + RestCount);
@@ -1039,6 +1052,8 @@ int32 UAssetSystem::ChangeMoneyPrivate(UWalletComponent* WalletComponent, uint8 
         SendUseMoneyEvent(WalletComponent, MoneyType, -Count);
     }
 
+    WalletComponent->OnWalletRefresh();
+
     return WalletComponent->Wallets[FindIndex].Count;
 }
 
@@ -1172,7 +1187,11 @@ void UAssetSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
 		if (Entity) {
             auto CharacterState = UGameFrameworkUtils::GetEntityState(Entity);
             if (CharacterState && CharacterState->BackpackComponent) {
-				UseItem(CharacterState->BackpackComponent, Request->BackpackType, Request->SlotIndex, Request->Count, Request->Reason);
+                int SlotIndex = CharacterState->BackpackComponent->FindIndexByInstanceID(Request->BackpackType, Request->InstanceID);
+                if (SlotIndex == -1) {
+                    return;
+                }
+				UseItem(CharacterState->BackpackComponent, Request->BackpackType, SlotIndex, Request->Count, Request->Reason);
 			}
 		}
 	}
@@ -1184,7 +1203,11 @@ void UAssetSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
             auto CharacterState = UGameFrameworkUtils::GetEntityState(Entity);
             if (CharacterState && CharacterState->BackpackComponent) {
 				FString Error;
-				auto AbandonItemResult = AbandonItem(CharacterState->BackpackComponent, Request->BackpackType, Request->SlotIndex, Request->Count, Request->Reason, Error);
+                int SlotIndex = CharacterState->BackpackComponent->FindIndexByInstanceID(Request->BackpackType, Request->InstanceID);
+                if (SlotIndex == -1) {
+                    return;
+                }
+				auto AbandonItemResult = AbandonItem(CharacterState->BackpackComponent, Request->BackpackType, SlotIndex, Request->Count, Request->Reason, Error);
 				if (AbandonItemResult) {
 					FActorSpawnParameters Paramters;
 					Paramters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -1206,8 +1229,16 @@ void UAssetSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
         if (Entity) {
             auto CharacterState = UGameFrameworkUtils::GetEntityState(Entity);
             if (CharacterState && CharacterState->BackpackComponent) {
+                int SpecialSlot = -1;
+                if (!Request->SpecialInstanceID.IsEmpty()) {
+                    SpecialSlot = CharacterState->BackpackComponent->FindIndexByInstanceID(Request->BackpackType, Request->SpecialInstanceID);
+                    if (SpecialSlot == -1) {
+                        return;
+                    }
+                }
+                
 				FString Error;
-				DeductItem(CharacterState->BackpackComponent, Request->BackpackType, Request->ItemId, Request->Count, Request->SpecialSlot, Request->Reason, Error);
+				DeductItem(CharacterState->BackpackComponent, Request->BackpackType, Request->ItemId, Request->Count, SpecialSlot, Request->Reason, Error);
 			}
 		}
 	}
@@ -1218,8 +1249,12 @@ void UAssetSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
         if (Entity) {
             auto CharacterState = UGameFrameworkUtils::GetEntityState(Entity);
             if (CharacterState && CharacterState->BackpackComponent) {
+                int SlotIndex = CharacterState->BackpackComponent->FindIndexByInstanceID(Request->BackpackType, Request->InstanceID);
+                if (SlotIndex == -1) {
+                    return;
+                }
 				FString Error;
-				MoveItem(CharacterState->BackpackComponent, Request->BackpackType, Request->SlotIndex, Request->NewPackageType, Request->NewSlotIndex, Error);
+				MoveItem(CharacterState->BackpackComponent, Request->BackpackType, SlotIndex, Request->NewPackageType, Request->NewSlotIndex, Error);
 			}
 		}
 	}
@@ -1230,8 +1265,12 @@ void UAssetSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
         if (Entity) {
             auto CharacterState = UGameFrameworkUtils::GetEntityState(Entity);
             if (CharacterState && CharacterState->BackpackComponent) {
+                int SlotIndex = CharacterState->BackpackComponent->FindIndexByInstanceID(Request->BackpackType, Request->InstanceID);
+                if (SlotIndex == -1) {
+                    return;
+                }
 				FString Error;
-				SplitItem(CharacterState->BackpackComponent, Request->BackpackType, Request->SlotIndex, Request->Count, Error);
+				SplitItem(CharacterState->BackpackComponent, Request->BackpackType, SlotIndex, Request->Count, Error);
 			}
 		}
 	}

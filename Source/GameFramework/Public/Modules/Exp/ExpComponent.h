@@ -45,7 +45,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Exp")
 	void AddExp(uint8 ExpType, int32 Exp, const FString& Reason);
 
-private:
     UFUNCTION()
     void OnExpChanged();
 };

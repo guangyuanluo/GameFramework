@@ -13,6 +13,7 @@
 #include "WalletComponent.h"
 #include "ExpComponent.h"
 #include "CorePlayerController.h"
+#include "CoreItem.h"
 
 void UGMComponent::AddItemInEditor(int32 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot) {
     auto PlayerController = Cast<ACorePlayerController>(GetOwner());
@@ -26,7 +27,12 @@ void UGMComponent::UseItemInEditor(uint8 BackpackType, int SlotIndex, int Count)
     auto PlayerController = Cast<ACorePlayerController>(GetOwner());
     auto CorePlayerState = Cast<ACoreCharacterStateBase>(PlayerController->PlayerState);
     if (ensureMsgf(CorePlayerState, TEXT("CorePlayerState为空"))) {
-        CorePlayerState->BackpackComponent->UseItem(BackpackType, SlotIndex, Count, TEXT("EditorTest"));
+        if (CorePlayerState->BackpackComponent->Backpacks.IsValidIndex(BackpackType)) {
+            auto Item = CorePlayerState->BackpackComponent->Backpacks[BackpackType].ItemList[SlotIndex];
+            if (Item) {
+                CorePlayerState->BackpackComponent->UseItem(BackpackType, Item->InstanceID, Count, TEXT("EditorTest"));
+            }
+        }
     }
 }
 
@@ -34,7 +40,12 @@ void UGMComponent::AbandonItemInEditor(uint8 BackpackType, int SlotIndex, int Co
     auto PlayerController = Cast<ACorePlayerController>(GetOwner());
     auto CorePlayerState = Cast<ACoreCharacterStateBase>(PlayerController->PlayerState);
     if (ensureMsgf(CorePlayerState, TEXT("CorePlayerState为空"))) {
-        CorePlayerState->BackpackComponent->AbandonItem(BackpackType, SlotIndex, Count, TEXT("EditorTest"));
+        if (CorePlayerState->BackpackComponent->Backpacks.IsValidIndex(BackpackType)) {
+            auto Item = CorePlayerState->BackpackComponent->Backpacks[BackpackType].ItemList[SlotIndex];
+            if (Item) {
+                CorePlayerState->BackpackComponent->AbandonItem(BackpackType, Item->InstanceID, Count, TEXT("EditorTest"));
+            }
+        }
     }
 }
 
@@ -42,7 +53,16 @@ void UGMComponent::DeductItemInEditor(uint8 BackpackType, int32 ItemId, int Coun
     auto PlayerController = Cast<ACorePlayerController>(GetOwner());
     auto CorePlayerState = Cast<ACoreCharacterStateBase>(PlayerController->PlayerState);
     if (ensureMsgf(CorePlayerState, TEXT("CorePlayerState为空"))) {
-        CorePlayerState->BackpackComponent->DeductItem(BackpackType, ItemId, Count, TEXT("EditorTest"), SpecialSlot);
+        FString SpecialInstanceID = "";
+        if (SpecialSlot != -1) {
+            if (CorePlayerState->BackpackComponent->Backpacks.IsValidIndex(BackpackType)) {
+                auto Item = CorePlayerState->BackpackComponent->Backpacks[BackpackType].ItemList[SpecialSlot];
+                if (Item) {
+                    SpecialInstanceID = Item->InstanceID;
+                }
+            }
+        }
+        CorePlayerState->BackpackComponent->DeductItem(BackpackType, ItemId, Count, TEXT("EditorTest"), SpecialInstanceID);
     }
 }
 
@@ -50,7 +70,12 @@ void UGMComponent::MoveItemInEditor(uint8 BackpackType, int SlotIndex, uint8 New
     auto PlayerController = Cast<ACorePlayerController>(GetOwner());
     auto CorePlayerState = Cast<ACoreCharacterStateBase>(PlayerController->PlayerState);
     if (ensureMsgf(CorePlayerState, TEXT("CorePlayerState为空"))) {
-        CorePlayerState->BackpackComponent->MoveItem(BackpackType, SlotIndex, NewPackageType, NewSlotIndex);
+        if (CorePlayerState->BackpackComponent->Backpacks.IsValidIndex(BackpackType)) {
+            auto Item = CorePlayerState->BackpackComponent->Backpacks[BackpackType].ItemList[SlotIndex];
+            if (Item) {
+                CorePlayerState->BackpackComponent->MoveItem(BackpackType, Item->InstanceID, NewPackageType, NewSlotIndex);
+            }
+        }
     }
 }
 
@@ -58,7 +83,12 @@ void UGMComponent::SplitItemInEditor(uint8 BackpackType, int SlotIndex, int Coun
     auto PlayerController = Cast<ACorePlayerController>(GetOwner());
     auto CorePlayerState = Cast<ACoreCharacterStateBase>(PlayerController->PlayerState);
     if (ensureMsgf(CorePlayerState, TEXT("CorePlayerState为空"))) {
-        CorePlayerState->BackpackComponent->SplitItem(BackpackType, SlotIndex, Count);
+        if (CorePlayerState->BackpackComponent->Backpacks.IsValidIndex(BackpackType)) {
+            auto Item = CorePlayerState->BackpackComponent->Backpacks[BackpackType].ItemList[SlotIndex];
+            if (Item) {
+                CorePlayerState->BackpackComponent->SplitItem(BackpackType, Item->InstanceID, Count);
+            }
+        }
     }
 }
 

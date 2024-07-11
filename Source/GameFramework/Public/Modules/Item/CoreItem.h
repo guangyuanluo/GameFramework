@@ -19,6 +19,9 @@ class GAMEFRAMEWORK_API UCoreItem : public UObject
 	
 public:
     UPROPERTY(Replicated, BlueprintReadOnly, Category = "Item")
+    FString InstanceID;
+
+    UPROPERTY(Replicated, BlueprintReadOnly, Category = "Item")
     int32 ItemId;
 
     UPROPERTY(ReplicatedUsing = OnRep_ItemNum, BlueprintReadOnly, Category = "Item")

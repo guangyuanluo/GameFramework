@@ -61,19 +61,19 @@ public:
 	* @brief 使用物品
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Backpack")
-	void UseItem(uint8 BackpackType, int SlotIndex, int Count, const FString& Reason);
+	void UseItem(uint8 BackpackType, const FString& InstanceID, int Count, const FString& Reason);
 	
 	/**
 	*  丢弃物品,count为-1表示全部丢弃
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Backpack")
-	void AbandonItem(uint8 BackpackType, int SlotIndex, int Count, const FString& Reason);
+	void AbandonItem(uint8 BackpackType, const FString& InstanceID, int Count, const FString& Reason);
 
 	/**
 	* 扣除物品，可以指定背包，没有指定背包BackpackType请传-1，这样会找所有背包进行扣除
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Backpack")
-	void DeductItem(uint8 BackpackType, int32 ItemId, int Count, const FString& Reason, int32 SpecialSlot = -1);
+	void DeductItem(uint8 BackpackType, int32 ItemId, int Count, const FString& Reason, const FString& SpecialInstanceID);
 
     /**
     * 批量扣除物品
@@ -85,13 +85,13 @@ public:
 	* 移动背包中某个槽的物品
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Backpack")
-	void MoveItem(uint8 BackpackType, int SlotIndex, uint8 NewPackageType, int NewSlotIndex);
+	void MoveItem(uint8 BackpackType, const FString& InstanceID, uint8 NewPackageType, int NewSlotIndex = -1);
 
 	/**
 	* 拆分背包中某个槽的物品
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Backpack")
-	void SplitItem(uint8 BackpackType, int SlotIndex, int Count);
+	void SplitItem(uint8 BackpackType, const FString& InstanceID, int Count);
 
 	/**
 	* 拾取物品,pickupCount小于等于0或者大于实际数量，表示全部拾取
@@ -116,6 +116,12 @@ public:
     */
     UFUNCTION(BlueprintCallable, Category = "Backpack")
     FAssetBackpack& GetBackpack(uint8 BackpackType);
+
+	/**
+	* 从指定背包找指定instanceid物品的索引
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Backpack")
+	int FindIndexByInstanceID(uint8 BackpackType, const FString& InstanceID);
 
 	/**
 	* 通知背包变化
@@ -185,7 +191,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		uint8 BackpackType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-		int32 SlotIndex;
+		FString InstanceID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		int32 Count;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
@@ -202,7 +208,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		uint8 BackpackType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-		int32 SlotIndex;
+		FString InstanceID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		int32 Count;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
@@ -223,7 +229,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		int32 Count;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-        int32 SpecialSlot;
+        FString SpecialInstanceID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		FString Reason;
 };
@@ -251,7 +257,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		uint8 BackpackType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-		int SlotIndex;
+		FString InstanceID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		uint8 NewPackageType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
@@ -268,7 +274,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		uint8 BackpackType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-		int SlotIndex;
+		FString InstanceID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 		int Count;
 };

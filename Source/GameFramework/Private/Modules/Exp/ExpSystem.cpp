@@ -142,6 +142,8 @@ bool UExpSystem::AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent
                                         UE_LOG(GameCore, Log, TEXT("AddExp:%d"), DiffExp);
                                     }
 
+                                    ExpComponent->OnExpChanged();
+
                                     return true;
                                 }
                             }

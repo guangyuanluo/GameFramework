@@ -66,6 +66,7 @@ bool UCoreItem::IsSupportedForNetworking() const {
 void UCoreItem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+    DOREPLIFETIME(UCoreItem, InstanceID);
     DOREPLIFETIME(UCoreItem, ItemId);
     DOREPLIFETIME(UCoreItem, ItemNum);
 }
