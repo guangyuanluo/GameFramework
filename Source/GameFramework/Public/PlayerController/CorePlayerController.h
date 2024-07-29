@@ -72,11 +72,6 @@ public:
     UFUNCTION(BlueprintImplementableEvent)
     void K2_OnClientPossessed();
 
-	UFUNCTION(BlueprintCallable)
-	void JumpExecute();
-	UFUNCTION(BlueprintCallable)
-	void StopJumpingExecute();
-
 	/** 添加角色输入 */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void AddPawnInputContext(APawn* ToAdd);
@@ -89,22 +84,10 @@ public:
 	/** 覆写接口 */
     virtual void OnRep_Pawn() override;
 
-private:
-	FVector2D LastTouchLocation;
-
 protected:
     virtual bool ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor) override;
 	virtual void OnPossess(APawn* InPawn) override;
 
-	void MoveVertical(float Value);
-	void MoveHorizontal(float Value);
-	virtual void Yaw(float Value);
-	virtual void Pitch(float Value);
-	virtual void Jump();
-	virtual void StopJumping();
-	virtual void OnTouchBegin(ETouchIndex::Type FingerIndex, FVector Location);
-	virtual void OnTouchEnd(ETouchIndex::Type FingerIndex, FVector Location);
-	virtual void OnFingerMove(ETouchIndex::Type FingerIndex, FVector Location);
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	

@@ -118,14 +118,6 @@ void ACorePlayerController::SendEventToClient_Implementation(const FString& Even
     GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->HandleSendEventToClient(EventClass, SerializeEvent);
 }
 
-void ACorePlayerController::JumpExecute() {
-	Jump();
-}
-
-void ACorePlayerController::StopJumpingExecute() {
-	StopJumping();
-}
-
 void ACorePlayerController::AddPawnInputContext(APawn* ToAdd)
 {
 	if (!ToAdd)
@@ -181,103 +173,6 @@ void ACorePlayerController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
 }
 
-void ACorePlayerController::MoveVertical(float Value)
-{
-	if (EnableInteractive && Value != 0.0f) {
-		auto OwnPawn = GetPawn();
-		if (OwnPawn) {
-			const FRotator Rotation = GetControlRotation();
-			FRotator YawRotation(0, Rotation.Yaw, 0);
-			const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
-            OwnPawn->AddMovementInput(Direction, Value);
-		}
-	}
-}
-
-void ACorePlayerController::MoveHorizontal(float Value)
-{
-	if (EnableInteractive && Value != 0.0f) {
-		auto OwnPawn = GetPawn();
-		if (OwnPawn) {
-			const FRotator Rotation = GetControlRotation();
-			FRotator YawRotation(0, Rotation.Yaw, 0);
-			const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
-            OwnPawn->AddMovementInput(Direction, Value);
-		}
-	}
-}
-
-void ACorePlayerController::Yaw(float Value)
-{
-	if (EnableInteractive && Value != 0.0f) {
-		auto OwnPawn = GetPawn();
-		if (OwnPawn) {
-			// AddControllerYawInput()函数用于改变控制器的Yaw变量，即增加纵向轴旋转量。
-			// GetWorld()函数取得世界指针UWorld*，通过世界指针调用GetDeltaSeconds()取得每帧耗费的时间。
-			// 之所以要乘以每帧耗费的时间，是为了使得每一【秒】都增加200.0f * Value的改变量。
-			// 如果不乘以每帧耗费的时间，那么每一【帧】都会增加200.0f * Value的改变量。（注意由于每秒渲染量不同，所以每秒的帧数不一定是固定的。）
-			// 通过帧数来控制变量，那么游戏看起来就不那么流畅。试想，机子性能好的时候游戏角色动作就迅速，机子性能差的时候游戏角色动作就慢，这对于玩家公平吗？
-			float Delta = 200.f * Value * GetWorld()->GetDeltaSeconds();
-			if (Delta > MouseSensibility) Delta = MouseSensibility;
-			else if (Delta < -MouseSensibility) Delta = -MouseSensibility;
-
-            OwnPawn->AddControllerYawInput(Delta);
-		}
-	}
-}
-
-void ACorePlayerController::Pitch(float Value)
-{
-	if (EnableInteractive && Value != 0.0f) {
-		auto OwnPawn = GetPawn();
-		if (OwnPawn) {
-			float Delta = 200.f * Value * GetWorld()->GetDeltaSeconds();
-			if (Delta > MouseSensibility) Delta = MouseSensibility;
-			else if (Delta < -MouseSensibility) Delta = -MouseSensibility;
-            OwnPawn->AddControllerPitchInput(Delta);
-		}
-	}
-}
-
-void ACorePlayerController::Jump()
-{
-	if (EnableInteractive)
-	{
-		ACoreCharacter* CoreCharacter = Cast<ACoreCharacter>(GetPawn());
-		CoreCharacter->Jump();
-	}
-}
-
-void ACorePlayerController::StopJumping()
-{
-	if (EnableInteractive) {
-		ACoreCharacter* CoreCharacter = Cast<ACoreCharacter>(GetPawn());
-        CoreCharacter->StopJumping();
-	}
-}
-
-void ACorePlayerController::OnTouchBegin(ETouchIndex::Type FingerIndex, FVector Location) {
-	LastTouchLocation = FVector2D(Location);
-}
-
-void ACorePlayerController::OnTouchEnd(ETouchIndex::Type FingerIndex, FVector Location) {
-	LastTouchLocation = FVector2D::ZeroVector;
-}
-
-static const float TouchRotationScale = 0.1f;
-
-void ACorePlayerController::OnFingerMove(ETouchIndex::Type FingerIndex, FVector Location) {
-	if (!LastTouchLocation.IsZero())
-	{
-		FVector2D const Delta = (FVector2D(Location) - LastTouchLocation) * TouchRotationScale;
-
-		Yaw(Delta.X);
-		Pitch(Delta.Y);
-
-		LastTouchLocation = FVector2D(Location);
-	}
-}
-
 void ACorePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -290,29 +185,6 @@ void ACorePlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 void ACorePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-
-	//绑定按键信息中指定字段到函数调用
-	InputComponent->BindAxis("MoveVertical", this,
-		&ACorePlayerController::MoveVertical);
-
-	InputComponent->BindAxis("MoveHorizontal", this,
-		&ACorePlayerController::MoveHorizontal);
-
-	InputComponent->BindAxis("Yaw", this,
-		&ACorePlayerController::Yaw);
-
-	InputComponent->BindAxis("Pitch", this,
-		&ACorePlayerController::Pitch);
-
-	//绑定action
-	InputComponent->BindAction("Jump", IE_Pressed, this,
-		&ACorePlayerController::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this,
-		&ACorePlayerController::StopJumping);
-
-	InputComponent->BindTouch(IE_Pressed, this, &ACorePlayerController::OnTouchBegin);
-	InputComponent->BindTouch(IE_Released, this, &ACorePlayerController::OnTouchEnd);
-	InputComponent->BindTouch(IE_Repeat, this, &ACorePlayerController::OnFingerMove);
 
 	//蓝图属性默认值
 	this->EnableInteractive = true;
