@@ -242,14 +242,14 @@ void UCoreAbilitySystemComponent::GetActiveAbilitiesWithInputID(int32 InputID, T
     }
 }
 
-TSubclassOf<UCoreAbility> UCoreAbilitySystemComponent::GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy) {
+UCoreAbility* UCoreAbilitySystemComponent::GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive, bool bOnlyAbilitiesThatSatisfy) {
     FGameplayTagContainer TargetTagContainer = GetTargetTagContainer();
 
     for (const auto& ActiveAbility : SortCoreAbilities) {
         auto AbilitySpec = ActiveAbility->GetCurrentAbilitySpec();
         if (AbilitySpec->InputID == InputID) {
             if (DoesAbilityFilterCondition(TargetTagContainer, ActiveAbility, ForceFilterActive, bOnlyAbilitiesThatSatisfy)) {
-                return ActiveAbility->GetClass();
+                return ActiveAbility;
             }
         }
     }
@@ -396,6 +396,17 @@ void UCoreAbilitySystemComponent::AddSkillPrivate(class UDataTable* SkillDataTab
     if (FindSkill) {
         if (FindSkill->GameplayAbilityClass) {
             GiveAbility(FGameplayAbilitySpec(FindSkill->GameplayAbilityClass, SkillInfo.SkillLevel, FindSkill->InputID, GetOwner()));
+            
+            auto FindResult = FindAbilitySpecFromClass(FindSkill->GameplayAbilityClass);
+            if (FindResult) {
+                auto FindAbility = FindResult->GetPrimaryInstance();
+                if (FindAbility) {
+                    if (auto FindCoreAbility = Cast<UCoreAbility>(FindAbility)) {
+                        FindCoreAbility->SetSkillID(SkillInfo.SkillID);
+                    }
+                    OnSkillAddDelegate.Broadcast(this, FindAbility);
+                }
+            }
         }
         else {
             UE_LOG(GameCore, Warning, TEXT("技能模板组配置的技能有空类，请检查配置，技能id:%d"), SkillInfo.SkillID);
@@ -415,6 +426,8 @@ void UCoreAbilitySystemComponent::RemoveSkillPrivate(class UDataTable* SkillData
         if (FindSkill->GameplayAbilityClass) {
             auto FindAbilitySpec = FindAbilitySpecFromClass(FindSkill->GameplayAbilityClass);
             if (FindAbilitySpec) {
+                auto FindAbility = FindAbilitySpec->GetPrimaryInstance();
+                OnSkillRemoveDelegate.Broadcast(this, FindAbility);
                 ClearAbility(FindAbilitySpec->Handle);
             }
         }

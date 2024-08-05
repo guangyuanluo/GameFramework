@@ -88,6 +88,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = Ability)
     void CallEndAbility();
 
+    /**
+    * 获得技能ID
+    */
+    UFUNCTION(BlueprintPure, Category = Ability)
+    int32 GetSkillID() const;
+    void SetSkillID(int32 InSkillID);
+
 	/**
 	* 是否激活
 	*/
@@ -124,6 +131,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "InputReleased", meta = (ScriptName = "InputReleased"))
 	void K2_InputReleased();
 
+    virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
     virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
     virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
     virtual void OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
@@ -139,6 +147,9 @@ protected:
     FGameplayEventData CurrentReceivedEventData;
 
 private:
+    UPROPERTY(Transient, Replicated)
+    int32 SkillID;
+
     UPROPERTY(VisibleAnywhere, Category = InternalData)
     FString InternalDuplicateData;
 
