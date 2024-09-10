@@ -25,8 +25,6 @@
 #include "Global/Conditions/UnitReachExpLevelCondition.h"
 //talk to
 #include "Global/Conditions/TalkToCondition.h"
-//acquire npcs
-#include "Global/Conditions/AcquireNPCsCondition.h"
 //deduct item
 #include "Global/Conditions/PlayerDeductItemCondition.h"
 //deduct money
@@ -287,34 +285,6 @@ namespace BaseConditionFactory {
         }
 	};
 
-	class ConditionWidgetFactory_AcquireNPCs : public ConditionWidgetFactory {
-	public:
-		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
-			return UAcquireNPCsCondition::StaticClass();
-		}
-        virtual bool CanCreateCondition() override {
-            FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-            auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
-            if (UnitInfoSource.Num() == 0) {
-                EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的单位，请先配置单位")), 5.0f);
-                return false;
-            }
-            return true;
-        }
-        virtual void PostInitConditionCreated(class UCoreCondition* Condition) override {
-            FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-            auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto UnitInfoSource = EditorWidgetTool->GetUnitInfoSource();
-
-            UAcquireNPCsCondition* AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(Condition);
-            FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoSource[0]->ConfigTableRow);
-            FUnitIDContainer IDContainer;
-            IDContainer.UnitID = RowData->UnitId;
-            AcquireNPCsCondition->UnitIDContainers.Add(IDContainer);
-        }
-	};
-
 	class ConditionWidgetFactory_PlayerDeductItem : public ConditionWidgetFactory {
 	public:
 		virtual TSubclassOf<class UCoreCondition> GetConditionClass() override {
@@ -419,7 +389,6 @@ TArray<TSharedPtr<ConditionWidgetFactory>> BaseConditionWidgetFactories::BaseFac
     TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerReachExpLevel),
     TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerIntimacyRequest),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_TalkTo),
-	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_AcquireNPCs),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerDeductItem),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_PlayerDeductMoney),
 	TSharedPtr<ConditionWidgetFactory>(new BaseConditionFactory::ConditionWidgetFactory_CloseToNPC),

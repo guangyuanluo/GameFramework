@@ -20,8 +20,6 @@
 #include "Engine/StreamableManager.h"
 #include "UE4LogImpl.h"
 #include "QuestSetting.h"
-#include "QuestNPCAcquirePredicate.h"
-#include "AcquireNPCsCondition.h"
 #include "NPCSystem.h"
 #include "SortUtils.h"
 
@@ -144,11 +142,6 @@ void UQuestComponent::RefreshAcceptableQuests() {
     bDirtyQuests = true;
 }
 
-void UQuestComponent::NotifyAcquireNPCs() {
-    bAcquireNPCs = true;
-    NotifyServerNextTickHandle();
-}
-
 void UQuestComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -188,7 +181,6 @@ void UQuestComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, F
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
     RefreshAcceptQuests();
-    RefreshNPCAcquire();
 
     StopServerTick();
 }
@@ -269,66 +261,6 @@ void UQuestComponent::RefreshAcceptQuests() {
         auto OnAcceptQuestIdsRefreshEvent = NewObject<UOnAcceptQuestIdsRefreshEvent>();
         OnAcceptQuestIdsRefreshEvent->QuestComponent = this;
         GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnAcceptQuestIdsRefreshEvent);
-    }
-}
-
-void UQuestComponent::RefreshNPCAcquire() {
-    if (bAcquireNPCs) {
-        //得到需要占用npc的任务
-        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-        auto NPCSystem = GameInstance->GameSystemManager->GetSystemByClass<UNPCSystem>();
-
-        TArray<UExecutingQuest*> AcquireNPCQuests;
-        for (int QuestIndex = 0; QuestIndex < ExecutingQuests.Num(); ++QuestIndex) {
-            auto ExecutingQuest = ExecutingQuests[QuestIndex];
-            const auto& QuestProgresses = ExecutingQuest->GetQuestProgresses();
-            for (int ProgressIndex = 0; ProgressIndex < QuestProgresses.Num(); ++ProgressIndex) {
-                auto Progress = QuestProgresses[ProgressIndex];
-                auto QuestProgress = Cast<UAcquireNPCsConditionProgress>(Progress);
-                bool IsValid;
-                if (QuestProgress && !QuestProgress->IsComplete(IsValid) && IsValid) {
-                    auto AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(QuestProgress->Condition);
-                    if (AcquireNPCsCondition && NPCSystem->IsNPCReleaseByContainer(AcquireNPCsCondition->UnitIDContainers)) {
-                        AcquireNPCQuests.Add(ExecutingQuest);
-                        break;
-                    }
-                }
-            }
-        }
-        if (AcquireNPCQuests.Num() > 0) {
-            //有满足条件的可以占有的NPC，进行优先级查询
-            const UQuestSetting* QuestSetting = GetDefault<UQuestSetting>();
-            FString NPCAcquirePredicateClassPath = QuestSetting->NPCAcquirePredicateClass.ToString();
-            TSubclassOf<UQuestNPCAcquirePredicate> QuestNPCAcquirePredicateClass = UQuestNPCAcquirePredicate::StaticClass();
-            if (!NPCAcquirePredicateClassPath.IsEmpty()) {
-                TSubclassOf<UQuestNPCAcquirePredicate> LoadClass = StaticLoadClass(UQuestNPCAcquirePredicate::StaticClass(), NULL, *NPCAcquirePredicateClassPath);
-                if (LoadClass) {
-                    QuestNPCAcquirePredicateClass = LoadClass;
-                }
-            }
-            
-            auto QuestNPCAcquirePredicate = Cast<UQuestNPCAcquirePredicate>(QuestNPCAcquirePredicateClass->GetDefaultObject());
-            TFunction<bool(UExecutingQuest*, UExecutingQuest*)> CompareFunc = [this, QuestNPCAcquirePredicate](UExecutingQuest* A, UExecutingQuest* B) {
-                return QuestNPCAcquirePredicate->Compare(this, A, B);
-            };
-            USortUtils::SortArray(AcquireNPCQuests, CompareFunc);
-            //按优先级从高到低占有NPC
-            for (int Index = AcquireNPCQuests.Num() - 1; Index >= 0; --Index) {
-                auto AcquireNPCQuest = AcquireNPCQuests[Index];
-                const auto& QuestProgresses = AcquireNPCQuest->GetQuestProgresses();
-                for (int ProgressIndex = 0; ProgressIndex < QuestProgresses.Num(); ++ProgressIndex) {
-                    auto Progress = QuestProgresses[ProgressIndex];
-                    auto AcquireNPCsConditionProgress = Cast<UAcquireNPCsConditionProgress>(Progress);
-                    bool IsValid;
-                    if (AcquireNPCsConditionProgress && !AcquireNPCsConditionProgress->IsComplete(IsValid) && IsValid) {
-                        auto AcquireNPCsCondition = Cast<UAcquireNPCsCondition>(AcquireNPCsConditionProgress->Condition);
-                        NPCSystem->TryAcquireNPCByContainer(GetOwner(), AcquireNPCsCondition->UnitIDContainers, AcquireNPCsConditionProgress);
-                    }
-                }
-            }
-        }
-
-        bAcquireNPCs = false;
     }
 }
 

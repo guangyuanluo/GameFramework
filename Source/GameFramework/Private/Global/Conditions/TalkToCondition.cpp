@@ -48,6 +48,9 @@ void UTalkToConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameE
 				HaveTalk = true;
 
 				RefreshSatisfy();
+
+				HaveTalk = false;
+				RefreshSatisfy();
 			}
 		}
 	}

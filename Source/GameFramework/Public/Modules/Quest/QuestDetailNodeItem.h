@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/Quest/QuestDetailNode.h"
 #include "Modules/Condition/CoreConditionList.h"
+#include "Modules/Unit/UnitIDContainer.h"
 #include "QuestDetailNodeItem.generated.h"
 
 /**
@@ -27,6 +28,12 @@ public:
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "描述"))
 	FString Description;
+
+	/**
+	* @brief 提交NPC
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "提交NPC"))
+	FUnitIDContainer CommitNPC;
 
 	/**
 	* 条件

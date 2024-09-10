@@ -14,16 +14,4 @@ struct FNPCInfo {
 	*/
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class ACoreCharacter* NPC;
-
-	/**
-	* 是否释放，空闲中
-	*/
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	bool IsReleased = true;
-
-	/**
-	* 被占有的自定义信息
-	*/
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UObject* CustomInfo;
 };

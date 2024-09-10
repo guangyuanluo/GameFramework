@@ -81,6 +81,12 @@ public:
 	*/
 	void SetNodeID(const FGuid& InNodeID);
 
+	/**
+	* 提交任务
+	*/
+	UFUNCTION(BlueprintCallable, Category = "QuestSystem")
+	void CommitQuest(int UnitID);
+
 	//继承
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool IsSupportedForNetworking() const override;
