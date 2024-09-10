@@ -13,7 +13,7 @@
 #include "EditorCategoryUtils.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 
-#define LOCTEXT_NAMESPACE "K2Node_GetDataTableRow"
+#define LOCTEXT_NAMESPACE "GameFramework_K2Node_GetDataTableRow"
 
 namespace GetDataTableRowHelper
 {
@@ -27,7 +27,7 @@ const FName IdPinName = "Id";
 UK2Node_GetConfigTableRow::UK2Node_GetConfigTableRow(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	NodeTooltip = LOCTEXT("NodeTooltip", "Attempts to retrieve a TableRow from a DataTable via it's Id");
+	NodeTooltip = LOCTEXT("GameFramework NodeTooltip", "GameFramework Attempts to retrieve a TableRow from a DataTable via it's Id");
 }
 
 void UK2Node_GetConfigTableRow::AllocateDefaultPins()
@@ -37,21 +37,21 @@ void UK2Node_GetConfigTableRow::AllocateDefaultPins()
 	// Add execution pins
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
 	UEdGraphPin* RowFoundPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
-	RowFoundPin->PinFriendlyName = LOCTEXT("GetDataTableRow Row Found Exec pin", "Row Found");
+	RowFoundPin->PinFriendlyName = LOCTEXT("GameFramework GetDataTableRow Row Found Exec pin", "GameFramework Row Found");
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, GetDataTableRowHelper::RowNotFoundPinName);
 
 	// Add DataTable pin
 	UEdGraphPin* DataTablePin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UDataTable::StaticClass(), GetDataTableRowHelper::DataTablePinName);
-	SetPinToolTip(*DataTablePin, LOCTEXT("DataTablePinDescription", "The DataTable you want to retreive a Row from"));
+	SetPinToolTip(*DataTablePin, LOCTEXT("GameFramework DataTablePinDescription", "GameFramework The DataTable you want to retreive a Row from"));
 
 	// Id pin
 	UEdGraphPin* IdPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Int, GetDataTableRowHelper::IdPinName);
-	SetPinToolTip(*IdPin, LOCTEXT("RowNamePinDescription", "The id to retrieve from the DataTable"));
+	SetPinToolTip(*IdPin, LOCTEXT("GameFramework RowNamePinDescription", "GameFramework The id to retrieve from the DataTable"));
 
 	// Result pin
 	UEdGraphPin* ResultPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Wildcard, UEdGraphSchema_K2::PN_ReturnValue);
-	ResultPin->PinFriendlyName = LOCTEXT("GetDataTableRow Output Row", "Out Row");
-	SetPinToolTip(*ResultPin, LOCTEXT("ResultPinDescription", "The returned TableRow, if found"));
+	ResultPin->PinFriendlyName = LOCTEXT("GameFramework GetDataTableRow Output Row", "GameFramework Out Row");
+	SetPinToolTip(*ResultPin, LOCTEXT("GameFramework ResultPinDescription", "GameFramework The returned TableRow, if found"));
 
 	Super::AllocateDefaultPins();
 }
@@ -312,31 +312,31 @@ FText UK2Node_GetConfigTableRow::GetNodeTitle(ENodeTitleType::Type TitleType) co
 {
 	if (TitleType == ENodeTitleType::MenuTitle)
 	{
-		return LOCTEXT("ListViewTitle", "Get Data Table Row");
+		return LOCTEXT("GameFramework ListViewTitle", "GameFramework Get Data Table Row");
 	}
 	else if (UEdGraphPin* DataTablePin = GetDataTablePin())
 	{
 		if (DataTablePin->LinkedTo.Num() > 0)
 		{
-			return NSLOCTEXT("K2Node", "DataTable_Title_Unknown", "Get Data Table Row");
+			return NSLOCTEXT("GameFramework K2Node", "DataTable_Title_Unknown", "GameFramework Get Data Table Row");
 		}
 		else if (DataTablePin->DefaultObject == nullptr)
 		{
-			return NSLOCTEXT("K2Node", "DataTable_Title_None", "Get Data Table Row NONE");
+			return NSLOCTEXT("GameFramework K2Node", "DataTable_Title_None", "GameFramework Get Data Table Row NONE");
 		}
 		else if (CachedNodeTitle.IsOutOfDate(this))
 		{
 			FFormatNamedArguments Args;
 			Args.Add(TEXT("DataTableName"), FText::FromString(DataTablePin->DefaultObject->GetName()));
 
-			FText LocFormat = NSLOCTEXT("K2Node", "DataTable", "Get Data Table Row {DataTableName}");
+			FText LocFormat = NSLOCTEXT("GameFramework K2Node", "DataTable", "GameFramework Get Data Table Row {DataTableName}");
 			// FText::Format() is slow, so we cache this to save on performance
 			CachedNodeTitle.SetCachedText(FText::Format(LocFormat, Args), this);
 		}
 	}
 	else
 	{
-		return NSLOCTEXT("K2Node", "DataTable_Title_None", "Get Data Table Row NONE");
+		return NSLOCTEXT("GameFramework K2Node", "DataTable_Title_None", "GameFramework Get Data Table Row NONE");
 	}	
 	return CachedNodeTitle;
 }
@@ -349,7 +349,7 @@ void UK2Node_GetConfigTableRow::ExpandNode(class FKismetCompilerContext& Compile
     UDataTable* Table = (OriginalDataTableInPin != NULL) ? Cast<UDataTable>(OriginalDataTableInPin->DefaultObject) : NULL;
     if((nullptr == OriginalDataTableInPin) || (0 == OriginalDataTableInPin->LinkedTo.Num() && nullptr == Table))
     {
-        CompilerContext.MessageLog.Error(*LOCTEXT("GetDataTableRowNoDataTable_Error", "GetDataTableRow must have a DataTable specified.").ToString(), this);
+        CompilerContext.MessageLog.Error(*LOCTEXT("GameFramework GetDataTableRowNoDataTable_Error", "GameFramework GetDataTableRow must have a DataTable specified.").ToString(), this);
         // we break exec links so this is the only error we get
         BreakAllNodeLinks();
         return;
@@ -424,7 +424,7 @@ void UK2Node_GetConfigTableRow::EarlyValidation(class FCompilerResultsLog& Messa
 	const UEdGraphPin* IdPin = GetIdPin();
 	if (!DataTablePin || !IdPin)
 	{
-		MessageLog.Error(*LOCTEXT("MissingPins", "Missing pins in @@").ToString(), this);
+		MessageLog.Error(*LOCTEXT("GameFramework MissingPins", "GameFramework Missing pins in @@").ToString(), this);
 		return;
 	}
 
@@ -433,7 +433,7 @@ void UK2Node_GetConfigTableRow::EarlyValidation(class FCompilerResultsLog& Messa
 		const UDataTable* DataTable = Cast<UDataTable>(DataTablePin->DefaultObject);
 		if (!DataTable)
 		{
-			MessageLog.Error(*LOCTEXT("NoDataTable", "No DataTable in @@").ToString(), this);
+			MessageLog.Error(*LOCTEXT("GameFramework NoDataTable", "GameFramework No DataTable in @@").ToString(), this);
 			return;
 		}
 
@@ -443,7 +443,7 @@ void UK2Node_GetConfigTableRow::EarlyValidation(class FCompilerResultsLog& Messa
 			if (!DataTableContainsId(DataTable, CurrentId))
 			{
 				const FString Msg = FText::Format(
-					LOCTEXT("WrongRowNameFmt", "'{0}' Row name is not stored in '{1}'. @@"),
+					LOCTEXT("GameFramework WrongRowNameFmt", "GameFramework '{0}' Row name is not stored in '{1}'. @@"),
 					FText::FromString(FString::FromInt(CurrentId)),
 					FText::FromString(GetFullNameSafe(DataTable))
 				).ToString();
