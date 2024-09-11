@@ -4,22 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreConditionList.h"
+#include "Modules/Quest/QuestTypes.h"
 #include "Quest.generated.h"
-
-//任务类型
-UENUM(BlueprintType, meta = (DisplayName = "任务类型"))
-enum class QuestTypeEnum :uint8 //设置uint8类型  
-{
-	QuestType_1,
-	QuestType_2,
-	QuestType_3,
-	QuestType_4,
-	QuestType_5,
-	QuestType_6,
-	QuestType_7,
-	QuestType_8,
-	QuestType_9,
-};
 
 /**
 * @brief 任务
@@ -45,7 +31,7 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	* 任务类型
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务类型"))
-	QuestTypeEnum QuestType;
+	EQuestTypeEnum QuestType;
 
 	/**
 	* 前置条件

@@ -36,7 +36,6 @@
 
 #include "GameInstance/CoreGameInstance.h"
 
-#include "Modules/Money/MoneySetting.h"
 #include "Modules/Exp/ExpSetting.h"
 #include "Modules/Item/ItemSetting.h"
 #include "Modules/Unit/UnitSetting.h"
@@ -80,22 +79,12 @@ namespace BaseConditionFactory {
             return UPlayerCollectMoneyCondition::StaticClass();
         }
         virtual bool CanCreateCondition() override {
-            FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-            auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
-            if (MoneyTypeSource.Num() == 0) {
-                EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的Money类型，请先配置Money类型")), 5.0f);
-                return false;
-            }
             return true;
         }
         virtual void PostInitConditionCreated(class UCoreCondition* Condition) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
             UPlayerCollectMoneyCondition* CollectMoneyCondition = Cast<UPlayerCollectMoneyCondition>(Condition);
-            FMoneyTypeConfigTableRow* RowData = (FMoneyTypeConfigTableRow*)(MoneyTypeSource[0]->ConfigTableRow);
-            CollectMoneyCondition->MoneyTypeContainer.MoneyType = RowData->MoneyTypeId;
             CollectMoneyCondition->MoneyCount = 1;
         }
     };
@@ -132,22 +121,12 @@ namespace BaseConditionFactory {
             return UPlayerConsumeMoneyCondition::StaticClass();
         }
         virtual bool CanCreateCondition() override {
-            FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-            auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
-            if (MoneyTypeSource.Num() == 0) {
-                EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的Money类型，请先配置Money类型")), 5.0f);
-                return false;
-            }
             return true;
         }
         virtual void PostInitConditionCreated(class UCoreCondition* Condition) override {
             FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
             auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
             UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = Cast<UPlayerConsumeMoneyCondition>(Condition);
-            FMoneyTypeConfigTableRow* RowData = (FMoneyTypeConfigTableRow*)(MoneyTypeSource[0]->ConfigTableRow);
-            ConsumeMoneyCondition->MoneyTypeContainer.MoneyType = RowData->MoneyTypeId;
             ConsumeMoneyCondition->MoneyCount = 1;
         }
     };
@@ -311,13 +290,6 @@ namespace BaseConditionFactory {
 			return UPlayerDeductMoneyCondition::StaticClass();
 		}
         virtual bool CanCreateCondition() override {
-            FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-            auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto MoneyTypeSource = EditorWidgetTool->GetMoneyTypeSource();
-            if (MoneyTypeSource.Num() == 0) {
-                EditorWidgetTool->ShowNotification(FText::FromString(TEXT("没有可选的Money类型，请先配置Money类型")), 5.0f);
-                return false;
-            }
             return true;
         }
         virtual void PostInitConditionCreated(class UCoreCondition* Condition) override {

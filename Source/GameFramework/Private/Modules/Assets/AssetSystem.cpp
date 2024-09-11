@@ -31,6 +31,7 @@
 #include "BackpackTypeConfigTableRow.h"
 #include "ItemTypeConfigTableRow.h"
 #include "ItemIDNumPair.h"
+#include "MoneyTypes.h"
 
 void UAssetSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
@@ -410,22 +411,22 @@ void UAssetSystem::SortBackpack(UBackpackComponent* BackpackComponent, uint8 Bac
     }
 }
 
-int32 UAssetSystem::ChangeMoney(UWalletComponent* WalletComponent, uint8 MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error) {
+int32 UAssetSystem::ChangeMoney(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error) {
 	int32 ChangeResult = ChangeMoneyPrivate(WalletComponent, MoneyType, Count, bConsume, Reason, Error);
 	return ChangeResult;
 }
 
 bool UAssetSystem::CanDeductMoney(UWalletComponent* WalletComponent, const TArray<FMoneyTypeNumPair>& DeductMoneys) {
-    TMap<uint32, int32> MoneyTotal;
+    TMap<EMoneyTypeEnum, int32> MoneyTotal;
     for (auto MoneyInfo : WalletComponent->Wallets) {
         MoneyTotal.Add(MoneyInfo.MoneyType, MoneyInfo.Count);
     }
     for (auto MoneyTypeNumPair : DeductMoneys) {
-        if (!MoneyTotal.Contains(MoneyTypeNumPair.MoneyTypeContainer.MoneyType)) {
+        if (!MoneyTotal.Contains(MoneyTypeNumPair.MoneyType)) {
             return false;
         }
-        MoneyTotal[MoneyTypeNumPair.MoneyTypeContainer.MoneyType] -= MoneyTypeNumPair.Num;
-        if (MoneyTotal[MoneyTypeNumPair.MoneyTypeContainer.MoneyType] < 0) {
+        MoneyTotal[MoneyTypeNumPair.MoneyType] -= MoneyTypeNumPair.Num;
+        if (MoneyTotal[MoneyTypeNumPair.MoneyType] < 0) {
             return false;
         }
     }
@@ -434,7 +435,7 @@ bool UAssetSystem::CanDeductMoney(UWalletComponent* WalletComponent, const TArra
 
 void UAssetSystem::ChangeMoney(UWalletComponent* WalletComponent, const TArray<FMoneyTypeNumPair>& ChangeMoneys, bool bConsume, const FString& Reason, FString& Error) {
     for (auto MoneyTypeNumPair : ChangeMoneys) {
-        ChangeMoney(WalletComponent, MoneyTypeNumPair.MoneyTypeContainer.MoneyType, MoneyTypeNumPair.Num, bConsume, Reason, Error);
+        ChangeMoney(WalletComponent, MoneyTypeNumPair.MoneyType, MoneyTypeNumPair.Num, bConsume, Reason, Error);
     }
 }
 
@@ -1012,7 +1013,7 @@ int32 UAssetSystem::SplitItemPrivate(UBackpackComponent* BackpackComponent, uint
 	return -1;
 }
 
-int32 UAssetSystem::ChangeMoneyPrivate(UWalletComponent* WalletComponent, uint8 MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error) {
+int32 UAssetSystem::ChangeMoneyPrivate(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error) {
     if (Count == 0) {
         Error = TEXT("非法操作");
         return -1;
@@ -1100,7 +1101,7 @@ void UAssetSystem::SendUseItemEvent(UBackpackComponent* BackpackComponent, int32
 	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ConsumeItemEvent);
 }
 
-void UAssetSystem::SendChangeMoneyEvent(UWalletComponent* WalletComponent, uint8 MoneyType, int32 moneyCount) {
+void UAssetSystem::SendChangeMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 moneyCount) {
 	UChangeMoneyEvent* changeMoneyEvent = NewObject<UChangeMoneyEvent>();
 	changeMoneyEvent->Source = WalletComponent->GetOwner();
 	changeMoneyEvent->MoneyType = MoneyType;
@@ -1108,7 +1109,7 @@ void UAssetSystem::SendChangeMoneyEvent(UWalletComponent* WalletComponent, uint8
 	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(changeMoneyEvent);
 }
 
-void UAssetSystem::SendUseMoneyEvent(UWalletComponent* WalletComponent, uint8 MoneyType, int32 moneyCount) {
+void UAssetSystem::SendUseMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 moneyCount) {
 	UConsumeMoneyEvent* consumeMoneyEvent = NewObject<UConsumeMoneyEvent>();
 	consumeMoneyEvent->Source = WalletComponent->GetOwner();
 	consumeMoneyEvent->MoneyType = MoneyType;

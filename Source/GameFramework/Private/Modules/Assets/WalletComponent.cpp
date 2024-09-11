@@ -38,7 +38,7 @@ void UWalletComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
     DOREPLIFETIME(UWalletComponent, Wallets);
 }
 
-void UWalletComponent::ChangeMoney(uint8 MoneyType, int32 Count, bool bConsume, const FString& Reason) {
+void UWalletComponent::ChangeMoney(EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto PlayerState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -57,7 +57,7 @@ void UWalletComponent::ChangeMoney(uint8 MoneyType, int32 Count, bool bConsume, 
     }
 }
 
-int UWalletComponent::GetMoneyCount(uint8 MoneyType) {
+int UWalletComponent::GetMoneyCount(EMoneyTypeEnum MoneyType) {
     for (int Index = 0; Index < Wallets.Num(); ++Index) {
         if (Wallets[Index].MoneyType == MoneyType) {
             return Wallets[Index].Count;

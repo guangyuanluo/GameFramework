@@ -19,7 +19,7 @@ bool UPlayerCollectMoneyConditionProgress::IsComplete(bool& IsValid) {
 	UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)Condition;
     auto PlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 
-    return CollectMoneyCondition->MoneyCount <= PlayerState->WalletComponent->GetMoneyCount(CollectMoneyCondition->MoneyTypeContainer.MoneyType);
+    return CollectMoneyCondition->MoneyCount <= PlayerState->WalletComponent->GetMoneyCount(CollectMoneyCondition->MoneyType);
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectMoneyConditionProgress::GetHandleEventTypes() {
@@ -37,7 +37,7 @@ void UPlayerCollectMoneyConditionProgress::OnEvent(UCoreGameInstance* InGameInst
         return;
     }
     UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)Condition;
-    if (ChangeMoneyEvent->MoneyType == CollectMoneyCondition->MoneyTypeContainer.MoneyType
+    if (ChangeMoneyEvent->MoneyType == CollectMoneyCondition->MoneyType
         && EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
 
         RefreshSatisfy();

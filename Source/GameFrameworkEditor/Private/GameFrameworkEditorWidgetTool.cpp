@@ -10,7 +10,6 @@
 #include "Runtime/Slate/Public/Framework/Notifications/NotificationManager.h"
 #include "Runtime/Slate/Public/Widgets/Notifications/SNotificationList.h"
 
-#include "Modules/Money/MoneySetting.h"
 #include "Modules/Exp/ExpSetting.h"
 #include "Modules/Assets/BackpackSetting.h"
 #include "Modules/Item/ItemSetting.h"
@@ -90,32 +89,6 @@ TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetUni
     }
 
     return Result;
-}
-
-TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetMoneyTypeSource() {
-	TArray<TSharedPtr<FConfigTableRowWrapper>> Result;
-    const UMoneySetting* MoneySetting = GetDefault<UMoneySetting>();
-    auto MoneyTypeDataTable = MoneySetting->MoneyTypeTable.LoadSynchronous();
-    if (MoneyTypeDataTable != nullptr) {
-        auto TableUsingStruct = MoneyTypeDataTable->GetRowStruct();
-        int32 StructureSize = TableUsingStruct->GetStructureSize();
-		TArray<FMoneyTypeConfigTableRow*> MoneyTypeArr;
-        MoneyTypeDataTable->GetAllRows("", MoneyTypeArr);
-		for (auto Index = 0; Index < MoneyTypeArr.Num(); ++Index) {
-            FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
-            uint8* NewRawRowData = (uint8*)FMemory::Malloc(StructureSize);
-
-            TableUsingStruct->InitializeStruct(NewRawRowData);
-            TableUsingStruct->CopyScriptStruct(NewRawRowData, MoneyTypeArr[Index]);
-
-            NewWrapper->RowStruct = TableUsingStruct;
-            NewWrapper->ConfigTableRow = NewRawRowData;
-
-            Result.Add(TSharedPtr<FConfigTableRowWrapper>(NewWrapper));
-		}
-	}
-
-	return Result;
 }
 
 TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetExpTypeSource() {

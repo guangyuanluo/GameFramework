@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Events/GameEventBase.h"
+#include "Modules/Money/MoneyTypes.h"
 #include "ChangeMoneyEvent.generated.h"
 
 /**
@@ -21,7 +22,7 @@ public:
 	class AActor* Source;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-	uint8 MoneyType;
+	EMoneyTypeEnum MoneyType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
 	int32 MoneyCount;

@@ -86,7 +86,7 @@ public:
 	/**
 	* 改钱
 	*/
-	int32 ChangeMoney(UWalletComponent* WalletComponent, uint8 MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error);
+	int32 ChangeMoney(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error);
 
 	/**
 	* 能否扣钱
@@ -113,15 +113,15 @@ private:
     TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> SimulateDeductItems(UBackpackComponent* BackpackComponent, const TArray<FItemIDNumPair>& DeductItems, const FString& Reason, FString& Error);
 	bool MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int32 NewPackageType, int NewSlotIndex, FString& Error);
 	int32 SplitItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, FString& Error);
-	int32 ChangeMoneyPrivate(UWalletComponent* WalletComponent, uint8 MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error);
+	int32 ChangeMoneyPrivate(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error);
 	/**
 	* 减少背包中某个槽的物品
 	*/
 	UCoreItem* ReduceItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
 	void SendChangeItemEvent(UBackpackComponent* BackpackComponent, int32 ItemId, int32 Count, const FString& Reason);
 	void SendUseItemEvent(UBackpackComponent* BackpackComponent, int32 ItemId, int32 Count);
-	void SendChangeMoneyEvent(UWalletComponent* WalletComponent, uint8 MoneyType, int32 MoneyCount);
-	void SendUseMoneyEvent(UWalletComponent* WalletComponent, uint8 MoneyType, int32 MoneyCount);
+	void SendChangeMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 MoneyCount);
+	void SendUseMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 MoneyCount);
 
     /**
     * 获取背包扩展处理类

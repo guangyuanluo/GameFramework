@@ -128,7 +128,7 @@ FName SSimpleRow::TableRowAdded(FName Name) {
 
             auto TableUsingStruct = RowDataTable->GetRowStruct();
             int32 StructureSize = TableUsingStruct->GetStructureSize();
-            FMoneyTypeConfigTableRow* NewRawRowData = (FMoneyTypeConfigTableRow*)FMemory::Malloc(StructureSize);
+            void* NewRawRowData = FMemory::Malloc(StructureSize);
             TableUsingStruct->InitializeStruct(NewRawRowData);
             TableUsingStruct->CopyScriptStruct(NewRawRowData, FindRow);
             FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/SWidget.h"
-#include "Modules/Money/MoneyTypeConfigTableRow.h"
 #include "Modules/Unit/UnitInfoConfigTableRow.h"
 #include "Modules/Exp/ExpTypeConfigTableRow.h"
 #include "Modules/Assets/BackpackTypeConfigTableRow.h"
@@ -22,7 +21,6 @@ public:
 	void ShowNotification(const FText& TextToDisplay, float TimeToDisplay);
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetUnitInfoSource();
     TArray<TSharedPtr<FConfigTableRowWrapper>> GetUnitGroupSource();
-	TArray<TSharedPtr<FConfigTableRowWrapper>> GetMoneyTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetExpTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetBackpackTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetItemInfoSource();
