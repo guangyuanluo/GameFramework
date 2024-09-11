@@ -38,13 +38,13 @@ struct GAMEFRAMEWORK_API FUnitInfoConfigTableRow : public FConfigTableRowBase
 	*  单位2D头像
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "基础", meta = (DisplayName = "单位2D头像", DisplayPriority = "1"))
-	FString HeadIcon;
+	TSoftObjectPtr<class UTexture2D> HeadIcon;
 
     /**
 	*  单位海报图片
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "基础", meta = (DisplayName = "单位海报图片", DisplayPriority = "1"))
-	FString PosterImage;
+	TSoftObjectPtr<class UTexture2D> PosterImage;
 
 	/**
 	*  单位蓝图

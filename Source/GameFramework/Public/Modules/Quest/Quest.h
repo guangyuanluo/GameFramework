@@ -42,6 +42,12 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	FString QuestName;
 
 	/**
+	* 任务类型
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务类型"))
+	QuestTypeEnum QuestType;
+
+	/**
 	* 前置条件
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "前置条件"))
