@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "QuestTypes.generated.h"
 
-//任务类型
+//任务类型，预留多个，可以在EnumDisplayNameConfigSetting设置DisplayName
 UENUM(BlueprintType, meta = (DisplayName = "任务类型"))
 enum class EQuestTypeEnum :uint8 //设置uint8类型  
 {

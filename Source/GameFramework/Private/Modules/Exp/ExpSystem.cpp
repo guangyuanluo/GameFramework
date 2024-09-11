@@ -25,7 +25,7 @@ void UExpSystem::Uninitialize() {
     Super::Uninitialize();
 }
 
-bool UExpSystem::AddExp(UExpComponent* ExpComponent, uint8 ExpType, int32 Exp, const FString& Reason, FString& Error) {
+bool UExpSystem::AddExp(UExpComponent* ExpComponent, EExpTypeEnum ExpType, int32 Exp, const FString& Reason, FString& Error) {
     bool Result = false;
     auto FindIndex = -1;
     for (int Index = 0; Index < ExpComponent->Exps.Num(); ++Index) {
@@ -46,7 +46,7 @@ bool UExpSystem::AddExp(UExpComponent* ExpComponent, uint8 ExpType, int32 Exp, c
             if (OldExp.Level != NewExp.Level) {
                 UExpLevelUpEvent* ExpLevelUpEvent = NewObject<UExpLevelUpEvent>();
                 ExpLevelUpEvent->Source = UGameFrameworkUtils::GetCharacterFromComponentOwner(ExpComponent);
-                ExpLevelUpEvent->ExpTypeId = ExpType;
+                ExpLevelUpEvent->ExpType = ExpType;
                 ExpLevelUpEvent->ExpLevel = NewExp.Level;
 
                 EventSystem->PushEvent(ExpLevelUpEvent);
@@ -64,13 +64,13 @@ bool UExpSystem::AddExp(UExpComponent* ExpComponent, uint8 ExpType, int32 Exp, c
     return Result;
 }
 
-int UExpSystem::GetLevelUpgradeExp(uint8 ExpType, int32 Level) {
+int UExpSystem::GetLevelUpgradeExp(EExpTypeEnum ExpType, int32 Level) {
     int MaxExp = 0;
 
     const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
     auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
     if (ExpTypeDataTable) {
-        auto FindExpType = (FExpTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, ExpType);
+        auto FindExpType = (FExpTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, (int)ExpType);
         if (FindExpType) {
             if (!FindExpType->ExpLevelTable.GetLongPackageName().IsEmpty()) {
                 UCurveTable* ExpLevelTable = FindExpType->ExpLevelTable.LoadSynchronous();
@@ -90,10 +90,10 @@ int UExpSystem::GetLevelUpgradeExp(uint8 ExpType, int32 Level) {
     return MaxExp;
 }
 
-bool UExpSystem::AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent* ExpComponent, int ExpIndex, uint8 ExpType, int32 Exp, const FString& Reason, FString& Error) {
+bool UExpSystem::AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent* ExpComponent, int ExpIndex, EExpTypeEnum ExpType, int32 Exp, const FString& Reason, FString& Error) {
     if (Exp > 0) {
         //这里是增加经验
-        auto FindExpType = (FExpTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, ExpType);
+        auto FindExpType = (FExpTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, (int)ExpType);
         if (FindExpType) {
             if (!FindExpType->ExpLevelTable.GetLongPackageName().IsEmpty()) {
                 UCurveTable* ExpLevelTable = FindExpType->ExpLevelTable.LoadSynchronous();

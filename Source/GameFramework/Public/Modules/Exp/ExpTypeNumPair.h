@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/Exp/ExpTypeContainer.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "ExpTypeNumPair.generated.h"
 
 /**
@@ -18,7 +18,7 @@ struct GAMEFRAMEWORK_API FExpTypeNumPair
 	* 经验类型
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Exp")
-	FExpTypeContainer ExpTypeContainer;
+	EExpTypeEnum ExpType;
 
 	/**
 	* 经验数量

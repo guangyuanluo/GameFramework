@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Base/ConfigTable/ConfigTableRowBase.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "ExpTypeConfigTableRow.generated.h"
 
 /**
@@ -14,8 +15,6 @@ struct GAMEFRAMEWORK_API FExpTypeConfigTableRow : public FConfigTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	static const int RoleExpType = 0;			///< 人物成长经验类型
-
 	/**
 	* 经验类型Id
 	*/
@@ -23,16 +22,16 @@ struct GAMEFRAMEWORK_API FExpTypeConfigTableRow : public FConfigTableRowBase
 	int32 ExpTypeId;
 
 	/**
-	* 经验类型描述
+	* 经验类型枚举
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ExpTypeConfigTable", meta = (DisplayName = "经验类型描述", DisplayPriority = "1"))
-	FString ExpTypeDescription;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ExpTypeConfigTable", meta = (DisplayName = "经验类型Id", DisplayPriority = "1"))
+	EExpTypeEnum ExpType;
 
 	/**
 	* 经验icon
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ExpTypeConfigTable", meta = (DisplayName = "经验类型图标", DisplayPriority = "1"))
-	FString Icon;
+	TSoftObjectPtr<class UTexture2D> Icon;
 
 	/**
 	* 经验等级表
@@ -41,5 +40,6 @@ struct GAMEFRAMEWORK_API FExpTypeConfigTableRow : public FConfigTableRowBase
 	TSoftObjectPtr<class UCurveTable> ExpLevelTable;
 
     virtual int GetUniqueId() override;
+	virtual int GetRowUniqueId() override;
     virtual FString GetSimpleDescription() override;
 };

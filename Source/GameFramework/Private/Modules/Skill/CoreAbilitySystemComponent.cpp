@@ -43,7 +43,7 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
                 auto CharacterState = Cast<ACoreCharacterStateBase>(Owner);
                 if (ensureMsgf(CharacterState, TEXT("Character没有CharacterState对象"))) {
                     if (Owner->GetLocalRole() == ROLE_Authority) {
-                        auto ExpLevel = CharacterState->ExpComponent->GetExpLevel(FindTemplate->GrowExpTypeId);
+                        auto ExpLevel = CharacterState->ExpComponent->GetExpLevel(FindTemplate->GrowExpType);
 
                         FGameplayEffectContextHandle EffectContext = MakeEffectContext();
                         FGameplayEffectSpecHandle NewHandle = MakeOutgoingSpec(FindTemplate->AttributeEffectClass, ExpLevel, EffectContext);

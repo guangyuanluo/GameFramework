@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Events/GameEventBase.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "ExpLevelUpEvent.generated.h"
 
 /**
@@ -19,7 +20,7 @@ public:
 	class AActor* Source;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-    uint8 ExpTypeId;
+	EExpTypeEnum ExpType;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
     int ExpLevel;

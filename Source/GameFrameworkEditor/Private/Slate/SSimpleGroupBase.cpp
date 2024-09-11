@@ -51,7 +51,7 @@ public:
 		if (ColumnName == GroupUI::GroupIdColumnName)
 		{
 			return	SNew(STextBlock)
-				.Text(FText::FromString(FString::FromInt(RowData->GetUniqueId())));
+				.Text(FText::FromString(FString::FromInt(RowData->GetRowUniqueId())));
 		}
 		else if (ColumnName == GroupUI::GroupDescriptionColumnName)
 		{
@@ -105,7 +105,7 @@ private:
 		TSharedPtr<SVerticalBox> page = SNew(SVerticalBox);
 
         FConfigTableRowBase* RowData = (FConfigTableRowBase*)(GroupPtr->ConfigTableRow);
-		PoolRow = mDataTable->FindRow<FSimpleGroupConfigTableRowBase>(*FString::FromInt(RowData->GetUniqueId()), "");
+		PoolRow = mDataTable->FindRow<FSimpleGroupConfigTableRowBase>(*FString::FromInt(RowData->GetRowUniqueId()), "");
 
 		//组
         GeneratePageItem(pageButtons, page, &PoolRow->GetGroupItems());
@@ -141,7 +141,7 @@ private:
 		for (int Index = 0; Index < GroupItemSource.Num(); ++Index) {
             FConfigTableRowBase* RowData = (FConfigTableRowBase*)(GroupPtr->ConfigTableRow);
             FConfigTableRowBase* GroupItemRow = (FConfigTableRowBase*)(GroupItemSource[Index]->ConfigTableRow);
-			if (mGroupItemArray->Contains(GroupItemRow->GetUniqueId())) {
+			if (mGroupItemArray->Contains(GroupItemRow->GetRowUniqueId())) {
 				mSelectListSource.Add(GroupItemSource[Index]);
 			}
 			else {
@@ -209,7 +209,7 @@ private:
 
 							for (int Index = 0; Index < GroupItemSource.Num(); ++Index) {
                                 FConfigTableRowBase* GroupItemRow = (FConfigTableRowBase*)(GroupItemSource[Index]->ConfigTableRow);
-								mGroupItemArray->Add(GroupItemRow->GetUniqueId());
+								mGroupItemArray->Add(GroupItemRow->GetRowUniqueId());
 								mSelectListSource.Add(GroupItemSource[Index]);
 							}
 
@@ -232,22 +232,22 @@ private:
 						SNew(SButton)
 						.OnClicked_Lambda([this, GroupItemSource, SelectList, unSelectList]() {
 							if (mUnselectListSelectItem.IsValid()) {
-                                FConfigTableRowBase* UnselectHeroListSelectRow = (FConfigTableRowBase*)(mUnselectListSelectItem->ConfigTableRow);
-								if (!mGroupItemArray->Contains(UnselectHeroListSelectRow->GetUniqueId())) {
+                                FConfigTableRowBase* UnselectListSelectRow = (FConfigTableRowBase*)(mUnselectListSelectItem->ConfigTableRow);
+								if (!mGroupItemArray->Contains(UnselectListSelectRow->GetRowUniqueId())) {
 									for (int Index = 0; Index < GroupItemSource.Num(); ++Index) {
                                         FConfigTableRowBase* GroupItemRow = (FConfigTableRowBase*)(GroupItemSource[Index]->ConfigTableRow);
-										if (GroupItemRow->GetUniqueId() == UnselectHeroListSelectRow->GetUniqueId()) {
+										if (GroupItemRow->GetRowUniqueId() == UnselectListSelectRow->GetRowUniqueId()) {
 											{
 												bool insertSuccess = false;
 												for (int ListIndex = 0; ListIndex < mGroupItemArray->Num(); ++ListIndex) {
-													if ((*mGroupItemArray)[ListIndex] > GroupItemRow->GetUniqueId()) {
-                                                        mGroupItemArray->Insert(GroupItemRow->GetUniqueId(), ListIndex);
+													if ((*mGroupItemArray)[ListIndex] > GroupItemRow->GetRowUniqueId()) {
+                                                        mGroupItemArray->Insert(GroupItemRow->GetRowUniqueId(), ListIndex);
 														insertSuccess = true;
 														break;
 													}
 												}
 												if (!insertSuccess) {
-                                                    mGroupItemArray->Add(GroupItemRow->GetUniqueId());
+                                                    mGroupItemArray->Add(GroupItemRow->GetRowUniqueId());
 												}
 											}
 
@@ -255,7 +255,7 @@ private:
 												bool insertSuccess = false;
 												for (int ListIndex = 0; ListIndex < mSelectListSource.Num(); ++ListIndex) {
                                                     FConfigTableRowBase* SelectListRow = (FConfigTableRowBase*)(mSelectListSource[ListIndex]->ConfigTableRow);
-													if (SelectListRow->GetUniqueId() > GroupItemRow->GetUniqueId()) {
+													if (SelectListRow->GetRowUniqueId() > GroupItemRow->GetRowUniqueId()) {
 														mSelectListSource.Insert(GroupItemSource[Index], ListIndex);
 														insertSuccess = true;
 														break;
@@ -294,11 +294,11 @@ private:
 						.OnClicked_Lambda([this, GroupItemSource, SelectList, unSelectList]() {
 							if (mSelectListSelectItem.IsValid()) {
                                 FConfigTableRowBase* SelectListSelectRow = (FConfigTableRowBase*)(mSelectListSelectItem->ConfigTableRow);
-								if (mGroupItemArray->Contains(SelectListSelectRow->GetUniqueId())) {
+								if (mGroupItemArray->Contains(SelectListSelectRow->GetRowUniqueId())) {
 									for (int Index = 0; Index < GroupItemSource.Num(); ++Index) {
                                         FConfigTableRowBase* GroupItemRow = (FConfigTableRowBase*)(GroupItemSource[Index]->ConfigTableRow);
-										if (GroupItemRow->GetUniqueId() == SelectListSelectRow->GetUniqueId()) {
-                                            mGroupItemArray->Remove(GroupItemRow->GetUniqueId());
+										if (GroupItemRow->GetRowUniqueId() == SelectListSelectRow->GetRowUniqueId()) {
+                                            mGroupItemArray->Remove(GroupItemRow->GetRowUniqueId());
 
 											mSelectListSource.Remove(GroupItemSource[Index]);
 
@@ -306,7 +306,7 @@ private:
 												bool insertSuccess = false;
 												for (int ListIndex = 0; ListIndex < mUnselectListSource.Num(); ++ListIndex) {
                                                     FConfigTableRowBase* UnselectListRow = (FConfigTableRowBase*)(mUnselectListSource[ListIndex]->ConfigTableRow);
-													if (UnselectListRow->GetUniqueId() > GroupItemRow->GetUniqueId()) {
+													if (UnselectListRow->GetRowUniqueId() > GroupItemRow->GetRowUniqueId()) {
 														mUnselectListSource.Insert(GroupItemSource[Index], ListIndex);
 														insertSuccess = true;
 														break;
@@ -476,7 +476,7 @@ bool SSimpleGroupBase::GroupTableRowPreRemove(FName Name) {
 void SSimpleGroupBase::GroupTableRowRemoved(FName Name) {
 	for (auto Index = 0; Index < mGroupSource.Num(); ++Index) {
         FConfigTableRowBase* RowData = (FConfigTableRowBase*)(mGroupSource[Index]->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->GetUniqueId());
+		FName RowName = *FString::FromInt(RowData->GetRowUniqueId());
 		if (RowName == Name) {			
             mGroupSource.RemoveAt(Index);
 			mGroupListView->RebuildList();
@@ -491,7 +491,7 @@ void SSimpleGroupBase::GroupTableRowModified(FName Name) {
 		FConfigTableRowBase* FindRow = (FConfigTableRowBase*)GroupDataTable->FindRowUnchecked(Name);
 		for (auto Index = 0; Index < mGroupSource.Num(); ++Index) {
             FConfigTableRowBase* RowData = (FConfigTableRowBase*)(mGroupSource[Index]->ConfigTableRow);
-			if (FindRow->GetUniqueId() == RowData->GetUniqueId()) {
+			if (FindRow->GetRowUniqueId() == RowData->GetRowUniqueId()) {
                 auto TableUsingStruct = GroupDataTable->GetRowStruct();
                 TableUsingStruct->CopyScriptStruct(RowData, FindRow);
 
@@ -539,7 +539,7 @@ void SSimpleGroupBase::GroupTableSetHighlightedRow(FName Name) {
 void SSimpleGroupBase::OnGroupSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo) {
 	if (InNewSelection.IsValid()) {
         FConfigTableRowBase* RowData = (FConfigTableRowBase*)(InNewSelection->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->GetUniqueId());
+		FName RowName = *FString::FromInt(RowData->GetRowUniqueId());
 		const bool bSelectionChanged = !InNewSelection.IsValid() || RowName != mGroupHighlightedRowName;
 		const FName NewRowName = (InNewSelection.IsValid()) ? RowName : NAME_None;
 

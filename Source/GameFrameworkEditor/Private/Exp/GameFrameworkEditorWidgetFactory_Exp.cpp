@@ -27,22 +27,7 @@ void GameFrameworkEditorWidgetFactory_Exp::CheckEditorTableNoExistAndCreate() {
 }
 
 void GameFrameworkEditorWidgetFactory_Exp::Export() {
-	TMap<int64, TPair<FString, FText>> EnumSource;
 
-    const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
-    auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
-    if (ExpTypeDataTable) {
-        TArray<FExpTypeConfigTableRow*> AllRows;
-        ExpTypeDataTable->GetAllRows<FExpTypeConfigTableRow>("", AllRows);
-
-        for (int Index = 0; Index < AllRows.Num(); ++Index) {
-            auto ExpTypeName = FString::Format(TEXT("ExpType_{0}"), { AllRows[Index]->ExpTypeId });
-            auto ExpTypeDescription = AllRows[Index]->ExpTypeDescription;
-            EnumSource.Add(AllRows[Index]->ExpTypeId, TPair<FString, FText>(ExpTypeName, FText::FromString(ExpTypeDescription)));
-        }
-
-        GameFrameworkEditorWidgetTool::ExportEnumBP(TEXT("ExpTypeEnum"), FText::FromString(TEXT("经验类型")), EnumSource);
-    }
 }
 
 bool GameFrameworkEditorWidgetFactory_Exp::CheckOpenCondition() {

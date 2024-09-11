@@ -198,14 +198,7 @@ namespace BaseConditionFactory {
             return true;
         }
         virtual void PostInitConditionCreated(class UCoreCondition* Condition) override {
-            FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-            auto EditorWidgetTool = GameFrameworkEditorModule.GetEditorWidgetTool();
-            auto ExpTypeSource = EditorWidgetTool->GetExpTypeSource();
-
             UPlayerReachExpLevelCondition* ReachExpLevelCondition = Cast<UPlayerReachExpLevelCondition>(Condition);
-            FExpTypeConfigTableRow* RowData = (FExpTypeConfigTableRow*)(ExpTypeSource[0]->ConfigTableRow);
-
-            ReachExpLevelCondition->ExpTypeContainer.ExpType = RowData->ExpTypeId;
             ReachExpLevelCondition->ExpLevel = 1;
         }
     };

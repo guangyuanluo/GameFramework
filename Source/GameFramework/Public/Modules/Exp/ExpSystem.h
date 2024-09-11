@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Base/ECS/SystemBase.h"
 #include "Modules/Events/EventHandlerInterface.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "ExpSystem.generated.h"
 
 class UExpComponent;
@@ -22,16 +23,16 @@ public:
     /**
     * 增加经验
     */
-    bool AddExp(UExpComponent* ExpComponent, uint8 ExpType, int32 Exp, const FString& Reason, FString& Error);
+    bool AddExp(UExpComponent* ExpComponent, EExpTypeEnum ExpType, int32 Exp, const FString& Reason, FString& Error);
 
     /**
     * 获取指定等级升级所需经验值
     */
     UFUNCTION(BlueprintCallable, Category = "Utils")
-    static int GetLevelUpgradeExp(uint8 ExpType, int32 Level);
+    static int GetLevelUpgradeExp(EExpTypeEnum ExpType, int32 Level);
 
 private:
-    bool AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent* ExpComponent, int ExpIndex, uint8 ExpType, int32 Exp, const FString& Reason, FString& Error);
+    bool AddExpPrivate(class UDataTable* ExpTypeDataTable, UExpComponent* ExpComponent, int ExpIndex, EExpTypeEnum ExpType, int32 Exp, const FString& Reason, FString& Error);
 
     /** 覆写事件监听 */
     virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;

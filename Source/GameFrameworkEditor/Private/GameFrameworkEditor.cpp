@@ -36,8 +36,6 @@
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Item/ItemIDContainer.h"
 #include "Customization/ItemIDContainerCustomization.h"
-#include "Modules/Exp/ExpTypeContainer.h"
-#include "Customization/ExpTypeContainerCustomization.h"
 #include "CoreConditionListCustomization.h"
 #include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
@@ -252,10 +250,6 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 		FItemIDContainer::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FItemIDContainerCustomization::MakeInstance));
 
-	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FExpTypeContainer::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FExpTypeContainerCustomization::MakeInstance));
-
 	PropertyModule.RegisterCustomClassLayout(
 		UQuestDetailNodeItem::StaticClass()->GetFName(),
 		FOnGetDetailCustomizationInstance::CreateStatic(&FQuestDetailNodeItemCustomization::MakeInstance));
@@ -295,7 +289,6 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
     if (FModuleManager::Get().IsModuleLoaded("PropertyEditor")) {
         FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FItemIDContainer::StaticStruct()->GetFName());
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FExpTypeContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UQuestDetailNodeItem::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());

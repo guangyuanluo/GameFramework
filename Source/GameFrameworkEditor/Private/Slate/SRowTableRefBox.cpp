@@ -57,7 +57,7 @@ void SRowTableRefBox::SetSelect(int InCurrentSelectId) {
 
         if (SearchText.IsEmpty() || TableRow->GetSimpleDescription().Find(SearchText.ToString()) >= 0) {
             TSharedPtr<int> NewRowName(new int);
-            *NewRowName = TableRow->GetUniqueId();
+            *NewRowName = TableRow->GetRowUniqueId();
 
             if (*NewRowName == InCurrentSelectId) {
                 FindSelectItem = NewRowName;
@@ -122,7 +122,7 @@ FString SRowTableRefBox::GetRowDisplayName(int Id) const {
     const TMap<FName, uint8*>& RowMap = RefDataTable->GetRowMap();
     for (auto Iter = RowMap.CreateConstIterator(); Iter; ++Iter) {
         FConfigTableRowBase* TableRow = (FConfigTableRowBase*)(Iter->Value);
-        if (TableRow->GetUniqueId() == Id) {
+        if (TableRow->GetRowUniqueId() == Id) {
             return TableRow->GetSimpleDescription();
         }
     }
@@ -144,7 +144,7 @@ void SRowTableRefBox::OnSearchTextChanged(const FText& InFilterText) {
 
         if (SearchText.IsEmpty() || TableRow->GetSimpleDescription().Find(SearchText.ToString()) >= 0) {
             int* NewRowName = new int();
-            *NewRowName = TableRow->GetUniqueId();
+            *NewRowName = TableRow->GetRowUniqueId();
             CachedRowNames.Add(MakeShareable(NewRowName));
         }
     }

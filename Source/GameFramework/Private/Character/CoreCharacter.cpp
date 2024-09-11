@@ -217,10 +217,10 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
     const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
     auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
     if (ExpTypeDataTable) {
-        if (UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, FindUnitInfo->GrowExpTypeId)) {
+        if (UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, (int)FindUnitInfo->GrowExpType)) {
             if (GetLocalRole() == ENetRole::ROLE_Authority) {
                 FExpInfo ExpInfo;
-                ExpInfo.ExpType = FindUnitInfo->GrowExpTypeId;
+                ExpInfo.ExpType = FindUnitInfo->GrowExpType;
                 ExpInfo.Level = FindUnitInfo->Level;
                 CharacterState->ExpComponent->Exps.Add(ExpInfo);
             }

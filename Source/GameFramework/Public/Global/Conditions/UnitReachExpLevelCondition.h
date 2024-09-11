@@ -6,7 +6,7 @@
 #include "Modules/Condition/CoreCondition.h"
 #include "Modules/Condition/CoreConditionProgress_Event.h"
 #include "Modules/Unit/UnitIDContainer.h"
-#include "Modules/Exp/ExpTypeContainer.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "UnitReachExpLevelCondition.generated.h"
 
 /**
@@ -28,7 +28,7 @@ public:
 	* 经验类型
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	FExpTypeContainer ExpTypeContainer;
+	EExpTypeEnum ExpType;
 
 	/**
 	* 经验等级

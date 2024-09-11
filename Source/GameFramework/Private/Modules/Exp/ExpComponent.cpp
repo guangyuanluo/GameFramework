@@ -41,7 +41,7 @@ void UExpComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutL
 	DOREPLIFETIME(UExpComponent, Exps);
 }
 
-int UExpComponent::GetExpLevel(uint8 ExpType) const {
+int UExpComponent::GetExpLevel(EExpTypeEnum ExpType) const {
 	for (int Index = 0; Index < Exps.Num(); ++Index) {
 		if (Exps[Index].ExpType == ExpType) {
 			return Exps[Index].Level;
@@ -50,7 +50,7 @@ int UExpComponent::GetExpLevel(uint8 ExpType) const {
 	return 1;
 }
 
-int UExpComponent::GetExpValue(uint8 ExpType) const {
+int UExpComponent::GetExpValue(EExpTypeEnum ExpType) const {
 	for (int Index = 0; Index < Exps.Num(); ++Index) {
 		if (Exps[Index].ExpType == ExpType) {
 			return Exps[Index].Exp;
@@ -60,7 +60,7 @@ int UExpComponent::GetExpValue(uint8 ExpType) const {
 	return 0;
 }
 
-void UExpComponent::AddExp(uint8 ExpType, int32 Exp, const FString& Reason) {
+void UExpComponent::AddExp(EExpTypeEnum ExpType, int32 Exp, const FString& Reason) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto PlayerState = Cast<ACoreCharacterStateBase>(GetOwner());

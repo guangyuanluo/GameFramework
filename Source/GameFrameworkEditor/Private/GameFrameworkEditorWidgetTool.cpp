@@ -273,35 +273,6 @@ TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetSki
     return Result;
 }
 
-bool GameFrameworkEditorWidgetTool::IsExpTypeUse(int32 ExpType, FString& UseInfo) {
-	if (ExpType == FExpTypeConfigTableRow::RoleExpType) {
-		UseInfo = TEXT("默认经验类型不能删除");
-		return true;
-	}
-
-    bool HaveFound = false;
-
-    const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
-    auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
-    if (UnitDataTable) {
-        UnitDataTable->ForeachRow<FUnitInfoConfigTableRow>("", [this, &ExpType, &HaveFound, &UseInfo](const FName& key, const FUnitInfoConfigTableRow& Value) -> void {
-            if (HaveFound) return;
-            if (Value.GrowExpTypeId == ExpType) {
-                HaveFound = true;
-                UseInfo = FString::Format(TEXT("单位表中有使用这个经验类型的，单位Id:{0}"), { Value.UnitId });
-            }
-        });
-    }
-
-	return HaveFound;
-}
-
-bool GameFrameworkEditorWidgetTool::IsMoneyTypeUse(int32 MoneyType, FString& UseInfo) {
-    bool HaveFound = false;
-
-	return HaveFound;
-}
-
 bool GameFrameworkEditorWidgetTool::IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo) {
     bool HaveFound = false;
 

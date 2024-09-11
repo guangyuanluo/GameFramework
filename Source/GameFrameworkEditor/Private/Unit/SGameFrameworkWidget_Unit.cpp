@@ -27,7 +27,6 @@ namespace UnitInfoUI
 {
 	const FName UnitIdColumnName(TEXT("单位Id"));
 	const FName UnitNameColumnName(TEXT("单位名字"));
-	const FName UnitGrowExpTypeIdColumnName(TEXT("单位成长经验类型"));
     const FName UnitSkillGroupIdColumnName(TEXT("技能模组"));
 };
 
@@ -41,46 +40,6 @@ public:
 	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr, TSharedPtr<SGameDataTableRowEditor> InDataTableRowEditor)
 	{
 		UnitInfoPtr = InPtr;
-
-        const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
-        auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
-        auto TableUsingStruct = ExpTypeDataTable->GetRowStruct();
-        int32 StructureSize = TableUsingStruct->GetStructureSize();
-
-        //构造一个非法的经验类型
-		FExpTypeConfigTableRow InvalidExpType;
-		InvalidExpType.ExpTypeId = -1;
-
-        TSharedPtr<FConfigTableRowWrapper> InvalidWrapper(new FConfigTableRowWrapper());
-        FExpTypeConfigTableRow* InvalidRawRowData = (FExpTypeConfigTableRow*)FMemory::Malloc(StructureSize);
-
-        TableUsingStruct->InitializeStruct(InvalidRawRowData);
-        TableUsingStruct->CopyScriptStruct(InvalidRawRowData, &InvalidExpType);
-
-        InvalidWrapper->RowStruct = TableUsingStruct;
-        InvalidWrapper->ConfigTableRow = (uint8*)InvalidRawRowData;
-
-		ExpTypeSource.Add(InvalidWrapper);
-		mSelectExpType = ExpTypeSource[0];
-
-		TArray<FExpTypeConfigTableRow*> ExpTypeArr;
-        ExpTypeDataTable->GetAllRows("", ExpTypeArr);
-		for (int Index = 0; Index < ExpTypeArr.Num(); ++Index) {
-            TSharedPtr<FConfigTableRowWrapper> NewWrapper(new FConfigTableRowWrapper());
-            FExpTypeConfigTableRow* NewRawRowData = (FExpTypeConfigTableRow*)FMemory::Malloc(StructureSize);
-
-            TableUsingStruct->InitializeStruct(NewRawRowData);
-            TableUsingStruct->CopyScriptStruct(NewRawRowData, ExpTypeArr[Index]);
-
-            NewWrapper->RowStruct = TableUsingStruct;
-            NewWrapper->ConfigTableRow = (uint8*)NewRawRowData;
-
-            FUnitInfoConfigTableRow* RowData = (FUnitInfoConfigTableRow*)(UnitInfoPtr->ConfigTableRow);
-			if (ExpTypeArr[Index]->ExpTypeId == RowData->GrowExpTypeId) {
-				mSelectExpType = NewWrapper;
-			}
-			ExpTypeSource.Add(NewWrapper);
-		}
 
 		this->DataTableRowEditor = InDataTableRowEditor;
 
@@ -103,22 +62,6 @@ public:
 		else if (ColumnName == UnitInfoUI::UnitNameColumnName) {
 			return	SNew(STextBlock)
 				.Text(FText::FromString(RowData->UnitName));
-		}
-		else if (ColumnName == UnitInfoUI::UnitGrowExpTypeIdColumnName) {
-            const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
-            auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
-            if (!ExpTypeDataTable) {
-                return SNullWidget::NullWidget;
-            }
-            else {
-                TSharedPtr<SRowTableRefBox> GrowExpTypeRefBox = SNew(SRowTableRefBox, ExpTypeDataTable, RowData->GrowExpTypeId);
-                GrowExpTypeRefBox->RowSelectChanged.BindLambda([this](int ID) {
-                    ((FUnitInfoConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->GrowExpTypeId = ID;
-
-                    DataTableRowEditor->MarkDatatableDirty();
-                });
-                return GrowExpTypeRefBox.ToSharedRef();
-            }
 		}
         else if (ColumnName == UnitInfoUI::UnitSkillGroupIdColumnName) {
             const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
@@ -202,9 +145,6 @@ TSharedRef<class SHeaderRow> SGameFrameworkWidget_Unit::ConstructListViewHeadRow
         .FillWidth(33.0f)
         + SHeaderRow::Column(UnitInfoUI::UnitNameColumnName)
         .DefaultLabel(FText::FromName(UnitInfoUI::UnitNameColumnName))
-        .FillWidth(33.0f)
-        + SHeaderRow::Column(UnitInfoUI::UnitGrowExpTypeIdColumnName)
-        .DefaultLabel(FText::FromName(UnitInfoUI::UnitGrowExpTypeIdColumnName))
         .FillWidth(33.0f)
         +SHeaderRow::Column(UnitInfoUI::UnitSkillGroupIdColumnName)
         .DefaultLabel(FText::FromName(UnitInfoUI::UnitSkillGroupIdColumnName))

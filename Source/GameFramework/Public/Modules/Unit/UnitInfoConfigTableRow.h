@@ -6,6 +6,7 @@
 #include "Base/ConfigTable/ConfigTableRowBase.h"
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Skill/EffectInfo.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "UnitInfoConfigTableRow.generated.h"
 
 /**
@@ -59,10 +60,10 @@ struct GAMEFRAMEWORK_API FUnitInfoConfigTableRow : public FConfigTableRowBase
 	int Level = 1;
 
 	/**
-	*  成长经验Id
+	*  成长经验类型
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UnitSystem|Hide", meta = (DisplayName = "成长经验Id", DisplayPriority = "1"))
-	int GrowExpTypeId = -1;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "UnitSystem|Hide", meta = (DisplayName = "成长经验类型", DisplayPriority = "1"))
+	EExpTypeEnum GrowExpType = EExpTypeEnum::ExpType_18;
 
     /**
     * 使用属性集

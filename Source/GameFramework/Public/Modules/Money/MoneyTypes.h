@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "MoneyTypes.generated.h"
 
-//任务类型
+//金币类型，预留多个，可以在EnumDisplayNameConfigSetting设置DisplayName
 UENUM(BlueprintType, meta = (DisplayName = "金币类型"))
 enum class EMoneyTypeEnum :uint8 //设置uint8类型  
 {
