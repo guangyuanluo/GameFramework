@@ -1,5 +1,4 @@
 #include "GameFrameworkEditorWidgetFactory_Exp.h"
-#include "SGameFrameworkWidget_Exp.h"
 #include "Modules/Exp/ExpSetting.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "Editor/UnrealEd/Classes/Factories/DataTableFactory.h"
@@ -19,7 +18,7 @@ FText GameFrameworkEditorWidgetFactory_Exp::GetWindowName() {
 }
 
 TSharedRef<SWidget> GameFrameworkEditorWidgetFactory_Exp::ConstructPage(TSharedPtr<FUICommandList> CommandList) {
-	return SNew(SGameFrameworkWidget_Exp, CommandList);
+	return SNullWidget::NullWidget;
 }
 
 void GameFrameworkEditorWidgetFactory_Exp::CheckEditorTableNoExistAndCreate() {
@@ -41,4 +40,10 @@ bool GameFrameworkEditorWidgetFactory_Exp::CheckOpenCondition() {
         return false;
     }
     return true;
+}
+
+void GameFrameworkEditorWidgetFactory_Exp::Open(TSharedPtr<FUICommandList> InCommandList) {
+    const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
+    auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
+    GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(ExpTypeDataTable);
 }
