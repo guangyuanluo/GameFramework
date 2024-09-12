@@ -19,7 +19,7 @@
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "GameFrameworkEditor.h"
 #include "GameFrameworkEditorWidgetTool.h"
-#include "Modules/Item/ItemType.h"
+#include "Modules/Item/ItemTypes.h"
 #include "SRowTableRefBox.h"
 #include "Modules/Skill/SkillGroupConfigTableRow.h"
 #include "Modules/Skill/SkillSetting.h"
@@ -77,59 +77,6 @@ private:
 	TSharedPtr<FConfigTableRowWrapper> BackpackTypePtr;
 };
 
-namespace ItemTypeUI
-{
-	const FName ItemTypeIdColumnName(TEXT("物品类型Id"));
-	const FName ItemTypeDescriptionColumnName(TEXT("物品类型描述"));
-	const FName DefaultBackpackTypeColumnName(TEXT("默认背包类型"));
-};
-
-class SItemTypeRow : public SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>
-{
-public:
-	SLATE_BEGIN_ARGS(SItemTypeRow) {}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr, TSharedPtr<SGameDataTableRowEditor> InDataTableRowEditor)
-	{
-		ItemTypePtr = InPtr;
-
-		this->DataTableRowEditor = InDataTableRowEditor;
-
-		SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>::Construct(
-			FSuperRowType::FArguments()
-			.Padding(1.0f),
-			OwnerTableView
-		);
-	}
-
-	/** Overridden from SMultiColumnTableRow.  Generates a widget for this column of the list view. */
-	virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
-	{
-        FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(ItemTypePtr->ConfigTableRow);
-		if (ColumnName == ItemTypeUI::ItemTypeIdColumnName)
-		{
-			return	SNew(STextBlock)
-				.Text(FText::FromString(FString::FromInt(RowData->ItemTypeId)));
-		}
-		else if (ColumnName == ItemTypeUI::ItemTypeDescriptionColumnName)
-		{
-			return	SNew(SEditableText)
-				.Text(FText::FromString(RowData->ItemTypeDescription))
-				.IsReadOnly(true);
-		}
-
-		return SNullWidget::NullWidget;
-	}
-
-private:
-
-	TSharedPtr<FConfigTableRowWrapper> ItemTypePtr;
-
-	TSharedPtr<SGameDataTableRowEditor> DataTableRowEditor;
-};
-
 namespace ItemInfoUI
 {
 	const FName ItemIdColumnName(TEXT("物品Id"));
@@ -149,12 +96,6 @@ public:
 	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr, TSharedPtr<SGameDataTableRowEditor> InDataTableRowEditor)
 	{
 		ItemInfoPtr = InPtr;
-        FItemConfigTableRow* RowData = (FItemConfigTableRow*)(ItemInfoPtr->ConfigTableRow);
-        const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-        auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-        ItemTypeTableRefBox = SNew(SRowTableRefBox, ItemTypeDataTable, RowData->ItemType);
-        ItemTypeTableRefBox->RowSelectChanged.BindSP(this, &SItemInfoRow::OnSelectionChanged);
-
 		this->DataTableRowEditor = InDataTableRowEditor;
 
 		SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>::Construct(
@@ -178,10 +119,6 @@ public:
 			return	SNew(SEditableText)
 				.Text(FText::FromString(RowData->ItemName))
 				.IsReadOnly(true);
-		}
-		else if (ColumnName == ItemInfoUI::ItemTypeColumnName)
-		{
-			return ItemTypeTableRefBox.ToSharedRef();
 		}
 		else if (ColumnName == ItemInfoUI::ItemDescriptionColumnName)
 		{
@@ -211,17 +148,8 @@ public:
 
 private:
 	TSharedPtr<FConfigTableRowWrapper> ItemInfoPtr;
-    TSharedPtr<SRowTableRefBox> ItemTypeTableRefBox;
 
 	TSharedPtr<SGameDataTableRowEditor> DataTableRowEditor;
-
-    void OnSelectionChanged(int ItemTypeId) {
-        FItemConfigTableRow* RowData = (FItemConfigTableRow*)(ItemInfoPtr->ConfigTableRow);
-        DataTableRowEditor->SelectRow(*FString::FromInt(RowData->ItemId));
-        ((FItemConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->ItemType = ItemTypeId;
-
-        DataTableRowEditor->MarkDatatableDirty();
-    }
 };
 
 void SGameFrameworkWidget_Item::Construct(const FArguments& InArgs, TSharedPtr<FUICommandList> InCommandList) {
@@ -241,29 +169,6 @@ void SGameFrameworkWidget_Item::ConstructItemWidgetSources() {
 	mItemTabIndex = 0;
 
 	FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-
-    if (ItemTypeDataTable->GetRowNames().Num() == 0) {
-        //添加默认物品类型
-        auto TableUsingStruct = ItemTypeDataTable->GetRowStruct();
-        int32 StructureSize = TableUsingStruct->GetStructureSize();
-        const UEnum* const BuiltInItemType = StaticEnum<EBuiltInItemType>();
-        for (int Index = 0; Index < BuiltInItemType->NumEnums() - 2; ++Index) {
-            //增加默认的角色升级经验类型
-            FItemTypeConfigTableRow* NewRawRowData = (FItemTypeConfigTableRow*)FMemory::Malloc(StructureSize);
-
-            TableUsingStruct->InitializeStruct(NewRawRowData);
-
-            NewRawRowData->ItemTypeId = BuiltInItemType->GetIndexByValue(Index);
-            NewRawRowData->ItemTypeDescription = BuiltInItemType->GetDisplayNameTextByIndex(Index).ToString();
-
-            ItemTypeDataTable->AddRow(*FString::FromInt(NewRawRowData->ItemTypeId), *NewRawRowData);
-        }
-    }
-
-	mItemTypeSource = GameFrameworkEditorModule.GetEditorWidgetTool()->GetItemTypeSource();
 
 	mItemInfoSource = GameFrameworkEditorModule.GetEditorWidgetTool()->GetItemInfoSource();
 }
@@ -308,7 +213,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemPage() {
 				//itemType编辑器选项卡界面
 				+ SWidgetSwitcher::Slot()
 				[
-					ConstructItemTypePage()
+					SNullWidget::NullWidget
 				]
 				//itemInfo编辑器选项卡界面
 				+ SWidgetSwitcher::Slot()
@@ -358,6 +263,11 @@ FReply SGameFrameworkWidget_Item::ItemPackageTabClicked() {
 
 FReply SGameFrameworkWidget_Item::ItemItemTypeTabClicked() {
 	mItemTabIndex = 1;
+
+	const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
+	auto ItemTypeTable = ItemSetting->ItemTypeTable.LoadSynchronous();
+	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(ItemTypeTable);
+
 	return FReply::Handled();
 }
 
@@ -365,240 +275,6 @@ FReply SGameFrameworkWidget_Item::ItemItemInfoTabClicked() {
 	mItemTabIndex = 2;
 	mItemInfoListView->RebuildList();
 	return FReply::Handled();
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemTypePage() {
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		[
-			SAssignNew(mItemTypeListView, SListView<TSharedPtr<FConfigTableRowWrapper>>)
-			.ListItemsSource(&mItemTypeSource)
-			.SelectionMode(ESelectionMode::Single)
-			.OnGenerateRow(this, &SGameFrameworkWidget_Item::ItemTypeListViewOnGenerateRow)
-			.OnSelectionChanged(this, &SGameFrameworkWidget_Item::OnItemTypeSelectionChanged)
-			.HeaderRow
-			(
-				SNew(SHeaderRow)
-				+ SHeaderRow::Column(ItemTypeUI::ItemTypeIdColumnName)
-				.DefaultLabel(FText::FromName(ItemTypeUI::ItemTypeIdColumnName))
-				.FillWidth(33.0f)
-				+ SHeaderRow::Column(ItemTypeUI::ItemTypeDescriptionColumnName)
-				.DefaultLabel(FText::FromName(ItemTypeUI::ItemTypeDescriptionColumnName))
-				.FillWidth(53.0f)
-				+ SHeaderRow::Column(ItemTypeUI::DefaultBackpackTypeColumnName)
-				.DefaultLabel(FText::FromName(ItemTypeUI::DefaultBackpackTypeColumnName))
-				.FillWidth(53.0f)
-			)
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-			ConstructItemTypeRowEditor()
-		];
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemTypeRowEditor() {
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-	mItemTypeEditorRow = SNew(SGameDataTableRowEditor, ItemTypeDataTable);
-	mItemTypeEditorRow->RowPreAddCallback.BindSP(this, &SGameFrameworkWidget_Item::ItemTypeTableRowPreAdd);
-	mItemTypeEditorRow->RowAddedCallback.BindSP(this, &SGameFrameworkWidget_Item::ItemTypeTableRowAdded);
-	mItemTypeEditorRow->RowPreRemoveCallback.BindSP(this, &SGameFrameworkWidget_Item::ItemTypeTableRowPreRemove);
-	mItemTypeEditorRow->RowRemovedCallback.BindSP(this, &SGameFrameworkWidget_Item::ItemTypeTableRowRemoved);
-	mItemTypeEditorRow->RowModifiedCallback.BindSP(this, &SGameFrameworkWidget_Item::ItemTypeTableRowModified);
-	mItemTypeEditorRow->RowSelectedCallback.BindSP(this, &SGameFrameworkWidget_Item::ItemTypeTableSetHighlightedRow);
-
-
-	return mItemTypeEditorRow.ToSharedRef();
-}
-
-bool SGameFrameworkWidget_Item::ItemTypeTableRowPreAdd(FName Name) {
-	return true;
-}
-
-FName SGameFrameworkWidget_Item::ItemTypeTableRowAdded(FName Name) {
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-	if (ItemTypeDataTable != nullptr) {
-		int32 NewItemTypeId = ApplyItemTypeId();
-		if (NewItemTypeId != -1) {
-			FName RowName = *FString::FromInt(NewItemTypeId);
-			if (FDataTableEditorUtils::RenameRow(ItemTypeDataTable, Name, RowName)) {
-				FItemTypeConfigTableRow* FindRow = ItemTypeDataTable->FindRow<FItemTypeConfigTableRow>(RowName, "");
-				FindRow->ItemTypeId = NewItemTypeId;
-				FindRow->ItemTypeDescription = TEXT("这里添加类型描述");
-				
-                auto TableUsingStruct = ItemTypeDataTable->GetRowStruct();
-                int32 StructureSize = TableUsingStruct->GetStructureSize();
-                FBackpackTypeConfigTableRow* NewRawRowData = (FBackpackTypeConfigTableRow*)FMemory::Malloc(StructureSize);
-                TableUsingStruct->InitializeStruct(NewRawRowData);
-                TableUsingStruct->CopyScriptStruct(NewRawRowData, FindRow);
-                FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
-                NewWrapper->RowStruct = TableUsingStruct;
-                NewWrapper->ConfigTableRow = (uint8*)NewRawRowData;
-
-                mItemTypeSource.Add(MakeShareable(NewWrapper));
-
-				mItemTypeListView->RebuildList();
-                mItemTypeListView->ScrollToBottom();
-				return RowName;
-			}
-			else {
-				return Name;
-			}
-		}
-		else {
-			FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-			GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("物品类型不能超过255个")), 5.0);
-			return FName();
-		}
-	}
-	return Name;
-}
-
-bool SGameFrameworkWidget_Item::ItemTypeTableRowPreRemove(FName Name) {
-	FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-
-	int itemType = FCString::Atoi(*Name.ToString());
-	if (itemType <= (int32)EBuiltInItemType::E_BuiltInMax)
-	{
-		GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("内建物品类型不能删除")), 3.0);
-		return false;
-	}
-
-	for (int32 Index = 0; Index < mItemInfoSource.Num(); ++Index) {
-        FItemConfigTableRow* RowData = (FItemConfigTableRow*)(mItemInfoSource[Index]->ConfigTableRow);
-		if (RowData->ItemType == itemType) {
-			GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("该物品类型有正在使用的物品，不能删除")), 3.0);
-			return false;
-		}
-	}
-	return true;
-}
-
-void SGameFrameworkWidget_Item::ItemTypeTableRowRemoved(FName Name) {
-	for (auto Index = 0; Index < mItemTypeSource.Num(); ++Index) {
-        FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(mItemTypeSource[Index]->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->ItemTypeId);
-		if (RowName == Name) {
-			mItemTypeSource.RemoveAt(Index);
-			mItemTypeListView->RebuildList();
-			break;
-		}
-	}
-}
-
-void SGameFrameworkWidget_Item::ItemTypeTableRowModified(FName Name) {
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-	if (ItemTypeDataTable != nullptr) {
-		FItemTypeConfigTableRow* FindRow = ItemTypeDataTable->FindRow<FItemTypeConfigTableRow>(Name, "");
-		for (auto Index = 0; Index < mItemTypeSource.Num(); ++Index) {
-            FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(mItemTypeSource[Index]->ConfigTableRow);
-			if (FindRow->ItemTypeId == RowData->ItemTypeId) {
-                auto TableUsingStruct = ItemTypeDataTable->GetRowStruct();
-                TableUsingStruct->CopyScriptStruct(RowData, FindRow);
-
-				mItemTypeListView->RebuildList();
-				break;
-			}
-		}
-	}
-}
-
-void SGameFrameworkWidget_Item::ItemTypeTableSetHighlightedRow(FName Name) {
-	if (Name == mItemTypeHighlightedRowName)
-	{
-		return;
-	}
-
-	if (Name.IsNone())
-	{
-		mItemTypeHighlightedRowName = NAME_None;
-
-		// Synchronize the list views
-		mItemTypeListView->ClearSelection();
-	}
-	else
-	{
-		TSharedPtr<FConfigTableRowWrapper>* NewSelectionPtr = mItemTypeSource.FindByPredicate([&Name](const TSharedPtr<FConfigTableRowWrapper>& RowDataWrapper) -> bool
-		{
-            FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(RowDataWrapper->ConfigTableRow);
-			return *FString::FromInt(RowData->ItemTypeId) == Name;
-		});
-		
-		// Synchronize the list views
-		if (NewSelectionPtr)
-		{
-			mItemTypeHighlightedRowName = Name;
-			mItemTypeListView->SetSelection(*NewSelectionPtr);
-		}
-		else
-		{
-			mItemTypeListView->ClearSelection();
-		}
-	}
-}
-
-void SGameFrameworkWidget_Item::OnItemTypeSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo) {
-	if (InNewSelection.IsValid()) {
-        FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(InNewSelection->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->ItemTypeId);
-		const bool bSelectionChanged = !InNewSelection.IsValid() || RowName != mItemTypeHighlightedRowName;
-		const FName NewRowName = (InNewSelection.IsValid()) ? RowName : NAME_None;
-
-		ItemTypeTableSetHighlightedRow(NewRowName);
-
-		if (bSelectionChanged)
-		{
-			mItemTypeEditorRow->SelectRow(mItemTypeHighlightedRowName);
-		}
-	}
-	else {
-		mItemTypeListView->ClearSelection();
-	}
-}
-
-TSharedRef<ITableRow> SGameFrameworkWidget_Item::ItemTypeListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-	return SNew(SItemTypeRow, OwnerTable, Item, mItemTypeEditorRow);
-}
-
-int32 SGameFrameworkWidget_Item::ApplyItemTypeId() {
-	auto SeedTable = DataTableSeedConfigTableHelper::GetDataTable();
-	auto itemTypeIdSeed = SeedTable->FindRow<FDataTableSeedConfigTableRow>("ItemTypeIdSeed", "");
-	if (itemTypeIdSeed == nullptr) {
-		FDataTableSeedConfigTableRow NewRow;
-		NewRow.SeedKey = "ItemTypeIdSeed";
-		NewRow.SeedValue = 0;
-		SeedTable->AddRow("ItemTypeIdSeed", NewRow);
-		itemTypeIdSeed = SeedTable->FindRow<FDataTableSeedConfigTableRow>("ItemTypeIdSeed", "");
-	}
-	TSet<int> ItemTypeIdSet;
-    const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-    auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-	if (ItemTypeDataTable != nullptr) {
-		TArray<FItemTypeConfigTableRow*> ItemTypeArr;
-        ItemTypeDataTable->GetAllRows("", ItemTypeArr);
-		for (auto Index = 0; Index < ItemTypeArr.Num(); ++Index) {
-			ItemTypeIdSet.Add(ItemTypeArr[Index]->ItemTypeId);
-		}
-	}
-	int ItemTypeId = -1;
-	if (ItemTypeIdSet.Num() > 255 - (int)EBuiltInItemType::E_BuiltInMax) {
-
-	}
-	else {
-		do {
-			ItemTypeId = (++itemTypeIdSeed->SeedValue) % 255;
-			if (ItemTypeId <= (int)EBuiltInItemType::E_BuiltInMax)
-			{
-				ItemTypeId = (int)EBuiltInItemType::E_BuiltInMax + 1;
-			}
-		} while (ItemTypeIdSet.Contains(ItemTypeId));
-	}
-
-	SeedTable->MarkPackageDirty();
-	return ItemTypeId;
 }
 
 TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemInfoPage() {
@@ -654,14 +330,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemInfoRowEditor() {
 }
 
 bool SGameFrameworkWidget_Item::ItemInfoTableRowPreAdd(FName Name) {
-	if (mItemTypeSource.Num() > 0) {
-		return true;
-	}
-	else {
-		FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-		GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("请先增加item类型")), 3.0);
-		return false;
-	}
+	return true;
 }
 
 FName SGameFrameworkWidget_Item::ItemInfoTableRowAdded(FName Name) {
@@ -674,8 +343,6 @@ FName SGameFrameworkWidget_Item::ItemInfoTableRowAdded(FName Name) {
 			FItemConfigTableRow* FindRow = ItemDataTable->FindRow<FItemConfigTableRow>(RowName, "");
 			FindRow->ItemId = newItemId;
 			FindRow->ItemName = TEXT("这里添加物品名字");
-            FItemTypeConfigTableRow* ItemTypeRow = (FItemTypeConfigTableRow*)(mItemTypeSource[0]->ConfigTableRow);
-			FindRow->ItemType = ItemTypeRow->ItemTypeId;
 			FindRow->ItemDescription = TEXT("这里添加物品描述");
 
             auto TableUsingStruct = ItemDataTable->GetRowStruct();

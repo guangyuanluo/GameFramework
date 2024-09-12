@@ -6,6 +6,7 @@
 #include "Base/ConfigTable/ConfigTableRowBase.h"
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Skill/EffectInfo.h"
+#include "Modules/Item/ItemTypes.h"
 #include "ItemConfigTableRow.generated.h"
 
 /**
@@ -25,8 +26,8 @@ struct GAMEFRAMEWORK_API FItemConfigTableRow : public FConfigTableRowBase
 	/**
 	* 物品类型
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable|Hide", meta = (DisplayName = "物品类型Id", DisplayPriority = "1"))
-	int32 ItemType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable|Hide", meta = (DisplayName = "物品类型", DisplayPriority = "1"))
+	EItemTypeEnum ItemType;
 
 	/**
 	* 物品图标

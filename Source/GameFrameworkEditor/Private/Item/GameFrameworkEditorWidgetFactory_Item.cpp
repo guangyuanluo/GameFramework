@@ -28,24 +28,6 @@ void GameFrameworkEditorWidgetFactory_Item::CheckEditorTableNoExistAndCreate() {
 }
 
 void GameFrameworkEditorWidgetFactory_Item::Export() {
-	{
-		TMap<int64, TPair<FString, FText>> EnumSource;
-
-        const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
-        auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-        if (ItemTypeDataTable) {
-            TArray<FItemTypeConfigTableRow*> AllRows;
-            ItemTypeDataTable->GetAllRows<FItemTypeConfigTableRow>("", AllRows);
-
-            for (int Index = 0; Index < AllRows.Num(); ++Index) {
-                auto ItemTypeName = FString::Format(TEXT("ItemType_{0}"), { AllRows[Index]->ItemTypeId });
-                auto ItemTypeDescription = AllRows[Index]->ItemTypeDescription;
-                EnumSource.Add(AllRows[Index]->ItemTypeId, TPair<FString, FText>(ItemTypeName, FText::FromString(ItemTypeDescription)));
-            }
-
-            GameFrameworkEditorWidgetTool::ExportEnumBP(TEXT("ItemTypeEnum"), FText::FromString(TEXT("物品类型")), EnumSource);
-        }
-	}
 }
 
 bool GameFrameworkEditorWidgetFactory_Item::CheckOpenCondition() {

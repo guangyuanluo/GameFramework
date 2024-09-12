@@ -26,11 +26,6 @@ private:
 	/**物品相关变量**/
 	int mItemTabIndex;
 
-	TSharedPtr<SListView<TSharedPtr<FConfigTableRowWrapper>>> mItemTypeListView;
-	TArray<TSharedPtr<FConfigTableRowWrapper>> mItemTypeSource;
-	TSharedPtr<class SGameDataTableRowEditor> mItemTypeEditorRow;
-	FName mItemTypeHighlightedRowName;
-
 	TSharedPtr<SListView<TSharedPtr<FConfigTableRowWrapper>>> mItemInfoListView;
 	TArray<TSharedPtr<FConfigTableRowWrapper>> mItemInfoSource;
 	TSharedPtr<class IStructureDetailsView> ItemInfoStructureDetailsView;
@@ -47,18 +42,6 @@ private:
 	FReply ItemItemInfoTabClicked();
 	//物品总界面
 	TSharedRef<SWidget> ConstructItemPage();
-	//物品类型界面
-	TSharedRef<SWidget> ConstructItemTypePage();
-	TSharedRef<SWidget> ConstructItemTypeRowEditor();
-	bool ItemTypeTableRowPreAdd(FName Name);
-	FName ItemTypeTableRowAdded(FName Name);
-	bool ItemTypeTableRowPreRemove(FName Name);
-	void ItemTypeTableRowRemoved(FName Name);
-	void ItemTypeTableRowModified(FName Name);
-	void ItemTypeTableSetHighlightedRow(FName Name);
-	void OnItemTypeSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo);
-	TSharedRef<ITableRow> ItemTypeListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable);
-	int32 ApplyItemTypeId();
 	//物品信息界面
 	TSharedRef<SWidget> ConstructItemInfoPage();
 	TSharedRef<SWidget> ConstructItemInfoRowEditor();

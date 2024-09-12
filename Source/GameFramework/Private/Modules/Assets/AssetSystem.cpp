@@ -51,7 +51,7 @@ int32 UAssetSystem::AddItem(UBackpackComponent* BackpackComponent, EBackpackType
         auto AddItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
         if (AddItemInfo) {
             if (BackpackType == EBackpackTypeEnum::BackpackType_32) {
-                auto AddItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, AddItemInfo->ItemType);
+                auto AddItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, (int)AddItemInfo->ItemType);
                 if (AddItemTypeInfo) {
                     BackpackType = AddItemTypeInfo->DefaultBackpackType;
                 }
@@ -464,7 +464,7 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
         //换成默认背包
         auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
         if (ItemInfo) {
-            auto ItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, ItemInfo->ItemType);
+            auto ItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, (int)ItemInfo->ItemType);
             if (ItemTypeInfo) {
                 BackpackType = ItemTypeInfo->DefaultBackpackType;
             }
@@ -588,7 +588,7 @@ TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::
             //换成默认背包
             auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, AddItems[Index].ItemId);
             if (ItemInfo) {
-                auto ItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, ItemInfo->ItemType);
+                auto ItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, (int)ItemInfo->ItemType);
                 if (ItemTypeInfo) {
                     BackpackType = ItemTypeInfo->DefaultBackpackType;
                 }

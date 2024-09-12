@@ -13,7 +13,7 @@ EBackpackTypeEnum UItemUtils::GetItemDefaultBackpackType(int ItemID) {
     if (ItemDataTable && ItemTypeDataTable) {
         auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemID);
         if (ItemInfo) {
-            auto ItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, ItemInfo->ItemType);
+            auto ItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, (int)ItemInfo->ItemType);
             if (ItemTypeInfo) {
                 return ItemTypeInfo->DefaultBackpackType;
             }

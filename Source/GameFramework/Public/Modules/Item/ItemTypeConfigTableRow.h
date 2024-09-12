@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Base/ConfigTable/ConfigTableRowBase.h"
 #include "Modules/Assets/BackpackTypeConfigTableRow.h"
+#include "Modules/Item/ItemTypes.h"
 #include "ItemTypeConfigTableRow.generated.h"
 
 /**
@@ -22,10 +23,10 @@ struct GAMEFRAMEWORK_API FItemTypeConfigTableRow : public FConfigTableRowBase
 	uint8 ItemTypeId;
 
 	/**
-	* 物品类型描述
+	* 物品类型
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemTypeConfigTable", meta = (DisplayName = "物品类型描述", DisplayPriority = "1"))
-	FString ItemTypeDescription;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemTypeConfigTable", meta = (DisplayName = "物品类型", DisplayPriority = "1"))
+	EItemTypeEnum ItemType;
 
 	/**
 	* 默认进入的背包类型
@@ -34,5 +35,6 @@ struct GAMEFRAMEWORK_API FItemTypeConfigTableRow : public FConfigTableRowBase
 	EBackpackTypeEnum DefaultBackpackType = EBackpackTypeEnum::BackpackType_32;
 
     virtual int GetUniqueId() override;
+	virtual int GetRowUniqueId() override;
     virtual FString GetSimpleDescription() override;
 };
