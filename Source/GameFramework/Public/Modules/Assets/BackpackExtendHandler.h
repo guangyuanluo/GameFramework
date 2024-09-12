@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
 #include "Base/Structure/LogicObjectBase.h"
+#include "Modules/Assets/BackpackTypes.h"
 #include "BackpackExtendHandler.generated.h"
 
 /*
@@ -19,12 +20,12 @@ public:
      * 是否允许添加物品
      */
     UFUNCTION(BlueprintNativeEvent)
-    bool AllowItemAdd(class UBackpackComponent* BackpackComponent, int ItemID, uint8 BackpackType);
+    bool AllowItemAdd(class UBackpackComponent* BackpackComponent, int ItemID, EBackpackTypeEnum BackpackType);
     /**
     * 背包物品变动处理
     */
     UFUNCTION(BlueprintNativeEvent)
-    void OnItemChange(class UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, UCoreItem* OldItem, uint8 BackpackType, int PackageIndex);
+    void OnItemChange(class UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, UCoreItem* OldItem, EBackpackTypeEnum BackpackType, int PackageIndex);
 
     /**
     * 物品效果增加前处理
@@ -36,5 +37,5 @@ public:
     * 能否移动物品
     */
     UFUNCTION(BlueprintNativeEvent)
-    bool CanMoveItem(class UBackpackComponent* BackpackComponent, uint8 SourceBackpackType, int SourceSlotIndex, UCoreItem* SourceItem, uint8 TargetBackpackType, int TargetSlotIndex, UCoreItem* TargetItem);
+    bool CanMoveItem(class UBackpackComponent* BackpackComponent, EBackpackTypeEnum SourceBackpackType, int SourceSlotIndex, UCoreItem* SourceItem, EBackpackTypeEnum TargetBackpackType, int TargetSlotIndex, UCoreItem* TargetItem);
 };

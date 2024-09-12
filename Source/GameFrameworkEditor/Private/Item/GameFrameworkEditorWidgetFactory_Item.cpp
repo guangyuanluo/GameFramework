@@ -31,24 +31,6 @@ void GameFrameworkEditorWidgetFactory_Item::Export() {
 	{
 		TMap<int64, TPair<FString, FText>> EnumSource;
 
-        const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-        auto BackpackTypeDataTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-        if (BackpackTypeDataTable) {
-            TArray<FBackpackTypeConfigTableRow*> AllRows;
-            BackpackTypeDataTable->GetAllRows<FBackpackTypeConfigTableRow>("", AllRows);
-
-            for (int Index = 0; Index < AllRows.Num(); ++Index) {
-                auto BackpackTypeName = FString::Format(TEXT("BackpackType_{0}"), { AllRows[Index]->BackpackTypeId });
-                auto BackpackTypeDescription = AllRows[Index]->BackpackTypeDescription;
-                EnumSource.Add(AllRows[Index]->BackpackTypeId, TPair<FString, FText>(BackpackTypeName, FText::FromString(BackpackTypeDescription)));
-            }
-
-            GameFrameworkEditorWidgetTool::ExportEnumBP(TEXT("BackpackTypeEnum"), FText::FromString(TEXT("背包类型")), EnumSource);
-        }
-	}
-	{
-		TMap<int64, TPair<FString, FText>> EnumSource;
-
         const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
         auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
         if (ItemTypeDataTable) {

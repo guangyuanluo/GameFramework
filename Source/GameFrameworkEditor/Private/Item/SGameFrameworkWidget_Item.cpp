@@ -29,7 +29,6 @@ namespace BackpackTypeUI
 	const FName BackpackTypeIdColumnName(TEXT("背包类型Id"));
 	const FName BackpackInitMaxNumColumnName(TEXT("背包初始大小"));
 	const FName BackpackExpansionMaxNumColumnName(TEXT("背包最大扩展大小"));
-	const FName BackpackTypeDescriptionColumnName(TEXT("背包类型描述"));
 };
 
 class SPackageTypeRow : public SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>
@@ -69,12 +68,6 @@ public:
 			return	SNew(STextBlock)
 				.Text(FText::FromString(FString::FromInt(RowData->BackpackExpansionMaxNum)));
 		}
-		else if (ColumnName == BackpackTypeUI::BackpackTypeDescriptionColumnName)
-		{
-			return	SNew(SEditableText)
-				.Text(FText::FromString(RowData->BackpackTypeDescription))
-				.IsReadOnly(true);
-		}
 
 		return SNullWidget::NullWidget;
 	}
@@ -101,11 +94,6 @@ public:
 	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr, TSharedPtr<SGameDataTableRowEditor> InDataTableRowEditor)
 	{
 		ItemTypePtr = InPtr;
-		FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(ItemTypePtr->ConfigTableRow);
-		const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-		auto BackpackTypeTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-		BackpackTypeTableRefBox = SNew(SRowTableRefBox, BackpackTypeTable, RowData->DefaultBackpackType);
-		BackpackTypeTableRefBox->RowSelectChanged.BindSP(this, &SItemTypeRow::OnSelectionChanged);
 
 		this->DataTableRowEditor = InDataTableRowEditor;
 
@@ -131,9 +119,6 @@ public:
 				.Text(FText::FromString(RowData->ItemTypeDescription))
 				.IsReadOnly(true);
 		}
-		else if (ColumnName == ItemTypeUI::DefaultBackpackTypeColumnName) {
-			return BackpackTypeTableRefBox.ToSharedRef();
-		}
 
 		return SNullWidget::NullWidget;
 	}
@@ -141,17 +126,8 @@ public:
 private:
 
 	TSharedPtr<FConfigTableRowWrapper> ItemTypePtr;
-	TSharedPtr<SRowTableRefBox> BackpackTypeTableRefBox;
 
 	TSharedPtr<SGameDataTableRowEditor> DataTableRowEditor;
-
-	void OnSelectionChanged(int DefaultBackpackType) {
-		FItemTypeConfigTableRow* RowData = (FItemTypeConfigTableRow*)(ItemTypePtr->ConfigTableRow);
-		DataTableRowEditor->SelectRow(*FString::FromInt(RowData->ItemTypeId));
-		((FItemTypeConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->DefaultBackpackType = DefaultBackpackType;
-
-		DataTableRowEditor->MarkDatatableDirty();
-	}
 };
 
 namespace ItemInfoUI
@@ -265,7 +241,6 @@ void SGameFrameworkWidget_Item::ConstructItemWidgetSources() {
 	mItemTabIndex = 0;
 
 	FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-	mBackpackTypeSource = GameFrameworkEditorModule.GetEditorWidgetTool()->GetBackpackTypeSource();
 
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
@@ -328,7 +303,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemPage() {
 				//BackpackType编辑器选项卡界面
 				+ SWidgetSwitcher::Slot()
 				[
-					ConstructPackageTypePage()
+					SNullWidget::NullWidget
 				]
 				//itemType编辑器选项卡界面
 				+ SWidgetSwitcher::Slot()
@@ -373,6 +348,11 @@ TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemPageButton(const FSt
 
 FReply SGameFrameworkWidget_Item::ItemPackageTabClicked() {
 	mItemTabIndex = 0;
+	
+	const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
+	auto BackpackTypeTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
+	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(BackpackTypeTable);
+
 	return FReply::Handled();
 }
 
@@ -385,237 +365,6 @@ FReply SGameFrameworkWidget_Item::ItemItemInfoTabClicked() {
 	mItemTabIndex = 2;
 	mItemInfoListView->RebuildList();
 	return FReply::Handled();
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructPackageTypePage() {
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		[
-			SAssignNew(mPackageTypeListView, SListView<TSharedPtr<FConfigTableRowWrapper>>)
-			.ListItemsSource(&mBackpackTypeSource)
-			.SelectionMode(ESelectionMode::Single)
-			.OnGenerateRow(this, &SGameFrameworkWidget_Item::PackageTypeListViewOnGenerateRow)
-			.OnSelectionChanged(this, &SGameFrameworkWidget_Item::OnPackageTypeSelectionChanged)
-			.HeaderRow
-			(
-				SNew(SHeaderRow)
-				+ SHeaderRow::Column(BackpackTypeUI::BackpackTypeIdColumnName)
-				.DefaultLabel(FText::FromName(BackpackTypeUI::BackpackTypeIdColumnName))
-				.FillWidth(33.0f)
-				+ SHeaderRow::Column(BackpackTypeUI::BackpackInitMaxNumColumnName)
-				.DefaultLabel(FText::FromName(BackpackTypeUI::BackpackInitMaxNumColumnName))
-				.FillWidth(33.0f)
-				+ SHeaderRow::Column(BackpackTypeUI::BackpackExpansionMaxNumColumnName)
-				.DefaultLabel(FText::FromName(BackpackTypeUI::BackpackExpansionMaxNumColumnName))
-				.FillWidth(33.0f)
-				+ SHeaderRow::Column(BackpackTypeUI::BackpackTypeDescriptionColumnName)
-				.DefaultLabel(FText::FromName(BackpackTypeUI::BackpackTypeDescriptionColumnName))
-				.FillWidth(53.0f)
-			)
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		[
-			ConstructPackageTypeRowEditor()
-		];
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructPackageTypeRowEditor() {
-    const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-    auto BackpackTypeDataTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-	mBackpackTypeEditorRow = SNew(SGameDataTableRowEditor, BackpackTypeDataTable);
-	mBackpackTypeEditorRow->RowAddedCallback.BindSP(this, &SGameFrameworkWidget_Item::BackpackTypeTableRowAdded);
-	mBackpackTypeEditorRow->RowPreRemoveCallback.BindSP(this, &SGameFrameworkWidget_Item::BackpackTypeTableRowPreRemove);
-	mBackpackTypeEditorRow->RowRemovedCallback.BindSP(this, &SGameFrameworkWidget_Item::BackpackTypeTableRowRemoved);
-	mBackpackTypeEditorRow->RowModifiedCallback.BindSP(this, &SGameFrameworkWidget_Item::BackpackTypeTableRowModified);
-	mBackpackTypeEditorRow->RowSelectedCallback.BindSP(this, &SGameFrameworkWidget_Item::BackpackTypeTableSetHighlightedRow);
-
-
-	return mBackpackTypeEditorRow.ToSharedRef();
-}
-
-FName SGameFrameworkWidget_Item::BackpackTypeTableRowAdded(FName Name) {
-    const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-    auto BackpackTypeDataTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-    int32 NewPackageTypeId = ApplyPackageTypeId();
-    if (NewPackageTypeId != -1) {
-        FName RowName = *FString::FromInt(NewPackageTypeId);
-        if (FDataTableEditorUtils::RenameRow(BackpackTypeDataTable, Name, RowName)) {
-            FBackpackTypeConfigTableRow* FindRow = BackpackTypeDataTable->FindRow<FBackpackTypeConfigTableRow>(RowName, "");
-            FindRow->BackpackTypeId = NewPackageTypeId;
-            FindRow->BackpackTypeDescription = TEXT("这里添加类型描述");
-
-            auto TableUsingStruct = BackpackTypeDataTable->GetRowStruct();
-            int32 StructureSize = TableUsingStruct->GetStructureSize();
-            FBackpackTypeConfigTableRow* NewRawRowData = (FBackpackTypeConfigTableRow*)FMemory::Malloc(StructureSize);
-            TableUsingStruct->InitializeStruct(NewRawRowData);
-            TableUsingStruct->CopyScriptStruct(NewRawRowData, FindRow);
-            FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
-            NewWrapper->RowStruct = TableUsingStruct;
-            NewWrapper->ConfigTableRow = (uint8*)NewRawRowData;
-
-            mBackpackTypeSource.Add(MakeShareable(NewWrapper));
-            
-            mPackageTypeListView->RebuildList();
-            mPackageTypeListView->ScrollToBottom();
-            return RowName;
-        }
-        else {
-            return Name;
-        }
-    }
-    else {
-        FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-        GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("背包类型不能超过200个")), 5.0);
-        return FName();
-    }
-	return Name;
-}
-
-bool SGameFrameworkWidget_Item::BackpackTypeTableRowPreRemove(FName Name) {
-	FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-	for (auto Index = 0; Index < mBackpackTypeSource.Num(); ++Index) {
-        FBackpackTypeConfigTableRow* RowData = (FBackpackTypeConfigTableRow*)(mBackpackTypeSource[Index]->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->BackpackTypeId);
-		if (RowName == Name) {
-			FString UseInfo;
-			if (GameFrameworkEditorModule.GetEditorWidgetTool()->IsPackageTypeIdUse(RowData->BackpackTypeId, UseInfo)) {
-				GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(UseInfo), 3.0);
-				return false;
-			}
-			break;
-		}
-	}
-	return true;
-}
-
-void SGameFrameworkWidget_Item::BackpackTypeTableRowRemoved(FName Name) {
-	for (auto Index = 0; Index < mBackpackTypeSource.Num(); ++Index) {
-        FBackpackTypeConfigTableRow* RowData = (FBackpackTypeConfigTableRow*)(mBackpackTypeSource[Index]->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->BackpackTypeId);
-		if (RowName == Name) {
-			mBackpackTypeSource.RemoveAt(Index);
-			mPackageTypeListView->RebuildList();
-			break;
-		}
-	}
-}
-
-void SGameFrameworkWidget_Item::BackpackTypeTableRowModified(FName Name) {
-    const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-    auto BackpackTypeDataTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-
-	if (BackpackTypeDataTable != nullptr) {
-		FBackpackTypeConfigTableRow* FindRow = BackpackTypeDataTable->FindRow<FBackpackTypeConfigTableRow>(Name, "");
-
-        int BackpackExpansionMaxNum = FMath::Max(FindRow->BackpackInitMaxNum, FindRow->BackpackExpansionMaxNum);
-        if (BackpackExpansionMaxNum != FindRow->BackpackExpansionMaxNum) {
-            FindRow->BackpackExpansionMaxNum = BackpackExpansionMaxNum;
-        }
-		for (auto Index = 0; Index < mBackpackTypeSource.Num(); ++Index) {
-            FBackpackTypeConfigTableRow* RowData = (FBackpackTypeConfigTableRow*)(mBackpackTypeSource[Index]->ConfigTableRow);
-			if (FindRow->BackpackTypeId == RowData->BackpackTypeId) {
-                auto TableUsingStruct = BackpackTypeDataTable->GetRowStruct();
-                TableUsingStruct->CopyScriptStruct(RowData, FindRow);
-
-				mPackageTypeListView->RebuildList();
-				break;
-			}
-		}
-	}
-}
-
-void SGameFrameworkWidget_Item::BackpackTypeTableSetHighlightedRow(FName Name) {
-	if (Name == mPackageTypeHighlightedRowName)
-	{
-		return;
-	}
-
-	if (Name.IsNone())
-	{
-		mPackageTypeHighlightedRowName = NAME_None;
-
-		// Synchronize the list views
-		mPackageTypeListView->ClearSelection();
-	}
-	else
-	{
-		TSharedPtr<FConfigTableRowWrapper>* NewSelectionPtr = mBackpackTypeSource.FindByPredicate([&Name](const TSharedPtr<FConfigTableRowWrapper>& RowDataWrapper) -> bool
-		{
-            FBackpackTypeConfigTableRow* RowData = (FBackpackTypeConfigTableRow*)(RowDataWrapper->ConfigTableRow);
-			return *FString::FromInt(RowData->BackpackTypeId) == Name;
-		});
-
-		// Synchronize the list views
-		if (NewSelectionPtr)
-		{
-			mPackageTypeHighlightedRowName = Name;
-			mPackageTypeListView->SetSelection(*NewSelectionPtr);
-		}
-		else
-		{
-			mPackageTypeListView->ClearSelection();
-		}
-	}
-}
-
-void SGameFrameworkWidget_Item::OnPackageTypeSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo) {
-	if (InNewSelection.IsValid()) {
-        FBackpackTypeConfigTableRow* RowData = (FBackpackTypeConfigTableRow*)(InNewSelection->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->BackpackTypeId);
-		const bool bSelectionChanged = !InNewSelection.IsValid() || RowName != mPackageTypeHighlightedRowName;
-		const FName NewRowName = (InNewSelection.IsValid()) ? RowName : NAME_None;
-
-		BackpackTypeTableSetHighlightedRow(NewRowName);
-
-		if (bSelectionChanged)
-		{
-			mBackpackTypeEditorRow->SelectRow(mPackageTypeHighlightedRowName);
-		}
-	}
-	else {
-		mPackageTypeListView->ClearSelection();
-	}
-}
-
-TSharedRef<ITableRow> SGameFrameworkWidget_Item::PackageTypeListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-	return SNew(SPackageTypeRow, OwnerTable, Item);
-}
-
-int32 SGameFrameworkWidget_Item::ApplyPackageTypeId() {
-	auto SeedTable = DataTableSeedConfigTableHelper::GetDataTable();
-	auto PackageTypeIdSeed = SeedTable->FindRow<FDataTableSeedConfigTableRow>("PackageTypeIdSeed", "");
-	if (PackageTypeIdSeed == nullptr) {
-		PackageTypeIdSeed = new FDataTableSeedConfigTableRow();
-		PackageTypeIdSeed->SeedKey = "PackageTypeIdSeed";
-		PackageTypeIdSeed->SeedValue = 1;
-		SeedTable->AddRow("PackageTypeIdSeed", *PackageTypeIdSeed);
-		PackageTypeIdSeed = SeedTable->FindRow<FDataTableSeedConfigTableRow>("PackageTypeIdSeed", "");
-	}
-
-	TSet<int> BackpackTypeIdSet;
-    const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
-    auto BackpackTypeDataTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-
-	if (BackpackTypeDataTable != nullptr) {
-		TArray<FBackpackTypeConfigTableRow*> BackpackTypeArr;
-        BackpackTypeDataTable->GetAllRows("", BackpackTypeArr);
-		for (auto Index = 0; Index < BackpackTypeArr.Num(); ++Index) {
-			BackpackTypeIdSet.Add(BackpackTypeArr[Index]->BackpackTypeId);
-		}
-	}
-	int BackpackTypeId = -1;
-	if (BackpackTypeIdSet.Num() > 100) {
-
-	}
-	else {
-		do {
-			BackpackTypeId = (++PackageTypeIdSeed->SeedValue) % 100;
-		} while (BackpackTypeIdSet.Contains(BackpackTypeId) || BackpackTypeId == 0);
-	}
-
-	SeedTable->MarkPackageDirty();
-	return BackpackTypeId;
 }
 
 TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemTypePage() {
@@ -664,14 +413,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_Item::ConstructItemTypeRowEditor() {
 }
 
 bool SGameFrameworkWidget_Item::ItemTypeTableRowPreAdd(FName Name) {
-	if (mBackpackTypeSource.Num() > 0) {
-		return true;
-	}
-	else {
-		FGameFrameworkEditorModule& GameFrameworkEditorModule = FModuleManager::LoadModuleChecked<FGameFrameworkEditorModule>("GameFrameworkEditor").Get();
-		GameFrameworkEditorModule.GetEditorWidgetTool()->ShowNotification(FText::FromString(TEXT("请先增加背包类型")), 3.0);
-		return false;
-	}
+	return true;
 }
 
 FName SGameFrameworkWidget_Item::ItemTypeTableRowAdded(FName Name) {
@@ -685,8 +427,6 @@ FName SGameFrameworkWidget_Item::ItemTypeTableRowAdded(FName Name) {
 				FItemTypeConfigTableRow* FindRow = ItemTypeDataTable->FindRow<FItemTypeConfigTableRow>(RowName, "");
 				FindRow->ItemTypeId = NewItemTypeId;
 				FindRow->ItemTypeDescription = TEXT("这里添加类型描述");
-				FBackpackTypeConfigTableRow* BackpackTypeRow = (FBackpackTypeConfigTableRow*)(mBackpackTypeSource[0]->ConfigTableRow);
-				FindRow->DefaultBackpackType = BackpackTypeRow->BackpackTypeId;
 				
                 auto TableUsingStruct = ItemTypeDataTable->GetRowStruct();
                 int32 StructureSize = TableUsingStruct->GetStructureSize();

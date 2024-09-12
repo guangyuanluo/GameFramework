@@ -43,14 +43,14 @@ void UAssetSystem::Uninitialize() {
 	Super::Uninitialize();
 }
 
-int32 UAssetSystem::AddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error) {
+int32 UAssetSystem::AddItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error) {
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
     if (ItemDataTable && ItemTypeDataTable) {
         auto AddItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
         if (AddItemInfo) {
-            if (BackpackType == 0 || BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
+            if (BackpackType == EBackpackTypeEnum::BackpackType_32) {
                 auto AddItemTypeInfo = (FItemTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemTypeDataTable, AddItemInfo->ItemType);
                 if (AddItemTypeInfo) {
                     BackpackType = AddItemTypeInfo->DefaultBackpackType;
@@ -107,7 +107,7 @@ int32 UAssetSystem::AddItem(UBackpackComponent* BackpackComponent, uint8 Backpac
 	return 0;
 }
 
-bool UAssetSystem::CanAddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot) {
+bool UAssetSystem::CanAddItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot) {
     FString Error;
     auto Result = SimulateAddItem(BackpackComponent, BackpackType, ItemId, Count, SpecialSlot, false, "", Error);
     return Error.IsEmpty();
@@ -171,7 +171,7 @@ bool UAssetSystem::CanAddItems(UBackpackComponent* BackpackComponent, const TArr
     return Error.IsEmpty();
 }
 
-bool UAssetSystem::UseItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason) {
+bool UAssetSystem::UseItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason) {
 	bool Result = UseItemPrivate(BackpackComponent, BackpackType, SlotIndex, Count, Reason);
 	if (Result) {
 		BackpackComponent->NotifyBackpackChanged();
@@ -179,7 +179,7 @@ bool UAssetSystem::UseItem(UBackpackComponent* BackpackComponent, uint8 Backpack
 	return Result;
 }
 
-UCoreItem* UAssetSystem::AbandonItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
+UCoreItem* UAssetSystem::AbandonItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
 	auto Result = AbandonItemPrivate(BackpackComponent, BackpackType, SlotIndex, Count, Reason, Error);
 
 	if (Error.IsEmpty()) {
@@ -189,8 +189,8 @@ UCoreItem* UAssetSystem::AbandonItem(UBackpackComponent* BackpackComponent, uint
 	return Result;
 }
 
-bool UAssetSystem::DeductItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error) {
-	TMap<int, TMap<int, int>> Result = SimulateDeductItem(BackpackComponent, BackpackType, ItemId, Count, SpecialSlot, Reason, Error);
+bool UAssetSystem::DeductItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error) {
+	TMap<EBackpackTypeEnum, TMap<int, int>> Result = SimulateDeductItem(BackpackComponent, BackpackType, ItemId, Count, SpecialSlot, Reason, Error);
 
 	if (Error.IsEmpty()) {
         for (auto PackageIter = Result.CreateConstIterator(); PackageIter; ++PackageIter) {
@@ -220,9 +220,9 @@ bool UAssetSystem::DeductItem(UBackpackComponent* BackpackComponent, uint8 Backp
 	return false;
 }
 
-bool UAssetSystem::CanDeductItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int Count, int32 SpecialSlot) {
+bool UAssetSystem::CanDeductItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int Count, int32 SpecialSlot) {
     FString Error;
-    TMap<int, TMap<int, int>> Result = SimulateDeductItem(BackpackComponent, BackpackType, ItemId, Count, SpecialSlot, "", Error);
+    TMap<EBackpackTypeEnum, TMap<int, int>> Result = SimulateDeductItem(BackpackComponent, BackpackType, ItemId, Count, SpecialSlot, "", Error);
     return Error.IsEmpty();
 }
 
@@ -260,7 +260,7 @@ bool UAssetSystem::CanDeductItems(UBackpackComponent* BackpackComponent, const T
     return Error.IsEmpty();
 }
 
-bool UAssetSystem::MoveItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int32 NewPackageType, int NewSlotIndex, FString& Error) {
+bool UAssetSystem::MoveItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, EBackpackTypeEnum NewPackageType, int NewSlotIndex, FString& Error) {
 	bool Result = MoveItemPrivate(BackpackComponent, BackpackType, SlotIndex, NewPackageType, NewSlotIndex, Error);
 
 	if (Error.IsEmpty()) {
@@ -270,7 +270,7 @@ bool UAssetSystem::MoveItem(UBackpackComponent* BackpackComponent, uint8 Backpac
 	return Result;
 }
 
-int32 UAssetSystem::SplitItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, FString& Error) {
+int32 UAssetSystem::SplitItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, FString& Error) {
 	auto Result = SplitItemPrivate(BackpackComponent, BackpackType, SlotIndex, Count, Error);
 
 	if (Error.IsEmpty()) {
@@ -280,7 +280,7 @@ int32 UAssetSystem::SplitItem(UBackpackComponent* BackpackComponent, uint8 Backp
 	return Result;
 }
 
-void UAssetSystem::SortBackpack(UBackpackComponent* BackpackComponent, uint8 BackpackType) {
+void UAssetSystem::SortBackpack(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType) {
     auto& assetBackpack = BackpackComponent->GetBackpack(BackpackType);
     if (UAssetBackpackBlueprintLibrary::IsValid(assetBackpack)) {
         const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
@@ -447,11 +447,11 @@ UCoreItem* UAssetSystem::GenerateNewItem(UBackpackComponent* BackpackComponent, 
     return AddItem;
 }
 
-FAssetBackpack& UAssetSystem::MakePackageExist(UBackpackComponent* BackpackComponent, uint8 BackpackType) {
+FAssetBackpack& UAssetSystem::MakePackageExist(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType) {
     return BackpackComponent->FindOrAddPackage(BackpackType);
 }
 
-TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error) {
+TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error) {
     TMap<int32, int32> TempChangeItems;
 	if (Count == 0) {
 		Error = TEXT("添加物品数量为0");
@@ -460,7 +460,7 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
-    if (BackpackType == 0 || BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
+    if (BackpackType == EBackpackTypeEnum::BackpackType_32) {
         //换成默认背包
         auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
         if (ItemInfo) {
@@ -569,8 +569,8 @@ TMap<int32, int32> UAssetSystem::SimulateAddItem(UBackpackComponent* BackpackCom
     return TempChangeItems;
 }
 
-TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddItems(UBackpackComponent* BackpackComponent, const TArray<FAddItemInfo>& AddItems, bool Force, const FString& Reason, FString& Error) {
-    TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> TempChangeItems;
+TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddItems(UBackpackComponent* BackpackComponent, const TArray<FAddItemInfo>& AddItems, bool Force, const FString& Reason, FString& Error) {
+    TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> TempChangeItems;
     if (AddItems.Num() == 0) {
         Error = TEXT("添加物品数量为0");
         return TempChangeItems;
@@ -581,10 +581,10 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
     auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);
     FLogicObjectLoadWorldScope LoadWorldScope(BackpackExtendHandler, BackpackComponent);
     //第一层key是packagetype，第二层key是itemid，value是AddItems的索引
-    TMap<int, TMap<int, int>> TotalItems;
+    TMap<EBackpackTypeEnum, TMap<int, int>> TotalItems;
     for (int Index = 0; Index < AddItems.Num(); ++Index) {
-        int BackpackType = AddItems[Index].BackpackType;
-        if (BackpackType == 0 || BackpackType == FBackpackTypeConfigTableRow::BackpackTypeMax) {
+        EBackpackTypeEnum BackpackType = AddItems[Index].BackpackType;
+        if (BackpackType == EBackpackTypeEnum::BackpackType_32) {
             //换成默认背包
             auto ItemInfo = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, AddItems[Index].ItemId);
             if (ItemInfo) {
@@ -689,7 +689,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateAddI
     return TempChangeItems;
 }
 
-bool UAssetSystem::UseItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason) {
+bool UAssetSystem::UseItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason) {
 	auto& Package = BackpackComponent->GetBackpack(BackpackType);
 	if (!UAssetBackpackBlueprintLibrary::IsValid(Package)) {
         return false;
@@ -717,7 +717,7 @@ bool UAssetSystem::UseItemPrivate(UBackpackComponent* BackpackComponent, uint8 B
 	return true;
 }
 
-UCoreItem* UAssetSystem::AbandonItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
+UCoreItem* UAssetSystem::AbandonItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
 	auto& Package = BackpackComponent->GetBackpack(BackpackType);
 	if (!UAssetBackpackBlueprintLibrary::IsValid(Package)) {
 		return nullptr;
@@ -758,14 +758,14 @@ UCoreItem* UAssetSystem::AbandonItemPrivate(UBackpackComponent* BackpackComponen
 	return Result;
 }
 
-TMap<int, TMap<int32, int32>> UAssetSystem::SimulateDeductItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error) {
-    TMap<int, TMap<int32, int32>> TempChangeItems;
+TMap<EBackpackTypeEnum, TMap<int32, int32>> UAssetSystem::SimulateDeductItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error) {
+    TMap<EBackpackTypeEnum, TMap<int32, int32>> TempChangeItems;
     int RestCount = Count;
     if (SpecialSlot == -1) {
         for (auto Index = 0; Index < BackpackComponent->Backpacks.Num(); ++Index) {
             auto& Package = BackpackComponent->Backpacks[Index];
             auto BackpackTypeId = Package.BackpackType;
-            if (BackpackType == -1 || BackpackType == BackpackTypeId) {
+            if (BackpackType == EBackpackTypeEnum::BackpackType_32 || BackpackType == BackpackTypeId) {
                 auto& Backpack = Package.ItemList;
 
                 for (int32 SlotIndex = 0; SlotIndex < Backpack.Num(); ++SlotIndex) {
@@ -806,8 +806,8 @@ TMap<int, TMap<int32, int32>> UAssetSystem::SimulateDeductItem(UBackpackComponen
     return TempChangeItems;
 }
 
-TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateDeductItems(UBackpackComponent* BackpackComponent, const TArray<FItemIDNumPair>& DeductItems, const FString& Reason, FString& Error) {
-    TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> TempChangeItems;
+TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateDeductItems(UBackpackComponent* BackpackComponent, const TArray<FItemIDNumPair>& DeductItems, const FString& Reason, FString& Error) {
+    TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> TempChangeItems;
     if (DeductItems.Num() == 0) {
         Error = TEXT("扣除物品数量为0");
         return TempChangeItems;
@@ -825,7 +825,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateDedu
 
     for (auto PackageIndex = 0; PackageIndex < BackpackComponent->Backpacks.Num(); ++PackageIndex) {
         auto& Package = BackpackComponent->Backpacks[PackageIndex];
-        auto BackpackTypeId = Package.BackpackType;
+        auto BackpackType = Package.BackpackType;
         auto& Backpack = Package.ItemList;
         for (int ItemIndex = 0; ItemIndex < Backpack.Num(); ++ItemIndex) {
             if (Backpack[ItemIndex]) {
@@ -833,7 +833,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateDedu
                 if (TotalRemoves.Contains(ItemId)) {
                     int RemoveCount = FMath::Min(Backpack[ItemIndex]->ItemNum, TotalRemoves[ItemId]);
                     TotalRemoves[ItemId] -= RemoveCount;
-                    TempChangeItems.FindOrAdd(BackpackTypeId).FindOrAdd(ItemId).Add(TPair<int32, int32>(ItemIndex, RemoveCount));
+                    TempChangeItems.FindOrAdd(BackpackType).FindOrAdd(ItemId).Add(TPair<int32, int32>(ItemIndex, RemoveCount));
                     if (TotalRemoves[ItemId] == 0) {
                         TotalRemoves.Remove(ItemId);
                         if (TotalRemoves.Num() == 0) {
@@ -855,7 +855,7 @@ TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> UAssetSystem::SimulateDedu
     return TempChangeItems;
 }
 
-bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int32 NewPackageType, int NewSlotIndex, FString& Error) {
+bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, EBackpackTypeEnum NewPackageType, int NewSlotIndex, FString& Error) {
 	auto& Package = BackpackComponent->GetBackpack(BackpackType);
 	if (!UAssetBackpackBlueprintLibrary::IsValid(Package)) {
 		return false;
@@ -955,7 +955,7 @@ bool UAssetSystem::MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 
 	return true;
 }
 
-int32 UAssetSystem::SplitItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, FString& Error) {
+int32 UAssetSystem::SplitItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, FString& Error) {
 	auto& Package = BackpackComponent->GetBackpack(BackpackType);
 	if (!UAssetBackpackBlueprintLibrary::IsValid(Package)) {
 		return -1;
@@ -1058,7 +1058,7 @@ int32 UAssetSystem::ChangeMoneyPrivate(UWalletComponent* WalletComponent, EMoney
     return WalletComponent->Wallets[FindIndex].Count;
 }
 
-UCoreItem* UAssetSystem::ReduceItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
+UCoreItem* UAssetSystem::ReduceItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error) {
 	auto& Package = BackpackComponent->GetBackpack(BackpackType);
 	if (!UAssetBackpackBlueprintLibrary::IsValid(Package)) {
 		Error = TEXT("物品数量不足");
@@ -1131,7 +1131,7 @@ class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler(UBackpackCo
     return BackpackExtendHandlerCDO;
 }
 
-void UAssetSystem::OnPackageItemChange(UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, uint8 BackpackType, int Index) {
+void UAssetSystem::OnPackageItemChange(UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, EBackpackTypeEnum BackpackType, int Index) {
     if (BackpackComponent->GetOwner()->GetLocalRole() == ENetRole::ROLE_Authority) {
         //这里移除物品扩展处理
         auto BackpackExtendHandler = GetBackpackExtendHandler(BackpackComponent);

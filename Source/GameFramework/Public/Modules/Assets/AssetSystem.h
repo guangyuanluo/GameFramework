@@ -9,6 +9,7 @@
 #include "Modules/Assets/BackpackComponent.h"
 #include "Modules/Item/ItemIDNumPair.h"
 #include "Modules/Money/MoneyTypeNumPair.h"
+#include "Modules/Assets/BackpackTypes.h"
 #include "AssetSystem.generated.h"
 
 class UWalletComponent;
@@ -29,11 +30,11 @@ public:
 	/**
 	* 增加一个物品
 	*/
-	int32 AddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error);
+	int32 AddItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error);
     /**
     * 能否添加物品
     */
-    bool CanAddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot);
+    bool CanAddItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot);
     /**
     * 批量增加物品
     */
@@ -46,20 +47,20 @@ public:
 	/**
 	* 使用物品
 	*/
-	bool UseItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason);
+	bool UseItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason);
 
 	/**
 	* 丢弃物品
 	*/
-	UCoreItem* AbandonItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
+	UCoreItem* AbandonItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
 	/**
 	* 扣除物品
 	*/
-	bool DeductItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error);
+	bool DeductItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error);
     /**
     * 能否扣除物品
     */
-    bool CanDeductItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int Count, int32 SpecialSlot);
+    bool CanDeductItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int Count, int32 SpecialSlot);
     /**
     * 批量扣除物品
     */
@@ -72,16 +73,16 @@ public:
 	/**
 	* 移动背包中某个槽的物品
 	*/
-	bool MoveItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int32 NewPackageType, int NewSlotIndex, FString& Error);
+	bool MoveItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, EBackpackTypeEnum NewPackageType, int NewSlotIndex, FString& Error);
 	/**
 	* 拆分背包中某个槽的物品
 	*/
-	int32 SplitItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, FString& Error);
+	int32 SplitItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, FString& Error);
 
     /**
     * 整理背包
     */
-    void SortBackpack(UBackpackComponent* BackpackComponent, uint8 BackpackType);
+    void SortBackpack(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType);
 
 	/**
 	* 改钱
@@ -104,20 +105,20 @@ public:
 	UCoreItem* GenerateNewItem(UBackpackComponent* BackpackComponent, int ItemId, UClass* ItemClass);
 
 private:
-	FAssetBackpack& MakePackageExist(UBackpackComponent* BackpackComponent, uint8 BackpackType);
-	TMap<int32, int32> SimulateAddItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error);
-    TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> SimulateAddItems(UBackpackComponent* BackpackComponent, const TArray<FAddItemInfo>& AddItems, bool Force, const FString& Reason, FString& Error);
-	bool UseItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason);
-	UCoreItem* AbandonItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
-    TMap<int, TMap<int32, int32>> SimulateDeductItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error);
-    TMap<int32, TMap<int32, TArray<TPair<int32, int32>>>> SimulateDeductItems(UBackpackComponent* BackpackComponent, const TArray<FItemIDNumPair>& DeductItems, const FString& Reason, FString& Error);
-	bool MoveItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int32 NewPackageType, int NewSlotIndex, FString& Error);
-	int32 SplitItemPrivate(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, FString& Error);
+	FAssetBackpack& MakePackageExist(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType);
+	TMap<int32, int32> SimulateAddItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, int32 SpecialSlot, bool Force, const FString& Reason, FString& Error);
+    TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> SimulateAddItems(UBackpackComponent* BackpackComponent, const TArray<FAddItemInfo>& AddItems, bool Force, const FString& Reason, FString& Error);
+	bool UseItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason);
+	UCoreItem* AbandonItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
+    TMap<EBackpackTypeEnum, TMap<int32, int32>> SimulateDeductItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int32 ItemId, int Count, int32 SpecialSlot, const FString& Reason, FString& Error);
+    TMap<EBackpackTypeEnum, TMap<int32, TArray<TPair<int32, int32>>>> SimulateDeductItems(UBackpackComponent* BackpackComponent, const TArray<FItemIDNumPair>& DeductItems, const FString& Reason, FString& Error);
+	bool MoveItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, EBackpackTypeEnum NewPackageType, int NewSlotIndex, FString& Error);
+	int32 SplitItemPrivate(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, FString& Error);
 	int32 ChangeMoneyPrivate(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason, FString& Error);
 	/**
 	* 减少背包中某个槽的物品
 	*/
-	UCoreItem* ReduceItem(UBackpackComponent* BackpackComponent, uint8 BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
+	UCoreItem* ReduceItem(UBackpackComponent* BackpackComponent, EBackpackTypeEnum BackpackType, int SlotIndex, int Count, const FString& Reason, FString& Error);
 	void SendChangeItemEvent(UBackpackComponent* BackpackComponent, int32 ItemId, int32 Count, const FString& Reason);
 	void SendUseItemEvent(UBackpackComponent* BackpackComponent, int32 ItemId, int32 Count);
 	void SendChangeMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 MoneyCount);
@@ -128,7 +129,7 @@ private:
     */
     class UBackpackExtendHandler* GetBackpackExtendHandler(UBackpackComponent* BackpackComponent);
 
-    void OnPackageItemChange(UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, uint8 BackpackType, int Index);
+    void OnPackageItemChange(UBackpackComponent* BackpackComponent, class UCoreItem* NewItem, class UCoreItem* OldItem, EBackpackTypeEnum BackpackType, int Index);
 
 	/** 覆写事件监听 */
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;

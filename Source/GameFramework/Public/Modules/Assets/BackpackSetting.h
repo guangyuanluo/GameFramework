@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
+#include "Modules/Assets/BackpackTypes.h"
 #include "BackpackSetting.generated.h"
 
 /*
@@ -25,7 +26,7 @@ public:
     * 玩家初始背包
     */
     UPROPERTY(config, EditAnywhere, Category = "Backpack", meta = (DisplayName = "玩家初始背包类型"))
-    TArray<int> InitPackageTypes;
+    TArray<EBackpackTypeEnum> InitPackageTypes;
 
     /**
     * 背包扩展处理类

@@ -6,7 +6,7 @@
 #include "ItemTypeConfigTableRow.h"
 #include "ConfigTableCache.h"
 
-uint8 UItemUtils::GetItemDefaultBackpackType(int ItemID) {
+EBackpackTypeEnum UItemUtils::GetItemDefaultBackpackType(int ItemID) {
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemTypeDataTable = ItemSetting->ItemTypeTable.LoadSynchronous();
@@ -19,5 +19,5 @@ uint8 UItemUtils::GetItemDefaultBackpackType(int ItemID) {
             }
         }
     }
-    return -1;
+    return EBackpackTypeEnum::BackpackType_32;
 }

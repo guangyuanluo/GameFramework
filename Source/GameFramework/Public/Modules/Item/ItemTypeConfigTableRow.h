@@ -31,7 +31,7 @@ struct GAMEFRAMEWORK_API FItemTypeConfigTableRow : public FConfigTableRowBase
 	* 默认进入的背包类型
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable|Hide", meta = (DisplayName = "默认进入的背包类型", DisplayPriority = "1"))
-	uint8 DefaultBackpackType = FBackpackTypeConfigTableRow::BackpackTypeMax;
+	EBackpackTypeEnum DefaultBackpackType = EBackpackTypeEnum::BackpackType_32;
 
     virtual int GetUniqueId() override;
     virtual FString GetSimpleDescription() override;

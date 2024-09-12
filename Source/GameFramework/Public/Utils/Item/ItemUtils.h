@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Modules/Assets/BackpackTypes.h"
 #include "ItemUtils.generated.h"
 
 
@@ -17,5 +18,5 @@ public:
 	GENERATED_BODY()
 
 	UFUNCTION(BlueprintCallable, Category = "Utils")
-	static uint8 GetItemDefaultBackpackType(int ItemID);
+	static EBackpackTypeEnum GetItemDefaultBackpackType(int ItemID);
 };
