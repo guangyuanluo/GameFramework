@@ -24,59 +24,6 @@
 #include "Modules/Skill/SkillGroupConfigTableRow.h"
 #include "Modules/Skill/SkillSetting.h"
 
-namespace BackpackTypeUI
-{
-	const FName BackpackTypeIdColumnName(TEXT("背包类型Id"));
-	const FName BackpackInitMaxNumColumnName(TEXT("背包初始大小"));
-	const FName BackpackExpansionMaxNumColumnName(TEXT("背包最大扩展大小"));
-};
-
-class SPackageTypeRow : public SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>
-{
-public:
-	SLATE_BEGIN_ARGS(SPackageTypeRow) {}
-
-	SLATE_END_ARGS()
-
-	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr)
-	{
-		BackpackTypePtr = InPtr;
-
-		SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>::Construct(
-			FSuperRowType::FArguments()
-			.Padding(1.0f),
-			OwnerTableView
-		);
-	}
-
-	/** Overridden from SMultiColumnTableRow.  Generates a widget for this column of the list view. */
-	virtual TSharedRef<SWidget> GenerateWidgetForColumn(const FName& ColumnName) override
-	{
-        FBackpackTypeConfigTableRow* RowData = (FBackpackTypeConfigTableRow*)(BackpackTypePtr->ConfigTableRow);
-		if (ColumnName == BackpackTypeUI::BackpackTypeIdColumnName)
-		{
-			return	SNew(STextBlock)
-				.Text(FText::FromString(FString::FromInt(RowData->BackpackTypeId)));
-		}
-		else if (ColumnName == BackpackTypeUI::BackpackInitMaxNumColumnName)
-		{
-			return	SNew(STextBlock)
-				.Text(FText::FromString(FString::FromInt(RowData->BackpackInitMaxNum)));
-		}
-		else if (ColumnName == BackpackTypeUI::BackpackExpansionMaxNumColumnName)
-		{
-			return	SNew(STextBlock)
-				.Text(FText::FromString(FString::FromInt(RowData->BackpackExpansionMaxNum)));
-		}
-
-		return SNullWidget::NullWidget;
-	}
-
-private:
-
-	TSharedPtr<FConfigTableRowWrapper> BackpackTypePtr;
-};
-
 namespace ItemInfoUI
 {
 	const FName ItemIdColumnName(TEXT("物品Id"));

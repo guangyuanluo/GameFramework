@@ -273,12 +273,6 @@ TArray<TSharedPtr<FConfigTableRowWrapper>> GameFrameworkEditorWidgetTool::GetSki
     return Result;
 }
 
-bool GameFrameworkEditorWidgetTool::IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo) {
-    bool HaveFound = false;
-
-	return HaveFound;
-}
-
 bool GameFrameworkEditorWidgetTool::IsItemIdUse(int32 ItemId, FString& UseInfo) {
     bool HaveFound = false;
 	

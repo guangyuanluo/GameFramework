@@ -29,7 +29,6 @@ public:
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetEffectSource();
     TArray<TSharedPtr<FConfigTableRowWrapper>> GetSkillGroupSource();
 
-	virtual bool IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo);
 	virtual bool IsItemIdUse(int32 ItemId, FString& UseInfo);
 	virtual bool IsUnitIdUse(int32 UnitId, FString& UseInfo);
     virtual bool IsSkillGroupIdUse(int32 SkillId, FString& UseInfo);

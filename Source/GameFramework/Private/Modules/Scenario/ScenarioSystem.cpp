@@ -71,7 +71,7 @@ void UScenarioSystem::Step(int ChildIndex) {
     if (CurrentPlayScenario) {
         if (CurrentPlayScenarioNode == nullptr) {
             CurrentPlayScenarioNode = CurrentPlayScenario->Scenario->RootScenario;
-            OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode);
+            OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, CurrentScenarioContext);
         }
         else {
             auto FollowNodeNum = CurrentPlayScenarioNode->FollowScenarioNodes.Num();
@@ -88,7 +88,7 @@ void UScenarioSystem::Step(int ChildIndex) {
                 auto NextNode = CurrentPlayScenarioNode->FollowScenarioNodes[0];
                 OnScenarioPlayEndDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, NextNode);
                 CurrentPlayScenarioNode = NextNode;
-                OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode);
+                OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, CurrentScenarioContext);
             }
             else {
                 if (ChildIndex >= FollowNodeNum) {
@@ -98,7 +98,7 @@ void UScenarioSystem::Step(int ChildIndex) {
                     auto NextNode = CurrentPlayScenarioNode->FollowScenarioNodes[ChildIndex];
                     OnScenarioPlayEndDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, NextNode);
                     CurrentPlayScenarioNode = NextNode;
-                    OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode);
+                    OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, CurrentScenarioContext);
                 }
             }
         }

@@ -6,7 +6,7 @@
 #include "Base/ECS/SystemBase.h"
 #include "ScenarioSystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnScenarioPlayStartDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayStartDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, UObject*, ScenarioContextToPlay);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayEndDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, class UScenarioNode*, NextNodeToPlay);
 
 USTRUCT()
