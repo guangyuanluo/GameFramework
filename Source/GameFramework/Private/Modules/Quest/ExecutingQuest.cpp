@@ -138,7 +138,7 @@ void UExecutingQuest::OnAllProgressesSatisfy(FConditionTriggerHandler Handler) {
 	if (GetWorld()->GetNetMode() == ENetMode::NM_Standalone) {
 		auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
 		UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
-		if (!NodeItem || (NodeItem && NodeItem->CommitNPC.UnitID == 0)) {
+		if (!NodeItem || (NodeItem && (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario))) {
 			NotifyPlayScenario();
 		}
 	}
@@ -175,7 +175,7 @@ void UExecutingQuest::OnRep_Progress(const TArray<UCoreConditionProgress*>& OldP
 	if (IsComplete()) {
 		auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
 		UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
-		if (!NodeItem || (NodeItem && NodeItem->CommitNPC.UnitID == 0)) {
+		if (!NodeItem || (NodeItem && (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario))) {
 			NotifyPlayScenario();
 		}
 	}
@@ -268,7 +268,7 @@ void UExecutingQuest::OnProgressPostNetReceive(UCoreConditionProgress* Progress)
 	if (IsComplete()) {
 		auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
 		UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
-		if (!NodeItem || (NodeItem && NodeItem->CommitNPC.UnitID == 0)) {
+		if (!NodeItem || (NodeItem && (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario))) {
 			NotifyPlayScenario();
 		}
 	}

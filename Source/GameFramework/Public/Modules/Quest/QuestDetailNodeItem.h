@@ -48,6 +48,12 @@ public:
 	TSoftObjectPtr<class UScenario> TalkingScenario;
 
 	/**
+	* 任务完成自动播放剧情
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务完成自动播放剧情"))
+	bool bAutoPlayScenario = false;
+
+	/**
 	* 剧情
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务完成剧情"))
