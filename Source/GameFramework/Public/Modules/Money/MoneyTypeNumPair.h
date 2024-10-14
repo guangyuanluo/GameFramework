@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/Money/MoneyTypeContainer.h"
+#include "Modules/Money/MoneyTypes.h"
 #include "MoneyTypeNumPair.generated.h"
 
 /**
@@ -18,11 +18,11 @@ struct GAMEFRAMEWORK_API FMoneyTypeNumPair
 	*  货币类型
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Money")
-	FMoneyTypeContainer MoneyTypeContainer;
+	EMoneyTypeEnum MoneyType;
 
 	/**
 	* 数量
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Money", meta = (DisplayName = "货币类型ID"))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Money")
 	int32 Num;
 };

@@ -33,7 +33,7 @@ void UUnitReachExpLevelConditionProgress::OnEvent(UCoreGameInstance* InGameInsta
 		return;
 	}
 	UUnitReachExpLevelCondition* ReachExpLevelCondition = (UUnitReachExpLevelCondition*)Condition;
-	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpTypeContainer.ExpType
+	if (ExpLevelUpEvent->ExpType == ReachExpLevelCondition->ExpType
 		&& Unit->TemplateID == ReachExpLevelCondition->UnitIDContainer.UnitID) {
 		RefreshSatisfy();
 	}

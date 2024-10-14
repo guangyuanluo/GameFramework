@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Modules/Events/GameEventBase.h"
+#include "Modules/Money/MoneyTypes.h"
 #include "WalletComponent.generated.h"
 
 /**
@@ -15,7 +16,7 @@ struct GAMEFRAMEWORK_API FMoneyInfo {
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(BlueprintReadOnly, Category = "Wallet")
-    uint8 MoneyType;
+    EMoneyTypeEnum MoneyType;
 
     UPROPERTY(BlueprintReadOnly, Category = "Wallet")
     int32 Count;
@@ -47,13 +48,13 @@ public:
 	* @param reason 改钱原因
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Wallet")
-	void ChangeMoney(uint8 MoneyType, int32 Count, bool bConsume, const FString& Reason);
+	void ChangeMoney(EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason);
 
     /**
     * @brief 获取货币数量
     */
     UFUNCTION(BlueprintCallable, Category = "Wallet")
-    int GetMoneyCount(uint8 MoneyType);
+    int GetMoneyCount(EMoneyTypeEnum MoneyType);
 
     UFUNCTION()
 	void OnWalletRefresh();
@@ -77,7 +78,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
         FString EntityId;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-        uint8 MoneyType;
+        EMoneyTypeEnum MoneyType;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
         int32 Count;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")

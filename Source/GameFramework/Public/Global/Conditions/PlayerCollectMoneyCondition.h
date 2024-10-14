@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
 #include "Modules/Condition/CoreConditionProgress_Event.h"
-#include "Modules/Money/MoneyTypeContainer.h"
+#include "Modules/Money/MoneyTypes.h"
 #include "PlayerCollectMoneyCondition.generated.h"
 
 /**
@@ -21,7 +21,7 @@ public:
 	* 金币类型
 	*/
 	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	FMoneyTypeContainer MoneyTypeContainer;
+	EMoneyTypeEnum MoneyType;
 
 	/**
 	* 金币数量

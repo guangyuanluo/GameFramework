@@ -20,7 +20,7 @@ UAdvanceObjectPromise::UAdvanceObjectPromise(const class FObjectInitializer& Obj
 			OnSuccess.Empty();
 			OnFailure.Empty();
 
-			if (this) {
+			if (::IsValid(this)) {
 				SetReadyToDestroy();
 			}
 		}));

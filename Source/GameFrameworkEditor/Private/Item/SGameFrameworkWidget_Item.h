@@ -25,15 +25,6 @@ public:
 private:
 	/**物品相关变量**/
 	int mItemTabIndex;
-	TSharedPtr<SListView<TSharedPtr<FConfigTableRowWrapper>>> mPackageTypeListView;
-	TArray<TSharedPtr<FConfigTableRowWrapper>> mBackpackTypeSource;
-	TSharedPtr<class SGameDataTableRowEditor> mBackpackTypeEditorRow;
-	FName mPackageTypeHighlightedRowName;
-
-	TSharedPtr<SListView<TSharedPtr<FConfigTableRowWrapper>>> mItemTypeListView;
-	TArray<TSharedPtr<FConfigTableRowWrapper>> mItemTypeSource;
-	TSharedPtr<class SGameDataTableRowEditor> mItemTypeEditorRow;
-	FName mItemTypeHighlightedRowName;
 
 	TSharedPtr<SListView<TSharedPtr<FConfigTableRowWrapper>>> mItemInfoListView;
 	TArray<TSharedPtr<FConfigTableRowWrapper>> mItemInfoSource;
@@ -51,29 +42,6 @@ private:
 	FReply ItemItemInfoTabClicked();
 	//物品总界面
 	TSharedRef<SWidget> ConstructItemPage();
-	//背包类型界面
-	TSharedRef<SWidget> ConstructPackageTypePage();
-	TSharedRef<SWidget> ConstructPackageTypeRowEditor();
-	FName BackpackTypeTableRowAdded(FName Name);
-	bool BackpackTypeTableRowPreRemove(FName Name);
-	void BackpackTypeTableRowRemoved(FName Name);
-	void BackpackTypeTableRowModified(FName Name);
-	void BackpackTypeTableSetHighlightedRow(FName Name);
-	void OnPackageTypeSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo);
-	TSharedRef<ITableRow> PackageTypeListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable);
-	int32 ApplyPackageTypeId();
-	//物品类型界面
-	TSharedRef<SWidget> ConstructItemTypePage();
-	TSharedRef<SWidget> ConstructItemTypeRowEditor();
-	bool ItemTypeTableRowPreAdd(FName Name);
-	FName ItemTypeTableRowAdded(FName Name);
-	bool ItemTypeTableRowPreRemove(FName Name);
-	void ItemTypeTableRowRemoved(FName Name);
-	void ItemTypeTableRowModified(FName Name);
-	void ItemTypeTableSetHighlightedRow(FName Name);
-	void OnItemTypeSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo);
-	TSharedRef<ITableRow> ItemTypeListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable);
-	int32 ApplyItemTypeId();
 	//物品信息界面
 	TSharedRef<SWidget> ConstructItemInfoPage();
 	TSharedRef<SWidget> ConstructItemInfoRowEditor();

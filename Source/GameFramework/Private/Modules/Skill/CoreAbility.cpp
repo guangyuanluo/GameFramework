@@ -20,6 +20,7 @@
 #include "CoreConditionGroup.h"
 #include "CoreAbilitiesGameplayEffectComponent.h"
 #include "CoreCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 UCoreAbility::UCoreAbility(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {
@@ -127,6 +128,14 @@ void UCoreAbility::CallEndAbility() {
     K2_EndAbility();
 }
 
+int32 UCoreAbility::GetSkillID() const {
+    return SkillID;
+}
+
+void UCoreAbility::SetSkillID(int32 InSkillID) {
+    SkillID = InSkillID;
+}
+
 bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
 }
@@ -145,6 +154,12 @@ void UCoreAbility::OnActivateNative_Implementation() {
 
 void UCoreAbility::OnEndNative_Implementation() {
 
+}
+
+void UCoreAbility::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UCoreAbility, SkillID);
 }
 
 void UCoreAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) {

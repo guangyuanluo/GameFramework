@@ -31,21 +31,20 @@ public:
 	* 得到经验类型的等级
 	*/
 	UFUNCTION(BlueprintCallable)
-	int GetExpLevel(uint8 ExpType) const;
+	int GetExpLevel(EExpTypeEnum ExpType) const;
 
 	/**
 	* 得到经验类型的经验值
 	*/
 	UFUNCTION(BlueprintCallable)
-	int GetExpValue(uint8 ExpType) const;
+	int GetExpValue(EExpTypeEnum ExpType) const;
 
 	/**
 	* 增加经验
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Exp")
-	void AddExp(uint8 ExpType, int32 Exp, const FString& Reason);
+	void AddExp(EExpTypeEnum ExpType, int32 Exp, const FString& Reason);
 
-private:
     UFUNCTION()
     void OnExpChanged();
 };
@@ -69,7 +68,7 @@ public:
 	FString EntityId;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
-	uint8 ExpType;
+	EExpTypeEnum ExpType;
 	
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem")
 	int32 Exp;

@@ -6,6 +6,9 @@
 #include "Base/ECS/SystemBase.h"
 #include "ScenarioSystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayStartDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, UObject*, ScenarioContextToPlay);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayEndDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, class UScenarioNode*, NextNodeToPlay);
+
 USTRUCT()
 struct FPlayScenarioQueueItem {
     GENERATED_BODY()
@@ -26,6 +29,18 @@ class GAMEFRAMEWORK_API UScenarioSystem : public USystemBase {
 public:
     virtual void Initialize(UCoreGameInstance* InGameInstance) override;
     virtual void Uninitialize() override;
+
+    /**
+    * 开始播放剧情
+    */
+    UPROPERTY(BlueprintAssignable)
+    FOnScenarioPlayStartDelegate OnScenarioPlayStartDelegate;
+
+    /**
+    * 剧情节点播放结束
+    */
+    UPROPERTY(BlueprintAssignable)
+    FOnScenarioPlayEndDelegate OnScenarioPlayEndDelegate;
 
     /**
     * 播放剧情

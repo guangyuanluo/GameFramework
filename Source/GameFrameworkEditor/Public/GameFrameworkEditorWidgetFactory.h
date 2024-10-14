@@ -18,4 +18,5 @@ public:
 	virtual void CheckEditorTableNoExistAndCreate() = 0;
 	virtual void Export() = 0;
     virtual bool CheckOpenCondition();
+	virtual void Open(TSharedPtr<FUICommandList> InCommandList);
 };

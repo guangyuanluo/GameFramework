@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/SWidget.h"
-#include "Modules/Money/MoneyTypeConfigTableRow.h"
 #include "Modules/Unit/UnitInfoConfigTableRow.h"
 #include "Modules/Exp/ExpTypeConfigTableRow.h"
 #include "Modules/Assets/BackpackTypeConfigTableRow.h"
@@ -22,7 +21,6 @@ public:
 	void ShowNotification(const FText& TextToDisplay, float TimeToDisplay);
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetUnitInfoSource();
     TArray<TSharedPtr<FConfigTableRowWrapper>> GetUnitGroupSource();
-	TArray<TSharedPtr<FConfigTableRowWrapper>> GetMoneyTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetExpTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetBackpackTypeSource();
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetItemInfoSource();
@@ -31,9 +29,6 @@ public:
 	TArray<TSharedPtr<FConfigTableRowWrapper>> GetEffectSource();
     TArray<TSharedPtr<FConfigTableRowWrapper>> GetSkillGroupSource();
 
-	virtual bool IsExpTypeUse(int32 ExpType, FString& UseInfo);
-	virtual bool IsMoneyTypeUse(int32 MoneyType, FString& UseInfo);
-	virtual bool IsPackageTypeIdUse(int32 BackpackTypeId, FString& UseInfo);
 	virtual bool IsItemIdUse(int32 ItemId, FString& UseInfo);
 	virtual bool IsUnitIdUse(int32 UnitId, FString& UseInfo);
     virtual bool IsSkillGroupIdUse(int32 SkillId, FString& UseInfo);

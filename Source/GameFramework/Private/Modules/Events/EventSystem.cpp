@@ -74,6 +74,10 @@ void UEventSystem::PushEventToClient(class ACorePlayerController* PlayerControll
 
 void UEventSystem::RegistEventHandler(TScriptInterface<IEventHandlerInterface> EventHandler) {
 	auto EventHandlerObj = EventHandler.GetObject();
+	if (!EventHandlerObj) {
+		UE_LOG(GameCore, Error, TEXT("注册了无效对象"));
+		return;
+	}
 	if (HandlerEventTypeMap.Contains(EventHandlerObj)) {
 		UnRegistEventHandler(EventHandler);
 	}
@@ -98,6 +102,10 @@ void UEventSystem::RegistEventHandler(TScriptInterface<IEventHandlerInterface> E
 
 void UEventSystem::UnRegistEventHandler(TScriptInterface<IEventHandlerInterface> EventHandler) {
 	auto EventHandlerObj = EventHandler.GetObject();
+	if (!EventHandlerObj) {
+		UE_LOG(GameCore, Error, TEXT("反注册无效对象"));
+		return;
+	}
 	auto FindEventTypeListPtr = HandlerEventTypeMap.Find(EventHandlerObj);
 	if (FindEventTypeListPtr) {
 		for (auto& EventType : *FindEventTypeListPtr) {

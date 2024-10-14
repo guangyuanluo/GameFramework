@@ -40,7 +40,7 @@ void UPlayerConsumeMoneyConditionProgress::OnEvent(UCoreGameInstance* InGameInst
         return;
     }
     UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
-    if (ConsumeMoneyEvent->MoneyType == ConsumeMoneyCondition->MoneyTypeContainer.MoneyType
+    if (ConsumeMoneyEvent->MoneyType == ConsumeMoneyCondition->MoneyType
         && EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
         CurrentCount += ConsumeMoneyEvent->MoneyCount;
         

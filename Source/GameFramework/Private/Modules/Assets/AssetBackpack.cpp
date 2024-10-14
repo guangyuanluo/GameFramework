@@ -2,12 +2,10 @@
 
 #include "AssetBackpack.h"
 
-const uint8 InvalidPackageType = -1;
-
 FAssetBackpack::FAssetBackpack() {
-    BackpackType = InvalidPackageType;
+    BackpackType = EBackpackTypeEnum::BackpackType_32;
 }
 
 bool UAssetBackpackBlueprintLibrary::IsValid(UPARAM(ref)FAssetBackpack& AssetBackpack) {
-    return AssetBackpack.BackpackType != InvalidPackageType;
+    return AssetBackpack.BackpackType != EBackpackTypeEnum::BackpackType_32;
 }

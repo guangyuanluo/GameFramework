@@ -78,16 +78,7 @@ void SGameFrameworkMainWidget::Construct(const FArguments& InArgs, TSharedPtr<FU
 				.ToolTipText(RegistEditorWidgetFactory->GetDisplayToolTip())
 				.OnClicked_Lambda([RegistEditorWidgetFactory, this]() {
                     if (RegistEditorWidgetFactory->CheckOpenCondition()) {
-                        const FVector2D BrowserWindowSize(1280, 720);
-                        TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
-                        FSlateApplication::Get().AddModalWindow(
-                            SNew(SWindow)
-                            .Title(RegistEditorWidgetFactory->GetWindowName())
-                            .HasCloseButton(true)
-                            .ClientSize(BrowserWindowSize)
-                            [
-                                RegistEditorWidgetFactory->ConstructPage(CommandList)
-                            ], RootWindow);
+						RegistEditorWidgetFactory->Open(CommandList);
                     }
 
 					return(FReply::Handled());

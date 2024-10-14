@@ -27,6 +27,10 @@
 #include "NPCComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Input/CoreInputCacheComponent.h"
+#include "EnhancedInputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "PlayerController/CorePlayerController.h"
+
 
 ACoreCharacter::ACoreCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     CoreInputCacheComponent = CreateDefaultSubobject<UCoreInputCacheComponent>("InputCacheComponent");
@@ -147,6 +151,13 @@ void ACoreCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     CoreInputCacheComponent->InitializePlayerInput(PlayerInputComponent, CommonMappingContext);
+    if (UEnhancedInputComponent* const EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+    {
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::MoveActionBinding);
+        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::LookActionBinding);
+        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &ThisClass::LookActionBinding);
+        EnhancedInputComponent->BindAction(LookDeltaAction, ETriggerEvent::Triggered, this, &ThisClass::LookDeltaActionBinding);
+    }
 }
 
 void ACoreCharacter::SetGenericTeamId(const FGenericTeamId& InTeamID) {
@@ -206,10 +217,10 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
     const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
     auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
     if (ExpTypeDataTable) {
-        if (UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, FindUnitInfo->GrowExpTypeId)) {
+        if (UConfigTableCache::GetDataTableRawDataFromId(ExpTypeDataTable, (int)FindUnitInfo->GrowExpType)) {
             if (GetLocalRole() == ENetRole::ROLE_Authority) {
                 FExpInfo ExpInfo;
-                ExpInfo.ExpType = FindUnitInfo->GrowExpTypeId;
+                ExpInfo.ExpType = FindUnitInfo->GrowExpType;
                 ExpInfo.Level = FindUnitInfo->Level;
                 CharacterState->ExpComponent->Exps.Add(ExpInfo);
             }
@@ -265,6 +276,83 @@ void ACoreCharacter::ListenAttributeChange() {
     for (int AttributeIndex = 0; AttributeIndex < AllGameplayAttributes.Num(); ++AttributeIndex) {
         CharacterState->SkillComponent->GetGameplayAttributeValueChangeDelegate(AllGameplayAttributes[AttributeIndex]).AddUObject(this, &ACoreCharacter::OnAttributeChange);
     }
+}
+
+void ACoreCharacter::MoveActionBinding(const struct FInputActionValue& ActionValue)
+{
+    Move(ActionValue.Get<FInputActionValue::Axis2D>());
+}
+
+void ACoreCharacter::LookActionBinding(const struct FInputActionValue& ActionValue)
+{
+    Look(ActionValue.Get<FInputActionValue::Axis2D>());
+}
+
+void ACoreCharacter::LookDeltaActionBinding(const struct FInputActionValue& ActionValue)
+{
+    const FInputActionValue::Axis2D AxisValue = ActionValue.Get<FInputActionValue::Axis2D>();
+    APawn::AddControllerYawInput(AxisValue.X);
+    APawn::AddControllerPitchInput(-AxisValue.Y);
+}
+
+void ACoreCharacter::Move(const FVector2D& Value)
+{
+    MoveForward(Value.X);
+    MoveRight(Value.Y);
+}
+
+void ACoreCharacter::Look(const FVector2D& Value)
+{
+    TurnAtRate(Value.X);
+    LookUpAtRate(Value.Y);
+}
+
+void ACoreCharacter::MoveForward(float Value)
+{
+    const FRotator Rotation = GetControlRotation();
+    FRotator YawRotation(0, Rotation.Yaw, 0);
+    const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+    AddMovementInput(Direction, Value);
+}
+
+void ACoreCharacter::MoveRight(float Value)
+{
+    const FRotator Rotation = GetControlRotation();
+    FRotator YawRotation(0, Rotation.Yaw, 0);
+    const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
+    AddMovementInput(Direction, Value);
+}
+
+void ACoreCharacter::TurnAtRate(float Rate)
+{
+    auto PlayerController = Cast<ACorePlayerController>(Controller);
+    if (!PlayerController)
+    {
+        return;
+    }
+    // AddControllerYawInput()函数用于改变控制器的Yaw变量，即增加纵向轴旋转量。
+    // GetWorld()函数取得世界指针UWorld*，通过世界指针调用GetDeltaSeconds()取得每帧耗费的时间。
+    // 之所以要乘以每帧耗费的时间，是为了使得每一【秒】都增加200.0f * Value的改变量。
+    // 如果不乘以每帧耗费的时间，那么每一【帧】都会增加200.0f * Value的改变量。（注意由于每秒渲染量不同，所以每秒的帧数不一定是固定的。）
+    // 通过帧数来控制变量，那么游戏看起来就不那么流畅。试想，机子性能好的时候游戏角色动作就迅速，机子性能差的时候游戏角色动作就慢，这对于玩家公平吗？
+    float Delta = 200.f * Rate * GetWorld()->GetDeltaSeconds();
+    if (Delta > PlayerController->MouseSensibility) Delta = PlayerController->MouseSensibility;
+    else if (Delta < -PlayerController->MouseSensibility) Delta = -PlayerController->MouseSensibility;
+
+    AddControllerYawInput(Delta);
+}
+
+void ACoreCharacter::LookUpAtRate(float Rate)
+{
+    auto PlayerController = Cast<ACorePlayerController>(Controller);
+    if (!PlayerController)
+    {
+        return;
+    }
+    float Delta = 200.f * Rate * GetWorld()->GetDeltaSeconds();
+    if (Delta > PlayerController->MouseSensibility) Delta = PlayerController->MouseSensibility;
+    else if (Delta < -PlayerController->MouseSensibility) Delta = -PlayerController->MouseSensibility;
+    AddControllerPitchInput(Delta);
 }
 
 UAbilitySystemComponent* ACoreCharacter::GetAbilitySystemComponent() const {

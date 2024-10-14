@@ -6,6 +6,7 @@
 #include "Base/ConfigTable/ConfigTableRowBase.h"
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Skill/EffectInfo.h"
+#include "Modules/Item/ItemTypes.h"
 #include "ItemConfigTableRow.generated.h"
 
 /**
@@ -25,14 +26,14 @@ struct GAMEFRAMEWORK_API FItemConfigTableRow : public FConfigTableRowBase
 	/**
 	* 物品类型
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable|Hide", meta = (DisplayName = "物品类型Id", DisplayPriority = "1"))
-	int32 ItemType;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable|Hide", meta = (DisplayName = "物品类型", DisplayPriority = "1"))
+	EItemTypeEnum ItemType;
 
 	/**
-	* 物品缩略图Url
+	* 物品图标
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "物品图标", DisplayPriority = "1"))
-	FString ItemIcon;
+	TSoftObjectPtr<class UTexture2D> ItemIcon;
 
 	/**
 	* 物品mesh
@@ -87,6 +88,12 @@ struct GAMEFRAMEWORK_API FItemConfigTableRow : public FConfigTableRowBase
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "堆叠上限", DisplayPriority = "1"))
 	int MaxStack = 0;
+
+	/**
+	* 拥有上限，为0表示无限制
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "ItemConfigTable", meta = (DisplayName = "拥有上限", DisplayPriority = "1"))
+	int MaxOwner = 0;
 
 	/**
 	* 初始技能模组

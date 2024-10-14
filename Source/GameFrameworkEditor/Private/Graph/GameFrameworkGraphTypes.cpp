@@ -20,7 +20,7 @@
 #include "AssetRegistryModule.h"
 #endif
 
-#define LOCTEXT_NAMESPACE "SClassViewer"
+#define LOCTEXT_NAMESPACE "GameFramework SClassViewer"
 
 FGameFrameworkGraphNodeClassData::FGameFrameworkGraphNodeClassData(UClass* InClass, const FString& InDeprecatedMessage) :
 	bIsHidden(0),
@@ -102,7 +102,7 @@ UClass* FGameFrameworkGraphNodeClassData::GetClass(bool bSilent)
 	UClass* RetClass = Class.Get();
 	if (RetClass == NULL && GeneratedClassPackage.Len())
 	{
-		GWarn->BeginSlowTask(LOCTEXT("LoadPackage", "Loading Package..."), true);
+		GWarn->BeginSlowTask(LOCTEXT("GameFramework LoadPackage", "GameFramework Loading Package..."), true);
 
 		UPackage* Package = LoadPackage(NULL, *GeneratedClassPackage, LOAD_NoRedirects);
 		if (Package)
@@ -127,9 +127,9 @@ UClass* FGameFrameworkGraphNodeClassData::GetClass(bool bSilent)
 			if (!bSilent)
 			{
 				FMessageLog EditorErrors("EditorErrors");
-				EditorErrors.Error(LOCTEXT("PackageLoadFail", "Package Load Failed"));
+				EditorErrors.Error(LOCTEXT("GameFramework PackageLoadFail", "GameFramework Package Load Failed"));
 				EditorErrors.Info(FText::FromString(GeneratedClassPackage));
-				EditorErrors.Notify(LOCTEXT("PackageLoadFail", "Package Load Failed"));
+				EditorErrors.Notify(LOCTEXT("GameFramework PackageLoadFail", "GameFramework Package Load Failed"));
 			}
 		}
 	}

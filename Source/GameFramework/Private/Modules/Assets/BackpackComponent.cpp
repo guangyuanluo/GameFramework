@@ -44,7 +44,7 @@ void UBackpackComponent::BeginPlay()
             if (BackpackTypeDataTable) {
                 for (int Index = 0; Index < BackpackSetting->InitPackageTypes.Num(); ++Index) {
                     auto BackpackType = BackpackSetting->InitPackageTypes[Index];
-                    auto BackpackTypeInfo = (FBackpackTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(BackpackTypeDataTable, BackpackType);
+                    auto BackpackTypeInfo = (FBackpackTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(BackpackTypeDataTable, (int)BackpackType);
                     if (BackpackTypeInfo) {
                         FAssetBackpack NewAssetBackpack;
                         NewAssetBackpack.BackpackType = BackpackType;
@@ -87,7 +87,7 @@ bool UBackpackComponent::ReplicateSubobjects(class UActorChannel* Channel, class
 	return WroteSomething;
 }
 
-void UBackpackComponent::AddItem(uint8 BackpackType, int32 ItemId, int32 Count, const FString& Reason, int32 SpecialSlot) {
+void UBackpackComponent::AddItem(EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, const FString& Reason, int32 SpecialSlot) {
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -124,7 +124,7 @@ void UBackpackComponent::AddItems(const TArray<FAddItemInfo>& AddItems, const FS
     }
 }
 
-void UBackpackComponent::UseItem(uint8 BackpackType, int SlotIndex, int Count, const FString& Reason) {
+void UBackpackComponent::UseItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, int Count, const FString& Reason) {
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -134,7 +134,7 @@ void UBackpackComponent::UseItem(uint8 BackpackType, int SlotIndex, int Count, c
             auto UseItemRequest = NewObject<UUseItemRequesEvent>();
             UseItemRequest->EntityId = GameEntity->GetEntityID();
             UseItemRequest->BackpackType = BackpackType;
-            UseItemRequest->SlotIndex = SlotIndex;
+            UseItemRequest->InstanceID = InstanceID;
             UseItemRequest->Count = Count;
             UseItemRequest->Reason = Reason;
 
@@ -143,7 +143,7 @@ void UBackpackComponent::UseItem(uint8 BackpackType, int SlotIndex, int Count, c
     }
 }
 
-void UBackpackComponent::AbandonItem(uint8 BackpackType, int SlotIndex, int Count, const FString& Reason) {
+void UBackpackComponent::AbandonItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, int Count, const FString& Reason) {
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -153,7 +153,7 @@ void UBackpackComponent::AbandonItem(uint8 BackpackType, int SlotIndex, int Coun
             auto AbandonItemRequest = NewObject<UAbandonItemRequesEvent>();
             AbandonItemRequest->EntityId = GameEntity->GetEntityID();
             AbandonItemRequest->BackpackType = BackpackType;
-            AbandonItemRequest->SlotIndex = SlotIndex;
+            AbandonItemRequest->InstanceID = InstanceID;
             AbandonItemRequest->Count = Count;
             AbandonItemRequest->Reason = Reason;
 
@@ -162,7 +162,7 @@ void UBackpackComponent::AbandonItem(uint8 BackpackType, int SlotIndex, int Coun
     }
 }
 
-void UBackpackComponent::DeductItem(uint8 BackpackType, int32 ItemId, int Count, const FString& Reason, int32 SpecialSlot) {
+void UBackpackComponent::DeductItem(EBackpackTypeEnum BackpackType, int32 ItemId, int Count, const FString& Reason, const FString& SpecialInstanceID) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -174,7 +174,7 @@ void UBackpackComponent::DeductItem(uint8 BackpackType, int32 ItemId, int Count,
             DeductItemRequest->BackpackType = BackpackType;
             DeductItemRequest->ItemId = ItemId;
             DeductItemRequest->Count = Count;
-            DeductItemRequest->SpecialSlot = SpecialSlot;
+            DeductItemRequest->SpecialInstanceID = SpecialInstanceID;
             DeductItemRequest->Reason = Reason;
 
             GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(DeductItemRequest, false);
@@ -199,7 +199,7 @@ void UBackpackComponent::DeductItems(const TArray<FItemIDNumPair>& DeductItems, 
     }
 }
 
-void UBackpackComponent::MoveItem(uint8 BackpackType, int SlotIndex, uint8 NewPackageType, int NewSlotIndex) {
+void UBackpackComponent::MoveItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, EBackpackTypeEnum NewPackageType, int NewSlotIndex) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -209,7 +209,7 @@ void UBackpackComponent::MoveItem(uint8 BackpackType, int SlotIndex, uint8 NewPa
             auto MoveItemRequest = NewObject<UMoveItemRequesEvent>();
             MoveItemRequest->EntityId = GameEntity->GetEntityID();
             MoveItemRequest->BackpackType = BackpackType;
-            MoveItemRequest->SlotIndex = SlotIndex;
+            MoveItemRequest->InstanceID = InstanceID;
             MoveItemRequest->NewPackageType = NewPackageType;
             MoveItemRequest->NewSlotIndex = NewSlotIndex;
 
@@ -218,7 +218,7 @@ void UBackpackComponent::MoveItem(uint8 BackpackType, int SlotIndex, uint8 NewPa
     }
 }
 
-void UBackpackComponent::SplitItem(uint8 BackpackType, int SlotIndex, int Count) {
+void UBackpackComponent::SplitItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, int Count) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -228,7 +228,7 @@ void UBackpackComponent::SplitItem(uint8 BackpackType, int SlotIndex, int Count)
             auto SplitItemRequest = NewObject<USplitItemRequesEvent>();
             SplitItemRequest->EntityId = GameEntity->GetEntityID();
             SplitItemRequest->BackpackType = BackpackType;
-            SplitItemRequest->SlotIndex = SlotIndex;
+            SplitItemRequest->InstanceID = InstanceID;
             SplitItemRequest->Count = Count;
 
             GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(SplitItemRequest, false);
@@ -236,7 +236,7 @@ void UBackpackComponent::SplitItem(uint8 BackpackType, int SlotIndex, int Count)
     }
 }
 
-void UBackpackComponent::PickupItem(uint8 BackpackType, class ACoreSceneItem* DropItem, int PickupCount) {
+void UBackpackComponent::PickupItem(EBackpackTypeEnum BackpackType, class ACoreSceneItem* DropItem, int PickupCount) {
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -254,7 +254,7 @@ void UBackpackComponent::PickupItem(uint8 BackpackType, class ACoreSceneItem* Dr
     }
 }
 
-void UBackpackComponent::SortBackpack(uint8 BackpackType) {
+void UBackpackComponent::SortBackpack(EBackpackTypeEnum BackpackType) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
@@ -290,7 +290,7 @@ int32 UBackpackComponent::GetBackpackItemCount(int32 ItemId) const {
 
 FAssetBackpack InvalidAssetBackpack;
 
-FAssetBackpack& UBackpackComponent::GetBackpack(uint8 BackpackType) {
+FAssetBackpack& UBackpackComponent::GetBackpack(EBackpackTypeEnum BackpackType) {
     for (int BackpackIndex = 0; BackpackIndex < Backpacks.Num(); ++BackpackIndex) {
         if (Backpacks[BackpackIndex].BackpackType == BackpackType) {
             return Backpacks[BackpackIndex];
@@ -300,6 +300,22 @@ FAssetBackpack& UBackpackComponent::GetBackpack(uint8 BackpackType) {
     return InvalidAssetBackpack;
 }
 
+int UBackpackComponent::FindIndexByInstanceID(EBackpackTypeEnum BackpackType, const FString& InstanceID)
+{
+    for (int BackpackIndex = 0; BackpackIndex < Backpacks.Num(); ++BackpackIndex) {
+        if (BackpackType == EBackpackTypeEnum::BackpackType_32 || Backpacks[BackpackIndex].BackpackType == BackpackType) {
+            const auto& Backpack = Backpacks[BackpackIndex];
+            for (auto ItemIndex = 0; ItemIndex < Backpack.ItemList.Num(); ++ItemIndex) {
+                if (Backpack.ItemList[ItemIndex] && Backpack.ItemList[ItemIndex]->InstanceID == InstanceID) {
+                    return ItemIndex;
+                }
+            }
+        }
+    }
+
+    return -1;
+}
+
 void UBackpackComponent::OnBackpackChanged() {
 	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 	auto OnBackpackRefreshEvent = NewObject<UOnBackpackRefreshEvent>();
@@ -307,10 +323,10 @@ void UBackpackComponent::OnBackpackChanged() {
 	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnBackpackRefreshEvent);
 }
 
-FAssetBackpack& UBackpackComponent::FindOrAddPackage(uint8 BackpackType) {
+FAssetBackpack& UBackpackComponent::FindOrAddPackage(EBackpackTypeEnum BackpackType) {
     const UBackpackSetting* BackpackSetting = GetDefault<UBackpackSetting>();
     auto BackpackTypeDataTable = BackpackSetting->BackpackTypeTable.LoadSynchronous();
-    auto BackpackTypeInfo = (FBackpackTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(BackpackTypeDataTable, BackpackType);
+    auto BackpackTypeInfo = (FBackpackTypeConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(BackpackTypeDataTable, (int)BackpackType);
     if (!BackpackTypeInfo) {
         return InvalidAssetBackpack;
     }

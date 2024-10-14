@@ -45,7 +45,7 @@ public:
 		if (ColumnName == SimpleRowUI::IdColumnName)
 		{
 			return	SNew(STextBlock)
-				.Text(FText::FromString(FString::FromInt(RowData->GetUniqueId())));
+				.Text(FText::FromString(FString::FromInt(RowData->GetRowUniqueId())));
 		}
 		else if (ColumnName == SimpleRowUI::SimpleDescriptionColumnName)
 		{
@@ -128,7 +128,7 @@ FName SSimpleRow::TableRowAdded(FName Name) {
 
             auto TableUsingStruct = RowDataTable->GetRowStruct();
             int32 StructureSize = TableUsingStruct->GetStructureSize();
-            FMoneyTypeConfigTableRow* NewRawRowData = (FMoneyTypeConfigTableRow*)FMemory::Malloc(StructureSize);
+            void* NewRawRowData = FMemory::Malloc(StructureSize);
             TableUsingStruct->InitializeStruct(NewRawRowData);
             TableUsingStruct->CopyScriptStruct(NewRawRowData, FindRow);
             FConfigTableRowWrapper* NewWrapper = new FConfigTableRowWrapper();
@@ -153,7 +153,7 @@ FName SSimpleRow::TableRowAdded(FName Name) {
 bool SSimpleRow::TableRowPreRemove(FName Name) {
     for (auto Index = 0; Index < Source.Num(); ++Index) {
         FConfigTableRowBase* RowData = (FConfigTableRowBase*)(Source[Index]->ConfigTableRow);
-        FName RowName = *FString::FromInt(RowData->GetUniqueId());
+        FName RowName = *FString::FromInt(RowData->GetRowUniqueId());
         if (RowName == Name) {
             return AllowRowRemove(RowData);
         }
@@ -164,7 +164,7 @@ bool SSimpleRow::TableRowPreRemove(FName Name) {
 void SSimpleRow::TableRowRemoved(FName Name) {
     for (auto Index = 0; Index < Source.Num(); ++Index) {
         FConfigTableRowBase* RowData = (FConfigTableRowBase*)(Source[Index]->ConfigTableRow);
-        FName RowName = *FString::FromInt(RowData->GetUniqueId());
+        FName RowName = *FString::FromInt(RowData->GetRowUniqueId());
         if (RowName == Name) {
             RowRemoved(RowData);
             Source.RemoveAt(Index);
@@ -180,8 +180,8 @@ void SSimpleRow::TableRowModified(FName Name) {
         FConfigTableRowBase* FindRow = (FConfigTableRowBase*)RowDataTable->FindRowUnchecked(Name);
         for (auto Index = 0; Index < Source.Num(); ++Index) {
             FConfigTableRowBase* RowData = (FConfigTableRowBase*)(Source[Index]->ConfigTableRow);
-            FName RowIdName = *FString::FromInt(RowData->GetUniqueId());
-            if (FindRow->GetUniqueId() == RowData->GetUniqueId() || RowIdName == Name) {
+            FName RowIdName = *FString::FromInt(RowData->GetRowUniqueId());
+            if (FindRow->GetRowUniqueId() == RowData->GetRowUniqueId() || RowIdName == Name) {
                 auto TableUsingStruct = RowDataTable->GetRowStruct();
                 if (AllRowModified(Name, FindRow, RowData)) {
                     TableUsingStruct->CopyScriptStruct(RowData, FindRow);
@@ -215,7 +215,7 @@ void SSimpleRow::TableSetHighlightedRow(FName Name) {
 		TSharedPtr<FConfigTableRowWrapper>* NewSelectionPtr = Source.FindByPredicate([&Name](const TSharedPtr<FConfigTableRowWrapper>& RowDataWrapper) -> bool
 		{
             FConfigTableRowBase* RowData = (FConfigTableRowBase*)(RowDataWrapper->ConfigTableRow);
-			return *FString::FromInt(RowData->GetUniqueId()) == Name;
+			return *FString::FromInt(RowData->GetRowUniqueId()) == Name;
 		});
 		
 		// Synchronize the list views
@@ -234,7 +234,7 @@ void SSimpleRow::TableSetHighlightedRow(FName Name) {
 void SSimpleRow::OnSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo) {
 	if (InNewSelection.IsValid()) {
         FConfigTableRowBase* RowData = (FConfigTableRowBase*)(InNewSelection->ConfigTableRow);
-		FName RowName = *FString::FromInt(RowData->GetUniqueId());
+		FName RowName = *FString::FromInt(RowData->GetRowUniqueId());
 		const bool bSelectionChanged = !InNewSelection.IsValid() || RowName != HighlightedRowName;
 		const FName NewRowName = (InNewSelection.IsValid()) ? RowName : NAME_None;
 

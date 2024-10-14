@@ -19,6 +19,11 @@ public:
     * 获取唯一id
     */
     virtual int GetUniqueId();
+
+    /**
+    * 获取表唯一id
+    */
+    virtual int GetRowUniqueId();
     /**
     * 简单描述一行数据
     */

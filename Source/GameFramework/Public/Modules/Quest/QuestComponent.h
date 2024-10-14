@@ -51,22 +51,15 @@ public:
     UFUNCTION()
     void RefreshAcceptableQuests();
 
-    /**
-    * 通知任务可以抢占NPC
-    */
-    void NotifyAcquireNPCs();
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
     virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 private:
     bool bDirtyQuests = false;
-    bool bAcquireNPCs = false;
     TSharedPtr<struct FStreamableHandle> QuestLoadedHandle;
 
     void RefreshAcceptQuests();
-    void RefreshNPCAcquire();
     void NotifyServerNextTickHandle();
     void StopServerTick();
 };

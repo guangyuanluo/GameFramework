@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/Exp/ExpTypes.h"
 #include "ExpInfo.generated.h"
 
 /**
@@ -14,7 +15,7 @@ struct GAMEFRAMEWORK_API FExpInfo
 	GENERATED_BODY()
 
 	UPROPERTY(Category = "ExpInfo", EditAnywhere, BlueprintReadWrite)
-	uint8 ExpType;
+	EExpTypeEnum ExpType;
 
 	UPROPERTY(Category = "ExpInfo", EditAnywhere, BlueprintReadWrite)
 	int Level = 1;

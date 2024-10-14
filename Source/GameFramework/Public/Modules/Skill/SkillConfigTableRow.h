@@ -36,7 +36,7 @@ struct GAMEFRAMEWORK_API FSkillConfigTableRow : public FConfigTableRowBase
     * 图标
     */
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Skill", meta = (DisplayName = "技能图标", DisplayPriority = "1"))
-    FString Icon;
+    TSoftObjectPtr<class UTexture2D> Icon;
 
     /**
     * 默认输入

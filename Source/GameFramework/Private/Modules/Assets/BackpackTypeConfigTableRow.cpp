@@ -2,12 +2,14 @@
 
 #include "BackpackTypeConfigTableRow.h"
 
-int FBackpackTypeConfigTableRow::BackpackTypeMax = 200;
-
 int FBackpackTypeConfigTableRow::GetUniqueId() {
+    return (int)BackpackType;
+}
+
+int FBackpackTypeConfigTableRow::GetRowUniqueId() {
     return BackpackTypeId;
 }
 
 FString FBackpackTypeConfigTableRow::GetSimpleDescription() {
-    return FString::Format(TEXT("{0}.{1}"), { BackpackTypeId, BackpackTypeDescription });
+    return FString::Format(TEXT("{0}.{1}"), { (int)BackpackType, StaticEnum<EBackpackTypeEnum>()->GetDisplayNameTextByValue((int64)BackpackType).ToString() });
 }

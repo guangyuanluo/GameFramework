@@ -26,7 +26,7 @@ void UPlayerCollectItemConditionProgress::OnUninitialize() {
     UBackpackComponent* BackpackComponent = CharacterState->BackpackComponent;
     FString Error;
     auto GameInstance = ProgressOwner->GetWorld()->GetGameInstance<UCoreGameInstance>();
-    GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, -1, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
+    GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, EBackpackTypeEnum::BackpackType_32, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
 }
 
 bool UPlayerCollectItemConditionProgress::IsComplete(bool& IsValid) {

@@ -15,6 +15,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEffectPreAddDynMutiDelegate, cla
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FEffectPreAddDynDelegate, class UCoreAbilitySystemComponent*, SkillComponent, const FGameplayEffectSpecHandle&, Spec, TSubclassOf<class UGameplayEffect>, EffectClass);
 DECLARE_DELEGATE_ThreeParams(FEffectPreAddDelegate, class UCoreAbilitySystemComponent*, const FGameplayEffectSpecHandle&, TSubclassOf<class UGameplayEffect>);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAbilityRestCounterUpdateDelegate, class UCoreAbilitySystemComponent*, UCoreAbility*, int);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillAddDelegate, class UCoreAbilitySystemComponent*, SkillComponent, UGameplayAbility*, AbilityAdded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSkillRemoveDelegate, class UCoreAbilitySystemComponent*, SkillComponent, UGameplayAbility*, AbilityRemoved);
 
 /**
  * Subclass of ability system component with game-specific data
@@ -31,6 +33,18 @@ public:
     */
     UPROPERTY(BlueprintAssignable)
     FEffectPreAddDynMutiDelegate EffectPreAddDynMutiDelegate;
+
+    /**
+    * 技能增加处理
+    */
+    UPROPERTY(BlueprintAssignable)
+    FOnSkillAddDelegate OnSkillAddDelegate;
+
+    /**
+    * 技能移除处理
+    */
+    UPROPERTY(BlueprintAssignable)
+    FOnSkillRemoveDelegate OnSkillRemoveDelegate;
 
     /**
     * 从模板初始化技能
@@ -96,7 +110,7 @@ public:
 
     /** 返回指定条件拥有指定InputID的优先级最高技能class */
     UFUNCTION(BlueprintCallable, Category = "Character")
-    TSubclassOf<UCoreAbility> GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true);
+    UCoreAbility* GetActiveAbilityWithInputID(int32 InputID, bool ForceFilterActive = false, bool bOnlyAbilitiesThatSatisfy = true);
 
     /** 返回用来运行的指定条件拥有指定InputID的优先级最高技能class */
     UFUNCTION(BlueprintCallable, Category = "Character")

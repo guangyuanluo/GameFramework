@@ -83,6 +83,15 @@ private:
     class UInputMappingContext* CommonMappingContext;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputAction* MoveAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputAction* LookAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputAction* LookDeltaAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
     int32 CommonMappingPriority = 1;
 
     UFUNCTION()
@@ -102,4 +111,14 @@ private:
     void InitSkill();
     /** 监听属性变化事件 */
     void ListenAttributeChange();
+
+    void MoveActionBinding(const struct FInputActionValue& ActionValue);
+    void LookActionBinding(const struct FInputActionValue& ActionValue);
+    void LookDeltaActionBinding(const struct FInputActionValue& ActionValue);
+    void Move(const FVector2D& Value);
+    void Look(const FVector2D& Value);
+    void MoveForward(float Value);
+    void MoveRight(float Value);
+    void TurnAtRate(float Rate);
+    void LookUpAtRate(float Rate);
 };

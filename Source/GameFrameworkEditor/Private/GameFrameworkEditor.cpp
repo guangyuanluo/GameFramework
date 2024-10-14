@@ -23,7 +23,6 @@
 #include "SUnitPlacementPalette.h"
 
 #include "GameFrameworkEditorWidgetFactory_Exp.h"
-#include "GameFrameworkEditorWidgetFactory_Money.h"
 #include "GameFrameworkEditorWidgetFactory_Unit.h"
 #include "GameFrameworkEditorWidgetFactory_Item.h"
 #include "GameFrameworkEditorWidgetFactory_UnitGroup.h"
@@ -35,12 +34,8 @@
 #include "Modules/Condition/CoreConditionList.h"
 
 #include "Modules/Skill/SkillInfo.h"
-#include "Modules/Money/MoneyTypeContainer.h"
-#include "Customization/MoneyTypeContainerCustomization.h"
 #include "Modules/Item/ItemIDContainer.h"
 #include "Customization/ItemIDContainerCustomization.h"
-#include "Modules/Exp/ExpTypeContainer.h"
-#include "Customization/ExpTypeContainerCustomization.h"
 #include "CoreConditionListCustomization.h"
 #include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
@@ -241,7 +236,6 @@ void FGameFrameworkEditorModule::RegistAssetType() {
 
 void FGameFrameworkEditorModule::RegistAllEditorWidgetFactories() {
     RegistEditorWidgetFactory(TSharedPtr<GameFrameworkEditorWidgetFactory>(new GameFrameworkEditorWidgetFactory_Exp()));
-    RegistEditorWidgetFactory(TSharedPtr<GameFrameworkEditorWidgetFactory>(new GameFrameworkEditorWidgetFactory_Money()));
     RegistEditorWidgetFactory(TSharedPtr<GameFrameworkEditorWidgetFactory>(new GameFrameworkEditorWidgetFactory_Unit()));
     RegistEditorWidgetFactory(TSharedPtr<GameFrameworkEditorWidgetFactory>(new GameFrameworkEditorWidgetFactory_Item()));
     RegistEditorWidgetFactory(TSharedPtr<GameFrameworkEditorWidgetFactory>(new GameFrameworkEditorWidgetFactory_UnitGroup()));
@@ -253,16 +247,8 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
     FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FMoneyTypeContainer::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FMoneyTypeContainerCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomPropertyTypeLayout(
 		FItemIDContainer::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FItemIDContainerCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FExpTypeContainer::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FExpTypeContainerCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomClassLayout(
 		UQuestDetailNodeItem::StaticClass()->GetFName(),
@@ -302,9 +288,7 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
     if (FModuleManager::Get().IsModuleLoaded("PropertyEditor")) {
         FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FMoneyTypeContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FItemIDContainer::StaticStruct()->GetFName());
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FExpTypeContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UQuestDetailNodeItem::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomClassLayout(UScenarioNode::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillInfo::StaticStruct()->GetFName());

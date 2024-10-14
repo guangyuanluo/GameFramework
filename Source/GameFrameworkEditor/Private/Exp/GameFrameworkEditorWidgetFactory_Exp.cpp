@@ -1,5 +1,4 @@
 #include "GameFrameworkEditorWidgetFactory_Exp.h"
-#include "SGameFrameworkWidget_Exp.h"
 #include "Modules/Exp/ExpSetting.h"
 #include "Developer/AssetTools/Public/AssetToolsModule.h"
 #include "Editor/UnrealEd/Classes/Factories/DataTableFactory.h"
@@ -19,7 +18,7 @@ FText GameFrameworkEditorWidgetFactory_Exp::GetWindowName() {
 }
 
 TSharedRef<SWidget> GameFrameworkEditorWidgetFactory_Exp::ConstructPage(TSharedPtr<FUICommandList> CommandList) {
-	return SNew(SGameFrameworkWidget_Exp, CommandList);
+	return SNullWidget::NullWidget;
 }
 
 void GameFrameworkEditorWidgetFactory_Exp::CheckEditorTableNoExistAndCreate() {
@@ -27,22 +26,7 @@ void GameFrameworkEditorWidgetFactory_Exp::CheckEditorTableNoExistAndCreate() {
 }
 
 void GameFrameworkEditorWidgetFactory_Exp::Export() {
-	TMap<int64, TPair<FString, FText>> EnumSource;
 
-    const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
-    auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
-    if (ExpTypeDataTable) {
-        TArray<FExpTypeConfigTableRow*> AllRows;
-        ExpTypeDataTable->GetAllRows<FExpTypeConfigTableRow>("", AllRows);
-
-        for (int Index = 0; Index < AllRows.Num(); ++Index) {
-            auto ExpTypeName = FString::Format(TEXT("ExpType_{0}"), { AllRows[Index]->ExpTypeId });
-            auto ExpTypeDescription = AllRows[Index]->ExpTypeDescription;
-            EnumSource.Add(AllRows[Index]->ExpTypeId, TPair<FString, FText>(ExpTypeName, FText::FromString(ExpTypeDescription)));
-        }
-
-        GameFrameworkEditorWidgetTool::ExportEnumBP(TEXT("ExpTypeEnum"), FText::FromString(TEXT("经验类型")), EnumSource);
-    }
 }
 
 bool GameFrameworkEditorWidgetFactory_Exp::CheckOpenCondition() {
@@ -56,4 +40,10 @@ bool GameFrameworkEditorWidgetFactory_Exp::CheckOpenCondition() {
         return false;
     }
     return true;
+}
+
+void GameFrameworkEditorWidgetFactory_Exp::Open(TSharedPtr<FUICommandList> InCommandList) {
+    const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
+    auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
+    GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(ExpTypeDataTable);
 }

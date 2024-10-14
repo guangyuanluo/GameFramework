@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/Assets/BackpackTypes.h"
 #include "AssetBackpack.generated.h"
 
 USTRUCT(BlueprintType)
@@ -12,7 +13,7 @@ struct GAMEFRAMEWORK_API FAssetBackpack {
     FAssetBackpack();
 
     UPROPERTY(Category = "AssetSystem", EditAnywhere, BlueprintReadOnly)
-    uint8 BackpackType;
+    EBackpackTypeEnum BackpackType;
 
 	UPROPERTY(Category = "AssetSystem", EditAnywhere, BlueprintReadOnly)
 	TArray<class UCoreItem*> ItemList;

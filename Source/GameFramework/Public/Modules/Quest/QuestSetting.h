@@ -20,11 +20,5 @@ public:
     UPROPERTY(config, EditAnywhere, Category = "任务", meta = (DisplayName = "预加载任务树", NoResetToDefault))
     TArray<TSoftObjectPtr<class UQuestTree>> PreloadQuestTrees;
 
-    /**
-    * 任务抢占NPC优先级类
-    */
-    UPROPERTY(config, EditAnywhere, Category = "Backpack", meta = (DisplayName = "任务NPC抢占优先级类", MetaClass = "QuestNPCAcquirePredicate", NoResetToDefault))
-    FSoftClassPath NPCAcquirePredicateClass;
-
     virtual FName GetCategoryName() const override;
 };

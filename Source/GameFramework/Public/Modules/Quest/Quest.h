@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreConditionList.h"
+#include "Modules/Quest/QuestTypes.h"
 #include "Quest.generated.h"
 
 /**
@@ -25,6 +26,12 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务名字"))
 	FString QuestName;
+
+	/**
+	* 任务类型
+	*/
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务类型"))
+	EQuestTypeEnum QuestType;
 
 	/**
 	* 前置条件

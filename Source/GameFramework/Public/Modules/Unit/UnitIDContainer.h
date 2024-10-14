@@ -17,5 +17,5 @@ struct GAMEFRAMEWORK_API FUnitIDContainer
 	*  单位ID
 	*/
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (DisplayName = "单位ID"))
-	int32 UnitID;
+	int32 UnitID = 0;
 };

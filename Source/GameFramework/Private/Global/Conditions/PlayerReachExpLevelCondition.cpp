@@ -18,7 +18,7 @@ bool UPlayerReachExpLevelConditionProgress::IsComplete(bool& IsValid) {
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
 
 	auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
-	auto ExpLevel = CharacterState->ExpComponent->GetExpLevel(ReachExpLevelCondition->ExpTypeContainer.ExpType);
+	auto ExpLevel = CharacterState->ExpComponent->GetExpLevel(ReachExpLevelCondition->ExpType);
 	return ExpLevel >= ReachExpLevelCondition->ExpLevel;
 }
 
@@ -49,7 +49,7 @@ void UPlayerReachExpLevelConditionProgress::OnEvent(UCoreGameInstance* InGameIns
 		return;
 	}
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
-	if (ExpLevelUpEvent->ExpTypeId == ReachExpLevelCondition->ExpTypeContainer.ExpType
+	if (ExpLevelUpEvent->ExpType == ReachExpLevelCondition->ExpType
 		&& EventPlayerState->PlayerComponent->RoleID == ConditionPlayerState->PlayerComponent->RoleID) {
 		RefreshSatisfy();
 	}
