@@ -158,6 +158,17 @@ void UExecutingQuest::OnRep_QuestID() {
 
 void UExecutingQuest::OnRep_NodeID() {
 	UE_LOG(GameCore, Log, TEXT("收到任务节点推进通知，QID:%s NodeID:%s"), *ID.ToString(), *NodeID.ToString());
+	auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
+	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
+	if (NodeItem) {
+		if (NodeItem->ConditionList.Conditions.Num() == 0) {
+			//不需要条件
+			if (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario) {
+				//不需要提交npc或者是自动提交
+				NotifyPlayScenario();
+			}
+		}
+	}
 }
 
 void UExecutingQuest::OnRep_Progress(const TArray<UCoreConditionProgress*>& OldProgresses) {
@@ -230,6 +241,9 @@ void UExecutingQuest::PlayScenarioCompleted(UScenario* PlayScenario, int ReturnI
 
 void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	NodeID = InNode->ID;
+	if (GetWorld()->GetNetMode() == ENetMode::NM_Standalone) {
+		OnRep_NodeID();
+	}
 
 	for (auto QuestProgress : QuestProgresses) {
 		QuestProgress->Uninitialize();
