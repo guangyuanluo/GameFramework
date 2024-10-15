@@ -10,7 +10,7 @@ void SSubClassSelectWidget::Construct(const FArguments& InArgs)
 	SelectedClass = InArgs._SelectedClass;
 	OnSetClass = InArgs._OnSetClass;
 
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(MetaClass));
+	TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(MetaClass));
 	ClassCache->UpdateAvailableBlueprintClasses();
 
 	FCategorizedGraphActionListBuilder ClassBuilder(TEXT("ClassBuilder"));

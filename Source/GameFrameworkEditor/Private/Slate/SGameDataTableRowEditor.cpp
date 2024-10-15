@@ -146,7 +146,6 @@ void SGameDataTableRowEditor::PreChange(const UDataTable* Changed, FDataTableEdi
 
 void SGameDataTableRowEditor::PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo Info)
 {
-	FSoftObjectPath::InvalidateTag(); // Should be removed after UE-5615 is fixed
 	if ((Changed == DataTable.Get()) && (FDataTableEditorUtils::EDataTableChangeInfo::RowList == Info))
 	{
 		RefreshNameList();

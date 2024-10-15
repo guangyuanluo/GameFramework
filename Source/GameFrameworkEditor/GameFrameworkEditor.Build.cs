@@ -28,6 +28,7 @@ public class GameFrameworkEditor : ModuleRules
 			{
                 "GameFramework",
 				// ... add other public dependencies that you statically link with here ...
+                "AIGraph",
             }
 			);
 			

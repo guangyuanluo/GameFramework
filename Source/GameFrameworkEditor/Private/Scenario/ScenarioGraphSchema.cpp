@@ -36,7 +36,7 @@ void UScenarioGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 
 void UScenarioGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(UScenarioNode::StaticClass()));
+	TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(UScenarioNode::StaticClass()));
 	ClassCache->UpdateAvailableBlueprintClasses();
 
 	FCategorizedGraphActionListBuilder ScenarioBuilder(TEXT("Scenario"));
@@ -121,8 +121,6 @@ const FPinConnectionResponse UScenarioGraphSchema::CanCreateConnection(const UEd
     else {
         return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, LOCTEXT("ConnectResponse_Allowed", "Connect"));
     }
-
-	return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorInput", "Can't connect input node to input node"));
 }
 
 TSharedPtr<FGameSchemaAction_NewNode> UScenarioGraphSchema::AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)
