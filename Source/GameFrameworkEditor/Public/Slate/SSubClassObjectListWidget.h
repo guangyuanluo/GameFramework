@@ -22,7 +22,7 @@ public:
 	void Construct(const FArguments& InArgs, TSharedPtr<IPropertyHandle> InProperty) {
 		Property = InProperty;
 
-		TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(ClassType::StaticClass()));
+		TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(ClassType::StaticClass()));
 		ClassCache->UpdateAvailableBlueprintClasses();
 
 		FCategorizedGraphActionListBuilder ClassBuilder(TEXT("ClassBuilder"));

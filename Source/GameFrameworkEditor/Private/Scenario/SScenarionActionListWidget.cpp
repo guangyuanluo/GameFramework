@@ -16,7 +16,7 @@ SScenarionActionListWidget::~SScenarionActionListWidget() {
 void SScenarionActionListWidget::Construct(const FArguments& InArgs, TSharedPtr<IPropertyHandle> InActionsProperty) {
 	ActionsProperty = InActionsProperty;
 
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(UScenarioAction::StaticClass()));
+	TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(UScenarioAction::StaticClass()));
 	ClassCache->UpdateAvailableBlueprintClasses();
 
 	FCategorizedGraphActionListBuilder ScenarioBuilder(TEXT("ScenarioAction"));

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Base/ConfigTable/ConfigTableRowBase.h"
+#include "Blueprint/BlueprintExceptionInfo.h"
 #include "ConfigTableCache.generated.h"
 
 /**

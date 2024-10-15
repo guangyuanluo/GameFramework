@@ -58,23 +58,23 @@ private:
 	FString DeprecatedMessage;
 };
 
-struct GAMEFRAMEWORKEDITOR_API FGraphNodeClassNode
+struct GAMEFRAMEWORKEDITOR_API FGameGraphNodeClassNode
 {
 	FGameFrameworkGraphNodeClassData Data;
 	FString ParentClassName;
 
-	TSharedPtr<FGraphNodeClassNode> ParentNode;
-	TArray<TSharedPtr<FGraphNodeClassNode> > SubNodes;
+	TSharedPtr<FGameGraphNodeClassNode> ParentNode;
+	TArray<TSharedPtr<FGameGraphNodeClassNode> > SubNodes;
 
-	void AddUniqueSubNode(TSharedPtr<FGraphNodeClassNode> SubNode);
+	void AddUniqueSubNode(TSharedPtr<FGameGraphNodeClassNode> SubNode);
 };
 
-struct GAMEFRAMEWORKEDITOR_API FGraphNodeClassHelper
+struct GAMEFRAMEWORKEDITOR_API FGameGraphNodeClassHelper
 {
 	DECLARE_MULTICAST_DELEGATE(FOnPackageListUpdated);
 
-	FGraphNodeClassHelper(UClass* InRootClass);
-	~FGraphNodeClassHelper();
+	FGameGraphNodeClassHelper(UClass* InRootClass);
+	~FGameGraphNodeClassHelper();
 
 	void GatherClasses(const UClass* BaseClass, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses);
 	static FString GetDeprecationMessage(const UClass* Class);
@@ -95,17 +95,17 @@ struct GAMEFRAMEWORKEDITOR_API FGraphNodeClassHelper
 private:
 
 	UClass* RootNodeClass;
-	TSharedPtr<FGraphNodeClassNode> RootNode;
+	TSharedPtr<FGameGraphNodeClassNode> RootNode;
 	static TArray<FName> UnknownPackages;
 	static TMap<UClass*, int32> BlueprintClassCount;
 
-	TSharedPtr<FGraphNodeClassNode> CreateClassDataNode(const struct FAssetData& AssetData);
-	TSharedPtr<FGraphNodeClassNode> FindBaseClassNode(TSharedPtr<FGraphNodeClassNode> Node, const FString& ClassName);
-	void FindAllSubClasses(TSharedPtr<FGraphNodeClassNode> Node, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses);
+	TSharedPtr<FGameGraphNodeClassNode> CreateClassDataNode(const struct FAssetData& AssetData);
+	TSharedPtr<FGameGraphNodeClassNode> FindBaseClassNode(TSharedPtr<FGameGraphNodeClassNode> Node, const FString& ClassName);
+	void FindAllSubClasses(TSharedPtr<FGameGraphNodeClassNode> Node, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses);
 
 	UClass* FindAssetClass(const FString& GeneratedClassPackage, const FString& AssetName);
 	void BuildClassGraph();
-	void AddClassGraphChildren(TSharedPtr<FGraphNodeClassNode> Node, TArray<TSharedPtr<FGraphNodeClassNode> >& NodeList);
+	void AddClassGraphChildren(TSharedPtr<FGameGraphNodeClassNode> Node, TArray<TSharedPtr<FGameGraphNodeClassNode> >& NodeList);
 
 	bool IsHidingClass(UClass* Class);
 	bool IsHidingParentClass(UClass* Class);

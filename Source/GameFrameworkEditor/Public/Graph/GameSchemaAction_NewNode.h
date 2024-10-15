@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EdGraph/EdGraphSchema.h"
+#include "AIGraphSchema.h"
 #include "GameSchemaAction_NewNode.generated.h"
 
 class FSlateRect;
@@ -16,7 +17,7 @@ struct GAMEFRAMEWORKEDITOR_API FGameSchemaAction_NewNode : public FEdGraphSchema
 
 	/** Template of node we want to create */
 	UPROPERTY()
-		class UGameFrameworkGraphNode* NodeTemplate;
+	TObjectPtr<class UGameFrameworkGraphNode> NodeTemplate;
 
 	FGameSchemaAction_NewNode()
 		: FEdGraphSchemaAction()

@@ -47,7 +47,7 @@ void UCustomizableSearchTreeGraphSchema::GetGraphContextActions(FGraphContextMen
         FilterClass = CustomizableSearchTree->LimitNodeClass;
     }
 
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(FilterClass));
+	TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(FilterClass));
 	ClassCache->UpdateAvailableBlueprintClasses();
 
 	FCategorizedGraphActionListBuilder CustomizableSearchTreeBuilder(TEXT("CustomizableSearchTree"));
@@ -132,8 +132,6 @@ const FPinConnectionResponse UCustomizableSearchTreeGraphSchema::CanCreateConnec
     else {
         return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, LOCTEXT("ConnectResponse_Allowed", "Connect"));
     }
-
-	return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorInput", "Can't connect input node to input node"));
 }
 
 TSharedPtr<FGameSchemaAction_NewNode> UCustomizableSearchTreeGraphSchema::AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)

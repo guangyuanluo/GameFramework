@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "PropertyEditor/Public/IPropertyTypeCustomization.h"
+#include "IPropertyTypeCustomization.h"
 
 class FEffectInfoCustomization : public IPropertyTypeCustomization {
 public:

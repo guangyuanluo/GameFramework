@@ -50,7 +50,7 @@ private:
 void SGlobalSkillInfoWidget::Construct(const FArguments& InArgs, TSubclassOf<class UCoreAbility> CurrentAbility) {
 	auto FilterClass = UCoreAbility::StaticClass();
 
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(FilterClass));
+	TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(FilterClass));
 	ClassCache->UpdateAvailableBlueprintClasses();
 
 	FCategorizedGraphActionListBuilder AbilityBuilder(TEXT("Ability"));

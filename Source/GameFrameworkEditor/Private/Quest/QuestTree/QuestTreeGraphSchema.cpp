@@ -36,7 +36,7 @@ void UQuestTreeGraphSchema::CreateDefaultNodesForGraph(UEdGraph& Graph) const
 
 void UQuestTreeGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	TSharedPtr<struct FGraphNodeClassHelper> ClassCache = MakeShareable(new FGraphNodeClassHelper(UQuest::StaticClass()));
+	TSharedPtr<struct FGameGraphNodeClassHelper> ClassCache = MakeShareable(new FGameGraphNodeClassHelper(UQuest::StaticClass()));
 	ClassCache->UpdateAvailableBlueprintClasses();
 
 	FCategorizedGraphActionListBuilder QuestBuilder(TEXT("Quest"));
@@ -121,8 +121,6 @@ const FPinConnectionResponse UQuestTreeGraphSchema::CanCreateConnection(const UE
     else {
         return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, LOCTEXT("ConnectResponse_Allowed", "Connect"));
     }
-
-	return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, LOCTEXT("PinErrorInput", "Can't connect input node to input node"));
 }
 
 TSharedPtr<FGameSchemaAction_NewNode> UQuestTreeGraphSchema::AddNewNodeAction(FGraphActionListBuilderBase& ContextMenuBuilder, const FText& Category, const FText& MenuDesc, const FText& Tooltip)

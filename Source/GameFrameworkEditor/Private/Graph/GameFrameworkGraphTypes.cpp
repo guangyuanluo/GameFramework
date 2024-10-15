@@ -138,31 +138,31 @@ UClass* FGameFrameworkGraphNodeClassData::GetClass(bool bSilent)
 }
 
 //////////////////////////////////////////////////////////////////////////
-TArray<FName> FGraphNodeClassHelper::UnknownPackages;
-TMap<UClass*, int32> FGraphNodeClassHelper::BlueprintClassCount;
-FGraphNodeClassHelper::FOnPackageListUpdated FGraphNodeClassHelper::OnPackageListUpdated;
+TArray<FName> FGameGraphNodeClassHelper::UnknownPackages;
+TMap<UClass*, int32> FGameGraphNodeClassHelper::BlueprintClassCount;
+FGameGraphNodeClassHelper::FOnPackageListUpdated FGameGraphNodeClassHelper::OnPackageListUpdated;
 
-FGraphNodeClassHelper::FGraphNodeClassHelper(UClass* InRootClass)
+FGameGraphNodeClassHelper::FGameGraphNodeClassHelper(UClass* InRootClass)
 {
 	RootNodeClass = InRootClass;
 
 	// Register with the Asset Registry to be informed when it is done loading up files.
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::GetModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-	AssetRegistryModule.Get().OnFilesLoaded().AddRaw(this, &FGraphNodeClassHelper::InvalidateCache);
-	AssetRegistryModule.Get().OnAssetAdded().AddRaw(this, &FGraphNodeClassHelper::OnAssetAdded);
-	AssetRegistryModule.Get().OnAssetRemoved().AddRaw(this, &FGraphNodeClassHelper::OnAssetRemoved);
+	AssetRegistryModule.Get().OnFilesLoaded().AddRaw(this, &FGameGraphNodeClassHelper::InvalidateCache);
+	AssetRegistryModule.Get().OnAssetAdded().AddRaw(this, &FGameGraphNodeClassHelper::OnAssetAdded);
+	AssetRegistryModule.Get().OnAssetRemoved().AddRaw(this, &FGameGraphNodeClassHelper::OnAssetRemoved);
 
 	// Register to have Populate called when doing a Hot Reload.
-	FCoreUObjectDelegates::ReloadCompleteDelegate.AddRaw(this, &FGraphNodeClassHelper::OnHotReload);
+	FCoreUObjectDelegates::ReloadCompleteDelegate.AddRaw(this, &FGameGraphNodeClassHelper::OnHotReload);
 
 	// Register to have Populate called when a Blueprint is compiled.
-	GEditor->OnBlueprintCompiled().AddRaw(this, &FGraphNodeClassHelper::InvalidateCache);
-	GEditor->OnClassPackageLoadedOrUnloaded().AddRaw(this, &FGraphNodeClassHelper::InvalidateCache);
+	GEditor->OnBlueprintCompiled().AddRaw(this, &FGameGraphNodeClassHelper::InvalidateCache);
+	GEditor->OnClassPackageLoadedOrUnloaded().AddRaw(this, &FGameGraphNodeClassHelper::InvalidateCache);
 
 	UpdateAvailableBlueprintClasses();
 }
 
-FGraphNodeClassHelper::~FGraphNodeClassHelper()
+FGameGraphNodeClassHelper::~FGameGraphNodeClassHelper()
 {
 	// Unregister with the Asset Registry to be informed when it is done loading up files.
 	if (FModuleManager::Get().IsModuleLoaded(TEXT("AssetRegistry")))
@@ -185,7 +185,7 @@ FGraphNodeClassHelper::~FGraphNodeClassHelper()
 	}
 }
 
-void FGraphNodeClassNode::AddUniqueSubNode(TSharedPtr<FGraphNodeClassNode> SubNode)
+void FGameGraphNodeClassNode::AddUniqueSubNode(TSharedPtr<FGameGraphNodeClassNode> SubNode)
 {
 	for (int32 Idx = 0; Idx < SubNodes.Num(); Idx++)
 	{
@@ -198,7 +198,7 @@ void FGraphNodeClassNode::AddUniqueSubNode(TSharedPtr<FGraphNodeClassNode> SubNo
 	SubNodes.Add(SubNode);
 }
 
-void FGraphNodeClassHelper::GatherClasses(const UClass* BaseClass, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses)
+void FGameGraphNodeClassHelper::GatherClasses(const UClass* BaseClass, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses)
 {
 	const FString BaseClassName = BaseClass->GetName();
 	if (!RootNode.IsValid())
@@ -206,11 +206,11 @@ void FGraphNodeClassHelper::GatherClasses(const UClass* BaseClass, TArray<FGameF
 		BuildClassGraph();
 	}
 
-	TSharedPtr<FGraphNodeClassNode> BaseNode = FindBaseClassNode(RootNode, BaseClassName);
+	TSharedPtr<FGameGraphNodeClassNode> BaseNode = FindBaseClassNode(RootNode, BaseClassName);
 	FindAllSubClasses(BaseNode, AvailableClasses);
 }
 
-FString FGraphNodeClassHelper::GetDeprecationMessage(const UClass* Class)
+FString FGameGraphNodeClassHelper::GetDeprecationMessage(const UClass* Class)
 {
 	static FName MetaDeprecated = TEXT("DeprecatedNode");
 	static FName MetaDeprecatedMessage = TEXT("DeprecationMessage");
@@ -227,12 +227,12 @@ FString FGraphNodeClassHelper::GetDeprecationMessage(const UClass* Class)
 	return DeprecatedMessage;
 }
 
-bool FGraphNodeClassHelper::IsClassKnown(const FGameFrameworkGraphNodeClassData& ClassData)
+bool FGameGraphNodeClassHelper::IsClassKnown(const FGameFrameworkGraphNodeClassData& ClassData)
 {
 	return !ClassData.IsBlueprint() || !UnknownPackages.Contains(*ClassData.GetPackageName());
 }
 
-void FGraphNodeClassHelper::AddUnknownClass(const FGameFrameworkGraphNodeClassData& ClassData)
+void FGameGraphNodeClassHelper::AddUnknownClass(const FGameFrameworkGraphNodeClassData& ClassData)
 {
 	if (ClassData.IsBlueprint())
 	{
@@ -240,29 +240,29 @@ void FGraphNodeClassHelper::AddUnknownClass(const FGameFrameworkGraphNodeClassDa
 	}
 }
 
-bool FGraphNodeClassHelper::IsHidingParentClass(UClass* Class)
+bool FGameGraphNodeClassHelper::IsHidingParentClass(UClass* Class)
 {
 	static FName MetaHideParent = TEXT("HideParentNode");
 	return Class && Class->HasAnyClassFlags(CLASS_Native) && Class->HasMetaData(MetaHideParent);
 }
 
-bool FGraphNodeClassHelper::IsHidingClass(UClass* Class)
+bool FGameGraphNodeClassHelper::IsHidingClass(UClass* Class)
 {
 	static FName MetaHideInEditor = TEXT("HiddenNode");
 	return Class && Class->HasAnyClassFlags(CLASS_Native) && Class->HasMetaData(MetaHideInEditor);
 }
 
-bool FGraphNodeClassHelper::IsPackageSaved(FName PackageName)
+bool FGameGraphNodeClassHelper::IsPackageSaved(FName PackageName)
 {
 	const bool bFound = FPackageName::SearchForPackageOnDisk(PackageName.ToString());
 	return bFound;
 }
 
-void FGraphNodeClassHelper::OnAssetAdded(const struct FAssetData& AssetData)
+void FGameGraphNodeClassHelper::OnAssetAdded(const struct FAssetData& AssetData)
 {
-	TSharedPtr<FGraphNodeClassNode> Node = CreateClassDataNode(AssetData);
+	TSharedPtr<FGameGraphNodeClassNode> Node = CreateClassDataNode(AssetData);
 
-	TSharedPtr<FGraphNodeClassNode> ParentNode;
+	TSharedPtr<FGameGraphNodeClassNode> ParentNode;
 	if (Node.IsValid())
 	{
 		ParentNode = FindBaseClassNode(RootNode, Node->ParentClassName);
@@ -296,7 +296,7 @@ void FGraphNodeClassHelper::OnAssetAdded(const struct FAssetData& AssetData)
 	}
 }
 
-void FGraphNodeClassHelper::OnAssetRemoved(const struct FAssetData& AssetData)
+void FGameGraphNodeClassHelper::OnAssetRemoved(const struct FAssetData& AssetData)
 {
 	FString AssetClassName;
 	if (AssetData.GetTagValue(FBlueprintTags::GeneratedClassPath, AssetClassName))
@@ -304,7 +304,7 @@ void FGraphNodeClassHelper::OnAssetRemoved(const struct FAssetData& AssetData)
 		ConstructorHelpers::StripObjectClass(AssetClassName);
 		AssetClassName = FPackageName::ObjectPathToObjectName(AssetClassName);
 
-		TSharedPtr<FGraphNodeClassNode> Node = FindBaseClassNode(RootNode, AssetClassName);
+		TSharedPtr<FGameGraphNodeClassNode> Node = FindBaseClassNode(RootNode, AssetClassName);
 		if (Node.IsValid() && Node->ParentNode.IsValid())
 		{
 			Node->ParentNode->SubNodes.RemoveSingleSwap(Node);
@@ -318,21 +318,21 @@ void FGraphNodeClassHelper::OnAssetRemoved(const struct FAssetData& AssetData)
 	}
 }
 
-void FGraphNodeClassHelper::InvalidateCache()
+void FGameGraphNodeClassHelper::InvalidateCache()
 {
 	RootNode.Reset();
 
 	UpdateAvailableBlueprintClasses();
 }
 
-void FGraphNodeClassHelper::OnHotReload(EReloadCompleteReason Reason)
+void FGameGraphNodeClassHelper::OnHotReload(EReloadCompleteReason Reason)
 {
 	InvalidateCache();
 }
 
-TSharedPtr<FGraphNodeClassNode> FGraphNodeClassHelper::CreateClassDataNode(const struct FAssetData& AssetData)
+TSharedPtr<FGameGraphNodeClassNode> FGameGraphNodeClassHelper::CreateClassDataNode(const struct FAssetData& AssetData)
 {
-	TSharedPtr<FGraphNodeClassNode> Node;
+	TSharedPtr<FGameGraphNodeClassNode> Node;
 
 	FString AssetClassName;
 	FString AssetParentClassName;
@@ -344,7 +344,7 @@ TSharedPtr<FGraphNodeClassNode> FGraphNodeClassHelper::CreateClassDataNode(const
 		UObject* Outer2(NULL);
 		ResolveName(Outer2, AssetParentClassName, false, false);
 
-		Node = MakeShareable(new FGraphNodeClassNode);
+		Node = MakeShareable(new FGameGraphNodeClassNode);
 		Node->ParentClassName = AssetParentClassName;
 
 		UObject* AssetOb = AssetData.IsAssetLoaded() ? AssetData.GetAsset() : NULL;
@@ -358,9 +358,9 @@ TSharedPtr<FGraphNodeClassNode> FGraphNodeClassHelper::CreateClassDataNode(const
 	return Node;
 }
 
-TSharedPtr<FGraphNodeClassNode> FGraphNodeClassHelper::FindBaseClassNode(TSharedPtr<FGraphNodeClassNode> Node, const FString& ClassName)
+TSharedPtr<FGameGraphNodeClassNode> FGameGraphNodeClassHelper::FindBaseClassNode(TSharedPtr<FGameGraphNodeClassNode> Node, const FString& ClassName)
 {
-	TSharedPtr<FGraphNodeClassNode> RetNode;
+	TSharedPtr<FGameGraphNodeClassNode> RetNode;
 	if (Node.IsValid())
 	{
 		if (Node->Data.GetClassName() == ClassName)
@@ -381,7 +381,7 @@ TSharedPtr<FGraphNodeClassNode> FGraphNodeClassHelper::FindBaseClassNode(TShared
 	return RetNode;
 }
 
-void FGraphNodeClassHelper::FindAllSubClasses(TSharedPtr<FGraphNodeClassNode> Node, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses)
+void FGameGraphNodeClassHelper::FindAllSubClasses(TSharedPtr<FGameGraphNodeClassNode> Node, TArray<FGameFrameworkGraphNodeClassData>& AvailableClasses)
 {
 	if (Node.IsValid())
 	{
@@ -397,7 +397,7 @@ void FGraphNodeClassHelper::FindAllSubClasses(TSharedPtr<FGraphNodeClassNode> No
 	}
 }
 
-UClass* FGraphNodeClassHelper::FindAssetClass(const FString& GeneratedClassPackage, const FString& AssetName)
+UClass* FGameGraphNodeClassHelper::FindAssetClass(const FString& GeneratedClassPackage, const FString& AssetName)
 {
 	UPackage* Package = FindPackage(NULL, *GeneratedClassPackage);
 	if (Package)
@@ -413,9 +413,9 @@ UClass* FGraphNodeClassHelper::FindAssetClass(const FString& GeneratedClassPacka
 	return NULL;
 }
 
-void FGraphNodeClassHelper::BuildClassGraph()
+void FGameGraphNodeClassHelper::BuildClassGraph()
 {
-	TArray<TSharedPtr<FGraphNodeClassNode> > NodeList;
+	TArray<TSharedPtr<FGameGraphNodeClassNode> > NodeList;
 	TArray<UClass*> HideParentList;
 	RootNode.Reset();
 
@@ -425,7 +425,7 @@ void FGraphNodeClassHelper::BuildClassGraph()
 		UClass* TestClass = *It;
 		if (TestClass->HasAnyClassFlags(CLASS_Native) && TestClass->IsChildOf(RootNodeClass))
 		{
-			TSharedPtr<FGraphNodeClassNode> NewNode = MakeShareable(new FGraphNodeClassNode);
+			TSharedPtr<FGameGraphNodeClassNode> NewNode = MakeShareable(new FGameGraphNodeClassNode);
 			NewNode->ParentClassName = TestClass->GetSuperClass()->GetName();
 
 			FString DeprecatedMessage = GetDeprecationMessage(TestClass);
@@ -453,7 +453,7 @@ void FGraphNodeClassHelper::BuildClassGraph()
 	// find all hidden parent classes
 	for (int32 i = 0; i < NodeList.Num(); i++)
 	{
-		TSharedPtr<FGraphNodeClassNode> TestNode = NodeList[i];
+		TSharedPtr<FGameGraphNodeClassNode> TestNode = NodeList[i];
 		if (HideParentList.Contains(TestNode->Data.GetClass()))
 		{
 			TestNode->Data.bIsHidden = true;
@@ -470,7 +470,7 @@ void FGraphNodeClassHelper::BuildClassGraph()
 
 	for (int32 i = 0; i < BlueprintList.Num(); i++)
 	{
-		TSharedPtr<FGraphNodeClassNode> NewNode = CreateClassDataNode(BlueprintList[i]);
+		TSharedPtr<FGameGraphNodeClassNode> NewNode = CreateClassDataNode(BlueprintList[i]);
 		NodeList.Add(NewNode);
 	}
 
@@ -478,7 +478,7 @@ void FGraphNodeClassHelper::BuildClassGraph()
 	AddClassGraphChildren(RootNode, NodeList);
 }
 
-void FGraphNodeClassHelper::AddClassGraphChildren(TSharedPtr<FGraphNodeClassNode> Node, TArray<TSharedPtr<FGraphNodeClassNode> >& NodeList)
+void FGameGraphNodeClassHelper::AddClassGraphChildren(TSharedPtr<FGameGraphNodeClassNode> Node, TArray<TSharedPtr<FGameGraphNodeClassNode> >& NodeList)
 {
 	if (!Node.IsValid())
 	{
@@ -490,7 +490,7 @@ void FGraphNodeClassHelper::AddClassGraphChildren(TSharedPtr<FGraphNodeClassNode
 	{
 		if (NodeList[i]->ParentClassName == NodeClassName)
 		{
-			TSharedPtr<FGraphNodeClassNode> MatchingNode = NodeList[i];
+			TSharedPtr<FGameGraphNodeClassNode> MatchingNode = NodeList[i];
 			NodeList.RemoveAt(i);
 
 			MatchingNode->ParentNode = Node;
@@ -501,17 +501,17 @@ void FGraphNodeClassHelper::AddClassGraphChildren(TSharedPtr<FGraphNodeClassNode
 	}
 }
 
-int32 FGraphNodeClassHelper::GetObservedBlueprintClassCount(UClass* BaseNativeClass)
+int32 FGameGraphNodeClassHelper::GetObservedBlueprintClassCount(UClass* BaseNativeClass)
 {
 	return BlueprintClassCount.FindRef(BaseNativeClass);
 }
 
-void FGraphNodeClassHelper::AddObservedBlueprintClasses(UClass* BaseNativeClass)
+void FGameGraphNodeClassHelper::AddObservedBlueprintClasses(UClass* BaseNativeClass)
 {
 	BlueprintClassCount.Add(BaseNativeClass, 0);
 }
 
-void FGraphNodeClassHelper::UpdateAvailableBlueprintClasses()
+void FGameGraphNodeClassHelper::UpdateAvailableBlueprintClasses()
 {
 	if (FModuleManager::Get().IsModuleLoaded(TEXT("AssetRegistry")))
 	{
