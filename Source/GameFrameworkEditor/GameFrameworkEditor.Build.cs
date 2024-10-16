@@ -88,7 +88,6 @@ public class GameFrameworkEditor : ModuleRules
             "GameFrameworkEditor/Private/Scenario",
             "GameFrameworkEditor/Private/Skill",
             "GameFrameworkEditor/Private/Item",
-            "GameFrameworkEditor/Private/Money",
             "GameFrameworkEditor/Private/Exp",
             "GameFrameworkEditor/Private/Store",
             "GameFrameworkEditor/Private/Unit",
