@@ -37,8 +37,6 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
     auto AnimInstance = CharMesh->GetAnimInstance();
     auto CurrentMontage = ActiveAbility->GetCurrentMontage();
 
-    bool bInComboEnable = false;
-    bool bAfterBackcast = false;
     int FindMontageIndex = -1;
     for (auto Index = 0; Index < AnimInstance->MontageInstances.Num(); ++Index) {
         auto MontageInstance = AnimInstance->MontageInstances[Index];
@@ -57,33 +55,15 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
     for (int32 Index = 0; Index < FindMontageInstance->Montage->Notifies.Num(); ++Index) {
         FAnimNotifyEvent& NotifyEvent = FindMontageInstance->Montage->Notifies[Index];
         if (NotifyEvent.NotifyStateClass) {
-            if (!bInComboEnable) {
-                if (NotifyEvent.NotifyStateClass->GetClass()->IsChildOf(UAnimNotifyState_ComboEnable::StaticClass())) {
-                    //不在连招允许时间
-                    const float NotifyStartTime = NotifyEvent.GetTriggerTime();
-                    const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
-                    if ((CurrentTrackPosition > NotifyStartTime) && (CurrentTrackPosition <= NotifyEndTime)) {
-                        bInComboEnable = true;
-                    }
+            if (NotifyEvent.NotifyStateClass->GetClass()->IsChildOf(UAnimNotifyState_ComboEnable::StaticClass())) {
+                //不在连招允许时间
+                const float NotifyStartTime = NotifyEvent.GetTriggerTime();
+                const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
+                if ((CurrentTrackPosition > NotifyStartTime) && (CurrentTrackPosition <= NotifyEndTime)) {
+                    return true;
                 }
-            }
-            if (!bAfterBackcast) {
-                if (NotifyEvent.NotifyStateClass->GetClass()->IsChildOf(UAnimNotifyState_BackCast::StaticClass())) {
-                    //不在后摇之后
-                    const float NotifyStartTime = NotifyEvent.GetTriggerTime();
-                    if (CurrentTrackPosition > NotifyStartTime) {
-                        bAfterBackcast = true;
-                    }
-                }
-            }
-            if (bInComboEnable && bAfterBackcast) {
-                break;
             }
         }
-    }
-
-    if (bInComboEnable && bAfterBackcast) {
-        return true;
     }
 
     return false;
