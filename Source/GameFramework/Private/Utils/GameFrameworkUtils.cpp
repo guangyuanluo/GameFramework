@@ -17,8 +17,8 @@
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 
-AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug) {
-	auto Result = GetAllActorsWithinRadius(Source, IgnoreActors, OffsetFromActor, TraceLength, Radius, TraceChannel, TeamAttitude, LimitActorClass, false, DrawDebug);
+AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, FName ProfileName, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug) {
+	auto Result = GetAllActorsWithinRadius(Source, IgnoreActors, OffsetFromActor, TraceLength, Radius, ProfileName, TeamAttitude, LimitActorClass, false, DrawDebug);
 	FVector SourceLocation = Source->GetActorLocation();
 	float MinDistance = MAX_flt;
 	AActor* ClosestActor = nullptr;
@@ -32,7 +32,7 @@ AActor* UGameFrameworkUtils::GetClosestActorWithinRadius(AActor* Source, const T
 	return ClosestActor;
 }
 
-TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool SortByDistance, bool DrawDebug) {
+TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, FName ProfileName, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool SortByDistance, bool DrawDebug) {
 	TArray<AActor*> Result;
 	TSet<AActor*> FilterSet;
 	TArray<FHitResult> OutHits;
@@ -45,7 +45,7 @@ TArray<AActor*> UGameFrameworkUtils::GetAllActorsWithinRadius(AActor* Source, co
 	EDrawDebugTrace::Type DrawDebugTrace = DrawDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
 	//保证end和start不一样，不然会导致impactpoint不对
 	TraceLength = FMath::IsNearlyZero(TraceLength) ? 0.001f : TraceLength;
-	if (UKismetSystemLibrary::SphereTraceMulti(Source, Center, Center + Source->GetActorForwardVector() * TraceLength, Radius, TraceChannel, false, IgnoreActors, DrawDebugTrace, OutHits, false)) {
+	if (UKismetSystemLibrary::SphereTraceMultiByProfile(Source, Center, Center + Source->GetActorForwardVector() * TraceLength, Radius, ProfileName, false, IgnoreActors, DrawDebugTrace, OutHits, false)) {
 		for (int Index = 0; Index < OutHits.Num(); ++Index) {
 			auto& HitResult = OutHits[Index];
 			AActor* Actor = HitResult.GetActor();
@@ -214,6 +214,36 @@ UAnimNotifyState* UGameFrameworkUtils::GetAnyActiveAnimNotifyStateByClass(USkele
 	}
 	
 	return nullptr;
+}
+
+bool UGameFrameworkUtils::GetDiffTimeToAnyAnimNotifyStateByClass(USkeletalMeshComponent* MeshComp, UAnimMontage* AnimMontage, TSubclassOf<UAnimNotifyState> AnimNotifyStateClass, float& DiffTime) {
+	if (!IsValid(MeshComp)) {
+		return false;
+	}
+	auto AnimInstance = MeshComp->GetAnimInstance();
+	if (!IsValid(AnimInstance)) {
+		return false;
+	}
+
+	for (auto MontageInstance : AnimInstance->MontageInstances) {
+		if (!MontageInstance || MontageInstance->Montage != AnimMontage) {
+			continue;
+		}
+
+		auto CurrentTrackPosition = MontageInstance->GetPosition();
+		auto FindClass = AnimNotifyStateClass.Get();
+		for (int32 Index = 0; Index < MontageInstance->Montage->Notifies.Num(); ++Index) {
+			FAnimNotifyEvent& NotifyEvent = MontageInstance->Montage->Notifies[Index];
+
+			if (NotifyEvent.NotifyStateClass && NotifyEvent.NotifyStateClass->GetClass()->IsChildOf(FindClass)) {
+				const float NotifyStartTime = NotifyEvent.GetTriggerTime();
+				DiffTime = CurrentTrackPosition - NotifyStartTime;
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 bool UGameFrameworkUtils::IsMontageValidSection(class UAnimMontage* AnimMontage, FName const& SectionName) {

@@ -6,7 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "CoreConditionGroup.h"
 #include "CurrentComboSectionLimitCondition.h"
-#include "SkillComboCacheComponent.h"
+#include "SkillSetting.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();
@@ -70,26 +70,13 @@ float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpec(FGameplayEffectSpe
 }
 
 bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
-	TArray<UCoreCondition*> SearchConditions;
-	for (auto TriggerCondition : Ability->TriggerConditions.Conditions) {
-		SearchConditions.Add(TriggerCondition);
+	if (!Ability) {
+		return false;
 	}
-	auto ComboConditionClass = UCurrentComboSectionLimitCondition::StaticClass();
-	while (SearchConditions.Num() > 0) {
-		auto SearchCondition = SearchConditions[SearchConditions.Num() - 1];
-		SearchConditions.RemoveAt(SearchConditions.Num() - 1);
-		if (SearchCondition->IsA(ComboConditionClass)) {
-			return true;
-		}
-		if (auto ConditionGroup = Cast<UCoreConditionGroup>(SearchCondition)) {
-			for (auto ChildCondition : ConditionGroup->ConditionList.Conditions) {
-				if (ChildCondition != ConditionGroup) {
-					SearchConditions.Add(ChildCondition);
-				}
-			}
-		}
+	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+	if (Ability->AbilityTags.HasTag(SkillSetting->ComboSkillTag)) {
+		return true;
 	}
-
 	return false;
 }
 
@@ -122,20 +109,4 @@ const UGameplayAbility* USkillBlueprintLibrary::EffectContextGetAbilityCDO(const
 
 const UGameplayAbility* USkillBlueprintLibrary::EffectContextGetAbilityInstance_NotReplicated(const FGameplayEffectContextHandle& EffectContext) {
 	return EffectContext.GetAbilityInstance_NotReplicated();
-}
-
-class USkillComboCacheComponent* USkillBlueprintLibrary::GetSkillComboCacheComponent(UAbilitySystemComponent* AbilitySystemComponent) {
-	if (!AbilitySystemComponent) {
-		return nullptr;
-	}
-
-	auto OwnerActor = AbilitySystemComponent->GetOwnerActor();
-	if (!OwnerActor) {
-		return nullptr;
-	}
-	auto SkillComboCacheComponent = Cast<USkillComboCacheComponent>(OwnerActor->GetComponentByClass(USkillComboCacheComponent::StaticClass()));
-	if (!SkillComboCacheComponent) {
-		SkillComboCacheComponent = Cast<USkillComboCacheComponent>(OwnerActor->AddComponentByClass(USkillComboCacheComponent::StaticClass(), false, FTransform::Identity, false));
-	}
-	return SkillComboCacheComponent;
 }
