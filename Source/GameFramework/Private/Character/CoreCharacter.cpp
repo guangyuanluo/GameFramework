@@ -153,10 +153,21 @@ void ACoreCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
     CoreInputCacheComponent->InitializePlayerInput(PlayerInputComponent, CommonMappingContext);
     if (UEnhancedInputComponent* const EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::MoveActionBinding);
-        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::LookActionBinding);
-        EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &ThisClass::LookActionBinding);
-        EnhancedInputComponent->BindAction(LookDeltaAction, ETriggerEvent::Triggered, this, &ThisClass::LookDeltaActionBinding);
+        if (MoveAction) {
+            EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::MoveActionBinding);
+        }
+        if (LookAction) {
+            EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::LookActionBinding);
+        }
+        if (LookAction) {
+            EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Completed, this, &ThisClass::LookActionBinding);
+        }
+        if (LookDeltaAction) {
+            EnhancedInputComponent->BindAction(LookDeltaAction, ETriggerEvent::Triggered, this, &ThisClass::LookDeltaActionBinding);
+        }
+        if (JumpAction) {
+            EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::JumpTrigger);
+        }
     }
 }
 
@@ -353,6 +364,10 @@ void ACoreCharacter::LookUpAtRate(float Rate)
     if (Delta > PlayerController->MouseSensibility) Delta = PlayerController->MouseSensibility;
     else if (Delta < -PlayerController->MouseSensibility) Delta = -PlayerController->MouseSensibility;
     AddControllerPitchInput(Delta);
+}
+
+void ACoreCharacter::JumpTrigger(const FInputActionValue& Value) {
+
 }
 
 UAbilitySystemComponent* ACoreCharacter::GetAbilitySystemComponent() const {

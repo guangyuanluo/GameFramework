@@ -10,6 +10,7 @@
 #include "Base/ECS/GameEntity.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectTypes.h"
+#include "InputActionValue.h"
 #include "CoreCharacter.generated.h"
 
 UCLASS()
@@ -92,6 +93,9 @@ private:
     class UInputAction* LookDeltaAction;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
+    class UInputAction* JumpAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
     int32 CommonMappingPriority = 1;
 
     UFUNCTION()
@@ -121,4 +125,7 @@ private:
     void MoveRight(float Value);
     void TurnAtRate(float Rate);
     void LookUpAtRate(float Rate);
+
+protected:
+    virtual void JumpTrigger(const FInputActionValue& Value);
 };
