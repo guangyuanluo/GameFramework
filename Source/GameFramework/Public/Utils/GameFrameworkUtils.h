@@ -27,13 +27,13 @@ public:
 	* @brief 得到半径内最近的actor
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils", meta = (DeterminesOutputType = "LimitActorClass"))
-	static AActor* GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug = true);
+	static AActor* GetClosestActorWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, FName ProfileName, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool DrawDebug = true);
 
 	/*
 	* @brief 得到半径内所有的actor
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils", meta = (DeterminesOutputType = "LimitActorClass"))
-	static TArray<AActor*> GetAllActorsWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, ETraceTypeQuery TraceChannel, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool SortByDistance = false, bool DrawDebug = true);
+	static TArray<AActor*> GetAllActorsWithinRadius(AActor* Source, const TArray<AActor*>& IgnoreActors, const FVector& OffsetFromActor, float TraceLength, float Radius, FName ProfileName, ETeamAttitude::Type TeamAttitude, TSubclassOf<AActor> LimitActorClass, bool SortByDistance = false, bool DrawDebug = true);
 
 	/**
 	* @brief 合并两个32位整数成64位整数
@@ -114,6 +114,12 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utils")
 	static UAnimNotifyState* GetAnyActiveAnimNotifyStateByClass(USkeletalMeshComponent* MeshComp, TSubclassOf<UAnimNotifyState> AnimNotifyStateClass);
+
+	/**
+	* 获取距离指定动画通知还有多少时间
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Utils")
+	static bool GetDiffTimeToAnyAnimNotifyStateByClass(USkeletalMeshComponent* MeshComp, UAnimMontage* AnimMontage, TSubclassOf<UAnimNotifyState> AnimNotifyStateClass, float& DiffTime);
 
 	/**
 	* 判断蒙太奇的section是否合法

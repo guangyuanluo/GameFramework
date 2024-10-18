@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
+#include "GameplayTagContainer.h"
 #include "SkillSetting.generated.h"
 
 /*
@@ -39,4 +40,10 @@ public:
     */
     UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "全局连招条件检查", NoResetToDefault))
     TArray<TSubclassOf<class UCoreAbilityCondition>> GlobalComboConditions;
+
+    /**
+    * 连招技能tag
+    */
+    UPROPERTY(config, EditAnywhere, Category = "Skill", meta = (DisplayName = "技能模组表", NoResetToDefault))
+    FGameplayTag ComboSkillTag;
 };

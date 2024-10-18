@@ -346,6 +346,14 @@ void UCoreAbilitySystemComponent::Multicast_CurrentMontageJumpToSection_Implemen
     }
 }
 
+UGameplayAbility* UCoreAbilitySystemComponent::K2_GetAnimatingAbility() {
+    return GetAnimatingAbility();
+}
+
+UAnimMontage* UCoreAbilitySystemComponent::K2_GetCurrentMontage() const {
+    return GetCurrentMontage();
+}
+
 void UCoreAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) {
     Super::OnGiveAbility(AbilitySpec);
 

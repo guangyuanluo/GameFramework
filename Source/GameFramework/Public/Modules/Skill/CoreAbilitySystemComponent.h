@@ -176,6 +176,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Character", NetMulticast, Reliable)
     void Multicast_CurrentMontageJumpToSection(class UAnimMontage* InMontage, FName SectionName);
 
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    UGameplayAbility* K2_GetAnimatingAbility();
+
+    UFUNCTION(BlueprintCallable, Category = "Character")
+    UAnimMontage* K2_GetCurrentMontage() const;
+
     /**
     * 技能模板初始化委托
     */

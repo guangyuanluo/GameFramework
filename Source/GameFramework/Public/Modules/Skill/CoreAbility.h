@@ -24,8 +24,8 @@ class GAMEFRAMEWORK_API UCoreAbility : public UGameplayAbility
 
 public:
     /**
- * 技能触发方式
- */
+    * 技能触发方式
+    */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发方式"))
     CoreAbilityTriggerEnum TriggerWay = CoreAbilityTriggerEnum::E_InputKey;
 

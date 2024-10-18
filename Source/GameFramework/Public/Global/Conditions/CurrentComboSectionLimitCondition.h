@@ -13,7 +13,7 @@ class GAMEFRAMEWORK_API UCurrentComboSectionLimitCondition : public UCoreConditi
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FName SectionName;
+    FGameplayTag ComboTag;
 };
 
 UCLASS()

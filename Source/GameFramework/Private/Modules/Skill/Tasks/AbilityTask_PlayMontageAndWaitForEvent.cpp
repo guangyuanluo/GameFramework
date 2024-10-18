@@ -26,7 +26,9 @@ void UAbilityTask_PlayMontageAndWaitForEvent::OnMontageBlendingOut(UAnimMontage*
 	{
 		if (Montage == MontageToPlay)
 		{
-			AbilitySystemComponent->ClearAnimatingAbility(Ability);
+			if (bInterrupted) {
+				AbilitySystemComponent->ClearAnimatingAbility(Ability);
+			}
 
 			// Reset AnimRootMotionTranslationScale
 			ACharacter* Character = Cast<ACharacter>(GetAvatarActor());
@@ -41,17 +43,11 @@ void UAbilityTask_PlayMontageAndWaitForEvent::OnMontageBlendingOut(UAnimMontage*
 
 	HandleEnd();
 
-	if (bInterrupted)
-	{
-		if (ShouldBroadcastAbilityTaskDelegates())
-		{
+	if (ShouldBroadcastAbilityTaskDelegates()) {
+		if (bInterrupted) {
 			OnInterrupted.Broadcast(FGameplayTag(), FGameplayEventData());
 		}
-	}
-	else
-	{
-		if (ShouldBroadcastAbilityTaskDelegates())
-		{
+		else {
 			OnBlendOut.Broadcast(FGameplayTag(), FGameplayEventData());
 		}
 	}
