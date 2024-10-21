@@ -7,6 +7,7 @@
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Skill/EffectInfo.h"
 #include "Modules/Item/ItemTypes.h"
+#include "Modules/Skill/SkillGroupIDContainer.h"
 #include "ItemConfigTableRow.generated.h"
 
 /**
@@ -98,8 +99,8 @@ struct GAMEFRAMEWORK_API FItemConfigTableRow : public FConfigTableRowBase
 	/**
 	* 初始技能模组
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "技能|Hide", meta = (DisplayName = "技能模组id", DisplayPriority = "1"))
-	int SkillGroupID = -1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "技能", meta = (DisplayName = "技能模组", DisplayPriority = "1"))
+	FSkillGroupIDContainer SkillGroupIDContainer;
 
     virtual int GetUniqueId() override;
     virtual FString GetSimpleDescription() override;

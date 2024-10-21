@@ -19,4 +19,5 @@ public:
 	virtual void Export() = 0;
     virtual bool CheckOpenCondition();
 	virtual void Open(TSharedPtr<FUICommandList> InCommandList);
+	virtual bool IsModelWindow();
 };

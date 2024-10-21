@@ -53,7 +53,7 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
                     }
                 }
             }
-            AddSkillGroup(FindTemplate->SkillGroupID, FEffectPreAddDelegate());
+            AddSkillGroup(FindTemplate->SkillGroupIDContainer.SkillGroupID, FEffectPreAddDelegate());
         }
     }
 }

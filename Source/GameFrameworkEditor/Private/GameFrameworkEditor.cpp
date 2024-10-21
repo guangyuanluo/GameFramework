@@ -52,6 +52,8 @@
 #include "Customization/UnitIDContainerCustomization.h"
 #include "Modules/TriggerAction/CoreTriggerActionList.h"
 #include "Customization/CoreTriggerActionListCustomization.h"
+#include "Modules/Skill/SkillGroupIDContainer.h"
+#include "Customization/SkillGroupIDContainerCustomization.h"
 
 static const FName GameFrameworkEditorTabName("GameFrameworkEditor");
 
@@ -282,6 +284,10 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 		FCoreTriggerActionList::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreTriggerActionListCustomization::MakeInstance));
 
+	PropertyModule.RegisterCustomPropertyTypeLayout(
+		FSkillGroupIDContainer::StaticStruct()->GetFName(),
+		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSkillGroupIDContainerCustomization::MakeInstance));
+
     PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -296,6 +302,7 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
         PropertyModule.UnregisterCustomClassLayout(UCoreAbility::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FUnitIDContainer::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreTriggerActionList::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillGroupIDContainer::StaticStruct()->GetFName());
 
         PropertyModule.NotifyCustomizationModuleChanged();
     }
