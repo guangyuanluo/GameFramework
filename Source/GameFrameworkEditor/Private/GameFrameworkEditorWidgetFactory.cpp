@@ -8,12 +8,28 @@ bool GameFrameworkEditorWidgetFactory::CheckOpenCondition() {
 void GameFrameworkEditorWidgetFactory::Open(TSharedPtr<FUICommandList> InCommandList) {
     const FVector2D BrowserWindowSize(1280, 720);
     TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
-    FSlateApplication::Get().AddModalWindow(
-        SNew(SWindow)
-        .Title(GetWindowName())
-        .HasCloseButton(true)
-        .ClientSize(BrowserWindowSize)
-        [
-            ConstructPage(InCommandList)
-        ], RootWindow);
+    if (IsModelWindow()) {
+        FSlateApplication::Get().AddModalWindow(
+            SNew(SWindow)
+            .Title(GetWindowName())
+            .HasCloseButton(true)
+            .ClientSize(BrowserWindowSize)
+            [
+                ConstructPage(InCommandList)
+            ], RootWindow);
+    }
+    else {
+        FSlateApplication::Get().AddWindow(
+            SNew(SWindow)
+            .Title(GetWindowName())
+            .HasCloseButton(true)
+            .ClientSize(BrowserWindowSize)
+            [
+                ConstructPage(InCommandList)
+            ]);
+    }
+}
+
+bool GameFrameworkEditorWidgetFactory::IsModelWindow() {
+    return true;
 }

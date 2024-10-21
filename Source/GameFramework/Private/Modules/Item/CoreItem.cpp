@@ -51,10 +51,10 @@ void UCoreItem::DeactiveItemTableEffects(class UBackpackComponent* BackpackCompo
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemRow = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
-    if (ItemRow->SkillGroupID != -1) {
+    if (ItemRow->SkillGroupIDContainer.SkillGroupID != 0) {
         auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
         if (CharacterState && CharacterState->SkillComponent) {
-            CharacterState->SkillComponent->RemoveSkillGroup(ItemRow->SkillGroupID);
+            CharacterState->SkillComponent->RemoveSkillGroup(ItemRow->SkillGroupIDContainer.SkillGroupID);
         }
     }
 }
@@ -96,10 +96,10 @@ void UCoreItem::ActiveItemTableEffectsPrivate(class UBackpackComponent* Backpack
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();
     auto ItemDataTable = ItemSetting->ItemTable.LoadSynchronous();
     auto ItemRow = (FItemConfigTableRow*)UConfigTableCache::GetDataTableRawDataFromId(ItemDataTable, ItemId);
-    if (ItemRow->SkillGroupID != -1) {
+    if (ItemRow->SkillGroupIDContainer.SkillGroupID != 0) {
         auto CharacterState = Cast<ACoreCharacterStateBase>(BackpackComponent->GetOwner());
         if (CharacterState && CharacterState->SkillComponent) {
-            CharacterState->SkillComponent->AddSkillGroup(ItemRow->SkillGroupID, Callback);
+            CharacterState->SkillComponent->AddSkillGroup(ItemRow->SkillGroupIDContainer.SkillGroupID, Callback);
         }
     }
 }

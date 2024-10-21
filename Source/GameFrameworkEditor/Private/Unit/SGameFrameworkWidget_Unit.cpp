@@ -27,7 +27,6 @@ namespace UnitInfoUI
 {
 	const FName UnitIdColumnName(TEXT("单位Id"));
 	const FName UnitNameColumnName(TEXT("单位名字"));
-    const FName UnitSkillGroupIdColumnName(TEXT("技能模组"));
 };
 
 class SUnitInfoRow : public SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>
@@ -37,11 +36,9 @@ public:
 
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr, TSharedPtr<SGameDataTableRowEditor> InDataTableRowEditor)
+	void Construct(const FArguments& Args, const TSharedRef<STableViewBase>& OwnerTableView, TSharedPtr<FConfigTableRowWrapper> InPtr)
 	{
 		UnitInfoPtr = InPtr;
-
-		this->DataTableRowEditor = InDataTableRowEditor;
 
 		SMultiColumnTableRow<TSharedPtr<FConfigTableRowWrapper>>::Construct(
 			FSuperRowType::FArguments()
@@ -63,32 +60,12 @@ public:
 			return	SNew(STextBlock)
 				.Text(FText::FromString(RowData->UnitName));
 		}
-        else if (ColumnName == UnitInfoUI::UnitSkillGroupIdColumnName) {
-            const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-            auto SkillGroupDataTable = SkillSetting->SkillGroupTable.LoadSynchronous();
-            if (!SkillGroupDataTable) {
-                return SNullWidget::NullWidget;
-            }
-            else {
-                TSharedPtr<SRowTableRefBox> SkillGroupRefBox = SNew(SRowTableRefBox, SkillGroupDataTable, RowData->SkillGroupID);
-                SkillGroupRefBox->RowSelectChanged.BindLambda([this](int ID) {
-                    ((FUnitInfoConfigTableRow*)DataTableRowEditor->GetCurrentRow()->GetStructMemory())->SkillGroupID = ID;
-
-                    DataTableRowEditor->MarkDatatableDirty();
-                });
-                return SkillGroupRefBox.ToSharedRef();
-            }
-        }
 
 		return SNullWidget::NullWidget;
 	}
 
 private:
 	TSharedPtr<FConfigTableRowWrapper> UnitInfoPtr;
-
-	TArray<TSharedPtr<FConfigTableRowWrapper>> ExpTypeSource;
-	TSharedPtr<FConfigTableRowWrapper> mSelectExpType;
-	TSharedPtr<SGameDataTableRowEditor> DataTableRowEditor;
 };
 
 TArray<TSharedPtr<FConfigTableRowWrapper>> SGameFrameworkWidget_Unit::GetRowSource() {
@@ -135,7 +112,7 @@ int32 SGameFrameworkWidget_Unit::ApplyUnitId() {
 }
 
 TSharedRef<ITableRow> SGameFrameworkWidget_Unit::ListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-    return SNew(SUnitInfoRow, OwnerTable, Item, EditorRow);
+    return SNew(SUnitInfoRow, OwnerTable, Item);
 }
 
 TSharedRef<class SHeaderRow> SGameFrameworkWidget_Unit::ConstructListViewHeadRow() {
@@ -145,9 +122,6 @@ TSharedRef<class SHeaderRow> SGameFrameworkWidget_Unit::ConstructListViewHeadRow
         .FillWidth(33.0f)
         + SHeaderRow::Column(UnitInfoUI::UnitNameColumnName)
         .DefaultLabel(FText::FromName(UnitInfoUI::UnitNameColumnName))
-        .FillWidth(33.0f)
-        +SHeaderRow::Column(UnitInfoUI::UnitSkillGroupIdColumnName)
-        .DefaultLabel(FText::FromName(UnitInfoUI::UnitSkillGroupIdColumnName))
         .FillWidth(33.0f);
 }
 

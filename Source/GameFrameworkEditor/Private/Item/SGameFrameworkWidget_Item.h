@@ -42,17 +42,5 @@ private:
 	FReply ItemItemInfoTabClicked();
 	//物品总界面
 	TSharedRef<SWidget> ConstructItemPage();
-	//物品信息界面
-	TSharedRef<SWidget> ConstructItemInfoPage();
-	TSharedRef<SWidget> ConstructItemInfoRowEditor();
-	bool ItemInfoTableRowPreAdd(FName Name);
-	FName ItemInfoTableRowAdded(FName Name);
-	bool ItemInfoTableRowPreRemove(FName Name);
-	void ItemInfoTableRowRemoved(FName Name);
-	void ItemInfoTableRowModified(FName Name);
-	void ItemInfoTableSetHighlightedRow(FName Name);
-	void OnItemInfoSelectionChanged(TSharedPtr<FConfigTableRowWrapper> InNewSelection, ESelectInfo::Type InSelectInfo);
-	TSharedRef<ITableRow> ItemInfoListViewOnGenerateRow(TSharedPtr<FConfigTableRowWrapper> Item, const TSharedRef<STableViewBase>& OwnerTable);
-	int32 ApplyItemId();
 	/**-----------------物品界面相关---------------------**/
 };
