@@ -54,6 +54,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Input")
     void RemoveInputContext(const TScriptInterface<class IEnhancedInputSubsystemInterface>& SubsystemInterface);
 
+    /**
+    * 获取最后移动输入的信息
+    */
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void GetLastMoveInputInfo(FVector& InputDirection, FDateTime& InputTime);
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -97,6 +103,9 @@ private:
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     int32 CommonMappingPriority = 1;
+
+    FVector LastMoveInputDirection = FVector::ZeroVector;;
+    FDateTime LastMoveInputTime;
 
     UFUNCTION()
     void OnReq_EntityID(const FString& OldID);

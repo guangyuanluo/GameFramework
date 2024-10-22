@@ -60,6 +60,11 @@ void ACoreCharacter::RemoveInputContext(const TScriptInterface<class IEnhancedIn
     SubsystemInterface->RemoveMappingContext(CommonMappingContext);
 }
 
+void ACoreCharacter::GetLastMoveInputInfo(FVector& InputDirection, FDateTime& InputTime) {
+    InputDirection = LastMoveInputDirection;
+    InputTime = LastMoveInputTime;
+}
+
 void ACoreCharacter::BeginPlay() {
     Super::BeginPlay();
 
@@ -310,6 +315,10 @@ void ACoreCharacter::Move(const FVector2D& Value)
 {
     MoveForward(Value.X);
     MoveRight(Value.Y);
+    if (!Value.IsNearlyZero()) {
+        LastMoveInputDirection = ControlInputVector;
+        LastMoveInputTime = FDateTime::Now();
+    }
 }
 
 void ACoreCharacter::Look(const FVector2D& Value)
