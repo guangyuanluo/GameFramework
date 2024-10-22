@@ -57,3 +57,7 @@ bool GameFrameworkEditorWidgetFactory_Skill::CheckOpenCondition() {
 
     return true;
 }
+
+bool GameFrameworkEditorWidgetFactory_Skill::IsModelWindow() {
+    return false;
+}

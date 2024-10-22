@@ -1,9 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SGameFrameworkWidget_SkillMain.h"
-#include "SGameFrameworkWidget_SkillTab.h"
-#include "SGameFrameworkWidget_EffectTab.h"
-#include "SGameFrameworkWidget_SkillGroupTab.h"
+#include "Modules/Skill/SkillSetting.h"
 
 void SGameFrameworkWidget_SkillMain::Construct(const FArguments& InArgs, TSharedPtr<FUICommandList> InCommandList) {
 	CommandList = InCommandList;
@@ -44,30 +42,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructPage() {
 					ConstructPageButton(TEXT("技能模组"), FOnClicked::CreateRaw(this, &SGameFrameworkWidget_SkillMain::SkillGroupTabClicked))
 				]
 			]
-			+ SHorizontalBox::Slot()
-			.HAlign(HAlign_Fill)
-			.FillWidth(0.9)
-			[
-				SNew(SWidgetSwitcher)
-				.WidgetIndex(this, &SGameFrameworkWidget_SkillMain::GetTabIndex)
-				+ SWidgetSwitcher::Slot()
-				[
-					ConstructSkillPage()
-				]
-				+ SWidgetSwitcher::Slot()
-				[
-					ConstructEffectPage()
-				]
-				+ SWidgetSwitcher::Slot()
-				[
-					ConstructSkillGroupPage()
-				]
-			]
 		];
-}
-
-int32 SGameFrameworkWidget_SkillMain::GetTabIndex() const {
-	return mTabIndex;
 }
 
 TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructPageButton(const FString& PageName, FOnClicked ClickCallback) {
@@ -86,7 +61,7 @@ TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructPageButton(const FS
 			[
 				SNew(STextBlock)
 				.Font(FCoreStyle::GetDefaultFontStyle("Regular", 10))
-				.ColorAndOpacity(FLinearColor(0, 0, 0, 1))
+				.ColorAndOpacity(FLinearColor(1, 1, 1, 1))
 				.Text(FText::FromString(PageName))
 			]
 		]
@@ -94,28 +69,25 @@ TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructPageButton(const FS
 }
 
 FReply SGameFrameworkWidget_SkillMain::SkillTabClicked() {
-	mTabIndex = 0;
+	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+	auto SkillTable = SkillSetting->SkillTable.LoadSynchronous();
+	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(SkillTable);
+
 	return FReply::Handled();
 }
 
 FReply SGameFrameworkWidget_SkillMain::EffectTabClicked() {
-	mTabIndex = 1;
+	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+	auto EffectTable = SkillSetting->EffectTable.LoadSynchronous();
+	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(EffectTable);
+
 	return FReply::Handled();
 }
 
 FReply SGameFrameworkWidget_SkillMain::SkillGroupTabClicked() {
-	mTabIndex = 2;
+	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
+	auto SkillGroupTable = SkillSetting->SkillGroupTable.LoadSynchronous();
+	GEditor->GetEditorSubsystem<UAssetEditorSubsystem>()->OpenEditorForAsset(SkillGroupTable);
+
 	return FReply::Handled();
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructSkillPage() {
-	return SNew(SGameFrameworkWidget_SkillTab, CommandList);
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructEffectPage() {
-	return SNew(SGameFrameworkWidget_EffectTab, CommandList);
-}
-
-TSharedRef<SWidget> SGameFrameworkWidget_SkillMain::ConstructSkillGroupPage() {
-	return SNew(SGameFrameworkWidget_SkillGroupTab, CommandList);
 }

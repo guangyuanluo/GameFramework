@@ -22,17 +22,11 @@ public:
 	virtual ~SGameFrameworkWidget_SkillMain() override;
 
 	/**-----------------界面相关---------------------**/
-	int mTabIndex;
 	TSharedPtr<FUICommandList> CommandList;
 
 	TSharedRef<SWidget> ConstructPage();
-	int32 GetTabIndex() const;
 	TSharedRef<SWidget> ConstructPageButton(const FString& PageName, FOnClicked ClickCallback);
 	FReply SkillTabClicked();
 	FReply EffectTabClicked();
 	FReply SkillGroupTabClicked();
-
-	TSharedRef<SWidget> ConstructSkillPage();
-	TSharedRef<SWidget> ConstructEffectPage();
-	TSharedRef<SWidget> ConstructSkillGroupPage();
 };
