@@ -155,7 +155,10 @@ void ACoreCharacter::OnRep_PlayerState() {
 void ACoreCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    CoreInputCacheComponent->InitializePlayerInput(PlayerInputComponent, CommonMappingContext);
+    ensure(CommonMappingContext);
+    if (CommonMappingContext) {
+        CoreInputCacheComponent->InitializePlayerInput(PlayerInputComponent, CommonMappingContext);
+    }
     if (UEnhancedInputComponent* const EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
         if (MoveAction) {
