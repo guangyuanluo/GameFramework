@@ -113,6 +113,11 @@ private:
 	UFUNCTION()
 	void OnRep_TemplateID();
 
+    UFUNCTION(unreliable, server, WithValidation)
+    void ServerMoveInput(const FVector& MoveInputDirection);
+    void ServerMoveInput_Implementation(const FVector& MoveInputDirection);
+    bool ServerMoveInput_Validate(const FVector& MoveInputDirection);
+
     /**
     * 属性变化回调
     */
