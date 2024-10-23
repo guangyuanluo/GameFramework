@@ -97,6 +97,15 @@ void ACoreCharacter::OnRep_TemplateID() {
     
 }
 
+void ACoreCharacter::ServerMoveInput_Implementation(const FVector& MoveInputDirection) {
+    LastMoveInputDirection = MoveInputDirection;
+    LastMoveInputTime = FDateTime::Now();
+}
+
+bool ACoreCharacter::ServerMoveInput_Validate(const FVector& MoveInputDirection) {
+    return true;
+}
+
 void ACoreCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -321,6 +330,11 @@ void ACoreCharacter::Move(const FVector2D& Value)
     if (!Value.IsNearlyZero()) {
         LastMoveInputDirection = ControlInputVector;
         LastMoveInputTime = FDateTime::Now();
+
+        if (GetLocalRole() == ENetRole::ROLE_AutonomousProxy) {
+            //主控客户端要同步输入到server
+            ServerMoveInput(LastMoveInputDirection);
+        }        
     }
 }
 
