@@ -13,6 +13,8 @@
 #include "InputActionValue.h"
 #include "CoreCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterMoveInputMCDelegate, const FVector2D&, MoveInput);
+
 UCLASS()
 class GAMEFRAMEWORK_API ACoreCharacter : public ACharacter, public IGenericTeamAgentInterface, public IGameEntity, public IAbilitySystemInterface
 {
@@ -59,6 +61,9 @@ public:
     */
     UFUNCTION(BlueprintCallable, Category = "Input")
     void GetLastMoveInputInfo(FVector& InputDirection, FDateTime& InputTime);
+
+    UPROPERTY(BlueprintAssignable)
+    FOnCharacterMoveInputMCDelegate OnCharacterMoveInput;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

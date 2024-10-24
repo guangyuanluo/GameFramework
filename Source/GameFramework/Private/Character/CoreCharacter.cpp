@@ -98,6 +98,10 @@ void ACoreCharacter::OnRep_TemplateID() {
 }
 
 void ACoreCharacter::ServerMoveInput_Implementation(const FVector& MoveInputDirection) {
+    if (!MoveInputDirection.IsNearlyZero()) {
+        FVector2D Input(MoveInputDirection.X, MoveInputDirection.Y);
+        OnCharacterMoveInput.Broadcast(Input);
+    }
     LastMoveInputDirection = MoveInputDirection;
     LastMoveInputTime = FDateTime::Now();
 }
@@ -325,6 +329,9 @@ void ACoreCharacter::LookDeltaActionBinding(const struct FInputActionValue& Acti
 
 void ACoreCharacter::Move(const FVector2D& Value)
 {
+    if (!Value.IsNearlyZero()) {
+        OnCharacterMoveInput.Broadcast(Value);
+    }
     MoveForward(Value.X);
     MoveRight(Value.Y);
     if (!Value.IsNearlyZero()) {
