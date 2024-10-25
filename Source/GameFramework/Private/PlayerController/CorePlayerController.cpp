@@ -158,6 +158,10 @@ void ACorePlayerController::RemovePawnInputContext(APawn* ToRemove)
 	}
 }
 
+void ACorePlayerController::HandleCameraOccludingObject_Implementation(const FVector& TraceOrigin, const FVector& TraceTarget, ECollisionChannel TraceChannel) {
+
+}
+
 bool ACorePlayerController::ProcessConsoleExec(const TCHAR * Cmd, FOutputDevice & Ar, UObject * Executor) {
     bool Res = Super::ProcessConsoleExec(Cmd, Ar, Executor);
     if (!Res) {

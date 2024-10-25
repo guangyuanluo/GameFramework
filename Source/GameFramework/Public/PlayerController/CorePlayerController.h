@@ -80,6 +80,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void RemovePawnInputContext(APawn* ToRemove);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HandleCameraOccludingObject(const FVector& TraceOrigin, const FVector& TraceTarget, ECollisionChannel TraceChannel);
+
 public:
 	/** 覆写接口 */
     virtual void OnRep_Pawn() override;
