@@ -137,6 +137,14 @@ public:
     virtual void OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
     virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const override;
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+    //~ Begin UObject Interface
+#if WITH_EDITOR
+    virtual void PostEditImport() override;
+    virtual void PostDuplicate(bool bDuplicateForPIE) override;
+    virtual void PostRename(UObject* OldOuter, const FName OldName) override;
+    virtual void PostLoad() override;
+#endif
+    // End UObject
 	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
 	virtual void CallInputReleased(const FGameplayAbilitySpecHandle Handle);
 
@@ -149,9 +157,6 @@ protected:
 private:
     UPROPERTY(Transient, Replicated)
     int32 SkillID;
-
-    UPROPERTY(VisibleAnywhere, Category = InternalData)
-    FString InternalDuplicateData;
 
     FTimerHandle LimitActiveTimeHandle;
     TArray<FActiveGameplayEffectHandle> FollowGAPeriodEffectHandles;

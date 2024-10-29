@@ -201,7 +201,7 @@ FReply SConditionEditWidget::AddConditionButtonClicked() {
 		if (!CanCreate) {
 			return FReply::Unhandled();
 		}
-		auto NewCondition = NewObject<UCoreCondition>(Outer, SelectConditionClass);
+		auto NewCondition = NewObject<UCoreCondition>(Outer, SelectConditionClass, NAME_None, RF_Transactional);
 		if (ConditionFactory) {
 			ConditionFactory->PostInitConditionCreated(NewCondition);
 		}

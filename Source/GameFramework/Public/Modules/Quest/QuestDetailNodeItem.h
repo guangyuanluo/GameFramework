@@ -72,6 +72,7 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditImport() override;
 	virtual void PostDuplicate(bool bDuplicateForPIE) override;
+	virtual void PostRename(UObject* OldOuter, const FName OldName) override;
 #endif
 	// End UObject
 };

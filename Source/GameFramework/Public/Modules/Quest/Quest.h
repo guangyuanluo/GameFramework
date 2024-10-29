@@ -61,6 +61,8 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 #if WITH_EDITOR
 	virtual void PostEditImport() override;
 	virtual void PostDuplicate(bool bDuplicateForPIE) override;
+	virtual void PostRename(UObject* OldOuter, const FName OldName) override;
+	virtual void PostLoad() override;
 #endif
 	// End UObject
 };

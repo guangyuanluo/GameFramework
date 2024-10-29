@@ -35,10 +35,10 @@ void FCoreTriggerActionListCustomization::CustomizeChildren(TSharedRef<IProperty
 	ActionsProperty =
 		StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FCoreTriggerActionList, Actions));
 
-	TArray<UPackage*> OutPackages;
-	ActionsProperty->GetOuterPackages(OutPackages);
+	TArray<UObject*> OutObjects;
+	ActionsProperty->GetOuterObjects(OutObjects);
 	
-	TSharedPtr<STriggerActionListWidget> TriggerActionListWidget = SNew(STriggerActionListWidget, OutPackages[0])
+	TSharedPtr<STriggerActionListWidget> TriggerActionListWidget = SNew(STriggerActionListWidget, OutObjects[0])
 		.OnActionChange_Raw(this, &FCoreTriggerActionListCustomization::OnAssetChange);
 
 	void* ActionsPropertyValuePtr;
