@@ -11,5 +11,5 @@ struct GAMEFRAMEWORK_API FCoreConditionList {
 
     /** 条件列表 */
     UPROPERTY(Category = "Conditon", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "条件列表"))
-    TArray<class UCoreCondition*> Conditions;
+    TArray<TObjectPtr<class UCoreCondition>> Conditions;
 };

@@ -74,4 +74,10 @@ void UQuestDetailNodeItem::PostRename(UObject* OldOuter, const FName OldName) {
     }
 }
 
+void UQuestDetailNodeItem::PostLoad() {
+    Super::PostLoad();
+
+    PostEditImport();
+}
+
 #endif
