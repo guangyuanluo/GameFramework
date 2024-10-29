@@ -286,6 +286,120 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
     }
 }
 
+#if WITH_EDITOR
+void UCoreAbility::PostEditImport() {
+    Super::PostEditImport();
+
+    if (TriggerConditions.Conditions.Num() > 0) {
+        bool bTriggerConditionDirty = false;
+        TArray<UCoreCondition*> NewConditions;
+        for (auto Condition : TriggerConditions.Conditions) {
+            if (Condition && Condition->GetOuter() != this) {
+                bTriggerConditionDirty = true;
+                auto NewCondition = DuplicateObject(Condition, this);
+                NewConditions.Add(NewCondition);
+            }
+        }
+        if (bTriggerConditionDirty) {
+            TriggerConditions.Conditions = NewConditions;
+        }
+    }
+
+    if (ConditionActionTriggerConfigs.Num() > 0) {
+        for (auto& ConditionActionTriggerConfig : ConditionActionTriggerConfigs) {
+            bool bConditionDirty = false;
+            TArray<UCoreCondition*> NewConditions;
+            for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
+                if (Condition && Condition->GetOuter() != this) {
+                    bConditionDirty = true;
+                    auto NewCondition = DuplicateObject(Condition, this);
+                    NewConditions.Add(NewCondition);
+                }
+            }
+            if (bConditionDirty) {
+                ConditionActionTriggerConfig.TriggerConditions.Conditions = NewConditions;
+            }
+            bool bActionDirty = false;
+            TArray<class UCoreTriggerAction*> NewActions;
+            for (auto Action : ConditionActionTriggerConfig.ExecuteActions.Actions) {
+                if (Action && Action->GetOuter() != this) {
+                    bActionDirty = true;
+                    auto NewAction = DuplicateObject(Action, this);
+                    NewActions.Add(NewAction);
+                }
+            }
+            if (bActionDirty) {
+                ConditionActionTriggerConfig.ExecuteActions.Actions = NewActions;
+            }
+        }
+    }
+
+    if (ExternFinishConditions.Conditions.Num() > 0) {
+        bool bExternFinishConditionDirty = false;
+        TArray<UCoreCondition*> NewConditions;
+        for (auto Condition : ExternFinishConditions.Conditions) {
+            if (Condition && Condition->GetOuter() != this) {
+                bExternFinishConditionDirty = true;
+                auto NewCondition = DuplicateObject(Condition, this);
+                NewConditions.Add(NewCondition);
+            }
+        }
+        if (bExternFinishConditionDirty) {
+            ExternFinishConditions.Conditions = NewConditions;
+        }
+    }
+}
+
+
+void UCoreAbility::PostDuplicate(bool bDuplicateForPIE) {
+    Super::PostDuplicate(bDuplicateForPIE);
+
+    PostEditImport();
+}
+
+void UCoreAbility::PostRename(UObject* OldOuter, const FName OldName) {
+    Super::PostRename(OldOuter, OldName);
+
+    if (TriggerConditions.Conditions.Num() > 0) {
+        for (auto Condition : TriggerConditions.Conditions) {
+            if (Condition) {
+                Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
+            }
+        }
+    }
+
+    if (ConditionActionTriggerConfigs.Num() > 0) {
+        for (auto ConditionActionTriggerConfig : ConditionActionTriggerConfigs) {
+            for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
+                if (Condition) {
+                    Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
+                }
+            }
+            for (auto Action : ConditionActionTriggerConfig.ExecuteActions.Actions) {
+                if (Action) {
+                    Action->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
+                }
+            }
+        }
+    }
+
+    if (ExternFinishConditions.Conditions.Num() > 0) {
+        for (auto Condition : ExternFinishConditions.Conditions) {
+            if (Condition) {
+                Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
+            }
+        }
+    }
+}
+
+void UCoreAbility::PostLoad() {
+    Super::PostLoad();
+
+    PostEditImport();
+}
+
+#endif
+
 void UCoreAbility::CallInputPressed(const FGameplayAbilitySpecHandle Handle) {
     K2_InputPressed();
 

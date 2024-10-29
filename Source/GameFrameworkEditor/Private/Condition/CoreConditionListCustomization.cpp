@@ -35,10 +35,10 @@ void FCoreConditionListCustomization::CustomizeChildren(TSharedRef<IPropertyHand
 	ConditionsProperty =
 		StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FCoreConditionList, Conditions));
 
-	TArray<UPackage*> OutPackages;
-	ConditionsProperty->GetOuterPackages(OutPackages);
+	TArray<UObject*> OutObjects;
+	ConditionsProperty->GetOuterObjects(OutObjects);
 	
-	TSharedPtr<SConditionEditWidget> ConditionEditWidget = SNew(SConditionEditWidget, OutPackages[0])
+	TSharedPtr<SConditionEditWidget> ConditionEditWidget = SNew(SConditionEditWidget, OutObjects[0])
 		.OnConditionChange_Raw(this, &FCoreConditionListCustomization::OnAssetChange);
 
 	void* ConditionsPropertyValuePtr;

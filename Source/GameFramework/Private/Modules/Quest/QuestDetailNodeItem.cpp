@@ -19,28 +19,59 @@ FString UQuestDetailNodeItem::GetNodeTypeName_Implementation() {
 #if WITH_EDITOR
 
 void UQuestDetailNodeItem::PostEditImport() {
-    auto Outer = GetOuter();
     if (ConditionList.Conditions.Num() > 0) {
+        bool bConditionDirty = false;
         TArray<UCoreCondition*> NewConditions;
         for (auto Condition : ConditionList.Conditions) {
-            auto NewCondition = DuplicateObject(Condition, Outer);
-            NewConditions.Add(NewCondition);
+            if (Condition && Condition->GetOuter() != this) {
+                bConditionDirty = true;
+                auto NewCondition = DuplicateObject(Condition, this);
+                NewConditions.Add(NewCondition);
+            }
         }
-        ConditionList.Conditions = NewConditions;
+        if (bConditionDirty) {
+            ConditionList.Conditions = NewConditions;
+        }
     }
 
     if (Rewards.Num() > 0) {
+        bool bRewardsDirty = false;
         TArray<UCoreReward*> NewRewards;
         for (auto Reward : Rewards) {
-            auto NewReward = DuplicateObject(Reward, Outer);
-            NewRewards.Add(NewReward);
+            if (Reward && Reward->GetOuter() != this) {
+                bRewardsDirty = true;
+                auto NewReward = DuplicateObject(Reward, this);
+                NewRewards.Add(NewReward);
+            }
         }
-        Rewards = NewRewards;
+        if (bRewardsDirty) {
+            Rewards = NewRewards;
+        }
     }
 }
 
 void UQuestDetailNodeItem::PostDuplicate(bool bDuplicateForPIE) {
     PostEditImport();
+}
+
+void UQuestDetailNodeItem::PostRename(UObject* OldOuter, const FName OldName) {
+    Super::PostRename(OldOuter, OldName);
+
+    if (ConditionList.Conditions.Num() > 0) {
+        for (auto Condition : ConditionList.Conditions) {
+            if (Condition) {
+                Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
+            }
+        }
+    }
+
+    if (Rewards.Num() > 0) {
+        for (auto Reward : Rewards) {
+            if (Reward) {
+                Reward->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
+            }
+        }
+    }
 }
 
 #endif
