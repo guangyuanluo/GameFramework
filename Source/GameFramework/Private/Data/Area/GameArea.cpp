@@ -14,30 +14,30 @@ AGameArea::AGameArea(const FObjectInitializer& ObjectInitializer) : Super(Object
 	bReplicates = true;
 }
 
-void AGameArea::OnEnter(ACoreCharacter* character) {
-	if (character != nullptr) {
-        auto gameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-		if (gameInstance != nullptr) {
-            UE_LOG(GameCore, Log, TEXT("实体Id[%s] 进入区域[%s]"), *character->GetEntityID(), *AreaName);
+void AGameArea::OnEnter(ACoreCharacter* Character) {
+	if (Character != nullptr) {
+        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+		if (GameInstance != nullptr) {
+            UE_LOG(GameCore, Log, TEXT("实体Id[%s] 进入区域[%s]"), *Character->GetEntityID(), *AreaName);
 
-			UEnterAreaEvent* enterAreaEvent = NewObject<UEnterAreaEvent>();
-			enterAreaEvent->Character = character;
-			enterAreaEvent->AreaName = AreaName;
-			gameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(enterAreaEvent);
+			UEnterAreaEvent* EnterAreaEvent = NewObject<UEnterAreaEvent>();
+			EnterAreaEvent->Character = Character;
+			EnterAreaEvent->AreaName = AreaName;
+			GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(EnterAreaEvent);
 		}
 	}
 }
 
-void AGameArea::OnExit(ACoreCharacter* character) {
-	if (character != nullptr) {
-        auto gameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-		if (gameInstance != nullptr) {
-            UE_LOG(GameCore, Log, TEXT("实体Id[%s] 离开区域[%s]"), *character->GetEntityID(), *AreaName);
+void AGameArea::OnExit(ACoreCharacter* Character) {
+	if (Character != nullptr) {
+        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+		if (GameInstance != nullptr) {
+            UE_LOG(GameCore, Log, TEXT("实体Id[%s] 离开区域[%s]"), *Character->GetEntityID(), *AreaName);
 
-			UExitAreaEvent* exitAreaEvent = NewObject<UExitAreaEvent>();
-			exitAreaEvent->Character = character;
-			exitAreaEvent->AreaName = AreaName;
-			gameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(exitAreaEvent);
+			UExitAreaEvent* ExitAreaEvent = NewObject<UExitAreaEvent>();
+			ExitAreaEvent->Character = Character;
+			ExitAreaEvent->AreaName = AreaName;
+			GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ExitAreaEvent);
 		}
 	}
 }
