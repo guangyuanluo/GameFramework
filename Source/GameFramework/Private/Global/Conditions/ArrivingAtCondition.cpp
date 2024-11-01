@@ -2,9 +2,12 @@
 
 #include "ArrivingAtCondition.h"
 #include "EnterAreaEvent.h"
+#include "ExitAreaEvent.h"
 #include "CoreCharacter.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+#include "CoreCharacterStateBase.h"
+#include "GameArea.h"
 
 UArrivingAtCondition::UArrivingAtCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {
@@ -15,6 +18,25 @@ void UArrivingAtConditionProgress::OnInitialize() {
 	Super::OnInitialize();
 
 	HaveComplete = false;
+
+	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+	if (ConditionPlayerState) {
+		auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
+		TArray<AActor*> OverlapAreas;
+		Character->GetOverlappingActors(OverlapAreas, AGameArea::StaticClass());
+
+		if (OverlapAreas.Num()) {
+			UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
+			for (auto OverlapActor : OverlapAreas) {
+				if (auto OverlapArea = Cast<AGameArea>(OverlapActor)) {
+					if (OverlapArea->AreaName == ArrivingAtCondition->LocationName) {
+						HaveComplete = true;
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 
 bool UArrivingAtConditionProgress::IsComplete(bool& IsValid) {
@@ -29,7 +51,9 @@ TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandl
 		return {};
 	}
 	if (bComplete) {
-		return {};
+		return {
+			UExitAreaEvent::StaticClass(),
+		};
 	}
 	else {
 		return {
@@ -39,13 +63,43 @@ TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandl
 }
 
 void UArrivingAtConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
-	UEnterAreaEvent* EnterAreaEvent = (UEnterAreaEvent*)HandleEvent;
-	UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
-	if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitIDContainer.UnitID
-		&& EnterAreaEvent->AreaName == ArrivingAtCondition->LocationName) {
-		HaveComplete = true;
+	if (UEnterAreaEvent* EnterAreaEvent = Cast<UEnterAreaEvent>(HandleEvent)) {
+		UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
+		if (ArrivingAtCondition->UnitIDContainer.UnitID == 0) {
+			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+			if (EnterAreaEvent->Character->GetPlayerState() != ConditionPlayerState) {
+				return;
+			}
+		}
+		else {
+			if (EnterAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitIDContainer.UnitID) {
+				return;
+			}
+		}
+		if (EnterAreaEvent->AreaName == ArrivingAtCondition->LocationName) {
+			HaveComplete = true;
 
-		RefreshSatisfy();
+			RefreshSatisfy();
+		}
+	}
+	else if (UExitAreaEvent* ExitAreaEvent = Cast<UExitAreaEvent>(HandleEvent)) {
+		UArrivingAtCondition* ArrivingAtCondition = (UArrivingAtCondition*)Condition;
+		if (ArrivingAtCondition->UnitIDContainer.UnitID == 0) {
+			auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
+			if (ExitAreaEvent->Character->GetPlayerState() != ConditionPlayerState) {
+				return;
+			}
+		}
+		else {
+			if (ExitAreaEvent->Character->TemplateID == ArrivingAtCondition->UnitIDContainer.UnitID) {
+				return;
+			}
+		}
+		if (ExitAreaEvent->AreaName == ArrivingAtCondition->LocationName) {
+			HaveComplete = false;
+
+			RefreshSatisfy();
+		}
 	}
 }
 
