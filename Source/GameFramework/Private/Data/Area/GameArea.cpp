@@ -17,28 +17,39 @@ AGameArea::AGameArea(const FObjectInitializer& ObjectInitializer) : Super(Object
 void AGameArea::OnEnter(ACoreCharacter* Character) {
 	if (Character != nullptr) {
         auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-		if (GameInstance != nullptr) {
-            UE_LOG(GameCore, Log, TEXT("实体Id[%s] 进入区域[%s]"), *Character->GetEntityID(), *AreaName);
-
-			UEnterAreaEvent* EnterAreaEvent = NewObject<UEnterAreaEvent>();
-			EnterAreaEvent->Character = Character;
-			EnterAreaEvent->AreaName = AreaName;
-			GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(EnterAreaEvent);
+		if (!GameInstance || !GameInstance->GameSystemManager) {
+			return;
 		}
+		auto EventSystem = GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
+		if (!EventSystem) {
+			return;
+		}
+        UE_LOG(GameCore, Log, TEXT("实体Id[%s] 进入区域[%s]"), *Character->GetEntityID(), *AreaName);
+
+		UEnterAreaEvent* EnterAreaEvent = NewObject<UEnterAreaEvent>();
+		EnterAreaEvent->Character = Character;
+		EnterAreaEvent->AreaName = AreaName;
+		EventSystem->PushEvent(EnterAreaEvent);
 	}
 }
 
 void AGameArea::OnExit(ACoreCharacter* Character) {
 	if (Character != nullptr) {
         auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-		if (GameInstance != nullptr) {
-            UE_LOG(GameCore, Log, TEXT("实体Id[%s] 离开区域[%s]"), *Character->GetEntityID(), *AreaName);
-
-			UExitAreaEvent* ExitAreaEvent = NewObject<UExitAreaEvent>();
-			ExitAreaEvent->Character = Character;
-			ExitAreaEvent->AreaName = AreaName;
-			GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ExitAreaEvent);
+		if (!GameInstance || !GameInstance->GameSystemManager) {
+			return;
 		}
+		auto EventSystem = GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
+		if (!EventSystem) {
+			return;
+		}
+
+        UE_LOG(GameCore, Log, TEXT("实体Id[%s] 离开区域[%s]"), *Character->GetEntityID(), *AreaName);
+
+		UExitAreaEvent* ExitAreaEvent = NewObject<UExitAreaEvent>();
+		ExitAreaEvent->Character = Character;
+		ExitAreaEvent->AreaName = AreaName;
+		EventSystem->PushEvent(ExitAreaEvent);
 	}
 }
 
