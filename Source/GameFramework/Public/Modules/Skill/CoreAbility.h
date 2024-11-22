@@ -10,7 +10,7 @@
 /** delegate define */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputPressed, class UCoreAbility*, Ability, int32, InputID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAbilityInputReleased, class UCoreAbility*, Ability, int32, InputID);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAbilityFinish);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAbilityFinish, class UCoreAbility*, Ability);
 
 /**
  * Subclass of ability blueprint type with game-specific data

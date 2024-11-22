@@ -424,7 +424,7 @@ void UCoreAbility::SetCurrentReceivedEventData(const FGameplayEventData& GameEve
 
 void UCoreAbility::OnAbilityEnd(const FAbilityEndedData& AbilityEndedData) {
     if (!AbilityEndedData.bWasCancelled) {
-        OnAbilityFinish.Broadcast();
+        OnAbilityFinish.Broadcast(this);
     }
 
     if (LimitActiveTimeHandle.IsValid()) {
