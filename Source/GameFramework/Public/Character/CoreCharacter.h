@@ -40,10 +40,6 @@ public:
     UFUNCTION(BlueprintNativeEvent, Category = "Character")
     void PostSkillTemplateInit();
 
-    /** 属性变化回调 */
-    UFUNCTION(BlueprintNativeEvent, Category = "Character")
-    void ReceiveAttributeChanged(FGameplayAttribute Attribute, float OldValue, float NewValue);
-
     /** 联网同步播放蒙太奇 */
     UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
     void RPC_ReplicatePlayMontageToActorOwingClient(class UAnimMontage* AnimMontage, float InPlayRate = 1.f, FName StartSectionName = NAME_None);
@@ -123,17 +119,10 @@ private:
     void ServerMoveInput_Implementation(const FVector& MoveInputDirection);
     bool ServerMoveInput_Validate(const FVector& MoveInputDirection);
 
-    /**
-    * 属性变化回调
-    */
-    void OnAttributeChange(const struct FOnAttributeChangeData& Data);
-
     /** 初始模板 */
     void InitTemplate(int InTemplateId);
     /** 初始化技能相关 */
     void InitSkill();
-    /** 监听属性变化事件 */
-    void ListenAttributeChange();
 
     void MoveActionBinding(const struct FInputActionValue& ActionValue);
     void LookActionBinding(const struct FInputActionValue& ActionValue);

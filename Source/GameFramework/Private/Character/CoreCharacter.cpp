@@ -13,9 +13,6 @@
 #include "UE4LogImpl.h"
 #include "ExpComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "ChangeAttributeEvent.h"
-#include "EventSystem.h"
-#include "GameSystemManager.h"
 #include "CoreCharacterStateBase.h"
 #include "CoreAbilitySystemComponent.h"
 #include "ConfigTableCache.h"
@@ -37,10 +34,6 @@ ACoreCharacter::ACoreCharacter(const class FObjectInitializer& ObjectInitializer
 }
 
 void ACoreCharacter::PostSkillTemplateInit_Implementation() {
-
-}
-
-void ACoreCharacter::ReceiveAttributeChanged_Implementation(FGameplayAttribute Attribute, float OldValue, float NewValue) {
 
 }
 
@@ -200,24 +193,6 @@ FGenericTeamId ACoreCharacter::GetGenericTeamId() const {
 	return (uint8)TeamID;
 }
 
-void ACoreCharacter::OnAttributeChange(const FOnAttributeChangeData& Data) {
-    if (Data.OldValue != Data.NewValue) {
-        //属性变化事件
-        UChangeAttributeEvent* ChangeAttributeEvent = NewObject<UChangeAttributeEvent>();
-        ChangeAttributeEvent->Character = this;
-        ChangeAttributeEvent->Attribute = Data.Attribute;
-        ChangeAttributeEvent->OldValue = Data.OldValue;
-        ChangeAttributeEvent->NewValue = Data.NewValue;
-
-        //蓝图回调
-        ReceiveAttributeChanged(Data.Attribute, Data.OldValue, Data.NewValue);
-
-        //事件广播
-        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeAttributeEvent);
-    }
-}
-
 void ACoreCharacter::InitTemplate(int InTemplateID) {
     const UUnitSetting* UnitSetting = GetDefault<UUnitSetting>();
     auto UnitDataTable = UnitSetting->UnitTable.LoadSynchronous();
@@ -281,7 +256,6 @@ void ACoreCharacter::InitSkill() {
                 || !FindUnitInfo->AttributeTable.GetLongPackageName().IsEmpty()) {
                 auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
                 CharacterState->SkillComponent->InitSkillFromTemplate(TemplateID);
-                ListenAttributeChange();
                 PostSkillTemplateInit();
 
                 //触发监听的组件回调
@@ -296,17 +270,6 @@ void ACoreCharacter::InitSkill() {
                 bSkillInit = true;
             }
         }
-    }
-}
-
-void ACoreCharacter::ListenAttributeChange() {
-    auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
-    /** 监听所有属性变化，替换成事件 */
-    TArray<FGameplayAttribute> AllGameplayAttributes;
-
-    CharacterState->SkillComponent->GetAllAttributes(AllGameplayAttributes);
-    for (int AttributeIndex = 0; AttributeIndex < AllGameplayAttributes.Num(); ++AttributeIndex) {
-        CharacterState->SkillComponent->GetGameplayAttributeValueChangeDelegate(AllGameplayAttributes[AttributeIndex]).AddUObject(this, &ACoreCharacter::OnAttributeChange);
     }
 }
 
