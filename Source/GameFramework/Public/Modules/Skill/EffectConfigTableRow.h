@@ -36,7 +36,7 @@ struct GAMEFRAMEWORK_API FEffectConfigTableRow : public FConfigTableRowBase
     * 图标
     */
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Skill", meta = (DisplayName = "图标", DisplayPriority = "1"))
-    FString Icon;
+    TSoftObjectPtr<class UTexture2D> Icon;
 
     /** 效果类 */
     UPROPERTY(Category = "Skill", EditAnywhere, BlueprintReadOnly)

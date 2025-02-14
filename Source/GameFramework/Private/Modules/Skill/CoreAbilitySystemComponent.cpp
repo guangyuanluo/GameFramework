@@ -17,6 +17,11 @@
 #include "SortUtils.h"
 #include "FindEnemyComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "ChangeAttributeEvent.h"
+#include "ChangeEffectEvent.h"
+#include "EventSystem.h"
+#include "GameSystemManager.h"
+#include "CoreGameInstance.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = GetOwner();
@@ -56,6 +61,7 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
             AddSkillGroup(FindTemplate->SkillGroupIDContainer.SkillGroupID, FEffectPreAddDelegate());
         }
     }
+    ListenAttributeChange();
 }
 
 void UCoreAbilitySystemComponent::K2_AddSkillGroup(int SkillGroupID, const FEffectPreAddDynDelegate& InEffectPreAddCallback) {
@@ -354,6 +360,19 @@ UAnimMontage* UCoreAbilitySystemComponent::K2_GetCurrentMontage() const {
     return GetCurrentMontage();
 }
 
+void UCoreAbilitySystemComponent::BeginPlay() {
+    Super::BeginPlay();
+
+    OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(this, &UCoreAbilitySystemComponent::OnActiveEffectAdded);
+    OnAnyGameplayEffectRemovedDelegate().AddUObject(this, &UCoreAbilitySystemComponent::OnActiveEffectRemove);
+}
+
+void UCoreAbilitySystemComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+    Super::EndPlay(EndPlayReason);
+
+    OnActiveGameplayEffectAddedDelegateToSelf.RemoveAll(this);
+}
+
 void UCoreAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) {
     Super::OnGiveAbility(AbilitySpec);
 
@@ -558,4 +577,53 @@ FGameplayTagContainer UCoreAbilitySystemComponent::GetTargetTagContainer() {
         }
     }
     return TargetTagContainer;
+}
+
+void UCoreAbilitySystemComponent::ListenAttributeChange() {
+    auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwnerActor());
+    /** 监听所有属性变化，替换成事件 */
+    TArray<FGameplayAttribute> AllGameplayAttributes;
+
+    CharacterState->SkillComponent->GetAllAttributes(AllGameplayAttributes);
+    for (int AttributeIndex = 0; AttributeIndex < AllGameplayAttributes.Num(); ++AttributeIndex) {
+        CharacterState->SkillComponent->GetGameplayAttributeValueChangeDelegate(AllGameplayAttributes[AttributeIndex]).AddUObject(this, &UCoreAbilitySystemComponent::OnAttributeChange);
+    }
+}
+
+void UCoreAbilitySystemComponent::OnAttributeChange(const FOnAttributeChangeData& Data) {
+    if (Data.OldValue != Data.NewValue) {
+        //属性变化事件
+        auto Character = Cast<ACoreCharacter>(GetAvatarActor());
+        UChangeAttributeEvent* ChangeAttributeEvent = NewObject<UChangeAttributeEvent>();
+        ChangeAttributeEvent->Character = Character;
+        ChangeAttributeEvent->Attribute = Data.Attribute;
+        ChangeAttributeEvent->OldValue = Data.OldValue;
+        ChangeAttributeEvent->NewValue = Data.NewValue;
+
+        //事件广播
+        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeAttributeEvent);
+    }
+}
+
+void UCoreAbilitySystemComponent::OnActiveEffectAdded(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle) {
+    //effect变化事件
+    auto Character = Cast<ACoreCharacter>(GetAvatarActor());
+    UChangeEffectEvent* ChangeEffectEvent = NewObject<UChangeEffectEvent>();
+    ChangeEffectEvent->Character = Character;
+
+    //事件广播
+    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeEffectEvent);
+}
+
+void UCoreAbilitySystemComponent::OnActiveEffectRemove(const FActiveGameplayEffect& FGameplayEffectRemovalInfo) {
+    //effect变化事件
+    auto Character = Cast<ACoreCharacter>(GetAvatarActor());
+    UChangeEffectEvent* ChangeEffectEvent = NewObject<UChangeEffectEvent>();
+    ChangeEffectEvent->Character = Character;
+
+    //事件广播
+    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeEffectEvent);
 }
