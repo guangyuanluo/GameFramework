@@ -19,10 +19,11 @@ FString UQuestDetailNodeItem::GetNodeTypeName_Implementation() {
 #if WITH_EDITOR
 
 void UQuestDetailNodeItem::PostEditImport() {
-    if (ConditionList.Conditions.Num() > 0) {
+    /*
+    if (ConditionList.Num() > 0) {
         bool bConditionDirty = false;
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : ConditionList.Conditions) {
+        for (auto Condition : ConditionList) {
             if (Condition && Condition->GetOuter() != this) {
                 bConditionDirty = true;
                 auto NewCondition = DuplicateObject(Condition, this);
@@ -30,7 +31,7 @@ void UQuestDetailNodeItem::PostEditImport() {
             }
         }
         if (bConditionDirty) {
-            ConditionList.Conditions = NewConditions;
+            ConditionList = NewConditions;
         }
     }
 
@@ -48,6 +49,7 @@ void UQuestDetailNodeItem::PostEditImport() {
             Rewards = NewRewards;
         }
     }
+    */
 }
 
 void UQuestDetailNodeItem::PostDuplicate(bool bDuplicateForPIE) {
@@ -57,8 +59,9 @@ void UQuestDetailNodeItem::PostDuplicate(bool bDuplicateForPIE) {
 void UQuestDetailNodeItem::PostRename(UObject* OldOuter, const FName OldName) {
     Super::PostRename(OldOuter, OldName);
 
-    if (ConditionList.Conditions.Num() > 0) {
-        for (auto Condition : ConditionList.Conditions) {
+    /*
+    if (ConditionList.Num() > 0) {
+        for (auto Condition : ConditionList) {
             if (Condition) {
                 Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
             }
@@ -72,6 +75,7 @@ void UQuestDetailNodeItem::PostRename(UObject* OldOuter, const FName OldName) {
             }
         }
     }
+    */
 }
 
 void UQuestDetailNodeItem::PostLoad() {

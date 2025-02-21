@@ -36,8 +36,8 @@ public:
 	UPROPERTY()
 	TArray<class UScenarioNode*> FollowScenarioNodes;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "动作列表"))
-    TArray<class UScenarioAction*> Actions;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, meta = (DisplayName = "动作列表"))
+    TArray<TObjectPtr<class UScenarioAction>> Actions;
 
     UFUNCTION(BlueprintCallable)
     const TArray<class UScenarioNode*>& GetFollowScenarioNodes() const;

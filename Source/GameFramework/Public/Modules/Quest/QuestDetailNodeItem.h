@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Quest/QuestDetailNode.h"
-#include "Modules/Condition/CoreConditionList.h"
 #include "Modules/Unit/UnitIDContainer.h"
 #include "QuestDetailNodeItem.generated.h"
 
@@ -38,8 +37,8 @@ public:
 	/**
 	* 条件
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "条件"))
-	FCoreConditionList ConditionList;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = "Quest", meta = (DisplayName = "条件"))
+	TArray<TObjectPtr<class UCoreCondition>> ConditionList;
 
 	/**
 	* 任务进行中，占有NPC交谈剧情
@@ -62,8 +61,8 @@ public:
 	/**
 	* 奖励
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "奖励") )
-	TArray<class UCoreReward*> Rewards;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = "Quest", meta = (DisplayName = "奖励") )
+	TArray<TObjectPtr<class UCoreReward>> Rewards;
 
 	virtual FString GetNodeTitle_Implementation() override;
 	virtual FString GetNodeTypeName_Implementation() override;

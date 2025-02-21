@@ -32,8 +32,8 @@ public:
     /**
     * 技能触发条件
     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发条件"))
-    FCoreConditionList TriggerConditions;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Instanced, Category = Default, meta = (DisplayName = "技能触发条件"))
+    TArray<TObjectPtr<class UCoreCondition>> TriggerConditions;
 
     /**
     * 技能响应触发动作
@@ -44,8 +44,8 @@ public:
     /**
     * 技能额外终止条件
     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能额外终止条件"))
-    FCoreConditionList ExternFinishConditions;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Instanced, Category = Default, meta = (DisplayName = "技能额外终止条件"))
+    TArray<TObjectPtr<class UCoreCondition>> ExternFinishConditions;
 
 	/**
     * 技能排序优先级

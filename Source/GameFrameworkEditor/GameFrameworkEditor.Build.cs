@@ -80,8 +80,6 @@ public class GameFrameworkEditor : ModuleRules
         PublicIncludePaths.Add(ModuleDirectory);
         PrivateIncludePaths.AddRange(new string[] {
             "GameFrameworkEditor/Public",
-            "GameFrameworkEditor/Public/Condition",
-            "GameFrameworkEditor/Private/Condition",
             "GameFrameworkEditor/Private",
             "GameFrameworkEditor/Private/Enum",            
             "GameFrameworkEditor/Private/Graph",
@@ -95,7 +93,6 @@ public class GameFrameworkEditor : ModuleRules
             "GameFrameworkEditor/Private/Quest/QuestTree",
             "GameFrameworkEditor/Public/Slate",
             "GameFrameworkEditor/Private/Placement",
-            "GameFrameworkEditor/Private/TriggerAction",
             "GameFrameworkEditor/Public/Scenario",
         });
     }

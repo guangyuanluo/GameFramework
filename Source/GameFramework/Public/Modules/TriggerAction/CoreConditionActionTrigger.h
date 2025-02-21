@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Modules/Condition/CoreConditionList.h"
-#include "Modules/TriggerAction/CoreTriggerActionList.h"
+#include "Modules/TriggerAction/CoreTriggerAction.h"
 #include "Modules/Condition/ConditionTriggerHandler.h"
 #include "CoreConditionActionTrigger.generated.h"
 
@@ -19,14 +18,14 @@ struct GAMEFRAMEWORK_API FCoreConditionActionTriggerConfig
 	/**
 	* 触发条件
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "触发条件"))
-	FCoreConditionList TriggerConditions;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (DisplayName = "触发条件"))
+	TArray<TObjectPtr<class UCoreCondition>> TriggerConditions;
 
 	/**
 	* 执行动作
 	*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "执行动作"))
-	FCoreTriggerActionList ExecuteActions;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, meta = (DisplayName = "执行动作"))
+	TArray<TObjectPtr<class UCoreTriggerAction>> ExecuteActions;
 };
 
 /**
