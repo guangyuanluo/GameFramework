@@ -26,25 +26,25 @@ public:
     /**
     * 技能触发方式
     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能触发方式"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能触发方式"))
     CoreAbilityTriggerEnum TriggerWay = CoreAbilityTriggerEnum::E_InputKey;
 
     /**
     * 技能触发条件
     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Instanced, Category = Default, meta = (DisplayName = "技能触发条件"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Default, meta = (DisplayName = "技能触发条件"))
     TArray<TObjectPtr<class UCoreCondition>> TriggerConditions;
 
     /**
     * 技能响应触发动作
     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Default, meta = (DisplayName = "技能响应触发动作"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default, meta = (DisplayName = "技能响应触发动作"))
     TArray<FCoreConditionActionTriggerConfig> ConditionActionTriggerConfigs;
 
     /**
     * 技能额外终止条件
     */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Instanced, Category = Default, meta = (DisplayName = "技能额外终止条件"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Instanced, Category = Default, meta = (DisplayName = "技能额外终止条件"))
     TArray<TObjectPtr<class UCoreCondition>> ExternFinishConditions;
 
 	/**
@@ -137,14 +137,7 @@ public:
     virtual void OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
     virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const override;
     virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-    //~ Begin UObject Interface
-#if WITH_EDITOR
-    virtual void PostEditImport() override;
-    virtual void PostDuplicate(bool bDuplicateForPIE) override;
-    virtual void PostRename(UObject* OldOuter, const FName OldName) override;
-    virtual void PostLoad() override;
-#endif
-    // End UObject
+
 	virtual void CallInputPressed(const FGameplayAbilitySpecHandle Handle);
 	virtual void CallInputReleased(const FGameplayAbilitySpecHandle Handle);
 

@@ -23,25 +23,25 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	/**
 	* 名字
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务名字"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务名字"))
 	FString QuestName;
 
 	/**
 	* 任务类型
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务类型"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务类型"))
 	EQuestTypeEnum QuestType;
 
 	/**
 	* 前置条件
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Instanced, Category = "Quest", meta = (DisplayName = "前置条件"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced, Category = "Quest", meta = (DisplayName = "前置条件"))
 	TArray<TObjectPtr<class UCoreCondition>> PreConditionList;
 
 	/**
 	* 任务详情
 	*/
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务详情"))
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Quest", meta = (DisplayName = "任务详情"))
 	TSoftObjectPtr<class UQuestDetail> QuestDetail;
 
 	/**
@@ -55,13 +55,4 @@ class GAMEFRAMEWORK_API UQuest : public UObject
 	*/
 	UPROPERTY()
 	TArray<class UQuest*> FollowQuests;
-
-	//~ Begin UObject Interface
-#if WITH_EDITOR
-	virtual void PostEditImport() override;
-	virtual void PostDuplicate(bool bDuplicateForPIE) override;
-	virtual void PostRename(UObject* OldOuter, const FName OldName) override;
-	virtual void PostLoad() override;
-#endif
-	// End UObject
 };
