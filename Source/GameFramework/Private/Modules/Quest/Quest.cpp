@@ -10,10 +10,11 @@ UQuest::UQuest(const class FObjectInitializer& ObjectInitializer) : Super(Object
 #if WITH_EDITOR
 
 void UQuest::PostEditImport() {
-    if (PreConditionList.Conditions.Num() > 0) {
+    /*
+    if (PreConditionList.Num() > 0) {
         bool bPreConditionDirty = false;
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : PreConditionList.Conditions) {
+        for (auto Condition : PreConditionList) {
             if (Condition && Condition->GetOuter() != this) {
                 bPreConditionDirty = true;
                 auto NewCondition = DuplicateObject(Condition, this);
@@ -21,9 +22,10 @@ void UQuest::PostEditImport() {
             }
         }
         if (bPreConditionDirty) {
-            PreConditionList.Conditions = NewConditions;
+            PreConditionList = NewConditions;
         }
     }
+    */
 }
 
 void UQuest::PostDuplicate(bool bDuplicateForPIE) {
@@ -37,11 +39,13 @@ void UQuest::PostDuplicate(bool bDuplicateForPIE) {
 void UQuest::PostRename(UObject* OldOuter, const FName OldName) {
     Super::PostRename(OldOuter, OldName);
 
-    for (auto Condition : PreConditionList.Conditions) {
+    /*
+    for (auto Condition : PreConditionList) {
         if (Condition) {
             Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
         }
     }
+    */
 }
 
 void UQuest::PostLoad() {

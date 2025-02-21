@@ -161,7 +161,7 @@ void UExecutingQuest::OnRep_NodeID() {
 	auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
 	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
 	if (NodeItem) {
-		if (NodeItem->ConditionList.Conditions.Num() == 0) {
+		if (NodeItem->ConditionList.Num() == 0) {
 			//不需要条件
 			if (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario) {
 				//不需要提交npc或者是自动提交
@@ -256,7 +256,7 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 
 	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(InNode);
 	if (NodeItem) {
-		for (auto Condition : NodeItem->ConditionList.Conditions) {
+		for (auto Condition : NodeItem->ConditionList) {
 			auto ConditionProgress = Condition->GenerateConditionProgress(Owner);
 			ConditionProgress->Initialize();
 			QuestProgresses.Add(ConditionProgress);

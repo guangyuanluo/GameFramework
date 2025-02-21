@@ -10,7 +10,7 @@
 /**
  * 触发器动作
  */
-UCLASS(BlueprintType, Blueprintable, Abstract, meta = (DisplayName = "动作"))
+UCLASS(BlueprintType, Blueprintable, Abstract, EditInlineNew, meta = (DisplayName = "动作"))
 class GAMEFRAMEWORK_API UCoreTriggerAction : public ULogicObjectBase
 {
 public:

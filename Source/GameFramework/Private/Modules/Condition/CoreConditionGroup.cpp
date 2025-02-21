@@ -13,8 +13,8 @@ UCoreConditionGroup::UCoreConditionGroup(const class FObjectInitializer& ObjectI
 class UCoreConditionProgress* UCoreConditionGroup::GenerateConditionProgress(AActor* ProgressOwner) {
     auto ConditionGroupProgress = Cast<UCoreConditionGroupProgress>(Super::GenerateConditionProgress(ProgressOwner));
     
-    for (int Index = 0; Index < ConditionList.Conditions.Num(); ++Index) {
-        auto ChildCondition = ConditionList.Conditions[Index];
+    for (int Index = 0; Index < ConditionList.Num(); ++Index) {
+        auto ChildCondition = ConditionList[Index];
         ConditionGroupProgress->ChildProgresses.Add(ChildCondition->GenerateConditionProgress(ProgressOwner));
     }
 
@@ -24,15 +24,17 @@ class UCoreConditionProgress* UCoreConditionGroup::GenerateConditionProgress(AAc
 #if WITH_EDITOR
 
 void UCoreConditionGroup::PostEditImport() {
+    /*
     auto Outer = GetOuter();
-    if (ConditionList.Conditions.Num() > 0) {
+    if (ConditionList.Num() > 0) {
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : ConditionList.Conditions) {
+        for (auto Condition : ConditionList) {
             auto NewCondition = DuplicateObject(Condition, Outer);
             NewConditions.Add(NewCondition);
         }
-        ConditionList.Conditions = NewConditions;
+        ConditionList = NewConditions;
     }
+    */
 }
 
 void UCoreConditionGroup::PostDuplicate(bool bDuplicateForPIE) {

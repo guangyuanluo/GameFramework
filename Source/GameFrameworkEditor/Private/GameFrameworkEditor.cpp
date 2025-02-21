@@ -15,7 +15,6 @@
 #include "Graph/GraphPanelNodeFactoryCommon.h"
 #include "Scenario/ScenarioEditor.h"
 #include "PropertyEditorModule.h"
-#include "BaseConditionWidgetFactories.h"
 #include "EditorModeRegistry.h"
 #include "IPlacementModeModule.h"
 #include "EdGraphUtilities.h"
@@ -31,17 +30,13 @@
 
 #include "Character/CoreCharacter.h"
 #include "Modules/Condition/CoreCondition.h"
-#include "Modules/Condition/CoreConditionList.h"
 
 #include "Modules/Skill/SkillInfo.h"
 #include "Modules/Item/ItemIDContainer.h"
 #include "Customization/ItemIDContainerCustomization.h"
-#include "CoreConditionListCustomization.h"
-#include "Customization/ScenarioNodeCustomization.h"
 #include "AssetTypeActions_QuestDetail.h"
 #include "AssetTypeActions_QuestTree.h"
 #include "Modules/Quest/Quest.h"
-#include "Customization/QuestDetailNodeItemCustomization.h"
 #include "Modules/Quest/QuestDetailNodeItem.h"
 #include "Customization/SkillInfoCustomization.h"
 #include "Customization/EffectInfoCustomization.h"
@@ -50,8 +45,6 @@
 #include "AnimSearchTree/AssetTypeActions_AnimSearchTree.h"
 #include "Modules/Unit/UnitIDContainer.h"
 #include "Customization/UnitIDContainerCustomization.h"
-#include "Modules/TriggerAction/CoreTriggerActionList.h"
-#include "Customization/CoreTriggerActionListCustomization.h"
 #include "Modules/Skill/SkillGroupIDContainer.h"
 #include "Customization/SkillGroupIDContainerCustomization.h"
 
@@ -83,9 +76,6 @@ void FGameFrameworkEditorModule::StartupModule()
 
 	// 注册资源类型
 	RegistAssetType();
-
-    //注册内置条件界面
-    BaseConditionWidgetFactories::Init();
 
     //注册放置分页
     RegistCustomPlacement(FText::FromString(TEXT("单位")), TEXT("Unit"), []() -> TSharedRef<SWidget> { return SNew(SUnitPlacementPalette); });
@@ -121,8 +111,6 @@ void FGameFrameworkEditorModule::ShutdownModule()
 	}
 	ItemDataAssetTypeActions.Empty();
 	mRegistEditorWidgetFactories.Empty();
-
-    BaseConditionWidgetFactories::Uninit();
 
 	if (GraphPanelNodeFactoryCommon.IsValid()) {
 		FEdGraphUtilities::UnregisterVisualNodeFactory(GraphPanelNodeFactoryCommon);
@@ -252,18 +240,6 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 		FItemIDContainer::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FItemIDContainerCustomization::MakeInstance));
 
-	PropertyModule.RegisterCustomClassLayout(
-		UQuestDetailNodeItem::StaticClass()->GetFName(),
-		FOnGetDetailCustomizationInstance::CreateStatic(&FQuestDetailNodeItemCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FCoreConditionList::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreConditionListCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomClassLayout(
-		UScenarioNode::StaticClass()->GetFName(),
-		FOnGetDetailCustomizationInstance::CreateStatic(&FScenarioNodeCustomization::MakeInstance));
-
 	PropertyModule.RegisterCustomPropertyTypeLayout(
 		FSkillInfo::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FSkillInfoCustomization::MakeInstance));
@@ -279,10 +255,6 @@ void FGameFrameworkEditorModule::RegistCustomizationDetail() {
 	PropertyModule.RegisterCustomPropertyTypeLayout(
 		FUnitIDContainer::StaticStruct()->GetFName(),
 		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FUnitIDContainerCustomization::MakeInstance));
-
-	PropertyModule.RegisterCustomPropertyTypeLayout(
-		FCoreTriggerActionList::StaticStruct()->GetFName(),
-		FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FCoreTriggerActionListCustomization::MakeInstance));
 
 	PropertyModule.RegisterCustomPropertyTypeLayout(
 		FSkillGroupIDContainer::StaticStruct()->GetFName(),
@@ -301,7 +273,6 @@ void FGameFrameworkEditorModule::UnregistCustomizationDetail() {
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FEffectInfo::StaticStruct()->GetFName());
         PropertyModule.UnregisterCustomClassLayout(UCoreAbility::StaticClass()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FUnitIDContainer::StaticStruct()->GetFName());
-		PropertyModule.UnregisterCustomPropertyTypeLayout(FCoreTriggerActionList::StaticStruct()->GetFName());
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FSkillGroupIDContainer::StaticStruct()->GetFName());
 
         PropertyModule.NotifyCustomizationModuleChanged();

@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType, Blueprintable, Abstract, config = Game)
+UCLASS(BlueprintType, Blueprintable, Abstract, EditInlineNew, config = Game)
 class GAMEFRAMEWORK_API UScenarioAction : public UObject
 {
 	GENERATED_UCLASS_BODY()

@@ -174,7 +174,7 @@ void UCoreAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const
     }
     //生成进度对象
     auto OwnerActor = ActorInfo->OwnerActor.Get();
-    for (auto TriggerCondition : TriggerConditions.Conditions) {
+    for (auto TriggerCondition : TriggerConditions) {
         auto ConditionProgress = TriggerCondition->GenerateConditionProgress(OwnerActor);
         RequireConditionProgresses.Add(ConditionProgress);
     }
@@ -290,10 +290,11 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 void UCoreAbility::PostEditImport() {
     Super::PostEditImport();
 
-    if (TriggerConditions.Conditions.Num() > 0) {
+    /*
+    if (TriggerConditions.Num() > 0) {
         bool bTriggerConditionDirty = false;
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : TriggerConditions.Conditions) {
+        for (auto Condition : TriggerConditions) {
             if (Condition && Condition->GetOuter() != this) {
                 bTriggerConditionDirty = true;
                 auto NewCondition = DuplicateObject(Condition, this);
@@ -301,7 +302,7 @@ void UCoreAbility::PostEditImport() {
             }
         }
         if (bTriggerConditionDirty) {
-            TriggerConditions.Conditions = NewConditions;
+            TriggerConditions = NewConditions;
         }
     }
 
@@ -309,7 +310,7 @@ void UCoreAbility::PostEditImport() {
         for (auto& ConditionActionTriggerConfig : ConditionActionTriggerConfigs) {
             bool bConditionDirty = false;
             TArray<UCoreCondition*> NewConditions;
-            for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
+            for (auto Condition : ConditionActionTriggerConfig.TriggerConditions) {
                 if (Condition && Condition->GetOuter() != this) {
                     bConditionDirty = true;
                     auto NewCondition = DuplicateObject(Condition, this);
@@ -317,11 +318,11 @@ void UCoreAbility::PostEditImport() {
                 }
             }
             if (bConditionDirty) {
-                ConditionActionTriggerConfig.TriggerConditions.Conditions = NewConditions;
+                ConditionActionTriggerConfig.TriggerConditions = NewConditions;
             }
             bool bActionDirty = false;
             TArray<class UCoreTriggerAction*> NewActions;
-            for (auto Action : ConditionActionTriggerConfig.ExecuteActions.Actions) {
+            for (auto Action : ConditionActionTriggerConfig.ExecuteActions) {
                 if (Action && Action->GetOuter() != this) {
                     bActionDirty = true;
                     auto NewAction = DuplicateObject(Action, this);
@@ -329,15 +330,15 @@ void UCoreAbility::PostEditImport() {
                 }
             }
             if (bActionDirty) {
-                ConditionActionTriggerConfig.ExecuteActions.Actions = NewActions;
+                ConditionActionTriggerConfig.ExecuteActions = NewActions;
             }
         }
     }
 
-    if (ExternFinishConditions.Conditions.Num() > 0) {
+    if (ExternFinishConditions.Num() > 0) {
         bool bExternFinishConditionDirty = false;
         TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : ExternFinishConditions.Conditions) {
+        for (auto Condition : ExternFinishConditions) {
             if (Condition && Condition->GetOuter() != this) {
                 bExternFinishConditionDirty = true;
                 auto NewCondition = DuplicateObject(Condition, this);
@@ -345,9 +346,10 @@ void UCoreAbility::PostEditImport() {
             }
         }
         if (bExternFinishConditionDirty) {
-            ExternFinishConditions.Conditions = NewConditions;
+            ExternFinishConditions = NewConditions;
         }
     }
+    */
 }
 
 
@@ -360,8 +362,9 @@ void UCoreAbility::PostDuplicate(bool bDuplicateForPIE) {
 void UCoreAbility::PostRename(UObject* OldOuter, const FName OldName) {
     Super::PostRename(OldOuter, OldName);
 
-    if (TriggerConditions.Conditions.Num() > 0) {
-        for (auto Condition : TriggerConditions.Conditions) {
+    /*
+    if (TriggerConditions.Num() > 0) {
+        for (auto Condition : TriggerConditions) {
             if (Condition) {
                 Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
             }
@@ -370,12 +373,12 @@ void UCoreAbility::PostRename(UObject* OldOuter, const FName OldName) {
 
     if (ConditionActionTriggerConfigs.Num() > 0) {
         for (auto ConditionActionTriggerConfig : ConditionActionTriggerConfigs) {
-            for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
+            for (auto Condition : ConditionActionTriggerConfig.TriggerConditions) {
                 if (Condition) {
                     Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
                 }
             }
-            for (auto Action : ConditionActionTriggerConfig.ExecuteActions.Actions) {
+            for (auto Action : ConditionActionTriggerConfig.ExecuteActions) {
                 if (Action) {
                     Action->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
                 }
@@ -383,13 +386,14 @@ void UCoreAbility::PostRename(UObject* OldOuter, const FName OldName) {
         }
     }
 
-    if (ExternFinishConditions.Conditions.Num() > 0) {
-        for (auto Condition : ExternFinishConditions.Conditions) {
+    if (ExternFinishConditions.Num() > 0) {
+        for (auto Condition : ExternFinishConditions) {
             if (Condition) {
                 Condition->Rename(nullptr, this, REN_ForceNoResetLoaders | REN_DoNotDirty | REN_DontCreateRedirectors | REN_NonTransactional);
             }
         }
     }
+    */
 }
 
 void UCoreAbility::PostLoad() {
@@ -469,13 +473,13 @@ void UCoreAbility::StartConditionTriggerListen() {
     //生成触发器的进度监听
     for (int Index = 0; Index < ConditionActionTriggerConfigs.Num(); ++Index) {
         auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[Index];
-        if (ConditionActionTriggerConfig.ExecuteActions.Actions.Num() == 0) {
+        if (ConditionActionTriggerConfig.ExecuteActions.Num() == 0) {
             //没有执行动作，监听无意义，多半是配错了
             ensureMsgf(false, TEXT("动作配置为空，将不生效"));
             continue;
         }
         FCoreConditionActionTriggerInfo& TriggerInfo = TriggerConditionProgressInfos.AddDefaulted_GetRef();
-        for (auto Condition : ConditionActionTriggerConfig.TriggerConditions.Conditions) {
+        for (auto Condition : ConditionActionTriggerConfig.TriggerConditions) {
             auto Progress = Condition->GenerateConditionProgress(OwnerActor);
             TriggerInfo.TriggerConditionProgresses.Add(Progress);
         }
@@ -534,7 +538,7 @@ void UCoreAbility::OnConditionTriggerCallback(FConditionTriggerHandler Handler) 
     }
     FGameplayEventData ActionEventData = CurrentReceivedEventData;
     const auto& ConditionActionTriggerConfig = ConditionActionTriggerConfigs[FindTriggerIndex];
-    for (auto ExecuteAction : ConditionActionTriggerConfig.ExecuteActions.Actions) {
+    for (auto ExecuteAction : ConditionActionTriggerConfig.ExecuteActions) {
         FLogicObjectLoadWorldScope LoadWorldScope(ExecuteAction, this);
         ExecuteAction->OnExecute(ActionEventData);
         if (!IsActive()) {
@@ -545,12 +549,12 @@ void UCoreAbility::OnConditionTriggerCallback(FConditionTriggerHandler Handler) 
 }
 
 void UCoreAbility::StartExternFinishConditionListen() {
-    if (ExternFinishConditions.Conditions.Num() == 0) {
+    if (ExternFinishConditions.Num() == 0) {
         return;
     }
     auto OwnerActor = GetOwningActorFromActorInfo();
 
-    for (const auto& ExternFinishCondition : ExternFinishConditions.Conditions) {
+    for (const auto& ExternFinishCondition : ExternFinishConditions) {
         auto Progress = ExternFinishCondition->GenerateConditionProgress(OwnerActor);
         ExternFinishConditionProgresses.Add(Progress);
     }
@@ -566,7 +570,7 @@ void UCoreAbility::StartExternFinishConditionListen() {
 }
 
 void UCoreAbility::StopExternFinishConditionListen() {
-    if (ExternFinishConditions.Conditions.Num() == 0) {
+    if (ExternFinishConditions.Num() == 0) {
         return;
     }
     for (auto ExternFinishConditionProgress : ExternFinishConditionProgresses) {

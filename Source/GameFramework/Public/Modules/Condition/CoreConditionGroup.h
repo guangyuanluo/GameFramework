@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Modules/Condition/CoreCondition.h"
-#include "Modules/Condition/CoreConditionList.h"
 #include "Modules/Condition/CoreConditionProgress.h"
 #include "CoreConditionGroup.generated.h"
 
@@ -19,8 +18,8 @@ public:
 	/**
 	* @brief 子条件
 	*/
-	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite)
-	FCoreConditionList ConditionList;
+	UPROPERTY(Category = "ConditionSystem", EditAnywhere, BlueprintReadWrite, Instanced)
+	TArray<TObjectPtr<class UCoreCondition>> ConditionList;
 
 	virtual class UCoreConditionProgress* GenerateConditionProgress(AActor* ProgressOwner) override;
 	//~ Begin UObject Interface

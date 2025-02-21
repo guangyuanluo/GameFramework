@@ -8,7 +8,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, EditInlineNew)
 class GAMEFRAMEWORK_API UCoreReward : public UObject
 {
 public:
