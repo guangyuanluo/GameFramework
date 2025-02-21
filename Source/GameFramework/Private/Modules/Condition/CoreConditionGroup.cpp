@@ -21,30 +21,6 @@ class UCoreConditionProgress* UCoreConditionGroup::GenerateConditionProgress(AAc
     return ConditionGroupProgress;
 }
 
-#if WITH_EDITOR
-
-void UCoreConditionGroup::PostEditImport() {
-    /*
-    auto Outer = GetOuter();
-    if (ConditionList.Num() > 0) {
-        TArray<UCoreCondition*> NewConditions;
-        for (auto Condition : ConditionList) {
-            auto NewCondition = DuplicateObject(Condition, Outer);
-            NewConditions.Add(NewCondition);
-        }
-        ConditionList = NewConditions;
-    }
-    */
-}
-
-void UCoreConditionGroup::PostDuplicate(bool bDuplicateForPIE) {
-    Super::PostDuplicate(bDuplicateForPIE);
-
-    PostEditImport();
-}
-
-#endif
-
 void UCoreConditionGroupProgress::Initialize() {
     Super::Initialize();
     
