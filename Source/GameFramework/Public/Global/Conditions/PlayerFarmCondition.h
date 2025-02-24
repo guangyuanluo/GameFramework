@@ -9,9 +9,9 @@
 #include "PlayerFarmCondition.generated.h"
 
 /**
- * 砍怪
+ * 杀怪
  */
-UCLASS(BlueprintType, meta = (DisplayName = "砍怪", Category = "任务条件"))
+UCLASS(BlueprintType, meta = (DisplayName = "杀怪", Category = "任务条件"))
 class GAMEFRAMEWORK_API UPlayerFarmCondition : public UCoreCondition
 {
 public:
