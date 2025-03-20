@@ -50,7 +50,7 @@ TArray<FActiveGameplayEffectHandle> USkillBlueprintLibrary::ApplyExternalEffectC
 }
 
 bool USkillBlueprintLibrary::IsAbilityMatchingAllTags(UGameplayAbility* Ability, FGameplayTagContainer AbilityTags) {
-	return Ability->AbilityTags.HasAll(AbilityTags);
+	return Ability->GetAssetTags().HasAll(AbilityTags);
 }
 
 float USkillBlueprintLibrary::GetSetByCallerMagnitudeWithSpecHandle(FGameplayEffectSpecHandle SpecHandle, FGameplayTag DataTag, bool WarnIfNotFound, float DefaultIfNotFound) {
@@ -74,7 +74,7 @@ bool USkillBlueprintLibrary::IsComboAbility(const UCoreAbility* Ability) {
 		return false;
 	}
 	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
-	if (Ability->AbilityTags.HasTag(SkillSetting->ComboSkillTag)) {
+	if (Ability->GetAssetTags().HasTag(SkillSetting->ComboSkillTag)) {
 		return true;
 	}
 	return false;

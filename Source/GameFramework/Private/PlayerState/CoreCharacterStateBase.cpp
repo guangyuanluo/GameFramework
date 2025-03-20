@@ -11,7 +11,7 @@
 
 ACoreCharacterStateBase::ACoreCharacterStateBase(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     //降低同步频率，0.5s一次足够了
-    NetUpdateFrequency = 2;
+    SetNetUpdateFrequency(2);
 }
 
 void ACoreCharacterStateBase::OnConstruction(const FTransform& Transform) {
