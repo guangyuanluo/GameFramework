@@ -55,11 +55,10 @@ void UCoreGameInstance::InitGameLogic() {
 		UConfigTableCache::Clear();
 
 		//初始化gameinstance子系统
-		const auto& GameSubsystemArray = GetSubsystemArray<UGameInstanceSubsystemBase>();
-		for (int Index = 0; Index < GameSubsystemArray.Num(); ++Index) {
-			auto GameSubSystem = GameSubsystemArray[Index];
+		ForEachSubsystem<UGameInstanceSubsystemBase>([](UGameInstanceSubsystemBase* GameSubSystem)
+		{
 			GameSubSystem->Init();
-		}
+		});
 
 		//初始化实体管理
 		GameEntityManager = NewObject<UGameEntityManager>(this, "GameEntityManager");

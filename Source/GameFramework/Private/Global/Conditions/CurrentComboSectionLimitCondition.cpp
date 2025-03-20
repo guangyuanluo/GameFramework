@@ -30,7 +30,7 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
     if (!ActiveAbility) {
         return false;
     }
-    if (!ActiveAbility->AbilityTags.HasTag(ThisCondition->ComboTag)) {
+    if (!ActiveAbility->GetAssetTags().HasTag(ThisCondition->ComboTag)) {
         return false;
     }
 
