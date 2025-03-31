@@ -160,10 +160,7 @@ bool UCoreAbilitySystemComponent::DoesAbilityFilterCondition(const FGameplayTagC
     }
     else {
         if (bOnlyAbilitiesThatSatisfy
-            && (
-                !ActiveAbility->DoesAbilitySatisfyTagRequirements(*this, nullptr, &TargetTagContainer)
-                || !ActiveAbility->K2_IsConditionSatisfy()
-                )
+            && !ActiveAbility->CanActivateAbility(ActiveAbility->GetCurrentAbilitySpecHandle(), ActiveAbility->GetCurrentActorInfo(), nullptr, &TargetTagContainer)
             ) {
             return false;
         }
