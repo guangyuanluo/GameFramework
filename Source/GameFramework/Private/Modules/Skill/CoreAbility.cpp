@@ -140,7 +140,7 @@ bool UCoreAbility::K2_IsActive() const {
 	return IsActive();
 }
 
-bool UCoreAbility::K2_IsConditionSatisfy() {
+bool UCoreAbility::K2_IsConditionSatisfy() const {
     return UConditionBlueprintLibrary::DoesProgressesSatisfy(RequireConditionProgresses);
 }
 
@@ -221,6 +221,17 @@ bool UCoreAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const 
     return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
 }
 
+bool UCoreAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const {
+    //父类没通过
+    if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags)) {
+        return false;
+    }
+    if (!K2_IsConditionSatisfy()) {
+        return false;
+    }
+    return true;
+}
+
 void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) {
     OnGameplayAbilityEndedWithData.AddUObject(this, &UCoreAbility::OnAbilityEnd);
 
@@ -245,10 +256,6 @@ void UCoreAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
         auto OwnerCharacter = Cast<ACoreCharacter>(ActorInfo->AvatarActor.Get());
         if (!OwnerCharacter) {
             //角色还没准备
-            K2_CancelAbility();
-            return;
-        }
-        if (!K2_IsConditionSatisfy()) {
             K2_CancelAbility();
             return;
         }
