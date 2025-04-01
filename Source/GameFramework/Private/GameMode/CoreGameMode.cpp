@@ -83,3 +83,23 @@ UClass* ACoreGameMode::GetDefaultPawnClassForController_Implementation(AControll
 	}
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
+
+APawn* ACoreGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) {
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient;	// We never want to save default player pawns into a map
+	SpawnInfo.bDeferConstruction = true;
+
+	UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer);
+
+	APawn* ResultPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo);
+	if (!ResultPawn)
+	{
+		UE_LOG(LogGameMode, Warning, TEXT("SpawnDefaultPawnAtTransform: Couldn't spawn Pawn of type %s at %s"), *GetNameSafe(PawnClass), *SpawnTransform.ToHumanReadableString());
+	}
+	if (NewPlayer->PlayerState) {
+		ResultPawn->SetPlayerState(NewPlayer->PlayerState);
+	}
+	UGameplayStatics::FinishSpawningActor(ResultPawn, SpawnTransform);
+	return ResultPawn;
+}

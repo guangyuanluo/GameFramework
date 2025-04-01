@@ -119,10 +119,10 @@ void ACoreCharacter::PossessedBy(AController* NewController) {
 
     // Initialize our abilities
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetPlayerState());
-    if (CharacterState && CharacterState->SkillComponent) {
+    if (CharacterState) {
         if (CharacterState->SkillComponent) {
             if (GetLocalRole() == ENetRole::ROLE_Authority) {
-                CharacterState->SkillComponent->RefreshAbilityActorInfo();
+                CharacterState->SkillComponent->InitAbilityActorInfo(CharacterState, this);
             }
         }
     }
@@ -214,7 +214,7 @@ void ACoreCharacter::InitTemplate(int InTemplateID) {
             SetPlayerState(CharacterState);
             UGameplayStatics::FinishSpawningActor(CharacterState, FTransform::Identity);
             if (CharController) {
-                CharController->PlayerState = CharacterState;
+                CharController->SetPlayerState(CharacterState);
             }
         }
     }
