@@ -29,4 +29,5 @@ public:
 	virtual void Logout(AController* Exiting) override;
 	/** 获取玩家模板 */
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 };
