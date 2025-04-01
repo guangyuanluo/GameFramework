@@ -5,6 +5,7 @@
 #include "CoreGameInstance.h"
 #include "GameSystemManager.h"
 #include "EventSystem.h"
+#include "GameEventUtils.h"
 #include "OrderSetting.h"
 #include "CoreOrderHandler.h"
 #include "CoreOrderBase.h"
@@ -61,7 +62,7 @@ void UOrderSystem::PayOrder(class ACoreCharacter* Character, const FGuid& OrderI
         AllOrders.Remove(OrderID);
         UOrderCompleteEvent* OrderCompleteEvent = NewObject<UOrderCompleteEvent>();
         OrderCompleteEvent->OrderID = OrderID;
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OrderCompleteEvent);
+        UGameEventUtils::PushEvent(GameInstance, OrderCompleteEvent);
     }
 }
 
@@ -71,7 +72,7 @@ void UOrderSystem::CancelOrder(const FGuid& OrderID) {
         UE_LOG(GameCore, Log, TEXT("订单取消:%s"), *OrderID.ToString());
         UOrderCancelEvent* OrderCancelEvent = NewObject<UOrderCancelEvent>();
         OrderCancelEvent->OrderID = OrderID;
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OrderCancelEvent);
+        UGameEventUtils::PushEvent(GameInstance, OrderCancelEvent);
     }
 }
 

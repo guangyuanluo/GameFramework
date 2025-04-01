@@ -5,13 +5,11 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "CoreGameInstance.h"
 #include "StoreSetting.h"
 #include "StoreConfigTableRow.h"
 #include "ConfigTableCache.h"
 #include "StoreGlobalEvents.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
+#include "GameEventUtils.h"
 #include "CoreCharacter.h"
 
 // Sets default values for this component's properties
@@ -64,15 +62,13 @@ void UStoreComponent::BuyGoods(ACoreCharacter* Character, int32 GoodsID) {
         return;
     }
 
-	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto OwnerActor = Cast<IGameEntity>(GetOwner());
     auto BuyGoodsRequestEvent = NewObject<UBuyGoodsRequestEvent>();
     BuyGoodsRequestEvent->EntityID = Character->GetEntityID();
     BuyGoodsRequestEvent->StoreEntityID = OwnerActor->GetEntityID();
     BuyGoodsRequestEvent->GoodsID = GoodsID;
 
-    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(BuyGoodsRequestEvent, false);
+    UGameEventUtils::PushEventToServer(this, BuyGoodsRequestEvent, false);
 }
 
 void UStoreComponent::OnGoodsChanged() {

@@ -2,14 +2,12 @@
 
 
 #include "QuestComponent.h"
-#include "CoreGameInstance.h"
 #include "QuestSystem.h"
 #include "AcceptableQuest.h"
 #include "ExecutingQuest.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
+#include "CoreGameInstance.h"
 #include "GameEntity.h"
 #include "CoreConditionProgress.h"
 #include "GameFramework/PlayerState.h"
@@ -22,6 +20,7 @@
 #include "QuestSetting.h"
 #include "NPCSystem.h"
 #include "SortUtils.h"
+#include "GameEventUtils.h"
 
 // Sets default values for this component's properties
 UQuestComponent::UQuestComponent()
@@ -68,12 +67,11 @@ void UQuestComponent::AcceptQuest(const FGuid& ID) {
 
     auto GameEntity = Cast<IGameEntity>(PlayerState->GetPawn());
     if (GameEntity) {
-        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
         auto Request = NewObject<UAcceptQuestRequesEvent>();
         Request->EntityId = GameEntity->GetEntityID();
         Request->ID = ID;
 
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(Request, true);
+        UGameEventUtils::PushEventToServer(this, Request, true);
     }
 }
 
@@ -88,8 +86,7 @@ void UQuestComponent::PushQuest(const FGuid& ID, int StepIndex) {
         Request->ID = ID;
         Request->StepIndex = StepIndex;
 
-        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(Request, false);
+        UGameEventUtils::PushEventToServer(this, Request, false);
     }
 }
 
@@ -121,19 +118,17 @@ void UQuestComponent::NotifyQuestChangedAfterLoaded() {
     UE_LOG(GameCore, Log, TEXT("UQuestComponent::NotifyQuestChangedAfterLoaded"));
     QuestLoadedHandle.Reset();
 
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
     auto OnQuestRefreshEvent = NewObject<UOnQuestRefreshEvent>();
     OnQuestRefreshEvent->QuestComponent = this;
-    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnQuestRefreshEvent);
+    UGameEventUtils::PushEvent(this, OnQuestRefreshEvent);
 
     RefreshAcceptableQuests();
 }
 
 void UQuestComponent::OnFinishQuestChanged() {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
     auto OnFinishQuestsRefreshEvent = NewObject<UOnFinishQuestsRefreshEvent>();
     OnFinishQuestsRefreshEvent->QuestComponent = this;
-    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnFinishQuestsRefreshEvent);
+    UGameEventUtils::PushEvent(this, OnFinishQuestsRefreshEvent);
 
     RefreshAcceptableQuests();
 }
@@ -260,7 +255,7 @@ void UQuestComponent::RefreshAcceptQuests() {
 
         auto OnAcceptQuestIdsRefreshEvent = NewObject<UOnAcceptQuestIdsRefreshEvent>();
         OnAcceptQuestIdsRefreshEvent->QuestComponent = this;
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnAcceptQuestIdsRefreshEvent);
+        UGameEventUtils::PushEvent(this, OnAcceptQuestIdsRefreshEvent);
     }
 }
 

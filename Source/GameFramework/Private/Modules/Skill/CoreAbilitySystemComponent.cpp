@@ -19,9 +19,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ChangeAttributeEvent.h"
 #include "ChangeEffectEvent.h"
-#include "EventSystem.h"
-#include "GameSystemManager.h"
-#include "CoreGameInstance.h"
+#include "GameEventUtils.h"
 
 void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
     auto Owner = GetOwner();
@@ -598,8 +596,7 @@ void UCoreAbilitySystemComponent::OnAttributeChange(const FOnAttributeChangeData
         ChangeAttributeEvent->NewValue = Data.NewValue;
 
         //事件广播
-        auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-        GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeAttributeEvent);
+        UGameEventUtils::PushEvent(this, ChangeAttributeEvent);
     }
 }
 
@@ -610,8 +607,7 @@ void UCoreAbilitySystemComponent::OnActiveEffectAdded(UAbilitySystemComponent* A
     ChangeEffectEvent->Character = Character;
 
     //事件广播
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeEffectEvent);
+    UGameEventUtils::PushEvent(this, ChangeEffectEvent);
 }
 
 void UCoreAbilitySystemComponent::OnActiveEffectRemove(const FActiveGameplayEffect& FGameplayEffectRemovalInfo) {
@@ -621,6 +617,5 @@ void UCoreAbilitySystemComponent::OnActiveEffectRemove(const FActiveGameplayEffe
     ChangeEffectEvent->Character = Character;
 
     //事件广播
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeEffectEvent);
+    UGameEventUtils::PushEvent(this, ChangeEffectEvent);
 }

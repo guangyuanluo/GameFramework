@@ -5,14 +5,11 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "CoreGameInstance.h"
-#include "AssetSystem.h"
 #include "AssetBackpack.h"
 #include "CoreItem.h"
 #include "CoreSceneItem.h"
 #include "ItemComponent.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
+#include "GameEventUtils.h"
 #include "GameEntity.h"
 #include "BackpackSetting.h"
 #include "BackpackTypeConfigTableRow.h"
@@ -88,8 +85,6 @@ bool UBackpackComponent::ReplicateSubobjects(class UActorChannel* Channel, class
 }
 
 void UBackpackComponent::AddItem(EBackpackTypeEnum BackpackType, int32 ItemId, int32 Count, const FString& Reason, int32 SpecialSlot) {
-	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -102,14 +97,12 @@ void UBackpackComponent::AddItem(EBackpackTypeEnum BackpackType, int32 ItemId, i
             AddItemRequest->SpecialSlot = SpecialSlot;
             AddItemRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(AddItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, AddItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::AddItems(const TArray<FAddItemInfo>& AddItems, const FString& Reason) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -119,14 +112,12 @@ void UBackpackComponent::AddItems(const TArray<FAddItemInfo>& AddItems, const FS
             AddItemsRequest->AddItemInfos = AddItems;
             AddItemsRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(AddItemsRequest, false);
+            UGameEventUtils::PushEventToServer(this, AddItemsRequest, false);
         }
     }
 }
 
 void UBackpackComponent::UseItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, int Count, const FString& Reason) {
-	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -138,14 +129,12 @@ void UBackpackComponent::UseItem(EBackpackTypeEnum BackpackType, const FString& 
             UseItemRequest->Count = Count;
             UseItemRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(UseItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, UseItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::AbandonItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, int Count, const FString& Reason) {
-	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -157,14 +146,12 @@ void UBackpackComponent::AbandonItem(EBackpackTypeEnum BackpackType, const FStri
             AbandonItemRequest->Count = Count;
             AbandonItemRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(AbandonItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, AbandonItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::DeductItem(EBackpackTypeEnum BackpackType, int32 ItemId, int Count, const FString& Reason, const FString& SpecialInstanceID) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -177,14 +164,12 @@ void UBackpackComponent::DeductItem(EBackpackTypeEnum BackpackType, int32 ItemId
             DeductItemRequest->SpecialInstanceID = SpecialInstanceID;
             DeductItemRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(DeductItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, DeductItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::DeductItems(const TArray<FItemIDNumPair>& DeductItems, const FString& Reason) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -194,14 +179,12 @@ void UBackpackComponent::DeductItems(const TArray<FItemIDNumPair>& DeductItems, 
             DeductItemsRequest->DeductItems = DeductItems;
             DeductItemsRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(DeductItemsRequest, false);
+            UGameEventUtils::PushEventToServer(this, DeductItemsRequest, false);
         }
     }
 }
 
 void UBackpackComponent::MoveItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, EBackpackTypeEnum NewPackageType, int NewSlotIndex) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -213,14 +196,12 @@ void UBackpackComponent::MoveItem(EBackpackTypeEnum BackpackType, const FString&
             MoveItemRequest->NewPackageType = NewPackageType;
             MoveItemRequest->NewSlotIndex = NewSlotIndex;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(MoveItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, MoveItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::SplitItem(EBackpackTypeEnum BackpackType, const FString& InstanceID, int Count) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -231,14 +212,12 @@ void UBackpackComponent::SplitItem(EBackpackTypeEnum BackpackType, const FString
             SplitItemRequest->InstanceID = InstanceID;
             SplitItemRequest->Count = Count;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(SplitItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, SplitItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::PickupItem(EBackpackTypeEnum BackpackType, class ACoreSceneItem* DropItem, int PickupCount) {
-	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -249,14 +228,12 @@ void UBackpackComponent::PickupItem(EBackpackTypeEnum BackpackType, class ACoreS
             PickupItemRequest->DropEntityId = DropItem->GetEntityID();
             PickupItemRequest->Count = PickupCount;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(PickupItemRequest, false);
+            UGameEventUtils::PushEventToServer(this, PickupItemRequest, false);
         }
     }
 }
 
 void UBackpackComponent::SortBackpack(EBackpackTypeEnum BackpackType) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (CharacterState) {
         auto GameEntity = Cast<IGameEntity>(CharacterState->GetPawn());
@@ -265,7 +242,7 @@ void UBackpackComponent::SortBackpack(EBackpackTypeEnum BackpackType) {
             SortBackpackRequest->EntityId = GameEntity->GetEntityID();
             SortBackpackRequest->BackpackType = BackpackType;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(SortBackpackRequest, false);
+            UGameEventUtils::PushEventToServer(this, SortBackpackRequest, false);
         }
     }
 }
@@ -317,10 +294,9 @@ int UBackpackComponent::FindIndexByInstanceID(EBackpackTypeEnum BackpackType, co
 }
 
 void UBackpackComponent::OnBackpackChanged() {
-	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
 	auto OnBackpackRefreshEvent = NewObject<UOnBackpackRefreshEvent>();
 	OnBackpackRefreshEvent->BackpackComponent = this;
-	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnBackpackRefreshEvent);
+    UGameEventUtils::PushEvent(this, OnBackpackRefreshEvent);
 }
 
 FAssetBackpack& UBackpackComponent::FindOrAddPackage(EBackpackTypeEnum BackpackType) {
