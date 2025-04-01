@@ -20,6 +20,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameEntityManager.h"
 #include "GameSystemManager.h"
+#include "GameEventUtils.h"
 #include "GameFrameworkUtils.h"
 #include "ItemSortPredicate.h"
 #include "ItemSetting.h"
@@ -1090,7 +1091,7 @@ void UAssetSystem::SendChangeItemEvent(UBackpackComponent* BackpackComponent, in
     ChangeItemEvent->ItemId = ItemId;
     ChangeItemEvent->Count = Count;
     ChangeItemEvent->Reason = Reason;
-	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ChangeItemEvent);
+	UGameEventUtils::PushEvent(BackpackComponent, ChangeItemEvent);
 }
 
 void UAssetSystem::SendUseItemEvent(UBackpackComponent* BackpackComponent, int32 ItemId, int32 Count) {
@@ -1098,23 +1099,23 @@ void UAssetSystem::SendUseItemEvent(UBackpackComponent* BackpackComponent, int32
     ConsumeItemEvent->Source = BackpackComponent->GetOwner();
     ConsumeItemEvent->ItemID = ItemId;
     ConsumeItemEvent->Count = Count;
-	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(ConsumeItemEvent);
+    UGameEventUtils::PushEvent(BackpackComponent, ConsumeItemEvent);
 }
 
 void UAssetSystem::SendChangeMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 moneyCount) {
-	UChangeMoneyEvent* changeMoneyEvent = NewObject<UChangeMoneyEvent>();
-	changeMoneyEvent->Source = WalletComponent->GetOwner();
-	changeMoneyEvent->MoneyType = MoneyType;
-	changeMoneyEvent->MoneyCount = moneyCount;
-	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(changeMoneyEvent);
+	UChangeMoneyEvent* ChangeMoneyEvent = NewObject<UChangeMoneyEvent>();
+    ChangeMoneyEvent->Source = WalletComponent->GetOwner();
+    ChangeMoneyEvent->MoneyType = MoneyType;
+    ChangeMoneyEvent->MoneyCount = moneyCount;
+    UGameEventUtils::PushEvent(WalletComponent, ChangeMoneyEvent);
 }
 
 void UAssetSystem::SendUseMoneyEvent(UWalletComponent* WalletComponent, EMoneyTypeEnum MoneyType, int32 moneyCount) {
-	UConsumeMoneyEvent* consumeMoneyEvent = NewObject<UConsumeMoneyEvent>();
-	consumeMoneyEvent->Source = WalletComponent->GetOwner();
-	consumeMoneyEvent->MoneyType = MoneyType;
-	consumeMoneyEvent->MoneyCount = moneyCount;
-	GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(consumeMoneyEvent);
+	UConsumeMoneyEvent* ConsumeMoneyEvent = NewObject<UConsumeMoneyEvent>();
+    ConsumeMoneyEvent->Source = WalletComponent->GetOwner();
+    ConsumeMoneyEvent->MoneyType = MoneyType;
+    ConsumeMoneyEvent->MoneyCount = moneyCount;
+    UGameEventUtils::PushEvent(WalletComponent, ConsumeMoneyEvent);
 }
 
 class UBackpackExtendHandler* UAssetSystem::GetBackpackExtendHandler(UBackpackComponent* BackpackComponent) {

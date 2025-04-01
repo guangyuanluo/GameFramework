@@ -4,9 +4,8 @@
 #include "ExpComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
+
+#include "GameEventUtils.h"
 #include "GameEntity.h"
 #include "Engine/World.h"
 #include "PlayerState/CoreCharacterStateBase.h"
@@ -61,8 +60,6 @@ int UExpComponent::GetExpValue(EExpTypeEnum ExpType) const {
 }
 
 void UExpComponent::AddExp(EExpTypeEnum ExpType, int32 Exp, const FString& Reason) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto PlayerState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (PlayerState) {
         auto GameEntity = Cast<IGameEntity>(PlayerState->GetPawn());
@@ -73,14 +70,13 @@ void UExpComponent::AddExp(EExpTypeEnum ExpType, int32 Exp, const FString& Reaso
             AddExpRequest->Exp = Exp;
             AddExpRequest->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(AddExpRequest, false);
+            UGameEventUtils::PushEventToServer(this, AddExpRequest, false);
         }
 	}
 }
 
 void UExpComponent::OnExpChanged() {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
     auto OnExpRefreshEvent = NewObject<UOnExpRefreshEvent>();
     OnExpRefreshEvent->Character = UGameFrameworkUtils::GetCharacterFromComponentOwner(this);
-    GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnExpRefreshEvent);
+	UGameEventUtils::PushEvent(this, OnExpRefreshEvent);
 }

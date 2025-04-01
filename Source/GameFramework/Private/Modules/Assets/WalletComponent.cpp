@@ -5,11 +5,9 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "CoreGameInstance.h"
-
 #include "AssetSystem.h"
-#include "GameSystemManager.h"
 #include "EventSystem.h"
+#include "GameEventUtils.h"
 #include "GameEntity.h"
 #include "PlayerState/CoreCharacterStateBase.h"
 
@@ -39,8 +37,6 @@ void UWalletComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 }
 
 void UWalletComponent::ChangeMoney(EMoneyTypeEnum MoneyType, int32 Count, bool bConsume, const FString& Reason) {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto PlayerState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (PlayerState) {
         auto GameEntity = Cast<IGameEntity>(PlayerState->GetPawn());
@@ -52,7 +48,7 @@ void UWalletComponent::ChangeMoney(EMoneyTypeEnum MoneyType, int32 Count, bool b
             Request->bConsume = bConsume;
             Request->Reason = Reason;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEventToServer(Request, false);
+            UGameEventUtils::PushEventToServer(this, Request, false);
         }
     }
 }
@@ -67,8 +63,6 @@ int UWalletComponent::GetMoneyCount(EMoneyTypeEnum MoneyType) {
 }
 
 void UWalletComponent::OnWalletRefresh() {
-    auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-
     auto PlayerState = Cast<ACoreCharacterStateBase>(GetOwner());
     if (PlayerState) {
         auto GameEntity = Cast<IGameEntity>(PlayerState->GetPawn());
@@ -76,7 +70,7 @@ void UWalletComponent::OnWalletRefresh() {
             auto OnWalletRefreshEvent = NewObject<UOnWalletRefreshEvent>();
             OnWalletRefreshEvent->WalletComponent = this;
 
-            GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->PushEvent(OnWalletRefreshEvent);
+            UGameEventUtils::PushEvent(this, OnWalletRefreshEvent);
         }
     }
 }

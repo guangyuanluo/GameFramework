@@ -12,6 +12,7 @@
 #include "CoreCharacterStateBase.h"
 #include "EventSystem.h"
 #include "GameSystemManager.h"
+#include "GameEventUtils.h"
 #include "ExpLevelUpEvent.h"
 #include "CoreCharacter.h"
 #include "ExpTypeConfigTableRow.h"
@@ -38,8 +39,6 @@ bool UExpSystem::AddExp(UExpComponent* ExpComponent, EExpTypeEnum ExpType, int32
         const UExpSetting* ExpSetting = GetDefault<UExpSetting>();
         auto ExpTypeDataTable = ExpSetting->ExpTypeTable.LoadSynchronous();
         if (ExpTypeDataTable) {
-            UEventSystem* EventSystem = GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>();
-
             FExpInfo OldExp = ExpComponent->Exps[FindIndex];
             Result = AddExpPrivate(ExpTypeDataTable, ExpComponent, FindIndex, ExpType, Exp, Reason, Error);
             FExpInfo NewExp = ExpComponent->Exps[FindIndex];
@@ -49,7 +48,7 @@ bool UExpSystem::AddExp(UExpComponent* ExpComponent, EExpTypeEnum ExpType, int32
                 ExpLevelUpEvent->ExpType = ExpType;
                 ExpLevelUpEvent->ExpLevel = NewExp.Level;
 
-                EventSystem->PushEvent(ExpLevelUpEvent);
+                UGameEventUtils::PushEvent(ExpComponent, ExpLevelUpEvent);
             }
         }
         else {
