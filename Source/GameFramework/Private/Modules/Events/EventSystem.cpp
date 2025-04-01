@@ -41,9 +41,10 @@ void UEventSystem::PushEventToServer(UGameEventBase* InPushEvent, bool Reliable)
     if (NetMode == ENetMode::NM_Client) {
         auto PlayerController = Cast<ACorePlayerController>(GameInstance->GetFirstLocalPlayerController());
         if (PlayerController) {
-            FBufferArchive ToBinary;
-            InPushEvent->Serialize(ToBinary);
-            FString SerializeEvent = UStringUtils::BinaryToString(ToBinary.GetData(), ToBinary.Num());
+			TArray<uint8> Bytes;
+			FMemoryWriter Writer(Bytes);
+            InPushEvent->Serialize(Writer);
+            FString SerializeEvent = UStringUtils::BinaryToString(Bytes);
 
 			if (Reliable) {
                 PlayerController->SendEventToServerReliable(InPushEvent->GetClass()->GetPathName(), SerializeEvent);
@@ -62,9 +63,10 @@ void UEventSystem::PushEventToClient(class ACorePlayerController* PlayerControll
     auto World = GetWorld();
     auto NetMode = World->GetNetMode();
     if (NetMode == ENetMode::NM_Client) {
-        FBufferArchive ToBinary;
-        InPushEvent->Serialize(ToBinary);
-        FString SerializeEvent = UStringUtils::BinaryToString(ToBinary.GetData(), ToBinary.Num());
+		TArray<uint8> Bytes;
+		FMemoryWriter Writer(Bytes);
+        InPushEvent->Serialize(Writer);
+        FString SerializeEvent = UStringUtils::BinaryToString(Bytes);
         PlayerController->SendEventToClient(InPushEvent->GetClass()->GetPathName(), SerializeEvent);
     }
     else {
