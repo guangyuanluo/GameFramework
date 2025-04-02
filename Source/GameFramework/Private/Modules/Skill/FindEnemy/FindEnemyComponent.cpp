@@ -5,35 +5,33 @@
 #include "FindEnemyBase.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
+#include "CoreCharacter.h"
 
 // Sets default values for this component's properties
 UFindEnemyComponent::UFindEnemyComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	SetIsReplicatedByDefault(true);
-	// ...
+	PrimaryComponentTick.TickInterval = 0.5;
+	
+	SetIsReplicatedByDefault(false);
 }
 
 ACoreCharacter* UFindEnemyComponent::FindOrGetEnemy() {
-	if (AutoUpdate) {
-        if (!Enemy) {
-			auto NetMode = GetWorld()->GetNetMode();
-			if (NetMode != ENetMode::NM_Client && NetMode != ENetMode::NM_Standalone) {
-				//索敌逻辑完全听客户端的
-			}
-			else {
-				if (FindEnemyClass.Get()) {
-					auto OldEnemy = Enemy;
-					auto NewEnemy = FindEnemyObject->FindEnemy(this);
-					if (NewEnemy != OldEnemy) {
-						SetEnemy(NewEnemy);
-						ServerSyncEnemy(NewEnemy);
-					}
+	if (!Enemy) {
+		auto NetMode = GetWorld()->GetNetMode();
+		if (NetMode != ENetMode::NM_Client && NetMode != ENetMode::NM_Standalone) {
+			//索敌逻辑完全听客户端的
+		}
+		else {
+			if (FindEnemyClass.Get()) {
+				auto OldEnemy = Enemy;
+				auto NewEnemy = FindEnemyObject->FindEnemy(this);
+				if (NewEnemy != OldEnemy) {
+					SetEnemy(NewEnemy);
+					ServerSyncEnemy(NewEnemy);
 				}
 			}
-        }
+		}
 	}
 	return Enemy;
 }
@@ -51,11 +49,7 @@ void UFindEnemyComponent::SetEnemy(ACoreCharacter* InEnemy) {
 }
 
 void UFindEnemyComponent::ClearEnemy() {
-	Enemy = nullptr;
-}
-
-void UFindEnemyComponent::SetAutoUpdateInterval(float NewInterval) {
-	AutoUpdateInterval = NewInterval;
+	SetEnemy(nullptr);
 }
 
 UFindEnemyBase* UFindEnemyComponent::GetFindEnemyInstance() const {
@@ -72,10 +66,6 @@ bool UFindEnemyComponent::IsLock() const {
 
 void UFindEnemyComponent::BeginPlay() {
 	Super::BeginPlay();
-
-	if (!AutoUpdate) {
-		SetComponentTickEnabled(false);
-	}
 
 	if (FindEnemyClass) {
 		FindEnemyObject = NewObject<UFindEnemyBase>(this, FindEnemyClass);
@@ -105,34 +95,29 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 			return;
 		}
 	}
+	CheckEnemyLost();
 
 	if (AutoUpdate) {
-		FDateTime Now = FDateTime::Now();
-		FTimespan TimeSinceLastUpdate = Now - LastAutoUpdateTime;
-		if (TimeSinceLastUpdate.GetTotalMilliseconds() > AutoUpdateInterval) {
-			LastAutoUpdateTime = Now;
+		if (bLock) {
+			return;
+		}
 
-			if (bLock) {
-				return;
-			}
-
-			if (!IgnoreAutoUpdateTagContainer.IsEmpty()) {
-				//有某些特定tag的时候，跳过自动更新
-				if (auto ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner())) {
-					if (ASC->HasAnyMatchingGameplayTags(IgnoreAutoUpdateTagContainer)) {
-						return;
-					}
+		if (!IgnoreAutoUpdateTagContainer.IsEmpty()) {
+			//有某些特定tag的时候，跳过自动更新
+			if (auto ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner())) {
+				if (ASC->HasAnyMatchingGameplayTags(IgnoreAutoUpdateTagContainer)) {
+					return;
 				}
 			}
+		}
 
-			//更新索敌
-			if (FindEnemyClass.Get()) {
-				auto OldEnemy = Enemy;
-				auto NewEnemy = FindEnemyObject->FindEnemy(this);
-				if (NewEnemy != OldEnemy) {
-					SetEnemy(NewEnemy);
-					ServerSyncEnemy(NewEnemy);
-				}
+		//更新索敌
+		if (FindEnemyClass.Get()) {
+			auto OldEnemy = Enemy;
+			auto NewEnemy = FindEnemyObject->FindEnemy(this);
+			if (NewEnemy != OldEnemy) {
+				SetEnemy(NewEnemy);
+				ServerSyncEnemy(NewEnemy);
 			}
 		}
 	}
@@ -140,4 +125,15 @@ void UFindEnemyComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 
 void UFindEnemyComponent::ServerSyncEnemy_Implementation(ACoreCharacter* InEnemy) {
 	SetEnemy(InEnemy);
+}
+
+void UFindEnemyComponent::CheckEnemyLost() {
+	if (Enemy) {
+		FVector OwnerLocation = GetOwner()->GetActorLocation();
+		FVector EnemyLocation = Enemy->GetActorLocation();
+		FVector DiffLocation = OwnerLocation - EnemyLocation;
+		if (DiffLocation.SizeSquared() > DistanceSquareLostEnemy) {
+			SetEnemy(nullptr);
+		}
+	}
 }
