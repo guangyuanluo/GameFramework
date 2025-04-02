@@ -27,11 +27,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill", meta = (DisplayName = "索敌类"))
 	TSubclassOf<UFindEnemyBase> FindEnemyClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill", meta = (DisplayName = "索敌距离"))
+	float FindEnemyDistance = 800.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill", meta = (DisplayName = "丢失目标距离"))
+	float DistanceSquareLostEnemy = 4000000.0;
+
+
 	/**
-	 * 是否自动索敌，如果是AI，关闭此选项，直接使用SetEnemy强行设置敌人
+	 * 是否自动索敌
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Skill")
-	bool AutoUpdate = true;
+	bool AutoUpdate = false;
 
 	/**
 	* 拥有以下Tag时跳过触发自动更新
@@ -83,12 +90,6 @@ public:
 	void ClearEnemy();
 
 	/**
-	* 更新自动索敌间隔
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Skill")
-	void SetAutoUpdateInterval(float NewInterval);
-
-	/**
 	* 获取索敌实例
 	*/
 	UFUNCTION(BlueprintPure, Category = "Skill")
@@ -106,8 +107,6 @@ public:
 
 private:
 	bool bLock = false;
-	FDateTime LastAutoUpdateTime;
-	float AutoUpdateInterval = 500.f;
 
 	UPROPERTY(Transient)
 	ACoreCharacter* Enemy;
@@ -120,4 +119,6 @@ private:
 	*/
 	UFUNCTION(Server, reliable)
 	void ServerSyncEnemy(ACoreCharacter* InEnemy);
+
+	void CheckEnemyLost();
 };
