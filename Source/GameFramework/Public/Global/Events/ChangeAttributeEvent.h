@@ -7,7 +7,7 @@
 #include "GameplayEffectTypes.h"
 #include "ChangeAttributeEvent.generated.h"
 
-class ACoreCharacter;
+class ACoreCharacterStateBase;
 /**
  * 
  */
@@ -21,7 +21,7 @@ public:
     * 变化目标
     */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-	ACoreCharacter* Character;
+    ACoreCharacterStateBase* OwnerActor;
 
     /**
     * 变化属性

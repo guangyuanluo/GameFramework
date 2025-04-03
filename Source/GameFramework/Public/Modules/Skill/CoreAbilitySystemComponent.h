@@ -222,14 +222,6 @@ private:
 
     FGameplayTagContainer GetTargetTagContainer();
 
-    /** 监听属性变化事件 */
-    void ListenAttributeChange();
-
-    /**
-    * 属性变化回调
-    */
-    void OnAttributeChange(const struct FOnAttributeChangeData& Data);
-
     void OnActiveEffectAdded(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
     void OnActiveEffectRemove(const struct FActiveGameplayEffect& FGameplayEffectRemovalInfo);
 };
