@@ -40,7 +40,8 @@ void AGameEntityActor::OnReq_EntityID(const FString& OldID) {
 void AGameEntityActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(AGameEntityActor, EntityID, COND_None, REPNOTIFY_Always);
+	FDoRepLifetimeParams Params;
+	DOREPLIFETIME_WITH_PARAMS_FAST(AGameEntityActor, EntityID, Params);
 }
 
 void AGameEntityActor::BeginPlay()

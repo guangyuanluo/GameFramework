@@ -17,7 +17,6 @@
 #include "SortUtils.h"
 #include "FindEnemyComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
-#include "ChangeAttributeEvent.h"
 #include "ChangeEffectEvent.h"
 #include "GameEventUtils.h"
 
@@ -59,7 +58,6 @@ void UCoreAbilitySystemComponent::InitSkillFromTemplate(int TemplateId) {
             AddSkillGroup(FindTemplate->SkillGroupIDContainer.SkillGroupID, FEffectPreAddDelegate());
         }
     }
-    ListenAttributeChange();
 }
 
 void UCoreAbilitySystemComponent::K2_AddSkillGroup(int SkillGroupID, const FEffectPreAddDynDelegate& InEffectPreAddCallback) {
@@ -572,32 +570,6 @@ FGameplayTagContainer UCoreAbilitySystemComponent::GetTargetTagContainer() {
         }
     }
     return TargetTagContainer;
-}
-
-void UCoreAbilitySystemComponent::ListenAttributeChange() {
-    auto CharacterState = Cast<ACoreCharacterStateBase>(GetOwnerActor());
-    /** 监听所有属性变化，替换成事件 */
-    TArray<FGameplayAttribute> AllGameplayAttributes;
-
-    CharacterState->SkillComponent->GetAllAttributes(AllGameplayAttributes);
-    for (int AttributeIndex = 0; AttributeIndex < AllGameplayAttributes.Num(); ++AttributeIndex) {
-        CharacterState->SkillComponent->GetGameplayAttributeValueChangeDelegate(AllGameplayAttributes[AttributeIndex]).AddUObject(this, &UCoreAbilitySystemComponent::OnAttributeChange);
-    }
-}
-
-void UCoreAbilitySystemComponent::OnAttributeChange(const FOnAttributeChangeData& Data) {
-    if (Data.OldValue != Data.NewValue) {
-        //属性变化事件
-        auto Character = Cast<ACoreCharacter>(GetAvatarActor());
-        UChangeAttributeEvent* ChangeAttributeEvent = NewObject<UChangeAttributeEvent>();
-        ChangeAttributeEvent->Character = Character;
-        ChangeAttributeEvent->Attribute = Data.Attribute;
-        ChangeAttributeEvent->OldValue = Data.OldValue;
-        ChangeAttributeEvent->NewValue = Data.NewValue;
-
-        //事件广播
-        UGameEventUtils::PushEvent(this, ChangeAttributeEvent);
-    }
 }
 
 void UCoreAbilitySystemComponent::OnActiveEffectAdded(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle ActiveGameplayEffectHandle) {

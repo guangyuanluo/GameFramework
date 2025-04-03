@@ -106,8 +106,9 @@ bool ACoreCharacter::ServerMoveInput_Validate(const FVector& MoveInputDirection)
 void ACoreCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME_CONDITION_NOTIFY(ACoreCharacter, EntityID, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME(ACoreCharacter, TemplateID);
+    FDoRepLifetimeParams Params;
+    DOREPLIFETIME_WITH_PARAMS_FAST(ACoreCharacter, EntityID, Params);
+    DOREPLIFETIME_WITH_PARAMS_FAST(ACoreCharacter, TemplateID, Params);
 }
 
 FString& ACoreCharacter::EntityID_Implementation() {
