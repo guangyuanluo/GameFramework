@@ -40,6 +40,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void PushQuest(const FGuid& ID, int StepIndex);
 
+    /* 根据剧情找到关联的执行中任务 */
+    UFUNCTION(BlueprintCallable, Category = "Quest")
+    class UExecutingQuest* FindExecutingQuestFromScenario(class UScenario* ScenarioAsset) const;
+
     UFUNCTION()
     void OnQuestChanged();
 

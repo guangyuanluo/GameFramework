@@ -14,6 +14,8 @@
 #include "QuestForestSubsystem.h"
 #include "QuestTree.h"
 #include "Quest.h"
+#include "QuestDetail.h"
+#include "QuestDetailNodeItem.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
 #include "UE4LogImpl.h"
@@ -21,6 +23,7 @@
 #include "NPCSystem.h"
 #include "SortUtils.h"
 #include "GameEventUtils.h"
+#include "Scenario.h"
 
 // Sets default values for this component's properties
 UQuestComponent::UQuestComponent()
@@ -88,6 +91,32 @@ void UQuestComponent::PushQuest(const FGuid& ID, int StepIndex) {
 
         UGameEventUtils::PushEventToServer(this, Request, false);
     }
+}
+
+class UExecutingQuest* UQuestComponent::FindExecutingQuestFromScenario(class UScenario* ScenarioAsset) const {
+    if (!ScenarioAsset) {
+        return nullptr;
+    }
+    FSoftObjectPath ScenarioAssetPath(ScenarioAsset);
+    for (int Index = 0; ExecutingQuests.Num(); ++Index) {
+        auto QuestTemplate = ExecutingQuests[Index]->GetQuest();
+        if (!QuestTemplate) {
+            continue;
+        }
+        UQuestDetail* QuestDetail = QuestTemplate->QuestDetail.Get();
+        if (!QuestDetail) {
+            continue;
+        }
+        for (auto Iter = QuestDetail->NodeMap.CreateConstIterator(); Iter; ++Iter) {
+            auto QuestDetailNodeItem = Cast<UQuestDetailNodeItem>(Iter->Value);
+            if (QuestDetailNodeItem) {
+                if (QuestDetailNodeItem->TalkingScenario.ToSoftObjectPath() == ScenarioAssetPath) {
+                    return ExecutingQuests[Index];
+                }
+            }
+        }
+    }
+    return nullptr;
 }
 
 void UQuestComponent::OnQuestChanged() {

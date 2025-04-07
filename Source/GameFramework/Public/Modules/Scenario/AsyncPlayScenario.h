@@ -22,7 +22,7 @@ class GAMEFRAMEWORK_API UAsyncPlayScenario : public UBlueprintAsyncActionBase
 
 public:
 	UFUNCTION(BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "WorldContextObject"))
-	static UAsyncPlayScenario* PlayScenario(UObject* WorldContextObject, UScenario* InScenario, UObject* Context = nullptr);
+	static UAsyncPlayScenario* PlayScenario(UObject* WorldContextObject, UScenario* InScenario);
 
 public:
 

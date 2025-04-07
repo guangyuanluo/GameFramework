@@ -6,6 +6,10 @@ UScenarioNode::UScenarioNode(const class FObjectInitializer& ObjectInitializer) 
 
 }
 
+class UScenario* UScenarioNode::GetScenarioAsset() const {
+    return ScenarioAsset;
+}
+
 const TArray<class UScenarioNode*>& UScenarioNode::GetFollowScenarioNodes() const {
     return FollowScenarioNodes;
 }
