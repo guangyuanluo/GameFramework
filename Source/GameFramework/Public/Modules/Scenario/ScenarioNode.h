@@ -40,6 +40,9 @@ public:
     TArray<TObjectPtr<class UScenarioAction>> Actions;
 
     UFUNCTION(BlueprintCallable)
+    class UScenario* GetScenarioAsset() const;
+
+    UFUNCTION(BlueprintCallable)
     const TArray<class UScenarioNode*>& GetFollowScenarioNodes() const;
 
     UFUNCTION(BlueprintNativeEvent)

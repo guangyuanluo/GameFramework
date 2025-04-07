@@ -11,10 +11,10 @@ UAsyncPlayScenario::UAsyncPlayScenario(const FObjectInitializer& ObjectInitializ
     
 }
 
-UAsyncPlayScenario* UAsyncPlayScenario::PlayScenario(UObject* WorldContextObject, UScenario* InScenario, UObject* Context) {
+UAsyncPlayScenario* UAsyncPlayScenario::PlayScenario(UObject* WorldContextObject, UScenario* InScenario) {
     auto GameInstance = Cast<UCoreGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));
     if (GameInstance) {
-        return GameInstance->GameSystemManager->GetSystemByClass<UScenarioSystem>()->PlayScenario(InScenario, Context);
+        return GameInstance->GameSystemManager->GetSystemByClass<UScenarioSystem>()->PlayScenario(InScenario);
     }
     return nullptr;
 }

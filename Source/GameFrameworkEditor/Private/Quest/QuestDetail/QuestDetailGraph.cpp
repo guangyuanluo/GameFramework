@@ -19,8 +19,8 @@ void UQuestDetailGraph::NotifyGraphPinConnectionChanged()
 	Super::NotifyGraphPinConnectionChanged();
 
 	UGameFrameworkGraphNode* RootNode = nullptr;
-	for (UEdGraphNode* node : Nodes) {
-		UGameFrameworkGraphNode* GraphNode = Cast<UGameFrameworkGraphNode>(node);
+	for (UEdGraphNode* Node : Nodes) {
+		UGameFrameworkGraphNode* GraphNode = Cast<UGameFrameworkGraphNode>(Node);
 		if (GraphNode != nullptr) {
 			if (RootNode == nullptr) {
 				RootNode = Cast<UQuestDetailGraphNode_Root>(GraphNode);

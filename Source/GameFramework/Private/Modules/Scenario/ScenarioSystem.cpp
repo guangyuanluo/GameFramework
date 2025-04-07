@@ -42,13 +42,12 @@ void UScenarioSystem::Uninitialize() {
     PlayScenarioPredicate = nullptr;
 }
 
-class UAsyncPlayScenario* UScenarioSystem::PlayScenario(class UScenario* Scenario, UObject* Context) {
+class UAsyncPlayScenario* UScenarioSystem::PlayScenario(class UScenario* Scenario) {
     UAsyncPlayScenario* PlayScenario = NewObject<UAsyncPlayScenario>();
     PlayScenario->Scenario = Scenario;
 
     FPlayScenarioQueueItem QueueItem;
     QueueItem.PlayScenario = PlayScenario;
-    QueueItem.Context = Context;
 
     PlayScenarioQueue.HeapPush(QueueItem, FPlayScenarioPredicate(PlayScenarioPredicate));
     if (CurrentPlayScenario == nullptr) {
@@ -65,13 +64,12 @@ void UScenarioSystem::Step(int ChildIndex) {
             FPlayScenarioQueueItem Top;
             PlayScenarioQueue.HeapPop(Top, FPlayScenarioPredicate(PlayScenarioPredicate));
             CurrentPlayScenario = Top.PlayScenario;
-            CurrentScenarioContext = Top.Context;
         }
     }
     if (CurrentPlayScenario) {
         if (CurrentPlayScenarioNode == nullptr) {
             CurrentPlayScenarioNode = CurrentPlayScenario->Scenario->RootScenario;
-            OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, CurrentScenarioContext);
+            OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode);
         }
         else {
             auto FollowNodeNum = CurrentPlayScenarioNode->FollowScenarioNodes.Num();
@@ -82,13 +80,12 @@ void UScenarioSystem::Step(int ChildIndex) {
 
                 CurrentPlayScenario = nullptr;
                 CurrentPlayScenarioNode = nullptr;
-                CurrentScenarioContext = nullptr;
             }
             else if (FollowNodeNum == 1) {
                 auto NextNode = CurrentPlayScenarioNode->FollowScenarioNodes[0];
                 OnScenarioPlayEndDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, NextNode);
                 CurrentPlayScenarioNode = NextNode;
-                OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, CurrentScenarioContext);
+                OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode);
             }
             else {
                 if (ChildIndex >= FollowNodeNum) {
@@ -98,7 +95,7 @@ void UScenarioSystem::Step(int ChildIndex) {
                     auto NextNode = CurrentPlayScenarioNode->FollowScenarioNodes[ChildIndex];
                     OnScenarioPlayEndDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, NextNode);
                     CurrentPlayScenarioNode = NextNode;
-                    OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode, CurrentScenarioContext);
+                    OnScenarioPlayStartDelegate.Broadcast(CurrentPlayScenario, CurrentPlayScenarioNode);
                 }
             }
         }
@@ -112,7 +109,6 @@ void UScenarioSystem::Step(int ChildIndex) {
 
                 CurrentPlayScenario = nullptr;
                 CurrentPlayScenarioNode = nullptr;
-                CurrentScenarioContext = nullptr;
 
                 //当前剧情播放完，继续下一个
                 if (PlayScenarioQueue.Num() > 0) {

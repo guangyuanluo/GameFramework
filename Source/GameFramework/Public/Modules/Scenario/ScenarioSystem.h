@@ -6,7 +6,7 @@
 #include "Base/ECS/SystemBase.h"
 #include "ScenarioSystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayStartDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, UObject*, ScenarioContextToPlay);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnScenarioPlayStartDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayEndDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, class UScenarioNode*, NextNodeToPlay);
 
 USTRUCT()
@@ -15,9 +15,6 @@ struct FPlayScenarioQueueItem {
 
     UPROPERTY()
     class UAsyncPlayScenario* PlayScenario;
-
-    UPROPERTY()
-    UObject* Context;
 };
 /*
 * @brief 剧情管理
@@ -46,7 +43,7 @@ public:
     * 播放剧情
     */
     UFUNCTION(BlueprintCallable)
-    class UAsyncPlayScenario* PlayScenario(class UScenario* Scenario, UObject* Context = nullptr);
+    class UAsyncPlayScenario* PlayScenario(class UScenario* Scenario);
 
     /**
     * 剧情步进
@@ -78,12 +75,6 @@ private:
     */
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
     class UScenarioNode* CurrentPlayScenarioNode;
-
-    /**
-    * 当前剧情播放的上下文
-    */
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
-    UObject* CurrentScenarioContext;
 
     UPROPERTY()
     class UPlayScenarioPredicate* PlayScenarioPredicate;
