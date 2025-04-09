@@ -36,9 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	void AcceptQuest(const FGuid& ID);
 
-	/*推动任务*/
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	void PushQuest(const FGuid& ID, int StepIndex);
+    /*提交任务*/
+    UFUNCTION(BlueprintCallable, Category = "Quest")
+    void CommitQuest(const FGuid& ID, int UnitID);
 
     /* 根据剧情找到关联的执行中任务 */
     UFUNCTION(BlueprintCallable, Category = "Quest")
@@ -109,14 +109,14 @@ public:
 };
 
 UCLASS(BlueprintType)
-class GAMEFRAMEWORK_API UPushQuestRequesEvent : public UGameEventBase {
+class GAMEFRAMEWORK_API UCommitQuestRequesEvent : public UGameEventBase {
     GENERATED_BODY()
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
-        FString EntityId;
+    FString EntityId;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
-        FGuid ID;
+    FGuid ID;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
-        int32 StepIndex;
+    int UnitID;
 };

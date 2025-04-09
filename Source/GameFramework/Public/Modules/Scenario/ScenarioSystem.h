@@ -3,24 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Modules/Events/EventHandlerInterface.h"
 #include "Base/ECS/SystemBase.h"
 #include "ScenarioSystem.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnScenarioPlayStartDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnScenarioPlayEndDelegate, class UAsyncPlayScenario*, ScenarioToPlay, class UScenarioNode*, NodeToPlay, class UScenarioNode*, NextNodeToPlay);
+class UScenarioComponent;
 
-USTRUCT()
-struct FPlayScenarioQueueItem {
-    GENERATED_BODY()
-
-    UPROPERTY()
-    class UAsyncPlayScenario* PlayScenario;
-};
 /*
 * @brief 剧情管理
 */
 UCLASS()
-class GAMEFRAMEWORK_API UScenarioSystem : public USystemBase {
+class GAMEFRAMEWORK_API UScenarioSystem : public USystemBase, public IEventHandlerInterface {
     GENERATED_BODY()
 
 public:
@@ -28,54 +21,28 @@ public:
     virtual void Uninitialize() override;
 
     /**
-    * 开始播放剧情
-    */
-    UPROPERTY(BlueprintAssignable)
-    FOnScenarioPlayStartDelegate OnScenarioPlayStartDelegate;
-
-    /**
-    * 剧情节点播放结束
-    */
-    UPROPERTY(BlueprintAssignable)
-    FOnScenarioPlayEndDelegate OnScenarioPlayEndDelegate;
-
-    /**
     * 播放剧情
     */
-    UFUNCTION(BlueprintCallable)
-    class UAsyncPlayScenario* PlayScenario(class UScenario* Scenario);
+    class UAsyncPlayScenario* PlayScenario(UScenarioComponent* ScenarioComponent, class UScenario* Scenario);
 
     /**
     * 剧情步进
     */
-    UFUNCTION(BlueprintCallable)
-    void Step(int ChildIndex);
+    void Step(UScenarioComponent* ScenarioComponent, int ChildIndex);
 
     /**
     * 执行当前剧情的所有动作
     */
     UFUNCTION(BlueprintCallable)
-    void ExecuteCurrentSceneActions();
+    void ExecuteCurrentSceneActions(UScenarioComponent* ScenarioComponent);
 
 private:
-    /**
-    * 剧情优先级队列
-    */
-    UPROPERTY()
-    TArray<FPlayScenarioQueueItem> PlayScenarioQueue;
-
-    /**
-    * 当前播放的剧情
-    */
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
-    class UAsyncPlayScenario* CurrentPlayScenario;
-
-    /**
-    * 当前播放的剧情节点
-    */
-    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
-    class UScenarioNode* CurrentPlayScenarioNode;
-
     UPROPERTY()
     class UPlayScenarioPredicate* PlayScenarioPredicate;
+
+    /** 覆写事件监听 */
+    virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;
+    virtual void OnEvent(UCoreGameInstance* IngGameInstance, UGameEventBase* HandleEvent) override;
+
+    void PlayScenarioAfterLoaded(FString EntityID, FString ScenarioPath);
 };

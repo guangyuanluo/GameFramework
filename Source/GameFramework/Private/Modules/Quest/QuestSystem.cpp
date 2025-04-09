@@ -64,7 +64,7 @@ void UQuestSystem::AcceptQuest(UQuestComponent* QuestComponent, const FGuid& ID)
     UAssetManager::GetStreamableManager().RequestAsyncLoad(Quest->QuestDetail.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &UQuestSystem::AddExecutinQuestAfterLoaded, QuestComponent, ID));
 }
 
-bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, int32 StepIndex, FString& Error) {
+void UQuestSystem::CommitQuest(UQuestComponent* QuestComponent, const FGuid& ID, int32 UnitID) {
     int32 FindIndex = -1;
     UExecutingQuest* FindQuest = nullptr;
     for (int Index = 0; Index < QuestComponent->ExecutingQuests.Num(); ++Index) {
@@ -76,12 +76,30 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
     }
 
     if (!FindQuest) {
-        Error = TEXT("提交任务不在进行中");
-        return false;
+        UE_LOG(GameCore, Log, TEXT("提交任务不在进行中"), *ID.ToString());
+        return;
+    }
+    FindQuest->CommitQuest(UnitID);
+}
+
+void UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, int32 StepIndex) {
+    int32 FindIndex = -1;
+    UExecutingQuest* FindQuest = nullptr;
+    for (int Index = 0; Index < QuestComponent->ExecutingQuests.Num(); ++Index) {
+        if (QuestComponent->ExecutingQuests[Index]->GetQuest()->ID == ID) {
+            FindQuest = QuestComponent->ExecutingQuests[Index];
+            FindIndex = Index;
+            break;
+        }
+    }
+
+    if (!FindQuest) {
+        UE_LOG(GameCore, Log, TEXT("提交任务不在进行中"), *ID.ToString());
+        return;
     }
     if (!FindQuest->IsComplete()) {
-        Error = TEXT("提交任务条件不满足");
-        return false;
+        UE_LOG(GameCore, Log, TEXT("提交任务条件不满足"), *ID.ToString());
+        return;
     }
     if (FindQuest->IsLastNode()) {
         //todo，任务进度完成
@@ -121,8 +139,6 @@ bool UQuestSystem::PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, i
         //这里就跳转下个节点
         FindQuest->StepNextNode(StepIndex);
     }
-
-    return true;
 }
 
 void UQuestSystem::AddExecutinQuestAfterLoaded(UQuestComponent* QuestComponent, const FGuid ID) {
@@ -162,7 +178,7 @@ void UQuestSystem::AddExecutinQuestAfterLoaded(UQuestComponent* QuestComponent, 
 TArray<TSubclassOf<class UGameEventBase>> UQuestSystem::GetHandleEventTypes() {
     return {
         UAcceptQuestRequesEvent::StaticClass(),
-        UPushQuestRequesEvent::StaticClass(),
+        UCommitQuestRequesEvent::StaticClass(),
     };
 }
 
@@ -181,8 +197,8 @@ void UQuestSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
             }
         }
     }
-    else if (HandleEvent->IsA(UPushQuestRequesEvent::StaticClass())) {
-        auto Request = Cast<UPushQuestRequesEvent>(HandleEvent);
+    else if (HandleEvent->IsA(UCommitQuestRequesEvent::StaticClass())) {
+        auto Request = Cast<UCommitQuestRequesEvent>(HandleEvent);
 
         auto Entity = InGameInstance->GameEntityManager->GetEntityById(Request->EntityId);
         if (Entity) {
@@ -190,8 +206,7 @@ void UQuestSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* Ha
             if (Character) {
                 auto PlayerState = Cast<ACoreCharacterStateBase>(Character->GetPlayerState());
                 if (PlayerState && PlayerState->QuestComponent) {
-                    FString Error;
-                    PushQuest(PlayerState->QuestComponent, Request->ID, Request->StepIndex, Error);
+                    CommitQuest(PlayerState->QuestComponent, Request->ID, Request->UnitID);
                 }
             }
         }

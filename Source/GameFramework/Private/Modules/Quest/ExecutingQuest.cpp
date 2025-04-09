@@ -22,6 +22,8 @@
 #include "Scenario.h"
 #include "GameFrameworkUtils.h"
 #include "ConditionBlueprintLibrary.h"
+#include "ScenarioComponent.h"
+#include "QuestSystem.h"
 
 void UExecutingQuest::Initialize(UQuest* InQuest) {
 	Quest = InQuest;
@@ -66,7 +68,9 @@ const TArray<UCoreConditionProgress*>& UExecutingQuest::GetQuestProgresses() con
 }
 
 const TArray<UCoreReward*>& UExecutingQuest::GetQuestRewards() const {
-	return QuestRewards;
+	auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
+	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
+	return NodeItem->Rewards;
 }
 
 bool UExecutingQuest::IsComplete() const {
@@ -93,6 +97,15 @@ void UExecutingQuest::StepNextNode(int StepIndex) {
 	}
 	//这里取下个节点
 	SetNode(Node->NextNodes[StepIndex]);
+}
+
+int UExecutingQuest::GetCurrentCommitUnitID() const {
+	auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
+	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
+	if (NodeItem && NodeItem->CommitNPC.UnitID) {
+		return NodeItem->CommitNPC.UnitID;
+	}
+	return 0;
 }
 
 void UExecutingQuest::SetNodeID(const FGuid& InNodeID) {
@@ -126,7 +139,6 @@ void UExecutingQuest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, ID, Params);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, NodeID, Params);
 	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, QuestProgresses, Params);
-	DOREPLIFETIME_WITH_PARAMS_FAST(UExecutingQuest, QuestRewards, Params);
 }
 
 bool UExecutingQuest::IsSupportedForNetworking() const {
@@ -135,7 +147,9 @@ bool UExecutingQuest::IsSupportedForNetworking() const {
 
 void UExecutingQuest::OnAllProgressesSatisfy(FConditionTriggerHandler Handler) {
 	//所有任务进度都变成完成
-	if (GetWorld()->GetNetMode() == ENetMode::NM_Standalone) {
+	auto NetMode = GetWorld()->GetNetMode();
+	if (NetMode == ENetMode::NM_Standalone
+	|| NetMode == ENetMode::NM_DedicatedServer) {
 		auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
 		UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
 		if (!NodeItem || (NodeItem && (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario))) {
@@ -158,38 +172,10 @@ void UExecutingQuest::OnRep_QuestID() {
 
 void UExecutingQuest::OnRep_NodeID() {
 	UE_LOG(GameCore, Log, TEXT("收到任务节点推进通知，QID:%s NodeID:%s"), *ID.ToString(), *NodeID.ToString());
-	auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
-	UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
-	if (NodeItem) {
-		if (NodeItem->ConditionList.Num() == 0) {
-			//不需要条件
-			if (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario) {
-				//不需要提交npc或者是自动提交
-				NotifyPlayScenario();
-			}
-		}
-	}
 }
 
 void UExecutingQuest::OnRep_Progress(const TArray<UCoreConditionProgress*>& OldProgresses) {
-	for (const auto& OldProgress : OldProgresses) {
-		if (OldProgress) {
-			OldProgress->OnConditionProgressPostNetReceive.RemoveDynamic(this, &UExecutingQuest::OnProgressPostNetReceive);
-		}
-	}
-	for (auto Progress : QuestProgresses) {
-		if (Progress) {
-			Progress->OnConditionProgressPostNetReceive.AddDynamic(this, &UExecutingQuest::OnProgressPostNetReceive);
-		}
-	}
 
-	if (IsComplete()) {
-		auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
-		UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
-		if (!NodeItem || (NodeItem && (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario))) {
-			NotifyPlayScenario();
-		}
-	}
 }
 
 void UExecutingQuest::OnRep_Rewards() {
@@ -225,7 +211,8 @@ void UExecutingQuest::NotifyPlayScenarioAfterLoaded(FSoftObjectPath LoadScenario
 	if (Scenario) {
 		UE_LOG(GameCore, Log, TEXT("任务节点开始播放剧情，QID:%s NodeID:%s Scenario:%s"), *ID.ToString(), *NodeID.ToString(), *LoadScenarioPath.ToString());
 		auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
-		auto AsyncPlayScenario = GameInstance->GameSystemManager->GetSystemByClass<UScenarioSystem>()->PlayScenario(Scenario);
+		auto PlayerState = Cast<ACoreCharacterStateBase>(GetOuter());
+		auto AsyncPlayScenario = GameInstance->GameSystemManager->GetSystemByClass<UScenarioSystem>()->PlayScenario(PlayerState->ScenarioComponent, Scenario);
 		AsyncPlayScenario->OnComplete.AddDynamic(this, &UExecutingQuest::PlayScenarioCompleted);
 	}
 	else {
@@ -236,7 +223,9 @@ void UExecutingQuest::NotifyPlayScenarioAfterLoaded(FSoftObjectPath LoadScenario
 void UExecutingQuest::PlayScenarioCompleted(UScenario* PlayScenario, int ReturnIndex) {
 	UE_LOG(GameCore, Log, TEXT("任务节点播放剧情完成，推动剧情，QID:%s NodeID:%s"), *ID.ToString(), *NodeID.ToString());
 
-	GetQuestComponent()->PushQuest(ID, ReturnIndex);
+	auto PlayerState = Cast<ACoreCharacterStateBase>(GetOuter());
+	auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
+	GameInstance->GameSystemManager->GetSystemByClass<UQuestSystem>()->PushQuest(PlayerState->QuestComponent, ID, ReturnIndex);
 }
 
 void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
@@ -250,7 +239,6 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	}
 
 	QuestProgresses.Empty();
-	QuestRewards.Empty();
 
 	auto Owner = Cast<AActor>(GetOuter());
 
@@ -261,7 +249,6 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 			ConditionProgress->Initialize();
 			QuestProgresses.Add(ConditionProgress);
 		}
-		QuestRewards = NodeItem->Rewards;
 	}
 	else {
 		UE_LOG(GameCore, Error, TEXT("不支持的任务节点类型"));
@@ -276,14 +263,4 @@ void UExecutingQuest::SetNode(UQuestDetailNode* InNode) {
 	Callback.BindUFunction(this, TEXT("OnAllProgressesSatisfy"));
 
 	ConditionTriggerSystem->FollowConditions(ConditionTriggerHandler, QuestProgresses, Callback);
-}
-
-void UExecutingQuest::OnProgressPostNetReceive(UCoreConditionProgress* Progress) {
-	if (IsComplete()) {
-		auto Node = Quest->QuestDetail->GetNodeByID(NodeID);
-		UQuestDetailNodeItem* NodeItem = Cast<UQuestDetailNodeItem>(Node);
-		if (!NodeItem || (NodeItem && (NodeItem->CommitNPC.UnitID == 0 || NodeItem->bAutoPlayScenario))) {
-			NotifyPlayScenario();
-		}
-	}
 }

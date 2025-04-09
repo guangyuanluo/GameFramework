@@ -9,6 +9,7 @@
 #include "AsyncPlayScenario.generated.h"
 
 class UScenario;
+class UScenarioComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayScenarioDelegate, UScenario*, Scenario, int, ReturnBranch);
 
@@ -22,7 +23,7 @@ class GAMEFRAMEWORK_API UAsyncPlayScenario : public UBlueprintAsyncActionBase
 
 public:
 	UFUNCTION(BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "WorldContextObject"))
-	static UAsyncPlayScenario* PlayScenario(UObject* WorldContextObject, UScenario* InScenario);
+	static UAsyncPlayScenario* PlayScenario(UObject* WorldContextObject, UScenarioComponent* ScenarioComponent, UScenario* InScenario);
 
 public:
 
