@@ -15,7 +15,7 @@ class GAMEFRAMEWORK_API UPayOrderRequestEvent : public UGameEventBase {
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
-        class ACoreCharacter* Source;
+        FString EntityID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EventSystem", Meta = (ExposeOnSpawn = true))
         FGuid OrderID;

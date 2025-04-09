@@ -77,6 +77,12 @@ public:
 	void StepNextNode(int StepIndex);
 
 	/**
+	* 获取当前提交的单位id
+	*/
+	UFUNCTION(BlueprintCallable, Category = "QuestSystem")
+	int GetCurrentCommitUnitID() const;
+
+	/**
 	* 设置剧情ID
 	*/
 	void SetNodeID(const FGuid& InNodeID);
@@ -84,7 +90,6 @@ public:
 	/**
 	* 提交任务
 	*/
-	UFUNCTION(BlueprintCallable, Category = "QuestSystem")
 	void CommitQuest(int UnitID);
 
 	//继承
@@ -115,12 +120,6 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Progress)
 	TArray<UCoreConditionProgress*> QuestProgresses;
 
-	/**
-	* 完成奖励
-	*/
-	UPROPERTY(ReplicatedUsing = OnRep_Rewards)
-	TArray<UCoreReward*> QuestRewards;
-
 	FConditionTriggerHandler ConditionTriggerHandler;
 	/**
 	* 所有进度完成
@@ -146,7 +145,4 @@ private:
 	void PlayScenarioCompleted(UScenario* PlayScenario, int ReturnIndex);
 
 	void SetNode(UQuestDetailNode* InNode);
-
-	UFUNCTION()
-	void OnProgressPostNetReceive(UCoreConditionProgress* Progress);
 };

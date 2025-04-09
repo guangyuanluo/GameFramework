@@ -29,9 +29,14 @@ public:
 	void AcceptQuest(UQuestComponent* QuestComponent, const FGuid& ID);
 
 	/**
+	* 提交任务
+	*/
+	void CommitQuest(UQuestComponent* QuestComponent, const FGuid& ID, int32 UnitID);
+
+	/**
 	* @brief 推动任务
 	*/
-	bool PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, int32 StepIndex, FString& Error);
+	void PushQuest(UQuestComponent* QuestComponent, const FGuid& ID, int32 StepIndex);
 
 private:
 	void AddExecutinQuestAfterLoaded(UQuestComponent* QuestComponent, const FGuid ID);

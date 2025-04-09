@@ -103,6 +103,12 @@ void ACorePlayerController::OnRep_Pawn() {
     K2_OnClientPossessed();
 }
 
+void ACorePlayerController::OnRep_PlayerState() {
+    Super::OnRep_PlayerState();
+
+    K2_OnPlayerStateInit();
+}
+
 void ACorePlayerController::SendEventToServerReliable_Implementation(const FString& EventClass, const FString& SerializeEvent) {
     auto GameInstance = GetWorld()->GetGameInstance<UCoreGameInstance>();
     GameInstance->GameSystemManager->GetSystemByClass<UEventSystem>()->HandleSendEventToServer(this, EventClass, SerializeEvent);

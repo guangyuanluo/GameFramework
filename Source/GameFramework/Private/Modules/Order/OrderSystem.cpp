@@ -12,6 +12,7 @@
 #include "OrderCancelEvent.h"
 #include "OrderCompleteEvent.h"
 #include "OrderGlobalEvents.h"
+#include "GameEntityManager.h"
 
 void UOrderSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);
@@ -85,6 +86,12 @@ TArray<TSubclassOf<class UGameEventBase>> UOrderSystem::GetHandleEventTypes() {
 void UOrderSystem::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {
     if (HandleEvent->IsA(UPayOrderRequestEvent::StaticClass())) {
         auto PayOrderRequestEvent = Cast<UPayOrderRequestEvent>(HandleEvent);
-        PayOrder(PayOrderRequestEvent->Source, PayOrderRequestEvent->OrderID);
+        auto Entity = InGameInstance->GameEntityManager->GetEntityById(PayOrderRequestEvent->EntityID);
+        if (Entity) {
+            auto Character = Cast<ACoreCharacter>(Entity.GetObject());
+            if (Character) {
+                PayOrder(Character, PayOrderRequestEvent->OrderID);
+            }
+        }
     }
 }

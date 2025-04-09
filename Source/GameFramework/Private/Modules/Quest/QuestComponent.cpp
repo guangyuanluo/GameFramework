@@ -78,16 +78,16 @@ void UQuestComponent::AcceptQuest(const FGuid& ID) {
     }
 }
 
-void UQuestComponent::PushQuest(const FGuid& ID, int StepIndex) {
+void UQuestComponent::CommitQuest(const FGuid& ID, int UnitID) {
     auto PlayerState = Cast<APlayerState>(GetOwner());
     check(PlayerState);
 
     auto GameEntity = Cast<IGameEntity>(PlayerState->GetPawn());
     if (GameEntity) {
-        auto Request = NewObject<UPushQuestRequesEvent>();
+        auto Request = NewObject<UCommitQuestRequesEvent>();
         Request->EntityId = GameEntity->GetEntityID();
         Request->ID = ID;
-        Request->StepIndex = StepIndex;
+        Request->UnitID = UnitID;
 
         UGameEventUtils::PushEventToServer(this, Request, false);
     }

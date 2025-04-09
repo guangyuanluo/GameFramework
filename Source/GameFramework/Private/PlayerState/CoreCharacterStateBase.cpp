@@ -8,6 +8,7 @@
 #include "QuestComponent.h"
 #include "PlayerComponent.h"
 #include "WalletComponent.h"
+#include "ScenarioComponent.h"
 
 ACoreCharacterStateBase::ACoreCharacterStateBase(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     //降低同步频率，0.5s一次足够了
@@ -26,6 +27,7 @@ void ACoreCharacterStateBase::OnConstruction(const FTransform& Transform) {
     QuestComponent = Cast<UQuestComponent>(GetComponentByClass((UQuestComponent::StaticClass())));
     PlayerComponent = Cast<UPlayerComponent>(GetComponentByClass((UPlayerComponent::StaticClass())));
     WalletComponent = Cast<UWalletComponent>(GetComponentByClass((UWalletComponent::StaticClass())));
+    ScenarioComponent = Cast<UScenarioComponent>(GetComponentByClass((UScenarioComponent::StaticClass())));
 }
 
 UAbilitySystemComponent* ACoreCharacterStateBase::GetAbilitySystemComponent() const {

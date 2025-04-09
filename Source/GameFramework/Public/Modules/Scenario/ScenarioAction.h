@@ -15,7 +15,7 @@ class GAMEFRAMEWORK_API UScenarioAction : public UObject
 
 public:
 	UFUNCTION(BlueprintNativeEvent)
-	void Execute(class UScenario* Scenario, class UScenarioNode* ScenarioNode);
+	void Execute(class UScenarioNode* ScenarioNode);
 
 	UFUNCTION(BlueprintNativeEvent)
 	FString GetNodeTitle();

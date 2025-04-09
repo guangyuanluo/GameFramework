@@ -6,7 +6,7 @@ UScenarioAction::UScenarioAction(const class FObjectInitializer& ObjectInitializ
 
 }
 
-void UScenarioAction::Execute_Implementation(class UScenario* Scenario, class UScenarioNode* ScenarioNode) {
+void UScenarioAction::Execute_Implementation(class UScenarioNode* ScenarioNode) {
 
 }
 

@@ -35,6 +35,9 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
     class UWalletComponent* WalletComponent;
 
+    UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+    class UScenarioComponent* ScenarioComponent;
+
     virtual void OnConstruction(const FTransform& Transform) override;
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
     virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;

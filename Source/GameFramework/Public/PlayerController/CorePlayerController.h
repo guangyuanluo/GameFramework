@@ -72,6 +72,12 @@ public:
     UFUNCTION(BlueprintImplementableEvent)
     void K2_OnClientPossessed();
 
+	/**
+	* 网络复制PlayerState初始化
+	*/
+	UFUNCTION(BlueprintImplementableEvent)
+	void K2_OnPlayerStateInit();
+
 	/** 添加角色输入 */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void AddPawnInputContext(APawn* ToAdd);
@@ -86,6 +92,7 @@ public:
 public:
 	/** 覆写接口 */
     virtual void OnRep_Pawn() override;
+	virtual void OnRep_PlayerState() override;
 
 protected:
     virtual bool ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor) override;
