@@ -15,19 +15,17 @@ UPlayerFarmCondition::UPlayerFarmCondition(const class FObjectInitializer& Objec
 	ProgressClass = UPlayerFarmConditionProgress::StaticClass();
 }
 
-bool UPlayerFarmConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UPlayerFarmConditionProgress::GetSatisfy() {
 	UPlayerFarmCondition* FarmCondition = (UPlayerFarmCondition*)Condition;
-	return FinishCount >= FarmCondition->Count;
+	if (FinishCount >= FarmCondition->Count) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerFarmConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {

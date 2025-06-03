@@ -21,12 +21,8 @@ void UPlayerQuestFinishConditionProgress::OnInitialize() {
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerQuestFinishConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {
@@ -54,9 +50,11 @@ void UPlayerQuestFinishConditionProgress::OnEvent(UCoreGameInstance* InGameInsta
 	}
 }
 
-bool UPlayerQuestFinishConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return HaveComplete;
+EConditionSatisfy UPlayerQuestFinishConditionProgress::GetSatisfy() {
+	if (HaveComplete) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 void UPlayerQuestFinishConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

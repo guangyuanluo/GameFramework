@@ -9,24 +9,16 @@ UPlayerHuntCondition::UPlayerHuntCondition(const class FObjectInitializer& Objec
 	ProgressClass = UPlayerHuntConditionProgress::StaticClass();
 }
 
-bool UPlayerHuntConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UPlayerHuntConditionProgress::GetSatisfy() {
 	UPlayerHuntCondition* huntCondition = (UPlayerHuntCondition*)Condition;
-	return ContributionDegree >= huntCondition->ContributionDegree;
+	if (ContributionDegree >= huntCondition->ContributionDegree) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerHuntConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
-		return {};
-	}
-	else {
-		return {};
-	}
+	return {};
 }
 
 void UPlayerHuntConditionProgress::OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) {

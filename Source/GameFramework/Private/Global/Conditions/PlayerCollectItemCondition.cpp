@@ -29,8 +29,7 @@ void UPlayerCollectItemConditionProgress::OnUninitialize() {
     GameInstance->GameSystemManager->GetSystemByClass<UAssetSystem>()->DeductItem(BackpackComponent, EBackpackTypeEnum::BackpackType_32, CollectItemCondition->ItemIDContainer.ItemID, CollectItemCondition->ItemCount, -1, TEXT("ConditionComplete"), Error);
 }
 
-bool UPlayerCollectItemConditionProgress::IsComplete(bool& IsValid) {
-    IsValid = true;
+EConditionSatisfy UPlayerCollectItemConditionProgress::GetSatisfy() {
 	UPlayerCollectItemCondition* CollectItemCondition = (UPlayerCollectItemCondition*)Condition;
     
     auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -45,7 +44,10 @@ bool UPlayerCollectItemConditionProgress::IsComplete(bool& IsValid) {
 			}
 		}
 	}
-	return CurrentCount >= CollectItemCondition->ItemCount;
+    if (CurrentCount >= CollectItemCondition->ItemCount) {
+        return EConditionSatisfy::ECS_Satisfy;
+    }
+    return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectItemConditionProgress::GetHandleEventTypes() {

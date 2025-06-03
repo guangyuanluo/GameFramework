@@ -16,15 +16,14 @@ UPlayerSkillReachLevelCondition::UPlayerSkillReachLevelCondition(const class FOb
 	ProgressClass = UPlayerSkillReachLevelConditionProgress::StaticClass();
 }
 
-bool UPlayerSkillReachLevelConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UPlayerSkillReachLevelConditionProgress::GetSatisfy() {
 	UPlayerSkillReachLevelCondition* PlayerSkillReachLevelCondition = (UPlayerSkillReachLevelCondition*)Condition;
 
 	const USkillSetting* SkillSetting = GetDefault<USkillSetting>();
 	auto SkillDataTable = SkillSetting->SkillTable.LoadSynchronous();
 	auto SkillRawRow = UConfigTableCache::GetDataTableRawDataFromId(SkillDataTable, PlayerSkillReachLevelCondition->Skill.SkillID);
 	if (SkillRawRow) {
-		return false;
+		return EConditionSatisfy::ECS_NotSatisfy;
 	}
 	FSkillConfigTableRow* SkillRow = (FSkillConfigTableRow*)SkillRawRow;
 	auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
@@ -32,18 +31,17 @@ bool UPlayerSkillReachLevelConditionProgress::IsComplete(bool& IsValid) {
 	TArray<UGameplayAbility*> ActiveAbilities;
 	CharacterState->SkillComponent->GetActiveAbilitiesWithClass(SkillRow->GameplayAbilityClass, ActiveAbilities);
 	if (ActiveAbilities.Num() == 0) {
-		return false;
+		return EConditionSatisfy::ECS_NotSatisfy;
 	}
-	return ActiveAbilities[0]->GetAbilityLevel() >= PlayerSkillReachLevelCondition->Skill.SkillLevel;
+	if (ActiveAbilities[0]->GetAbilityLevel() >= PlayerSkillReachLevelCondition->Skill.SkillLevel) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerSkillReachLevelConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {

@@ -34,18 +34,16 @@ void UPlayerDeductItemConditionProgress::OnInitialize() {
 	OrderID = ItemOrder->ID;
 }
 
-bool UPlayerDeductItemConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return HaveComplete;
+EConditionSatisfy UPlayerDeductItemConditionProgress::GetSatisfy() {
+	if (HaveComplete) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerDeductItemConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {

@@ -11,20 +11,18 @@ UMatchUnitTemplateCondition::UMatchUnitTemplateCondition(const class FObjectInit
 	ProgressClass = UMatchUnitTemplateConditionProgress::StaticClass();
 }
 
-bool UMatchUnitTemplateConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = false;
+EConditionSatisfy UMatchUnitTemplateConditionProgress::GetSatisfy() {
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	if (!ConditionPlayerState) {
-		return false;
+		return EConditionSatisfy::ECS_Unknown;
 	}
 	auto Character = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 	if (!Character) {
-		return false;
+		return EConditionSatisfy::ECS_Unknown;
 	}
-	IsValid = true;
 	auto ThisCondition = Cast<UMatchUnitTemplateCondition>(Condition);
 	if (Character->TemplateID != ThisCondition->UnitIDContainer.UnitID) {
-		return false;
+		return EConditionSatisfy::ECS_NotSatisfy;
 	}
-	return true;
+	return EConditionSatisfy::ECS_Satisfy;
 }

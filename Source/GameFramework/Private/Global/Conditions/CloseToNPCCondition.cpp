@@ -44,9 +44,11 @@ void UCloseToNPCConditionProgress::OnUninitialize() {
 	Character->OnCharacterMovementUpdated.RemoveDynamic(this, &UCloseToNPCConditionProgress::OnCharacterMovementUpdate);
 }
 
-bool UCloseToNPCConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return HaveComplete;
+EConditionSatisfy UCloseToNPCConditionProgress::GetSatisfy() {
+	if (HaveComplete) {
+        return EConditionSatisfy::ECS_Satisfy;
+    }
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UCloseToNPCConditionProgress::GetHandleEventTypes() {

@@ -13,25 +13,23 @@ UCurrentComboSectionLimitCondition::UCurrentComboSectionLimitCondition(const cla
     ProgressClass = UCurrentComboSectionLimitConditionProgress::StaticClass();
 }
 
-bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
-    IsValid = false;
+EConditionSatisfy UCurrentComboSectionLimitConditionProgress::GetSatisfy() {
     auto AbilitySystemComponent = GetAbilitySystemComponent();
     auto Character = Cast<ACoreCharacter>(AbilitySystemComponent->GetAvatarActor());
     if (!Character) {
-        return false;
+        return EConditionSatisfy::ECS_Unknown;
     }
     auto CharMesh = Character->GetMesh();
     if (!CharMesh) {
-        return false;
+        return EConditionSatisfy::ECS_Unknown;
     }
-    IsValid = true;
     auto ThisCondition = Cast<UCurrentComboSectionLimitCondition>(Condition);
     auto ActiveAbility = AbilitySystemComponent->GetAnimatingAbility();
     if (!ActiveAbility) {
-        return false;
+        return EConditionSatisfy::ECS_NotSatisfy;
     }
     if (!ActiveAbility->GetAssetTags().HasTag(ThisCondition->ComboTag)) {
-        return false;
+        return EConditionSatisfy::ECS_NotSatisfy;
     }
 
     auto AnimInstance = CharMesh->GetAnimInstance();
@@ -47,7 +45,7 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
         break;
     }
     if (FindMontageIndex == -1) {
-        return false;
+        return EConditionSatisfy::ECS_NotSatisfy;
     }
 
     auto FindMontageInstance = AnimInstance->MontageInstances[FindMontageIndex];
@@ -56,15 +54,15 @@ bool UCurrentComboSectionLimitConditionProgress::IsComplete(bool& IsValid) {
         FAnimNotifyEvent& NotifyEvent = FindMontageInstance->Montage->Notifies[Index];
         if (NotifyEvent.NotifyStateClass) {
             if (NotifyEvent.NotifyStateClass->GetClass()->IsChildOf(UAnimNotifyState_ComboEnable::StaticClass())) {
-                //²»ÔÚÁ¬ÕÐÔÊÐíÊ±¼ä
+                // æ£€æŸ¥æ˜¯å¦åœ¨é€šçŸ¥æ—¶é—´å†…
                 const float NotifyStartTime = NotifyEvent.GetTriggerTime();
                 const float NotifyEndTime = NotifyEvent.GetEndTriggerTime();
                 if ((CurrentTrackPosition > NotifyStartTime) && (CurrentTrackPosition <= NotifyEndTime)) {
-                    return true;
+                    return EConditionSatisfy::ECS_Satisfy;
                 }
             }
         }
     }
 
-    return false;
+    return EConditionSatisfy::ECS_NotSatisfy;
 }

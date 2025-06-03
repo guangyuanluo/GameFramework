@@ -11,9 +11,8 @@ UPlayerIntimacyRequestCondition::UPlayerIntimacyRequestCondition(const class FOb
 	ProgressClass = UPlayerIntimacyRequestConditionProgress::StaticClass();
 }
 
-bool UPlayerIntimacyRequestConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return false;
+EConditionSatisfy UPlayerIntimacyRequestConditionProgress::GetSatisfy() {
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerIntimacyRequestConditionProgress::GetHandleEventTypes() {

@@ -32,5 +32,5 @@ class GAMEFRAMEWORK_API UMoveInputInTimeConditionProgress : public UCoreConditio
 public:
 	GENERATED_BODY()
 
-	virtual bool IsComplete(bool& IsValid) override;
+	virtual EConditionSatisfy GetSatisfy() override;
 };

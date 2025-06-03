@@ -39,7 +39,7 @@ class GAMEFRAMEWORK_API UPlayerReachExpLevelConditionProgress : public UCoreCond
 public:
 	GENERATED_BODY()
 
-	virtual bool IsComplete(bool& IsValid) override;
+	virtual EConditionSatisfy GetSatisfy() override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;
 	virtual void OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;

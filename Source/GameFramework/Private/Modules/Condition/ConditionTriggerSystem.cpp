@@ -66,7 +66,7 @@ void UConditionTriggerSystem::GenerateHandler(FConditionTriggerHandler& InOutHan
 	InOutHandler.SetInHandle(NewSerialNumber);
 }
 
-void UConditionTriggerSystem::OnConditionSatisfyChange(UCoreConditionProgress* Progress, bool NewSatisfy) {
+void UConditionTriggerSystem::OnConditionSatisfyChange(UCoreConditionProgress* Progress, EConditionSatisfy NewSatisfy) {
 	auto FindReserveInfoPtr = ProgressReserveMap.Find(Progress);
 	if (FindReserveInfoPtr) {
 		//刷新满足性

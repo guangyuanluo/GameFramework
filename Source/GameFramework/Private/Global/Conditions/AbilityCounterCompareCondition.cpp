@@ -31,11 +31,13 @@ void UAbilityCounterCompareConditionProgress::OnUninitialize() {
 	AbilityCounterSubsystem->OnAbilityCounterNumChange.RemoveDynamic(this, &UAbilityCounterCompareConditionProgress::OnCounterChange);
 }
 
-bool UAbilityCounterCompareConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UAbilityCounterCompareConditionProgress::GetSatisfy() {
 	auto AbilityCounterSubsystem = Cast<UAbilityCounterSubsystem>(USubsystemBlueprintLibrary::GetWorldSubsystem(this, UAbilityCounterSubsystem::StaticClass()));
 	auto ThisCondition = Cast<UAbilityCounterCompareCondition>(Condition);
-	return UComparisonOperatorUtil::CheckComparePass(AbilityCounterSubsystem->GetCounterNum(CounterName), ThisCondition->Value, ThisCondition->Operator);
+	if (UComparisonOperatorUtil::CheckComparePass(AbilityCounterSubsystem->GetCounterNum(CounterName), ThisCondition->Value, ThisCondition->Operator)) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 void UAbilityCounterCompareConditionProgress::OnCounterChange(const FString& InCounterName, int InCounterNum) {

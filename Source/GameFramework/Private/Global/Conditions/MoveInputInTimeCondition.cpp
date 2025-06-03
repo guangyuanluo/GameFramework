@@ -11,17 +11,15 @@ UMoveInputInTimeCondition::UMoveInputInTimeCondition(const class FObjectInitiali
 	ProgressClass = UMoveInputInTimeConditionProgress::StaticClass();
 }
 
-bool UMoveInputInTimeConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = false;
+EConditionSatisfy UMoveInputInTimeConditionProgress::GetSatisfy() {
 	auto ConditionPlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	if (!ConditionPlayerState) {
-		return false;
+		return EConditionSatisfy::ECS_Unknown;
 	}
 	auto ConditionCharacter = Cast<ACoreCharacter>(ConditionPlayerState->GetPawn());
 	if (!ConditionCharacter) {
-		return false;
+		return EConditionSatisfy::ECS_Unknown;
 	}
-	IsValid = true;
 	auto NowTime = FDateTime::Now();
 	FVector LastMoveInputValue;
 	FDateTime LastMoveTime;
@@ -29,7 +27,7 @@ bool UMoveInputInTimeConditionProgress::IsComplete(bool& IsValid) {
 	auto DiffTime = (NowTime - LastMoveTime).GetTotalMilliseconds();
 	auto ThisCondition = Cast<UMoveInputInTimeCondition>(Condition);
 	if (DiffTime < ThisCondition->InTime) {
-		return true;
+		return EConditionSatisfy::ECS_Satisfy;
 	}
-	return false;
+	return EConditionSatisfy::ECS_NotSatisfy;
 }

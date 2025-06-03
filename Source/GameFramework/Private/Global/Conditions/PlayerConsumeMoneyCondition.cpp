@@ -14,12 +14,8 @@ UPlayerConsumeMoneyCondition::UPlayerConsumeMoneyCondition(const class FObjectIn
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeMoneyConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {
@@ -48,10 +44,12 @@ void UPlayerConsumeMoneyConditionProgress::OnEvent(UCoreGameInstance* InGameInst
     }
 }
 
-bool UPlayerConsumeMoneyConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UPlayerConsumeMoneyConditionProgress::GetSatisfy() {
 	UPlayerConsumeMoneyCondition* ConsumeMoneyCondition = (UPlayerConsumeMoneyCondition*)Condition;
-	return CurrentCount >= ConsumeMoneyCondition->MoneyCount;
+	if (CurrentCount >= ConsumeMoneyCondition->MoneyCount) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 void UPlayerConsumeMoneyConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

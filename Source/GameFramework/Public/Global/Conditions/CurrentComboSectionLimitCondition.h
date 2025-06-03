@@ -21,5 +21,5 @@ class GAMEFRAMEWORK_API UCurrentComboSectionLimitConditionProgress : public UCor
     GENERATED_BODY()
 
 public:
-    virtual bool IsComplete(bool& IsValid) override;
+    virtual EConditionSatisfy GetSatisfy() override;
 };

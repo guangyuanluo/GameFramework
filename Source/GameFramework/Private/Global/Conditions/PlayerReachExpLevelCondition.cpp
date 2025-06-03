@@ -13,22 +13,20 @@ UPlayerReachExpLevelCondition::UPlayerReachExpLevelCondition(const class FObject
 	ProgressClass = UPlayerReachExpLevelConditionProgress::StaticClass();
 }
 
-bool UPlayerReachExpLevelConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UPlayerReachExpLevelConditionProgress::GetSatisfy() {
 	UPlayerReachExpLevelCondition* ReachExpLevelCondition = (UPlayerReachExpLevelCondition*)Condition;
 
 	auto CharacterState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 	auto ExpLevel = CharacterState->ExpComponent->GetExpLevel(ReachExpLevelCondition->ExpType);
-	return ExpLevel >= ReachExpLevelCondition->ExpLevel;
+	if (ExpLevel >= ReachExpLevelCondition->ExpLevel) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerReachExpLevelConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {

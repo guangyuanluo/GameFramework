@@ -34,7 +34,7 @@ public:
 
 	virtual void Initialize() override;
 	virtual void Uninitialize() override;
-	virtual bool IsComplete(bool& IsValid) override;
+	virtual EConditionSatisfy GetSatisfy() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void GetProgressesWithChildren(TArray<UCoreConditionProgress*>& OutProgresses) override;
 
@@ -45,7 +45,7 @@ private:
 	TArray<UCoreConditionProgress*> ChildProgresses;
 
 	UFUNCTION()
-	void OnChildConditionSatisfyChange(UCoreConditionProgress* Progress, bool NewSatisfy);
+	void OnChildConditionSatisfyChange(UCoreConditionProgress* Progress, EConditionSatisfy NewSatisfy);
 
 	UFUNCTION()
 	void OnChildProgressPostNetReceive(UCoreConditionProgress* Progress);

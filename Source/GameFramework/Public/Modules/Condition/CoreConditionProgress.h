@@ -8,7 +8,16 @@
 
 class ACharacter;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnConditionProgressSatisfyUpdate, UCoreConditionProgress*, Progress, bool, NewSatisfy);
+// 条件满足性
+UENUM(BlueprintType)
+enum class EConditionSatisfy : uint8 //设置uint8类型
+{
+	ECS_Satisfy,	// 满足
+	ECS_NotSatisfy,	// 不满足
+	ECS_Unknown		// 未知
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnConditionProgressSatisfyUpdate, UCoreConditionProgress*, Progress, EConditionSatisfy, NewSatisfy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConditionProgressPostNetReceive, UCoreConditionProgress*, Progress);
 
 /**
@@ -62,11 +71,10 @@ public:
 	bool IsInitialized() const;
 
 	/*
-	* 是否完成
-	* @param IsValid 是否判断合法
+	* 获取满足性
 	*/
-	UFUNCTION(BlueprintCallable, Category = "ConditionSystem")
-	virtual bool IsComplete(bool& IsValid);
+	UFUNCTION(BlueprintPure, Category = "ConditionSystem")
+	virtual EConditionSatisfy GetSatisfy();
 
 	/**
 	* 刷新满足性
@@ -115,7 +123,7 @@ protected:
 	virtual void OnUninitialize();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem")
-	bool K2_IsComplete(bool& IsValid);
+	EConditionSatisfy K2_GetSatisfy();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "ConditionSystem", DisplayName = "OnSatisfyChange", meta = (ScriptName = "OnSatisfyChange"))
 	void K2_OnSatisfyChange();
@@ -124,5 +132,5 @@ private:
 	bool bInitialized = false;
 
 	UPROPERTY(Transient)
-	bool bLastSatisfy = false;
+	EConditionSatisfy bLastSatisfy = EConditionSatisfy::ECS_Unknown;
 };
