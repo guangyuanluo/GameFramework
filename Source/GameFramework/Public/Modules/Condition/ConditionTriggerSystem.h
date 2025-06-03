@@ -71,7 +71,7 @@ private:
 	* 条件进度满足性变化回调
 	*/
 	UFUNCTION()
-	void OnConditionSatisfyChange(UCoreConditionProgress* Progress, bool NewSatisfy);
+	void OnConditionSatisfyChange(UCoreConditionProgress* Progress, EConditionSatisfy NewSatisfy);
 
 	/**
 	* 进度是否满足

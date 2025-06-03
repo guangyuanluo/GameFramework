@@ -46,34 +46,35 @@ void UCoreConditionGroupProgress::Uninitialize() {
     ChildProgresses.Empty();
 }
 
-bool UCoreConditionGroupProgress::IsComplete(bool& IsValid) {
-    IsValid = true;
-
+EConditionSatisfy UCoreConditionGroupProgress::GetSatisfy() {
     bool HaveComplete = true;
 
     TArray<BooleanAlgebraEnum> LoopGroupRelations;
     for (auto ChildProgress : ChildProgresses) {
         if (!ChildProgress) {
-            return false;
+            return EConditionSatisfy::ECS_NotSatisfy;
         }
         LoopGroupRelations.Add(ChildProgress->Condition->Relation);
     }
     FBooleanAlgebraNodeInfo GroupExecuteRoot = UBooleanAlgebraUtil::RelationsGenerate(LoopGroupRelations);
-    TFunction<bool(int)> CheckFunction = [this, &IsValid](int ProgressIndex) {
+    TFunction<bool(int)> CheckFunction = [this](int ProgressIndex) {
         auto Progress = ChildProgresses[ProgressIndex];
         auto Condition = Progress->Condition;
 
-        bool bChildValid;
-        bool bLastSatisfy = Progress->IsComplete(bChildValid);
-        if (!bChildValid) {
-            IsValid = false;
+        EConditionSatisfy bLastSatisfy = Progress->GetSatisfy();
+        if (bLastSatisfy == EConditionSatisfy::ECS_Unknown) {
+            return false;
         }
-        return bChildValid && bLastSatisfy != Condition->bNot;
+        EConditionSatisfy SatisfyExpected = Condition->bNot ? EConditionSatisfy::ECS_NotSatisfy : EConditionSatisfy::ECS_Satisfy;
+        return SatisfyExpected == bLastSatisfy;
     };
 
     HaveComplete = UBooleanAlgebraUtil::ExecuteConditionRelationTree(GroupExecuteRoot, CheckFunction);
 
-    return HaveComplete;
+    if (HaveComplete) {
+        return EConditionSatisfy::ECS_Satisfy;
+    }
+    return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 void UCoreConditionGroupProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -93,7 +94,7 @@ void UCoreConditionGroupProgress::GetProgressesWithChildren(TArray<UCoreConditio
     }
 }
 
-void UCoreConditionGroupProgress::OnChildConditionSatisfyChange(UCoreConditionProgress* Progress, bool NewSatisfy) {
+void UCoreConditionGroupProgress::OnChildConditionSatisfyChange(UCoreConditionProgress* Progress, EConditionSatisfy NewSatisfy) {
     RefreshSatisfy();
 }
 

@@ -14,18 +14,16 @@ UTalkToCondition::UTalkToCondition(const class FObjectInitializer& ObjectInitial
 	ProgressClass = UTalkToConditionProgress::StaticClass();
 }
 
-bool UTalkToConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return HaveTalk;
+EConditionSatisfy UTalkToConditionProgress::GetSatisfy() {
+	if (HaveTalk) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UTalkToConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {

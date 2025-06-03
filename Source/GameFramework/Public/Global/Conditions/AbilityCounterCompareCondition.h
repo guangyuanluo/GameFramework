@@ -50,7 +50,7 @@ public:
 
 	virtual void OnInitialize() override;
 	virtual void OnUninitialize() override;
-	virtual bool IsComplete(bool& IsValid) override;
+	virtual EConditionSatisfy GetSatisfy() override;
 
 private:
 	FString CounterName;

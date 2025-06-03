@@ -33,5 +33,5 @@ class GAMEFRAMEWORK_API UMatchUnitTemplateConditionProgress : public UCoreCondit
 public:
 	GENERATED_BODY()
 
-	virtual bool IsComplete(bool& IsValid) override;
+	virtual EConditionSatisfy GetSatisfy() override;
 };

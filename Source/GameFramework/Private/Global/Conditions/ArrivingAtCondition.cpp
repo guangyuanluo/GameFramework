@@ -39,18 +39,16 @@ void UArrivingAtConditionProgress::OnInitialize() {
 	}
 }
 
-bool UArrivingAtConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return HaveComplete;
+EConditionSatisfy UArrivingAtConditionProgress::GetSatisfy() {
+	if (HaveComplete) {
+		return EConditionSatisfy::ECS_Satisfy;
+	}
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UArrivingAtConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {
 			UExitAreaEvent::StaticClass(),
 		};

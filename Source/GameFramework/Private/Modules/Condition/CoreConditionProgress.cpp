@@ -22,23 +22,19 @@ void UCoreConditionProgress::Uninitialize() {
     ConditionGlobalSystem->FreeProgress(this);
 
     bInitialized = false;
-    bLastSatisfy = false;
+    bLastSatisfy = EConditionSatisfy::ECS_Unknown;
 }
 
 bool UCoreConditionProgress::IsInitialized() const {
     return bInitialized;
 }
 
-bool UCoreConditionProgress::IsComplete(bool& IsValid) {
-    return K2_IsComplete(IsValid);
+EConditionSatisfy UCoreConditionProgress::GetSatisfy() {
+    return K2_GetSatisfy();
 }
 
 void UCoreConditionProgress::RefreshSatisfy() {
-    bool IsValid;
-    bool NewSatisfy = IsComplete(IsValid);
-    if (!IsValid) {
-        return;
-    }
+    EConditionSatisfy NewSatisfy = GetSatisfy();
     if (bLastSatisfy != NewSatisfy) {
         bLastSatisfy = NewSatisfy;
         OnSatisfyChange();

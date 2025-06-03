@@ -14,12 +14,14 @@ UPlayerCollectMoneyCondition::UPlayerCollectMoneyCondition(const class FObjectIn
 	ProgressClass = UPlayerCollectMoneyConditionProgress::StaticClass();
 }
 
-bool UPlayerCollectMoneyConditionProgress::IsComplete(bool& IsValid) {
-    IsValid = true;
+EConditionSatisfy UPlayerCollectMoneyConditionProgress::GetSatisfy() {
 	UPlayerCollectMoneyCondition* CollectMoneyCondition = (UPlayerCollectMoneyCondition*)Condition;
     auto PlayerState = Cast<ACoreCharacterStateBase>(ProgressOwner);
 
-    return CollectMoneyCondition->MoneyCount <= PlayerState->WalletComponent->GetMoneyCount(CollectMoneyCondition->MoneyType);
+    if (CollectMoneyCondition->MoneyCount <= PlayerState->WalletComponent->GetMoneyCount(CollectMoneyCondition->MoneyType)) {
+        return EConditionSatisfy::ECS_Satisfy;
+    }
+    return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerCollectMoneyConditionProgress::GetHandleEventTypes() {

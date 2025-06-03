@@ -11,12 +11,8 @@ UUnitReachExpLevelCondition::UUnitReachExpLevelCondition(const class FObjectInit
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UUnitReachExpLevelConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {
@@ -39,7 +35,6 @@ void UUnitReachExpLevelConditionProgress::OnEvent(UCoreGameInstance* InGameInsta
 	}
 }
 
-bool UUnitReachExpLevelConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
-	return false;
+EConditionSatisfy UUnitReachExpLevelConditionProgress::GetSatisfy() {
+	return EConditionSatisfy::ECS_NotSatisfy;
 }

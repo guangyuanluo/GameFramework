@@ -45,7 +45,7 @@ public:
 	UPROPERTY(Replicated, Category = "ConditionSystem", EditAnywhere, BlueprintReadOnly)
 	int32 FinishCount;
 
-	virtual bool IsComplete(bool& IsValid) override;
+	virtual EConditionSatisfy GetSatisfy() override;
 	/**************EventHandler interface define begin*************/
 	virtual TArray<TSubclassOf<class UGameEventBase>> GetHandleEventTypes() override;
 	virtual void OnEvent(UCoreGameInstance* InGameInstance, UGameEventBase* HandleEvent) override;

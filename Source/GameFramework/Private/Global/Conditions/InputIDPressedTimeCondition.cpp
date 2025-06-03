@@ -8,10 +8,11 @@ UInputIDPressedTimeCondition::UInputIDPressedTimeCondition(const class FObjectIn
     ProgressClass = UInputIDPressedTimeConditionProgress::StaticClass();
 }
 
-bool UInputIDPressedTimeConditionProgress::IsComplete(bool& IsValid) {
-    IsValid = false;
+EConditionSatisfy UInputIDPressedTimeConditionProgress::GetSatisfy() {
     auto AbilitySystemComponent = GetAbilitySystemComponent();
-    IsValid = true;
     auto ThisCondition = Cast<UInputIDPressedTimeCondition>(Condition);
-    return AbilitySystemComponent->GetInputPressTime(ThisCondition->InputID) >= ThisCondition->InputTimeLimit;
+    if (AbilitySystemComponent->GetInputPressTime(ThisCondition->InputID) >= ThisCondition->InputTimeLimit) {
+        return EConditionSatisfy::ECS_Satisfy;
+    }
+    return EConditionSatisfy::ECS_NotSatisfy;
 }

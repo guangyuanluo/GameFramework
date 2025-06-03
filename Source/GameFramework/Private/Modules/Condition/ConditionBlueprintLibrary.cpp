@@ -19,9 +19,13 @@ bool UConditionBlueprintLibrary::DoesProgressesSatisfy(const TArray<class UCoreC
 		auto Progress = Progresses[ProgressIndex];
 		auto Condition = Progress->Condition;
 
-		bool IsValid;
-		bool bLastSatisfy = Progress->IsComplete(IsValid);
-		return IsValid && bLastSatisfy != Condition->bNot;
+		EConditionSatisfy LastSatisfy = Progress->GetSatisfy();
+		if (LastSatisfy == EConditionSatisfy::ECS_Unknown)
+		{
+			return false;
+		}
+		EConditionSatisfy SatisfyExpected = Condition->bNot ? EConditionSatisfy::ECS_NotSatisfy : EConditionSatisfy::ECS_Satisfy;
+		return SatisfyExpected == LastSatisfy;
 	};
 
 	HaveComplete = UBooleanAlgebraUtil::ExecuteConditionRelationTree(GroupExecuteRoot, CheckFunction);

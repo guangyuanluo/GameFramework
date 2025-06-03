@@ -14,12 +14,8 @@ UPlayerConsumeItemCondition::UPlayerConsumeItemCondition(const class FObjectInit
 }
 
 TArray<TSubclassOf<class UGameEventBase>> UPlayerConsumeItemConditionProgress::GetHandleEventTypes() {
-	bool IsValid;
-	bool bComplete = IsComplete(IsValid);
-	if (!IsValid) {
-		return {};
-	}
-	if (bComplete) {
+	EConditionSatisfy Satisfy = GetSatisfy();
+	if (Satisfy == EConditionSatisfy::ECS_Satisfy) {
 		return {};
 	}
 	else {
@@ -49,10 +45,12 @@ void UPlayerConsumeItemConditionProgress::OnEvent(UCoreGameInstance* InGameInsta
 	}
 }
 
-bool UPlayerConsumeItemConditionProgress::IsComplete(bool& IsValid) {
-	IsValid = true;
+EConditionSatisfy UPlayerConsumeItemConditionProgress::GetSatisfy() {
 	UPlayerConsumeItemCondition* ConsumeItemCondition = (UPlayerConsumeItemCondition*)Condition;
-	return CurrentCount >= ConsumeItemCondition->ItemCount;
+	if (CurrentCount >= ConsumeItemCondition->ItemCount) {
+        return EConditionSatisfy::ECS_Satisfy;
+    }
+	return EConditionSatisfy::ECS_NotSatisfy;
 }
 
 void UPlayerConsumeItemConditionProgress::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
