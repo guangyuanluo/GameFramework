@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ExpComponent.h"
+#include "Modules/Exp/ExpComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "GameEventUtils.h"
-#include "GameEntity.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "Base/ECS/GameEntity.h"
 #include "Engine/World.h"
 #include "PlayerState/CoreCharacterStateBase.h"
-#include "GameFrameworkUtils.h"
+#include "Utils/GameFrameworkUtils.h"
 
-#include "UE4LogImpl.h"
+#include "Base/Log/UE4LogImpl.h"
 
 // Sets default values for this component's properties
 UExpComponent::UExpComponent()

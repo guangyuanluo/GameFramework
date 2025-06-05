@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemReward.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "AssetSystem.h"
-#include "CoreCharacter.h"
-#include "CoreCharacterStateBase.h"
+#include "Global/Rewards/ItemReward.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Assets/AssetSystem.h"
+#include "Character/CoreCharacter.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UItemReward::UItemReward(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

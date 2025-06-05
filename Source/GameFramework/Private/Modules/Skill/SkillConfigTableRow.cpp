@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SkillConfigTableRow.h"
+#include "Modules/Skill/SkillConfigTableRow.h"
 
 int FSkillConfigTableRow::GetUniqueId() {
     return SkillId;

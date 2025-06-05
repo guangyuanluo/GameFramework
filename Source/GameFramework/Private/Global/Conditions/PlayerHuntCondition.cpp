@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerHuntCondition.h"
+#include "Global/Conditions/PlayerHuntCondition.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 

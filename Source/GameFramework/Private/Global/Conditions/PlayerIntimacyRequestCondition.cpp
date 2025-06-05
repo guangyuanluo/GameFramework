@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerIntimacyRequestCondition.h"
-#include "IntimacyChangeEvent.h"
-#include "GameFrameworkUtils.h"
-#include "PlayerComponent.h"
-#include "CoreCharacterStateBase.h"
+#include "Global/Conditions/PlayerIntimacyRequestCondition.h"
+#include "Global/Events/IntimacyChangeEvent.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerIntimacyRequestCondition::UPlayerIntimacyRequestCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

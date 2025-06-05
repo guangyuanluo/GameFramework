@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemOrderHandler.h"
-#include "ItemOrder.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "AssetSystem.h"
-#include "CoreCharacter.h"
-#include "CoreCharacterStateBase.h"
+#include "Global/Orders/ItemOrderHandler.h"
+#include "Global/Orders/ItemOrder.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Assets/AssetSystem.h"
+#include "Character/CoreCharacter.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 class UCoreOrderBase* UItemOrderHandler::OnCreateOrder_Implementation(UCoreGameInstance* InGameInstance, TSubclassOf<class UCoreOrderBase> OrderClass, UObject* Context) {
     auto ItemOrder = NewObject<UItemOrder>(InGameInstance, OrderClass);

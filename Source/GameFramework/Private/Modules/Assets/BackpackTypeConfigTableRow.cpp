@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BackpackTypeConfigTableRow.h"
+#include "Modules/Assets/BackpackTypeConfigTableRow.h"
 
 int FBackpackTypeConfigTableRow::GetUniqueId() {
     return (int)BackpackType;

@@ -1,4 +1,4 @@
-#include "BooleanAlgebraUtil.h"
+#include "Utils/Algorithm/BooleanAlgebraUtil.h"
 
 TArray<TArray<int>> UBooleanAlgebraUtil::SplitRelationIndexArray(BooleanAlgebraEnum Relation, const TArray<BooleanAlgebraEnum>& LoopRelations, const TArray<int>& RelationIndexs) {
     TArray<TArray<int>> Result;

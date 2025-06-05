@@ -1,3 +1,3 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "EffectInfo.h"
+#include "Modules/Skill/EffectInfo.h"

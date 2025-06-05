@@ -1,5 +1,5 @@
-#include "AbilityCounterSubsystem.h"
-#include "CoreAbility.h"
+#include "Modules/AbilityCounter/AbilityCounterSubsystem.h"
+#include "Modules/Skill/CoreAbility.h"
 
 void UAbilityCounterSubsystem::SetCounterNum(const FString& CounterName, int CounterNum, class UCoreAbility* OwnerAbility) {
     FCounterInfo& CounterInfo = CounterMap.Add(CounterName);

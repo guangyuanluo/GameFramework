@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "NPCComponent.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "NPCSystem.h"
-#include "GameFrameworkUtils.h"
+#include "Modules/NPC/NPCComponent.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/NPC/NPCSystem.h"
+#include "Utils/GameFrameworkUtils.h"
 
 // Sets default values for this component's properties
 UNPCComponent::UNPCComponent(const FObjectInitializer& ObjectInitializer)

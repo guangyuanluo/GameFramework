@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreReward.h"
+#include "Modules/Reward/CoreReward.h"
 
 UCoreReward::UCoreReward(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

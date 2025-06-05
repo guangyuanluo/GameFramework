@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "DestroyAbilityCounterAction.h"
-#include "CoreAbility.h"
+#include "Global/Actions/DestroyAbilityCounterAction.h"
+#include "Modules/Skill/CoreAbility.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Modules/AbilityCounter/AbilityCounterSubsystem.h"
 

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "InputIDPressedTimeCondition.h"
-#include "CoreAbilitySystemComponent.h"
+#include "Global/Conditions/InputIDPressedTimeCondition.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 
 UInputIDPressedTimeCondition::UInputIDPressedTimeCondition(const class FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {

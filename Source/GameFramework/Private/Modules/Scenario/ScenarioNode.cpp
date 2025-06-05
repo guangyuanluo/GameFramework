@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ScenarioNode.h"
+#include "Modules/Scenario/ScenarioNode.h"
 
 UScenarioNode::UScenarioNode(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

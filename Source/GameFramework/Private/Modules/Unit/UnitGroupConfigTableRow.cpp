@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "UnitGroupConfigTableRow.h"
+#include "Modules/Unit/UnitGroupConfigTableRow.h"
 
 int FUnitGroupConfigTableRow::GetUniqueId() {
     return GroupId;

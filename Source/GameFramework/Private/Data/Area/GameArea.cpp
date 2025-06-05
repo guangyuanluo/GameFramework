@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameArea.h"
-#include "EnterAreaEvent.h"
-#include "ExitAreaEvent.h"
-#include "CoreCharacter.h"
-#include "GameEventUtils.h"
+#include "Data/Area/GameArea.h"
+#include "Global/Events/EnterAreaEvent.h"
+#include "Global/Events/ExitAreaEvent.h"
+#include "Character/CoreCharacter.h"
+#include "Modules/Events/GameEventUtils.h"
 #include "Components/SceneComponent.h"
-#include "UE4LogImpl.h"
+#include "Base/Log/UE4LogImpl.h"
 
 AGameArea::AGameArea(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	bReplicates = true;

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreConditionProgress.h"
+#include "Modules/Condition/CoreConditionProgress.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "CoreCharacterStateBase.h"
-#include "CoreAbilitySystemComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
-#include "ConditionGlobalSystem.h"
+#include "Modules/Condition/ConditionGlobalSystem.h"
 
 void UCoreConditionProgress::Initialize() {
     OnInitialize();

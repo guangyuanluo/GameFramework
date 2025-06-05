@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "WalletComponent.h"
+#include "Modules/Assets/WalletComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "AssetSystem.h"
-#include "EventSystem.h"
-#include "GameEventUtils.h"
-#include "GameEntity.h"
+#include "Modules/Assets/AssetSystem.h"
+#include "Modules/Events/EventSystem.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "Base/ECS/GameEntity.h"
 #include "PlayerState/CoreCharacterStateBase.h"
 
 // Sets default values for this component's properties

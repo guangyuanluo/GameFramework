@@ -1,4 +1,4 @@
-﻿#include "DataTableSeedConfigTableHelper.h"
+﻿#include "Editor/Table/DataTableSeedConfigTableHelper.h"
 
 FString DataTableSeedConfigTableHelper::GetDataTablePackagePath() {
 	return TEXT(

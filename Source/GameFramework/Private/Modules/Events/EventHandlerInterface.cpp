@@ -1,4 +1,4 @@
-#include "EventHandlerInterface.h"
+#include "Modules/Events/EventHandlerInterface.h"
 
 TArray<TSubclassOf<class UGameEventBase>> IEventHandlerInterface::GetHandleEventTypes() {
     return K2_GetHandleEventTypes();

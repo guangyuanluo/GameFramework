@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncTypeWriting.h"
+#include "UI/AsyncTypeWriting.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
 

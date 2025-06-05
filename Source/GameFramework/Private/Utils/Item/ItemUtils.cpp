@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemUtils.h"
-#include "ItemSetting.h"
-#include "ItemConfigTableRow.h"
-#include "ItemTypeConfigTableRow.h"
-#include "ConfigTableCache.h"
+#include "Utils/Item/ItemUtils.h"
+#include "Modules/Item/ItemSetting.h"
+#include "Modules/Item/ItemConfigTableRow.h"
+#include "Modules/Item/ItemTypeConfigTableRow.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
 
 EBackpackTypeEnum UItemUtils::GetItemDefaultBackpackType(int ItemID) {
     const UItemSetting* ItemSetting = GetDefault<UItemSetting>();

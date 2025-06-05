@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ConfigTableRowBase.h"
+#include "Base/ConfigTable/ConfigTableRowBase.h"
 
 int FConfigTableRowBase::GetUniqueId() {
     return -1;

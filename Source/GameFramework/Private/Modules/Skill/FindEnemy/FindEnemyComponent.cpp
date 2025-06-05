@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FindEnemyComponent.h"
-#include "FindEnemyBase.h"
+#include "Modules/Skill/FindEnemy/FindEnemyComponent.h"
+#include "Modules/Skill/FindEnemy/FindEnemyBase.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
-#include "CoreCharacter.h"
+#include "Character/CoreCharacter.h"
 
 // Sets default values for this component's properties
 UFindEnemyComponent::UFindEnemyComponent()

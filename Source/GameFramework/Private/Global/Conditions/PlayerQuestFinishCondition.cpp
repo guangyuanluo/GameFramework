@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerQuestFinishCondition.h"
-#include "CoreGameInstance.h"
-#include "GameFrameworkUtils.h"
-#include "CompleteQuestEvent.h"
-#include "PlayerComponent.h"
+#include "Global/Conditions/PlayerQuestFinishCondition.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Global/Events/CompleteQuestEvent.h"
+#include "Modules/Player/PlayerComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "CoreCharacterStateBase.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerQuestFinishCondition::UPlayerQuestFinishCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ScenarioAction.h"
+#include "Modules/Scenario/ScenarioAction.h"
 
 UScenarioAction::UScenarioAction(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

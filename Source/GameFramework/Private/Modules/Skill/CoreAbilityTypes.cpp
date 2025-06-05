@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CoreAbilityTypes.h"
-#include "CoreAbilitySystemComponent.h"
+#include "Modules/Skill/CoreAbilityTypes.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 
 bool FCoreGameplayEffectContainerSpec::HasValidEffects() const

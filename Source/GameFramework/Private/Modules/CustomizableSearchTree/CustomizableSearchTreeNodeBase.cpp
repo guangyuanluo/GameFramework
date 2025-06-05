@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CustomizableSearchTreeNodeBase.h"
-#include "CustomizableSearchTreeNodeVisit.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeBase.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeVisit.h"
 
 FString UCustomizableSearchTreeNodeBase::GetNodeTitle_Implementation() {
 #if WITH_EDITORONLY_DATA

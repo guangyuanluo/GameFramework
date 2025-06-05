@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "NPCSystem.h"
-#include "CoreCharacter.h"
-#include "GameFrameworkUtils.h"
+#include "Modules/NPC/NPCSystem.h"
+#include "Character/CoreCharacter.h"
+#include "Utils/GameFrameworkUtils.h"
 
 void UNPCSystem::AddNPC(ACoreCharacter* NPC) {
     check(!NPCMap.Contains(NPC->TemplateID));

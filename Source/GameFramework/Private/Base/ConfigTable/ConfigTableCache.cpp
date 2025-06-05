@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ConfigTableCache.h"
 #include "Base/ConfigTable/ConfigTableCache.h"
 
 TMap<FString, TMap<int32, FConfigTableRowBase*>> AllCacheRows;
@@ -118,7 +117,7 @@ TMap<int32, FConfigTableRowBase*>* UConfigTableCache::FindAndInitTable(const UDa
     return nullptr;
 }
 
-//写这个函数，要将缓存的表数据算入gc
+// 澧炲姞寮曠敤璁℃暟
 void UConfigTableCache::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {
     Super::AddReferencedObjects(InThis, Collector);
 

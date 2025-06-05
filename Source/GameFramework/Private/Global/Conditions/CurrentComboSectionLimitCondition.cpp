@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CurrentComboSectionLimitCondition.h"
-#include "GameFrameworkUtils.h"
-#include "AnimNotifyState_ComboEnable.h"
-#include "CoreAbilitySystemComponent.h"
-#include "SkillBlueprintLibrary.h"
-#include "CoreCharacter.h"
-#include "AnimNotifyState_BackCast.h"
+#include "Global/Conditions/CurrentComboSectionLimitCondition.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Skill/AnimNotifies/AnimNotifyState_ComboEnable.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
+#include "Modules/Skill/SkillBlueprintLibrary.h"
+#include "Character/CoreCharacter.h"
+#include "Modules/Skill/AnimNotifies/AnimNotifyState_BackCast.h"
 
 UCurrentComboSectionLimitCondition::UCurrentComboSectionLimitCondition(const class FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer) {

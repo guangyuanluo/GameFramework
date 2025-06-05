@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncPlayScenario.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "ScenarioSystem.h"
+#include "Modules/Scenario/AsyncPlayScenario.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Scenario/ScenarioSystem.h"
 #include "Kismet/GameplayStatics.h"
 
 UAsyncPlayScenario::UAsyncPlayScenario(const FObjectInitializer& ObjectInitializer)

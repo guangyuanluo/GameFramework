@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AsyncListenEvents.h"
-#include "CoreGameInstance.h"
+#include "Modules/Events/AsyncListenEvents.h"
+#include "GameInstance/CoreGameInstance.h"
 #include "Engine/World.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Events/EventSystem.h"
 
 #if WITH_EDITORONLY_DATA
 #include "GameDelegates.h"

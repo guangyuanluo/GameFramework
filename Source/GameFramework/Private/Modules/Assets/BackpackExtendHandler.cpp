@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BackpackExtendHandler.h"
+#include "Modules/Assets/BackpackExtendHandler.h"
 
 bool UBackpackExtendHandler::AllowItemAdd_Implementation(class UBackpackComponent* BackpackComponent, int ItemID, EBackpackTypeEnum BackpackType) {
     return true;

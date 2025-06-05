@@ -1,4 +1,4 @@
-#include "GameEntityManager.h"
+#include "Base/ECS/GameEntityManager.h"
 
 TScriptInterface<IGameEntity> UGameEntityManager::GetEntityById(const FString& EntityId) {
     auto findPtr = EntityMap.Find(EntityId);

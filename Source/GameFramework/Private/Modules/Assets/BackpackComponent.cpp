@@ -1,21 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BackpackComponent.h"
+#include "Modules/Assets/BackpackComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "AssetBackpack.h"
-#include "CoreItem.h"
-#include "CoreSceneItem.h"
-#include "ItemComponent.h"
-#include "GameEventUtils.h"
-#include "GameEntity.h"
-#include "BackpackSetting.h"
-#include "BackpackTypeConfigTableRow.h"
-#include "CoreCharacterStateBase.h"
-#include "UE4LogImpl.h"
-#include "ConfigTableCache.h"
+#include "Modules/Assets/AssetBackpack.h"
+#include "Modules/Item/CoreItem.h"
+#include "Modules/Item/CoreSceneItem.h"
+#include "Modules/Item/ItemComponent.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "Base/ECS/GameEntity.h"
+#include "Modules/Assets/BackpackSetting.h"
+#include "Modules/Assets/BackpackTypeConfigTableRow.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Base/Log/UE4LogImpl.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
 
 // Sets default values for this component's properties
 UBackpackComponent::UBackpackComponent()
