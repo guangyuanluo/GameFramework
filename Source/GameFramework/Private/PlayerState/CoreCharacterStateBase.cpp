@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreCharacterStateBase.h"
-#include "BackpackComponent.h"
-#include "ExpComponent.h"
-#include "CoreAbilitySystemComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Modules/Assets/BackpackComponent.h"
+#include "Modules/Exp/ExpComponent.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "QuestComponent.h"
-#include "PlayerComponent.h"
-#include "WalletComponent.h"
-#include "ScenarioComponent.h"
+#include "Modules/Quest/QuestComponent.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "Modules/Assets/WalletComponent.h"
+#include "Modules/Scenario/ScenarioComponent.h"
 
 ACoreCharacterStateBase::ACoreCharacterStateBase(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-    //½µµÍÍ¬²½ÆµÂÊ£¬0.5sÒ»´Î×ã¹»ÁË
+    //ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½Æµï¿½Ê£ï¿½0.5sÒ»ï¿½ï¿½ï¿½ã¹»ï¿½ï¿½
     SetNetUpdateFrequency(2);
 }
 

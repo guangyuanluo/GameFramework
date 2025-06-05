@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ExpTypeConfigTableRow.h"
+#include "Modules/Exp/ExpTypeConfigTableRow.h"
 
 int FExpTypeConfigTableRow::GetUniqueId() {
     return (int)ExpType;

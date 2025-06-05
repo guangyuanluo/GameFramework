@@ -1,5 +1,5 @@
-#include "ConditionProgressLifeCycleManager.h"
-#include "CoreConditionProgress.h"
+#include "Modules/Condition/ConditionProgressLifeCycleManager.h"
+#include "Modules/Condition/CoreConditionProgress.h"
 
 class UCoreConditionProgress* UConditionProgressLifeCycleManager::MallocProgress(AActor* ProgressOwner, class UCoreCondition* Condition) {
     auto ConditionProgress = NewObject<UCoreConditionProgress>(ProgressOwner, Condition->ProgressClass);

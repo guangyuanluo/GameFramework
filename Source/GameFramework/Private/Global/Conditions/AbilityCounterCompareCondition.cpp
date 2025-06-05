@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AbilityCounterCompareCondition.h"
+#include "Global/Conditions/AbilityCounterCompareCondition.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
-#include "AbilityCounterSubsystem.h"
+#include "Modules/AbilityCounter/AbilityCounterSubsystem.h"
 
 UAbilityCounterCompareCondition::UAbilityCounterCompareCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

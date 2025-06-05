@@ -1,10 +1,10 @@
-#include "ConditionTriggerSystem.h"
-#include "CoreGameInstance.h"
-#include "CoreCondition.h"
-#include "CoreConditionProgress.h"
-#include "GameSystemManager.h"
-#include "CorePlayerController.h"
-#include "ConditionBlueprintLibrary.h"
+#include "Modules/Condition/ConditionTriggerSystem.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Modules/Condition/CoreCondition.h"
+#include "Modules/Condition/CoreConditionProgress.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "PlayerController/CorePlayerController.h"
+#include "Modules/Condition/ConditionBlueprintLibrary.h"
 #include "GameFramework/PlayerState.h"
 
 /** track the last assigned handle globally */

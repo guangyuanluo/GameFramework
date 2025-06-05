@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ScenarioNodeReturn.h"
+#include "Modules/Scenario/ScenarioNodeReturn.h"
 
 UScenarioNodeReturn::UScenarioNodeReturn(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

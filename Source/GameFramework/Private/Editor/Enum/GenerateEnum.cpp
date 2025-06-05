@@ -1,6 +1,6 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 
-#include "GenerateEnum.h"
+#include "Editor/Enum/GenerateEnum.h"
 
 UGenerateEnum::UGenerateEnum(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

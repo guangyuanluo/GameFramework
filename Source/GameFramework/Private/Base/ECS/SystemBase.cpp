@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SystemBase.h"
-#include "CoreGameInstance.h"
+#include "Base/ECS/SystemBase.h"
+#include "GameInstance/CoreGameInstance.h"
 
 void USystemBase::Initialize(UCoreGameInstance* InGameInstance) {
 	GameInstance = InGameInstance;

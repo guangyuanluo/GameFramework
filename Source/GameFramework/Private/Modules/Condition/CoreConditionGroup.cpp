@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreConditionGroup.h"
-#include "CoreConditionProgress.h"
+#include "Modules/Condition/CoreConditionGroup.h"
+#include "Modules/Condition/CoreConditionProgress.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "BooleanAlgebraUtil.h"
+#include "Utils/Algorithm/BooleanAlgebraUtil.h"
 
 UCoreConditionGroup::UCoreConditionGroup(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     ProgressClass = UCoreConditionGroupProgress::StaticClass();

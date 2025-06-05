@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AbilityTask_PlayMontageAndWaitForEvent.h"
-#include "CoreAbilitySystemComponent.h"
+#include "Modules/Skill/Tasks/AbilityTask_PlayMontageAndWaitForEvent.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemGlobals.h"
 #include "Animation/AnimMontage.h"
-#include "UE4LogImpl.h"
+#include "Base/Log/UE4LogImpl.h"
 #include "Character/CoreCharacter.h"
 
 UAbilityTask_PlayMontageAndWaitForEvent::UAbilityTask_PlayMontageAndWaitForEvent(const FObjectInitializer& ObjectInitializer)

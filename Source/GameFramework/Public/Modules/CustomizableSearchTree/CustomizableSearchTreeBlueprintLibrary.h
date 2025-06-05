@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "CustomizableSearchTreeNodeVisit.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeVisit.h"
 #include "CustomizableSearchTreeBlueprintLibrary.generated.h"
 
 /**

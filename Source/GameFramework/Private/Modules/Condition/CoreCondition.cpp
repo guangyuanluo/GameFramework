@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreCondition.h"
-#include "CoreConditionProgress.h"
+#include "Modules/Condition/CoreCondition.h"
+#include "Modules/Condition/CoreConditionProgress.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
-#include "ConditionGlobalSystem.h"
+#include "Modules/Condition/ConditionGlobalSystem.h"
 
 UCoreCondition::UCoreCondition(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     

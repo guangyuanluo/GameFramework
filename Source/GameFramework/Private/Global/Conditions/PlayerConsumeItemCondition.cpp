@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerConsumeItemCondition.h"
-#include "ChangeItemEvent.h"
+#include "Global/Conditions/PlayerConsumeItemCondition.h"
+#include "Global/Events/ChangeItemEvent.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "GameFrameworkUtils.h"
-#include "PlayerComponent.h"
-#include "CoreCharacterStateBase.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerConsumeItemCondition::UPlayerConsumeItemCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

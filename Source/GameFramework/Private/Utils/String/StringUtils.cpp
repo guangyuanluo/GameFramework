@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "StringUtils.h"
+#include "Utils/String/StringUtils.h"
 
 bool UStringUtils::StartsWith(const FString& SearchStr, const FString& MatchStr, bool IgnoreCase) {
     return SearchStr.StartsWith(MatchStr, IgnoreCase ? ESearchCase::IgnoreCase : ESearchCase::CaseSensitive);

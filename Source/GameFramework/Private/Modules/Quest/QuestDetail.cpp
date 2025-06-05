@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "QuestDetail.h"
-#include "QuestDetailNode.h"
+#include "Modules/Quest/QuestDetail.h"
+#include "Modules/Quest/QuestDetailNode.h"
 
 UQuestDetail::UQuestDetail(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

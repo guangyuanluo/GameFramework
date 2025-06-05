@@ -1,19 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreGameMode.h"
+#include "GameMode/CoreGameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "CoreGameInstance.h"
+#include "GameInstance/CoreGameInstance.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
-#include "CorePlayerController.h"
-#include "CoreCharacter.h"
-#include "UE4LogImpl.h"
-#include "GameSystemManager.h"
-#include "PlayerSystem.h"
-#include "PlayerComponent.h"
-#include "CoreCharacterStateBase.h"
-#include "UnitSetting.h"
-#include "ConfigTableCache.h"
-#include "UnitInfoConfigTableRow.h"
+#include "PlayerController/CorePlayerController.h"
+#include "Character/CoreCharacter.h"
+#include "Base/Log/UE4LogImpl.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Player/PlayerSystem.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Modules/Unit/UnitSetting.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
+#include "Modules/Unit/UnitInfoConfigTableRow.h"
 
 void ACoreGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) {
 	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
@@ -33,7 +33,7 @@ APlayerController* ACoreGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRol
 		UnitIDStr = FString::FromInt(DebugStartTemplate.UnitID);
 	}
 
-	UE_LOG(GameCore, Display, TEXT("玩家登入，RoleID:%s"), *RoleID, *UnitIDStr);
+	UE_LOG(GameCore, Display, TEXT("玩家登入，RoleID:%s %s"), *RoleID, *UnitIDStr);
 
 	auto PlayerController =  Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 	if (PlayerController) {

@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemConfigTableRow.h"
+#include "Modules/Item/ItemConfigTableRow.h"
 
 int FItemConfigTableRow::GetUniqueId() {
     return ItemId;

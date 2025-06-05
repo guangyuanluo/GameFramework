@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ArrivingAtCondition.h"
-#include "EnterAreaEvent.h"
-#include "ExitAreaEvent.h"
-#include "CoreCharacter.h"
+#include "Global/Conditions/ArrivingAtCondition.h"
+#include "Global/Events/EnterAreaEvent.h"
+#include "Global/Events/ExitAreaEvent.h"
+#include "Character/CoreCharacter.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "CoreCharacterStateBase.h"
-#include "GameArea.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Data/Area/GameArea.h"
 
 UArrivingAtCondition::UArrivingAtCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

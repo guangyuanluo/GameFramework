@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "StoreComponent.h"
+#include "Modules/Store/StoreComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
 
-#include "StoreSetting.h"
-#include "StoreConfigTableRow.h"
-#include "ConfigTableCache.h"
-#include "StoreGlobalEvents.h"
-#include "GameEventUtils.h"
-#include "CoreCharacter.h"
+#include "Modules/Store/StoreSetting.h"
+#include "Modules/Store/StoreConfigTableRow.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
+#include "Modules/Store/StoreGlobalEvents.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "Character/CoreCharacter.h"
 
 // Sets default values for this component's properties
 UStoreComponent::UStoreComponent()

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreItem.h"
+#include "Modules/Item/CoreItem.h"
 #include "Net/UnrealNetwork.h"
-#include "BackpackComponent.h"
-#include "CoreCharacterStateBase.h"
-#include "ConfigTableCache.h"
-#include "ItemSetting.h"
-#include "ItemConfigTableRow.h"
-#include "CoreAbilitySystemComponent.h"
+#include "Modules/Assets/BackpackComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
+#include "Modules/Item/ItemSetting.h"
+#include "Modules/Item/ItemConfigTableRow.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 
 void UCoreItem::ActiveEffects(class UBackpackComponent* BackpackComponent, const FItemEffectPreAddDelegate& InEffectPreAddCallback) {
     auto Callback = FEffectPreAddDelegate::CreateLambda([this, InEffectPreAddCallback](class UCoreAbilitySystemComponent* SkillComponent, const FGameplayEffectSpecHandle& Spec, TSubclassOf<class UGameplayEffect> EffectClass) {

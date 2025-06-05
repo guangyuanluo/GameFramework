@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SkillBlueprintLibrary.h"
+#include "Modules/Skill/SkillBlueprintLibrary.h"
 #include "Abilities/GameplayAbility.h"
-#include "CoreAbility.h"
+#include "Modules/Skill/CoreAbility.h"
 #include "AbilitySystemComponent.h"
-#include "CoreConditionGroup.h"
-#include "CurrentComboSectionLimitCondition.h"
-#include "SkillSetting.h"
+#include "Modules/Condition/CoreConditionGroup.h"
+#include "Global/Conditions/CurrentComboSectionLimitCondition.h"
+#include "Modules/Skill/SkillSetting.h"
 
 bool USkillBlueprintLibrary::DoesEffectContainerSpecHaveEffects(const FCoreGameplayEffectContainerSpec& ContainerSpec) {
     return ContainerSpec.HasValidEffects();

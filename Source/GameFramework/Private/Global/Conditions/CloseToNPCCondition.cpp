@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CloseToNPCCondition.h"
+#include "Global/Conditions/CloseToNPCCondition.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "CoreCharacterStateBase.h"
-#include "CoreCharacter.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "NPCSystem.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Character/CoreCharacter.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/NPC/NPCSystem.h"
 #include "Components/CapsuleComponent.h"
-#include "CorePlayerController.h"
+#include "PlayerController/CorePlayerController.h"
 
 UCloseToNPCCondition::UCloseToNPCCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

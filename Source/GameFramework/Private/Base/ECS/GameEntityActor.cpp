@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameEntityActor.h"
+#include "Base/ECS/GameEntityActor.h"
 #include "Engine/World.h"
-#include "CoreGameInstance.h"
+#include "GameInstance/CoreGameInstance.h"
 #include "Net/UnrealNetwork.h"
-#include "EventSystem.h"
-#include "GameEntityManager.h"
+#include "Modules/Events/EventSystem.h"
+#include "Base/ECS/GameEntityManager.h"
 #include "AbilitySystemComponent.h"
 
 AGameEntityActor::AGameEntityActor(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {

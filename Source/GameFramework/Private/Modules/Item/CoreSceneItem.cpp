@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreSceneItem.h"
-#include "ItemComponent.h"
-#include "ConfigTableCache.h"
-#include "ItemSetting.h"
-#include "ItemConfigTableRow.h"
+#include "Modules/Item/CoreSceneItem.h"
+#include "Modules/Item/ItemComponent.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
+#include "Modules/Item/ItemSetting.h"
+#include "Modules/Item/ItemConfigTableRow.h"
 #include "Engine/StaticMesh.h"
 
 ACoreSceneItem::ACoreSceneItem(const FObjectInitializer& ObjectInitializer)

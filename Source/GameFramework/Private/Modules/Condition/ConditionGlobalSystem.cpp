@@ -1,5 +1,5 @@
-#include "ConditionGlobalSystem.h"
-#include "ConditionProgressLifeCycleManager.h"
+#include "Modules/Condition/ConditionGlobalSystem.h"
+#include "Modules/Condition/ConditionProgressLifeCycleManager.h"
 
 class UCoreConditionProgress* UConditionGlobalSystem::MallocProgress(AActor* ProgressOwner, class UCoreCondition* Condition) {
     if (!ProgressLifeCycleManagerCDO) {

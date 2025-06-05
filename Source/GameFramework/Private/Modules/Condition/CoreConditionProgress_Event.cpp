@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreConditionProgress_Event.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
+#include "Modules/Condition/CoreConditionProgress_Event.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Events/EventSystem.h"
 
 void UCoreConditionProgress_Event::OnInitialize() {
     Super::OnInitialize();

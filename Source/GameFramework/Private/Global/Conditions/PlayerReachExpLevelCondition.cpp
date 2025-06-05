@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerReachExpLevelCondition.h"
-#include "GameFrameworkUtils.h"
-#include "ExpComponent.h"
+#include "Global/Conditions/PlayerReachExpLevelCondition.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Exp/ExpComponent.h"
 #include "Modules/Exp/ExpInfo.h"
-#include "ExpLevelUpEvent.h"
-#include "PlayerComponent.h"
-#include "CoreCharacterStateBase.h"
+#include "Global/Events/ExpLevelUpEvent.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerReachExpLevelCondition::UPlayerReachExpLevelCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

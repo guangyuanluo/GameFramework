@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreGameInstance.h"
-#include "UE4LogImpl.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/Log/UE4LogImpl.h"
 
 #include "Data/Team/TeamIDDefines.h"
 #include "GenericTeamAgentInterface.h"
-#include "GameEntityManager.h"
-#include "GameSystemManager.h"
-#include "GameInstanceSubSystemBase.h"
+#include "Base/ECS/GameEntityManager.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Base/Subsystem/GameInstanceSubsystemBase.h"
 
-#include "ConfigTableCache.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
 
 ETeamAttitude::Type AttitudeSolver(FGenericTeamId TeamA, FGenericTeamId TeamB) {
 	if (TeamA.GetId() == TeamB.GetId()) {

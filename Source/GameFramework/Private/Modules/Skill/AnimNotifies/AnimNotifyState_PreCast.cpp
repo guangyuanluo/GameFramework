@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AnimNotifyState_PreCast.h"
+#include "Modules/Skill/AnimNotifies/AnimNotifyState_PreCast.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Modules/Skill/SkillBlueprintLibrary.h"

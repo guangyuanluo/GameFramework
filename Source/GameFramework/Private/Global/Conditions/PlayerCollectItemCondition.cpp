@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerCollectItemCondition.h"
-#include "GameFrameworkUtils.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "AssetSystem.h"
-#include "BackpackComponent.h"
-#include "CoreItem.h"
-#include "ItemComponent.h"
-#include "AssetBackpack.h"
-#include "ChangeItemEvent.h"
-#include "PlayerComponent.h"
-#include "CoreCharacterStateBase.h"
+#include "Global/Conditions/PlayerCollectItemCondition.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Assets/AssetSystem.h"
+#include "Modules/Assets/BackpackComponent.h"
+#include "Modules/Item/CoreItem.h"
+#include "Modules/Item/ItemComponent.h"
+#include "Modules/Assets/AssetBackpack.h"
+#include "Global/Events/ChangeItemEvent.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerCollectItemCondition::UPlayerCollectItemCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

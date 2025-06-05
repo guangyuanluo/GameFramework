@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "TalkToCondition.h"
-#include "CoreCharacter.h"
+#include "Global/Conditions/TalkToCondition.h"
+#include "Character/CoreCharacter.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "TalkToNPCEvent.h"
-#include "CoreCharacterStateBase.h"
-#include "CoreGameInstance.h"
-#include "ExecutingQuest.h"
+#include "Global/Events/TalkToNPCEvent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Modules/Quest/ExecutingQuest.h"
 
 UTalkToCondition::UTalkToCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

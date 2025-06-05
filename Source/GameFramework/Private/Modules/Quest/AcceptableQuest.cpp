@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AcceptableQuest.h"
-#include "CoreConditionProgress.h"
-#include "QuestSystem.h"
-#include "QuestComponent.h"
-#include "UE4LogImpl.h"
-#include "Quest.h"
+#include "Modules/Quest/AcceptableQuest.h"
+#include "Modules/Condition/CoreConditionProgress.h"
+#include "Modules/Quest/QuestSystem.h"
+#include "Modules/Quest/QuestComponent.h"
+#include "Base/Log/UE4LogImpl.h"
+#include "Modules/Quest/Quest.h"
 #include "Kismet/GameplayStatics.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "ConditionTriggerSystem.h"
-#include "ConditionBlueprintLibrary.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Condition/ConditionTriggerSystem.h"
+#include "Modules/Condition/ConditionBlueprintLibrary.h"
 
 void UAcceptableQuest::Initialize(UQuest* InQuestPtr, UQuestComponent* InQuestComponent) {
 	QuestPtr = InQuestPtr;

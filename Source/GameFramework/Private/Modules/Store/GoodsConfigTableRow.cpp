@@ -1,6 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GoodsConfigTableRow.h"
+#include "Modules/Store/GoodsConfigTableRow.h"
 
 int FGoodsConfigTableRow::GetUniqueId() {
     return GoodsID;

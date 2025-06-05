@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerSkillReachLevelCondition.h"
-#include "SkillLevelUpEvent.h"
-#include "GameFrameworkUtils.h"
-#include "CoreCharacterStateBase.h"
-#include "PlayerComponent.h"
-#include "ConfigTableCache.h"
-#include "SkillConfigTableRow.h"
-#include "SkillSetting.h"
-#include "CoreAbilitySystemComponent.h"
-#include "CoreCharacter.h"
+#include "Global/Conditions/PlayerSkillReachLevelCondition.h"
+#include "Global/Events/SkillLevelUpEvent.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "Base/ConfigTable/ConfigTableCache.h"
+#include "Modules/Skill/SkillConfigTableRow.h"
+#include "Modules/Skill/SkillSetting.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
+#include "Character/CoreCharacter.h"
 
 UPlayerSkillReachLevelCondition::UPlayerSkillReachLevelCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

@@ -18,7 +18,7 @@ public:
 	FString GetNodeTitle();
 
     /**
-    * ½±Àø·¢·Å
+    * @brief å¥–åŠ±æ´¾å‘
     */
     UFUNCTION(BlueprintNativeEvent)
     void HandleRewardDispatch(UCoreGameInstance* InGameInstance, class ACoreCharacter* Source);

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerDeductMoneyCondition.h"
+#include "Global/Conditions/PlayerDeductMoneyCondition.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "OrderCompleteEvent.h"
-#include "OrderSystem.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "MoneyOrder.h"
+#include "Global/Events/OrderCompleteEvent.h"
+#include "Modules/Order/OrderSystem.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Global/Orders/MoneyOrder.h"
 
 UPlayerDeductMoneyCondition::UPlayerDeductMoneyCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

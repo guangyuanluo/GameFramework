@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CoreTargetType.h"
-#include "CoreAbility.h"
-#include "CoreCharacter.h"
+#include "Modules/Skill/CoreTargetType.h"
+#include "Modules/Skill/CoreAbility.h"
+#include "Character/CoreCharacter.h"
 
 void UCoreTargetType::GetTargets(class UCoreAbility* Ability, FGameplayEventData EventData, TArray<FHitResult>& OutHitResults, TArray<AActor*>& OutActors) const
 {

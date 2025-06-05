@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GameEntity.h"
+#include "Base/ECS/GameEntity.h"
 
 // Add default functionality here for any IGameEntity functions that are not pure virtual.
 const FString& IGameEntity::GetEntityID() {

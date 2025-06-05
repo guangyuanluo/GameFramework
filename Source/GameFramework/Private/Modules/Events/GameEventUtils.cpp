@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameEventUtils.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Events/EventSystem.h"
 
 void UGameEventUtils::PushEvent(UObject* WorldContextObject, class UGameEventBase* InPushEvent) {
     if (!WorldContextObject) {

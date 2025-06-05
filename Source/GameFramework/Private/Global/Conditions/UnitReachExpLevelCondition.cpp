@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "UnitReachExpLevelCondition.h"
-#include "ExpLevelUpEvent.h"
-#include "CoreCharacter.h"
-#include "CorePlayerController.h"
+#include "Global/Conditions/UnitReachExpLevelCondition.h"
+#include "Global/Events/ExpLevelUpEvent.h"
+#include "Character/CoreCharacter.h"
+#include "PlayerController/CorePlayerController.h"
 
 UUnitReachExpLevelCondition::UUnitReachExpLevelCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

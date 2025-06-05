@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "OrderSystem.h"
-#include "UE4LogImpl.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "EventSystem.h"
-#include "GameEventUtils.h"
-#include "OrderSetting.h"
-#include "CoreOrderHandler.h"
-#include "CoreOrderBase.h"
-#include "OrderCancelEvent.h"
-#include "OrderCompleteEvent.h"
-#include "OrderGlobalEvents.h"
-#include "GameEntityManager.h"
+#include "Modules/Order/OrderSystem.h"
+#include "Base/Log/UE4LogImpl.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Modules/Events/EventSystem.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "Modules/Order/OrderSetting.h"
+#include "Modules/Order/CoreOrderHandler.h"
+#include "Modules/Order/CoreOrderBase.h"
+#include "Global/Events/OrderCancelEvent.h"
+#include "Global/Events/OrderCompleteEvent.h"
+#include "Modules/Order/OrderGlobalEvents.h"
+#include "Base/ECS/GameEntityManager.h"
 
 void UOrderSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);

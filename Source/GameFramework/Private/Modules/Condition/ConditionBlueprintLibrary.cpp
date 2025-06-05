@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ConditionBlueprintLibrary.h"
-#include "CoreConditionProgress.h"
-#include "BooleanAlgebraUtil.h"
+#include "Modules/Condition/ConditionBlueprintLibrary.h"
+#include "Modules/Condition/CoreConditionProgress.h"
+#include "Utils/Algorithm/BooleanAlgebraUtil.h"
 
 bool UConditionBlueprintLibrary::DoesProgressesSatisfy(const TArray<class UCoreConditionProgress*>& Progresses) {
 	bool HaveComplete = true;

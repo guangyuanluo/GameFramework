@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameSystemManager.h"
-#include "UE4LogImpl.h"
-#include "GameSystemFeature.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Base/Log/UE4LogImpl.h"
+#include "Base/ECS/GameSystemFeature.h"
 
 void UGameSystemManager::Initialize(UCoreGameInstance* InGameInstance) {
 	GameInstance = InGameInstance;

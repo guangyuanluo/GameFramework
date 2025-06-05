@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ExpReward.h"
+#include "Global/Rewards/ExpReward.h"
 
 UExpReward::UExpReward(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerCollectMoneyCondition.h"
-#include "CoreGameInstance.h"
-#include "GameFrameworkUtils.h"
-#include "AssetSystem.h"
-#include "WalletComponent.h"
-#include "ChangeMoneyEvent.h"
-#include "PlayerComponent.h"
-#include "CoreCharacterStateBase.h"
+#include "Global/Conditions/PlayerCollectMoneyCondition.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Assets/AssetSystem.h"
+#include "Modules/Assets/WalletComponent.h"
+#include "Global/Events/ChangeMoneyEvent.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerCollectMoneyCondition::UPlayerCollectMoneyCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

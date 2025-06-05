@@ -1,4 +1,4 @@
-#include "LogicObjectBase.h"
+#include "Base/Structure/LogicObjectBase.h"
 
 FLogicObjectLoadWorldScope::FLogicObjectLoadWorldScope() 
 : LogicObjectBase(nullptr)

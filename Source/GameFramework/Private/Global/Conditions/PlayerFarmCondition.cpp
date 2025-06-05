@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerFarmCondition.h"
-#include "ActorDiedEvent.h"
-#include "GameFrameworkUtils.h"
-#include "PlayerComponent.h"
-#include "CoreCharacter.h"
-#include "CorePlayerController.h"
+#include "Global/Conditions/PlayerFarmCondition.h"
+#include "Global/Events/ActorDiedEvent.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Player/PlayerComponent.h"
+#include "Character/CoreCharacter.h"
+#include "PlayerController/CorePlayerController.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "CoreCharacterStateBase.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerFarmCondition::UPlayerFarmCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

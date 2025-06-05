@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CustomizableSearchTreeBlueprintLibrary.h"
-#include "CustomizableSearchTree.h"
-#include "CustomizableSearchTreeNodeBase.h"
-#include "CustomizableSearchTreeNodeVisit.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeBlueprintLibrary.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTree.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeBase.h"
+#include "Modules/CustomizableSearchTree/CustomizableSearchTreeNodeVisit.h"
 
 UCustomizableSearchTreeNodeBase* UCustomizableSearchTreeBlueprintLibrary::FindNodeFromAnimSearchTree(UCustomizableSearchTree* CustomizableSearchTree, TSubclassOf<UCustomizableSearchTreeNodeBase> NodeClass, UObject* FindContext) {
 	if (!NodeClass) {

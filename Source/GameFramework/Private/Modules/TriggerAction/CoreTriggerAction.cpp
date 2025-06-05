@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreTriggerAction.h"
-#include "CoreAbility.h"
+#include "Modules/TriggerAction/CoreTriggerAction.h"
+#include "Modules/Skill/CoreAbility.h"
 
 void UCoreTriggerAction::OnExecute(const FGameplayEventData& EventData) const {
     K2_OnExecute(EventData);

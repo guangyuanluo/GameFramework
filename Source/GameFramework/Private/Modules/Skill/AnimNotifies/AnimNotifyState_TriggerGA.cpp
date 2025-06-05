@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "AnimNotifyState_TriggerGA.h"
-#include "CoreCharacter.h"
-#include "CoreAbilitySystemComponent.h"
+#include "Modules/Skill/AnimNotifies/AnimNotifyState_TriggerGA.h"
+#include "Character/CoreCharacter.h"
+#include "Modules/Skill/CoreAbilitySystemComponent.h"
 
 void UAnimNotifyState_TriggerGA::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference) {
     if (!TriggerGA) {

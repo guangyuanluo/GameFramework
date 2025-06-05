@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "QuestDetailNodeItem.h"
-#include "CoreCondition.h"
-#include "CoreReward.h"
+#include "Modules/Quest/QuestDetailNodeItem.h"
+#include "Modules/Condition/CoreCondition.h"
+#include "Modules/Reward/CoreReward.h"
 
 UQuestDetailNodeItem::UQuestDetailNodeItem(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
     

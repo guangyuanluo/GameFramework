@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerConsumeMoneyCondition.h"
-#include "ConsumeMoneyEvent.h"
-#include "GameFrameworkUtils.h"
-#include "PlayerComponent.h"
+#include "Global/Conditions/PlayerConsumeMoneyCondition.h"
+#include "Global/Events/ConsumeMoneyEvent.h"
+#include "Utils/GameFrameworkUtils.h"
+#include "Modules/Player/PlayerComponent.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "CoreCharacterStateBase.h"
+#include "PlayerState/CoreCharacterStateBase.h"
 
 UPlayerConsumeMoneyCondition::UPlayerConsumeMoneyCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

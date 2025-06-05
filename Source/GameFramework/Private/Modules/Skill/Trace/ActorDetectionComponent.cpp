@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "ActorDetectionComponent.h"
+#include "Modules/Skill/Trace/ActorDetectionComponent.h"
 #include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PhysicsEngine/PhysicsSettings.h"

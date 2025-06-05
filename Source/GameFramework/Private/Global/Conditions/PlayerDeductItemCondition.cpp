@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerDeductItemCondition.h"
+#include "Global/Conditions/PlayerDeductItemCondition.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
-#include "OrderCompleteEvent.h"
-#include "OrderSystem.h"
-#include "CoreGameInstance.h"
-#include "GameSystemManager.h"
-#include "ItemOrder.h"
+#include "Global/Events/OrderCompleteEvent.h"
+#include "Modules/Order/OrderSystem.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Base/ECS/GameSystemManager.h"
+#include "Global/Orders/ItemOrder.h"
 
 UPlayerDeductItemCondition::UPlayerDeductItemCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

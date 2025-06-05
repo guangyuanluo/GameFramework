@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "MoveInputInTimeCondition.h"
-#include "CoreCharacter.h"
-#include "CoreCharacterStateBase.h"
-#include "CoreGameInstance.h"
-#include "ExecutingQuest.h"
+#include "Global/Conditions/MoveInputInTimeCondition.h"
+#include "Character/CoreCharacter.h"
+#include "PlayerState/CoreCharacterStateBase.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "Modules/Quest/ExecutingQuest.h"
 
 UMoveInputInTimeCondition::UMoveInputInTimeCondition(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer) {

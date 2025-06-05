@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "EventSystem.h"
-#include "EventHandlerInterface.h"
-#include "UE4LogImpl.h"
-#include "GameEventBase.h"
+#include "Modules/Events/EventSystem.h"
+#include "Modules/Events/EventHandlerInterface.h"
+#include "Base/Log/UE4LogImpl.h"
+#include "Modules/Events/GameEventBase.h"
 #include "Engine/World.h"
-#include "AllEvent.h"
-#include "CoreGameInstance.h"
-#include "CorePlayerController.h"
+#include "Global/Events/AllEvent.h"
+#include "GameInstance/CoreGameInstance.h"
+#include "PlayerController/CorePlayerController.h"
 #include "Serialization/BufferArchive.h"
-#include "StringUtils.h"
+#include "Utils/String/StringUtils.h"
 
 void UEventSystem::Initialize(UCoreGameInstance* InGameInstance) {
     Super::Initialize(InGameInstance);

@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ScenarioComponent.h"
-#include "GameEventUtils.h"
-#include "GameEntity.h"
+#include "Modules/Scenario/ScenarioComponent.h"
+#include "Modules/Events/GameEventUtils.h"
+#include "Base/ECS/GameEntity.h"
 #include "GameFramework/PlayerState.h"
-#include "Scenario.h"
+#include "Modules/Scenario/Scenario.h"
 #include "Engine/ActorChannel.h"
 #include "Net/UnrealNetwork.h"
 
