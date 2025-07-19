@@ -11,7 +11,7 @@
 #include "Modules/Scenario/ScenarioComponent.h"
 
 ACoreCharacterStateBase::ACoreCharacterStateBase(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-    //����ͬ��Ƶ�ʣ�0.5sһ���㹻��
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     SetNetUpdateFrequency(2);
 }
 
