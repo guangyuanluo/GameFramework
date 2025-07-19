@@ -330,7 +330,7 @@ bool FGraphEditorBase::CanCopyNodes() const {
 
 void FGraphEditorBase::PasteSelectedNodes() {
 	if (TSharedPtr<SGraphEditor> CurrentGraphEditor = UpdateGraphEdPtr.Pin()) {
-		const FVector2D PasteLocation = CurrentGraphEditor->GetPasteLocation();
+		const FVector2f PasteLocation = CurrentGraphEditor->GetPasteLocation2f();
 
 		UEdGraph* EdGraph = CurrentGraphEditor->GetCurrentGraph();
 		EdGraph->Modify();
@@ -438,7 +438,7 @@ void FGraphEditorBase::CreateComment()
 	if (!CurrentGraphEditor) {
 		return;
 	}
-	const FVector2D PasteLocation = CurrentGraphEditor->GetPasteLocation();
+	const FVector2f PasteLocation = CurrentGraphEditor->GetPasteLocation2f();
 	auto Graph = GetGraph();
 	if (Graph) {
 		if (const UEdGraphSchema* Schema = Graph->GetSchema()) {

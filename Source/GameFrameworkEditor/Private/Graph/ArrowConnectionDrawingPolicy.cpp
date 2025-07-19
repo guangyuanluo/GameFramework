@@ -32,7 +32,7 @@ void FArrowConnectionDrawingPolicy::Draw(TMap<TSharedRef<SWidget>, FArrangedWidg
     FConnectionDrawingPolicy::Draw(InPinGeometries, ArrangedNodes);
 }
 
-void FArrowConnectionDrawingPolicy::DrawPreviewConnector(const FGeometry& PinGeometry, const FVector2D& StartPoint, const FVector2D& EndPoint, UEdGraphPin* Pin) {
+void FArrowConnectionDrawingPolicy::DrawPreviewConnector(const FGeometry& PinGeometry, const FVector2f& StartPoint, const FVector2f& EndPoint, UEdGraphPin* Pin) {
     FConnectionParams Params;
     DetermineWiringStyle(Pin, nullptr, /*inout*/ Params);
 
@@ -44,27 +44,27 @@ void FArrowConnectionDrawingPolicy::DrawPreviewConnector(const FGeometry& PinGeo
     }
 }
 
-void FArrowConnectionDrawingPolicy::DrawSplineWithArrow(const FVector2D& StartAnchorPoint, const FVector2D& EndAnchorPoint, const FConnectionParams& Params) {
+void FArrowConnectionDrawingPolicy::DrawSplineWithArrow(const FVector2f& StartAnchorPoint, const FVector2f& EndAnchorPoint, const FConnectionParams& Params) {
     // bUserFlag1 indicates that we need to reverse the direction of connection (used by debugger)
-    const FVector2D& P0 = Params.bUserFlag1 ? EndAnchorPoint : StartAnchorPoint;
-    const FVector2D& P1 = Params.bUserFlag1 ? StartAnchorPoint : EndAnchorPoint;
+    const FVector2f& P0 = Params.bUserFlag1 ? EndAnchorPoint : StartAnchorPoint;
+    const FVector2f& P1 = Params.bUserFlag1 ? StartAnchorPoint : EndAnchorPoint;
 
     Internal_DrawLineWithArrow(P0, P1, Params);
 }
 
-void FArrowConnectionDrawingPolicy::Internal_DrawLineWithArrow(const FVector2D& StartAnchorPoint, const FVector2D& EndAnchorPoint, const FConnectionParams& Params) {
+void FArrowConnectionDrawingPolicy::Internal_DrawLineWithArrow(const FVector2f& StartAnchorPoint, const FVector2f& EndAnchorPoint, const FConnectionParams& Params) {
     //@TODO: Should this be scaled by zoom factor?
     const float LineSeparationAmount = 4.5f;
 
-    const FVector2D DeltaPos = EndAnchorPoint - StartAnchorPoint;
-    const FVector2D UnitDelta = DeltaPos.GetSafeNormal();
-    const FVector2D Normal = FVector2D(DeltaPos.Y, -DeltaPos.X).GetSafeNormal();
+    const FVector2f DeltaPos = EndAnchorPoint - StartAnchorPoint;
+    const FVector2f UnitDelta = DeltaPos.GetSafeNormal();
+    const FVector2f Normal = FVector2f(DeltaPos.Y, -DeltaPos.X).GetSafeNormal();
 
     // Come up with the final start/end points
-    const FVector2D DirectionBias = Normal * LineSeparationAmount;
-    const FVector2D LengthBias = ArrowRadius.X * UnitDelta;
-    const FVector2D StartPoint = StartAnchorPoint + DirectionBias + LengthBias;
-    const FVector2D EndPoint = EndAnchorPoint + DirectionBias - LengthBias;
+    const FVector2f DirectionBias = Normal * LineSeparationAmount;
+    const FVector2f LengthBias = ArrowRadius.X * UnitDelta;
+    const FVector2f StartPoint = StartAnchorPoint + DirectionBias + LengthBias;
+    const FVector2f EndPoint = EndAnchorPoint + DirectionBias - LengthBias;
 
     // Draw a line/spline
     DrawConnection(WireLayerID, StartPoint, EndPoint, Params);
@@ -80,7 +80,7 @@ void FArrowConnectionDrawingPolicy::Internal_DrawLineWithArrow(const FVector2D& 
         ArrowImage,
         ESlateDrawEffect::None,
         AngleInRadians,
-        TOptional<FVector2D>(),
+        TOptional<FVector2f>(),
         FSlateDrawElement::RelativeToElement,
         Params.WireColor
     );
@@ -88,20 +88,20 @@ void FArrowConnectionDrawingPolicy::Internal_DrawLineWithArrow(const FVector2D& 
 
 void FArrowConnectionDrawingPolicy::DrawSplineWithArrow(const FGeometry& StartGeom, const FGeometry& EndGeom, const FConnectionParams& Params) {
     // Get a reasonable seed point (halfway between the boxes)
-    const FVector2D StartCenter = FGeometryHelper::CenterOf(StartGeom);
-    const FVector2D EndCenter = FGeometryHelper::CenterOf(EndGeom);
-    const FVector2D SeedPoint = (StartCenter + EndCenter) * 0.5f;
+    const FVector2f StartCenter = FGeometryHelper::CenterOf(StartGeom);
+    const FVector2f EndCenter = FGeometryHelper::CenterOf(EndGeom);
+    const FVector2f SeedPoint = (StartCenter + EndCenter) * 0.5f;
 
     // Find the (approximate) closest points between the two boxes
-    const FVector2D StartAnchorPoint = FGeometryHelper::FindClosestPointOnGeom(StartGeom, SeedPoint);
-    const FVector2D EndAnchorPoint = FGeometryHelper::FindClosestPointOnGeom(EndGeom, SeedPoint);
+    const FVector2f StartAnchorPoint = FGeometryHelper::FindClosestPointOnGeom(StartGeom, SeedPoint);
+    const FVector2f EndAnchorPoint = FGeometryHelper::FindClosestPointOnGeom(EndGeom, SeedPoint);
 
     DrawSplineWithArrow(StartAnchorPoint, EndAnchorPoint, Params);
 }
 
-FVector2D FArrowConnectionDrawingPolicy::ComputeSplineTangent(const FVector2D& Start, const FVector2D& End) const {
-    const FVector2D Delta = End - Start;
-    const FVector2D NormDelta = Delta.GetSafeNormal();
+FVector2f FArrowConnectionDrawingPolicy::ComputeSplineTangent(const FVector2f& Start, const FVector2f& End) const {
+    const FVector2f Delta = End - Start;
+    const FVector2f NormDelta = Delta.GetSafeNormal();
 
     return NormDelta;
 }

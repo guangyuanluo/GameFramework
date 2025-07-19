@@ -8,7 +8,7 @@
 
 #define LOCTEXT_NAMESPACE "Graph"
 
-UEdGraphNode* FGameSchemaAction_NewComment::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode /*= true*/)
+UEdGraphNode* FGameSchemaAction_NewComment::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2f& Location, bool bSelectNewNode /*= true*/)
 {
 	UGameFrameworkGraph* EditorGraph = Cast<UGameFrameworkGraph>(ParentGraph);
 	if (!EditorGraph)
@@ -20,7 +20,7 @@ UEdGraphNode* FGameSchemaAction_NewComment::PerformAction(class UEdGraph* Parent
 	UEdGraphNode_Comment* CommentTemplate = NewObject<UEdGraphNode_Comment>();
 	auto GraphEditorPtr = EditorGraph->Editor;
 
-	FVector2D SpawnLocation = Location;
+	FVector2f SpawnLocation = Location;
 	FSlateRect Bounds;
 	if (GraphEditorPtr && GraphEditorPtr->GetBoundsForSelectedNodes(Bounds, 50.0f))
 	{

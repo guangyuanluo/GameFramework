@@ -46,8 +46,7 @@ void SUnitPlacementPalette::Construct( const FArguments& InArgs )
         .SelectionMode(ESelectionMode::Single)
         .ListItemsSource(&PlacementList)
         .OnGenerateRow(this, &SUnitPlacementPalette::MakeListViewWidget)
-        .OnSelectionChanged(this, &SUnitPlacementPalette::OnSelectionChanged)
-        .ItemHeight(35);
+        .OnSelectionChanged(this, &SUnitPlacementPalette::OnSelectionChanged);
 
     ChildSlot
         [
