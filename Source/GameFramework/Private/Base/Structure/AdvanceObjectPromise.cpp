@@ -35,16 +35,6 @@ UAdvanceObjectPromise::UAdvanceObjectPromise(const class FObjectInitializer& Obj
 	}
 }
 
-UAdvanceObjectPromise::~UAdvanceObjectPromise() {
-	if (!HaveSet) {
-		OnSuccess.Empty();
-		OnFailure.Empty();
-		if (Promise) {
-			Promise->SetValue(false);
-		}
-	}
-}
-
 void UAdvanceObjectPromise::TrySuccess(UObject* InResult) {
 
 	if (HaveSet) {
@@ -151,6 +141,18 @@ void UAdvanceObjectPromise::SetTimeout(float Timeout) {
 	check(World);
 
 	World->GetTimerManager().SetTimer(TimeoutHandle, this, &UAdvanceObjectPromise::TimeoutCallback, Timeout);
+}
+
+void UAdvanceObjectPromise::BeginDestroy() {
+	Super::BeginDestroy();
+
+	if (!HaveSet) {
+		OnSuccess.Empty();
+		OnFailure.Empty();
+		if (Promise) {
+			Promise->SetValue(false);
+		}
+	}
 }
 
 void UAdvanceObjectPromise::BindOtherPromiseSuccessCallback(UObject* InResult) {

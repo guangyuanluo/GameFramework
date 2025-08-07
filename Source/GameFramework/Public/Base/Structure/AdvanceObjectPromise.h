@@ -20,8 +20,6 @@ class GAMEFRAMEWORK_API UAdvanceObjectPromise : public UObject {
 	GENERATED_UCLASS_BODY()
 
 public:
-	~UAdvanceObjectPromise();
-
 	/**
 	* 尝试设置结果
 	*/
@@ -85,6 +83,8 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable)
 	void SetTimeout(float Timeout);
+
+	virtual void BeginDestroy() override;
 
 private:
 	UPROPERTY()
