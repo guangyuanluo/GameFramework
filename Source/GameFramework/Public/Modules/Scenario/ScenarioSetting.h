@@ -18,6 +18,6 @@ public:
     /**
     * 播放剧情优先级排序类
     */
-    UPROPERTY(config, EditAnywhere, Category = "剧情", meta = (DisplayName = "播放剧情优先级排序类", MetaClass = "PlayScenarioPredicate", NoResetToDefault))
+    UPROPERTY(config, EditAnywhere, Category = "剧情", meta = (DisplayName = "播放剧情优先级排序类", MetaClass = "/Script/GameFramework.PlayScenarioPredicate", NoResetToDefault))
     FSoftClassPath PlayScenarioPredicateClass;
 };

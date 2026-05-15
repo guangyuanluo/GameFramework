@@ -19,7 +19,7 @@ public:
     /**
     * 物品优先级排序类
     */
-    UPROPERTY(config, EditAnywhere, Category = "Backpack", meta = (DisplayName = "物品优先级排序类", MetaClass = "ItemSortPredicate", NoResetToDefault))
+    UPROPERTY(config, EditAnywhere, Category = "Backpack", meta = (DisplayName = "物品优先级排序类", MetaClass = "/Script/GameFramework.ItemSortPredicate", NoResetToDefault))
     FSoftClassPath ItemSortPredicateClass;
 
     /**
@@ -31,7 +31,7 @@ public:
     /**
     * 背包扩展处理类
     */
-    UPROPERTY(config, EditAnywhere, Category = "Backpack", meta = (DisplayName = "背包扩展处理类", MetaClass = "BackpackExtendHandler", NoResetToDefault))
+    UPROPERTY(config, EditAnywhere, Category = "Backpack", meta = (DisplayName = "背包扩展处理类", MetaClass = "/Script/GameFramework.BackpackExtendHandler", NoResetToDefault))
     FSoftClassPath BackpackExtendHandlerClass;
 
     /**
